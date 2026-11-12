@@ -1,4 +1,5 @@
 site/
+.cache_pdfs/
 __pycache__/
 *.pyc
 .venv/

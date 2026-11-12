@@ -3,8 +3,8 @@
 """
 build_nav_and_index.py
 扫描 docs/venues/ 下的所有推荐系统论文 Markdown 笔记，
-完整挂载原仓库 Paper-Notes 的 overrides/、stylesheets/extra.css、javascripts/ 与 hooks/，
-并生成全宽门户卡片式首页 (docs/index.md)、14 大推荐细分方向页 (docs/topics/)、22 个会刊页 (docs/venues/) 与 mkdocs.yml。
+提取 paper_url (论文原文链接) 与 code_url (开源代码链接)，
+在专题汇总表与会议列表页自动展示 [📄 论文原文] 与 [💻 开源代码] 徽章链接。
 """
 
 import re
@@ -14,19 +14,21 @@ from init_clean_recsys_repo import VENUES, CATEGORIES
 
 CAT_ICONS = {
     "collaborative_filtering": "🤝",
+    "graph_rec": "🕸️",
+    "self_supervised_denoising": "🔄",
     "sequential_rec": "⏱️",
     "generative_rec": "✨",
-    "llm_agent_rec": "🧠",
+    "llm_rec": "🧠",
+    "agent_conversational_rec": "🗣️",
     "multimodal_rec": "🧩",
-    "graph_rec": "🕸️",
-    "social_rec": "👥",
-    "cold_start_cross_domain": "❄️",
-    "ctr_multi_task_ranking": "🎯",
-    "conversational_explainable": "🗣️",
-    "rl_bandit_rec": "🎮",
-    "debias_fairness_trust": "⚖️",
+    "social_group_rec": "👥",
+    "cold_start_rec": "❄️",
+    "cross_domain_multi_scenario": "🌐",
     "poi_spatiotemporal_rec": "📍",
-    "industrial_system_eval": "🏭",
+    "ctr_feature_interaction": "🎯",
+    "multi_task_reranking": "⚖️",
+    "rl_bandit_rec": "🎮",
+    "debias_fairness_industrial": "🛡️",
 }
 
 PORTAL_STYLE = """<style>
@@ -47,7 +49,7 @@ PORTAL_STYLE = """<style>
 .recsys-hero p {
   font-size: 1.05rem;
   opacity: 0.82;
-  max-width: 720px;
+  max-width: 740px;
   margin: 0 auto 1.4rem;
 }
 .recsys-stats {
@@ -117,13 +119,15 @@ PORTAL_STYLE = """<style>
 
 
 def parse_frontmatter(md_path: Path) -> dict:
-    """解析单篇论文 Markdown 笔记顶部的 YAML Frontmatter 元数据。"""
+    """解析单篇论文 Markdown 笔记顶部的 YAML Frontmatter 元数据（含 paper_url 与 code_url）。"""
     text = md_path.read_text(encoding="utf-8", errors="ignore")
     meta = {
         "title": md_path.stem.replace("_", " ").title(),
         "description": "",
         "date": "",
         "venue": md_path.parent.parent.name,
+        "paper_url": "",
+        "code_url": "",
         "categories": [md_path.parent.name],
         "path": md_path,
     }
@@ -152,12 +156,30 @@ def parse_frontmatter(md_path: Path) -> dict:
     if venue_m:
         meta["venue"] = venue_m.group(1).strip()
 
+    paper_m = re.search(r'^paper_url:\s*["\']?(https?://[^\s"\']+)["\']?\s*$', fm, re.MULTILINE)
+    if paper_m:
+        meta["paper_url"] = paper_m.group(1).strip()
+
+    code_m = re.search(r'^code_url:\s*["\']?(https?://[^\s"\']+)["\']?\s*$', fm, re.MULTILINE)
+    if code_m:
+        meta["code_url"] = code_m.group(1).strip()
+
     cats = re.findall(r"^\s*-\s*([a-z0-9_]+)\s*$", fm, re.MULTILINE)
     valid_cats = [c for c in cats if c in CATEGORIES]
     if valid_cats:
         meta["categories"] = valid_cats
 
     return meta
+
+
+def format_resource_links(item: dict) -> str:
+    """生成论文原文与开源代码的快捷点击链接标签。"""
+    links = []
+    if item.get("paper_url"):
+        links.append(f"[📄 原文]({item['paper_url']})")
+    if item.get("code_url"):
+        links.append(f"[💻 代码]({item['code_url']})")
+    return " · ".join(links) if links else "-"
 
 
 def collect_all_notes(docs_dir: Path):
@@ -177,7 +199,7 @@ def collect_all_notes(docs_dir: Path):
 
 
 def build_topic_pages(docs_dir: Path, notes: list):
-    """生成 docs/topics/ 下的 14 大推荐系统细分方向跨会议聚合页。"""
+    """生成 docs/topics/ 下的 16 大推荐系统细分方向跨会议聚合页。"""
     topics_dir = docs_dir / "topics"
     topics_dir.mkdir(parents=True, exist_ok=True)
 
@@ -210,9 +232,9 @@ def build_topic_pages(docs_dir: Path, notes: list):
         "",
         PORTAL_STYLE,
         "",
-        "# 🔬 按推荐系统细分类别浏览 (14 大核心方向)",
+        f"# 🔬 按推荐系统细分类别浏览 ({len(CATEGORIES)} 大正交方向)",
         "",
-        "按**推荐系统研究子方向**跨会议、跨期刊聚合所有论文解读笔记。无论论文发表于 SIGIR、RecSys、KDD、WWW、ACM MM 还是 TOIS、TKDE，均可在此按技术脉络集中检索。",
+        "按**推荐系统研究子方向**跨会议、跨期刊聚合所有论文解读笔记。每篇均附带精读笔记、**论文原文直达链接**与**开源代码仓库链接（如有）**。",
         "",
         "\n".join(cards_html),
     ]
@@ -232,15 +254,15 @@ def build_topic_pages(docs_dir: Path, notes: list):
             page_lines.append("*暂无论文笔记，运行 `python scripts/generate_recsys_notes.py` 后将自动归档至此。*")
         else:
             page_lines.extend([
-                "| 会议/期刊 | 论文标题 | 核心速览 / 描述 | 日期 |",
-                "| :---: | :--- | :--- | :---: |",
+                "| 会议/期刊 | 论文标题 (点击查看 5 分钟精读) | 原文与开源代码 | 核心速览 |",
+                "| :---: | :--- | :---: | :--- |",
             ])
             for item in items:
                 rel_link = "../" + item["rel_from_docs"]
-                desc = item["description"] or "点击查看 5 分钟核心思想精读"
-                date_str = item["date"] or "-"
+                desc = item["description"] or "点击查看核心思想与实验协议精读"
+                res_links = format_resource_links(item)
                 page_lines.append(
-                    f"| `{item['venue']}` | [**{item['title']}**]({rel_link}) | {desc} | {date_str} |"
+                    f"| `{item['venue']}` | [**{item['title']}**]({rel_link}) | {res_links} | {desc} |"
                 )
 
         (topics_dir / f"{cat_slug}.md").write_text("\n".join(page_lines) + "\n", encoding="utf-8")
@@ -302,8 +324,13 @@ def build_venue_pages(docs_dir: Path, notes: list, default_year: str = "2026"):
             if not c_items:
                 c_lines.append("*当前会议在该细分方向下暂无论文笔记。*")
             else:
+                c_lines.extend([
+                    "| 论文标题 (点击查看 5 分钟精读) | 原文与开源代码 | 核心速览 |",
+                    "| :--- | :---: | :--- |",
+                ])
                 for item in c_items:
-                    c_lines.append(f"- [**{item['title']}**]({item['path'].name}) — {item['description']}")
+                    res_links = format_resource_links(item)
+                    c_lines.append(f"| [**{item['title']}**]({item['path'].name}) | {res_links} | {item['description']} |")
 
             (c_dir / "index.md").write_text("\n".join(c_lines) + "\n", encoding="utf-8")
         sub_cards.append("</div>")
@@ -393,7 +420,7 @@ def build_home_and_mkdocs_yml(repo_root: Path, notes: list, github_user: str = "
         "",
         '<div class="recsys-hero">',
         '  <h1>📚 RecSys Paper Notes</h1>',
-        '  <p>5 分钟读懂一篇推荐系统与信息检索顶会/顶刊论文 · 支持「14 大推荐细分方向 × 22 个核心会刊」双维度检索</p>',
+        f'  <p>5 分钟读懂一篇推荐系统与信息检索顶会/顶刊论文 · 支持「{len(CATEGORIES)} 大正交细分方向 × {len(VENUES)} 个核心会刊」双维度检索</p>',
         '  <div class="recsys-stats">',
         f'    <span class="recsys-stat-pill">📖 已收录 {len(notes)} 篇精读笔记</span>',
         f'    <span class="recsys-stat-pill">🔬 {len(CATEGORIES)} 大推荐系统细分方向</span>',
@@ -401,7 +428,7 @@ def build_home_and_mkdocs_yml(repo_root: Path, notes: list, github_user: str = "
         '  </div>',
         '</div>',
         "",
-        "## 🔬 按推荐系统细分类别浏览 (14 大核心方向)",
+        f"## 🔬 按推荐系统细分类别浏览 ({len(CATEGORIES)} 大正交方向)",
         "",
         "\n".join(topic_cards),
         "",
@@ -411,7 +438,6 @@ def build_home_and_mkdocs_yml(repo_root: Path, notes: list, github_user: str = "
     ]
     (docs_dir / "index.md").write_text("\n".join(home_lines) + "\n", encoding="utf-8")
 
-    # 检查本地是否存在原仓库的 overrides, extra.css, javascripts, hooks 等文件并自动挂载
     has_overrides = (repo_root / "overrides").exists()
     custom_dir_line = "  custom_dir: overrides\n" if has_overrides else ""
     logo_line = "  logo: assets/papernotes-logo-horizontal.svg\n" if (docs_dir / "assets" / "papernotes-logo-horizontal.svg").exists() else ""
@@ -502,9 +528,9 @@ markdown_extensions:
 
 nav:
   - 🏠 首页总览: index.md
-  - 🔬 按推荐细分类别 (14大类):
+  - 🔬 按推荐细分类别 ({len(CATEGORIES)}大类):
 {chr(10).join(topic_nav_items)}
-  - 🏛️ 按顶会与顶刊 (22个会刊):
+  - 🏛️ 按顶会与顶刊 ({len(VENUES)}个会刊):
 {chr(10).join(conf_nav_items)}
 """
     (repo_root / "mkdocs.yml").write_text(mkdocs_content, encoding="utf-8")

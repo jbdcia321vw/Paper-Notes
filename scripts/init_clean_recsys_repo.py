@@ -3,14 +3,13 @@
 """
 init_clean_recsys_repo.py
 一键清空原 Paper-Notes 中的泛 AI (CV/NLP/ML) 历史论文目录，
-并初始化涵盖 22 个推荐系统相关顶会/顶刊与 14 大推荐系统细分方向的双维度目录架构。
+并初始化涵盖 22 个推荐系统相关顶会/顶刊与优化后的 16 大推荐系统正交细分方向的双维度目录架构。
 """
 
-import os
 import shutil
 from pathlib import Path
 
-# 1. 推荐系统核心会议与顶级期刊配置 (Venues)
+# 1. 推荐系统核心会议与顶级期刊配置 (22 Venues)
 VENUES = {
     # 信息检索与推荐核心顶会
     "SIGIR": {"name": "SIGIR", "full_name": "ACM SIGIR Conference on Research and Development in Information Retrieval", "tier": "CCF-A · IR/RecSys 顶会", "type": "conference"},
@@ -40,77 +39,91 @@ VENUES = {
     "TWEB": {"name": "ACM TWEB", "full_name": "ACM Transactions on the Web", "tier": "CCF-B · Web 顶刊", "type": "journal"},
 }
 
-# 2. 推荐系统 14 大核心与前沿细分类别 (Categories)
+# 2. 优化后的推荐系统 16 大正交核心细分类别 (4 大板块 × 4 个子方向，边界清晰无重叠)
 CATEGORIES = {
+    # 板块一：基础协同、图结构与自监督去噪
     "collaborative_filtering": {
-        "title": "协同过滤与表征学习",
-        "en_title": "Collaborative Filtering & Representation Learning",
-        "desc": "矩阵分解、双塔召回、对比学习自监督表征、解耦表征与负采样策略",
-    },
-    "sequential_rec": {
-        "title": "序列与会话推荐",
-        "en_title": "Sequential & Session-based Recommendation",
-        "desc": "长短期用户行为序列建模、Transformer/Mamba/RNN 架构、会话匿名推荐与 Next-Item 预测",
-    },
-    "generative_rec": {
-        "title": "生成式推荐与语义 ID",
-        "en_title": "Generative Recommendation & Semantic IDs",
-        "desc": "RQ-VAE 离散化语义 Token、TIGER 生成式检索范式、扩散模型推荐 (Diffusion Rec) 与自回归生成",
-    },
-    "llm_agent_rec": {
-        "title": "大模型与智能体推荐",
-        "en_title": "LLM4Rec & Agentic Recommendation",
-        "desc": "大模型指令微调推荐、In-Context Prompting、知识蒸馏对齐、RecSys Agent 用户行为仿真",
-    },
-    "multimodal_rec": {
-        "title": "多模态推荐与内容理解",
-        "en_title": "Multimodal Recommendation",
-        "desc": "视觉-文本-音频多模态特征融合、多模态图对比学习、短视频/微视频推荐与商品图文匹配",
+        "title": "协同过滤与双塔召回",
+        "en_title": "Collaborative Filtering & Two-Tower Retrieval",
+        "desc": "矩阵分解、双塔向量内积检索、ANN 索引量化、解耦表征与负采样理论",
     },
     "graph_rec": {
         "title": "图神经网络与知识图谱推荐",
-        "en_title": "Graph & Knowledge-aware Recommendation",
-        "desc": "LightGCN 谱图卷积改进、超图学习 (Hypergraph Rec)、知识图谱推理推荐 (KGRec) 与异构图建模",
+        "en_title": "Graph & Knowledge-Aware Recommendation",
+        "desc": "LightGCN 谱图卷积改进、超图推荐 (Hypergraph)、异构图与知识图谱推理 (KGRec)",
     },
-    "social_rec": {
+    "self_supervised_denoising": {
+        "title": "自监督对比学习与交互去噪",
+        "en_title": "Self-Supervised, Contrastive & Denoising Rec",
+        "desc": "图/序列对比数据增广 (SGL/SimGCL)、隐式反馈假阳性噪声过滤 (Denoising) 与鲁棒表征",
+    },
+    # 板块二：时序动态、前沿生成式与大模型智能体
+    "sequential_rec": {
+        "title": "序列与会话推荐",
+        "en_title": "Sequential & Session-Based Recommendation",
+        "desc": "长短期动态兴趣建模、Transformer/Mamba(SSM)/MLP 序列架构、匿名会话推荐与 Next-Item 预测",
+    },
+    "generative_rec": {
+        "title": "生成式推荐与离散语义 ID",
+        "en_title": "Generative Recommendation & Semantic IDs",
+        "desc": "RQ-VAE/VQ 残差量化码本、TIGER 自回归生成式检索、扩散/流匹配生成推荐 (Diffusion/Flow Rec)",
+    },
+    "llm_rec": {
+        "title": "大语言模型推荐 (LLM4Rec)",
+        "en_title": "LLM-Enhanced & LLM-as-Recommender",
+        "desc": "LLM 指令微调推荐、In-Context 列表重排、语义表征增强、大模型向轻量推荐模型知识蒸馏",
+    },
+    "agent_conversational_rec": {
+        "title": "对话推荐与智能体仿真",
+        "en_title": "Conversational & Agentic Recommendation",
+        "desc": "多轮主动追问对话推荐 (CRS)、基于 LLM Agent 的用户行为模拟沙盒、可解释性推荐理由生成",
+    },
+    # 板块三：多模态内容、社交时空与迁移泛化
+    "multimodal_rec": {
+        "title": "多模态推荐与内容理解",
+        "en_title": "Multimodal Recommendation",
+        "desc": "视觉-文本-音频特征融合与解耦、多模态图对齐、短视频/微视频推荐与图文电商匹配",
+    },
+    "social_group_rec": {
         "title": "社交与群组推荐",
         "en_title": "Social & Group Recommendation",
-        "desc": "社交信任网络传播、社交去噪与同质性建模、群组偏好聚合 (Group Rec) 与意见领袖分析",
+        "desc": "社交信任网络传播、社交同质性去噪、群组偏好共识聚合 (Group Rec) 与影响力建模",
     },
-    "cold_start_cross_domain": {
-        "title": "冷启动与跨域/多场景推荐",
-        "en_title": "Cold-Start, Cross-Domain & Multi-Scenario Rec",
-        "desc": "新用户/新物品冷启动、元学习 (Meta-Learning)、跨域迁移学习 (CDR) 与多场景自适应建模",
+    "cold_start_rec": {
+        "title": "冷启动与长尾推荐",
+        "en_title": "Cold-Start & Long-Tail Recommendation",
+        "desc": "Strict Zero-shot 新用户/新物品冷启动、元学习 (Meta-Learning)、少样本适应与长尾物品扶持",
     },
-    "ctr_multi_task_ranking": {
-        "title": "CTR/CVR 预估与多任务精排",
-        "en_title": "CTR Prediction, Multi-Task & Cascade Ranking",
-        "desc": "高阶特征交叉网络、MMoE/PLE 多目标优化、粗排-精排-重排级联一致性与延迟反馈建模",
+    "cross_domain_multi_scenario": {
+        "title": "跨域与多场景推荐",
+        "en_title": "Cross-Domain & Multi-Scenario Recommendation",
+        "desc": "跨域知识迁移 (CDR)、重叠/非重叠用户对齐、多业务场景联合建模 (STAR/PEPNet 等)",
     },
-    "conversational_explainable": {
-        "title": "对话推荐与可解释性",
-        "en_title": "Conversational & Explainable Recommendation",
-        "desc": "多轮主动追问对话推荐 (CRS)、推荐理由生成、反事实可解释性与用户意图澄清",
+    "poi_spatiotemporal_rec": {
+        "title": "时空轨迹与 POI 本地生活推荐",
+        "en_title": "POI & Spatio-Temporal Recommendation",
+        "desc": "Next-POI 兴趣点推荐、时空序列轨迹建模、LBS 本地生活服务与移动出行推荐",
+    },
+    # 板块四：精排重排、长期策略、去偏可信与工业架构
+    "ctr_feature_interaction": {
+        "title": "CTR/CVR 预估与特征交叉",
+        "en_title": "CTR Prediction & Feature Interaction",
+        "desc": "显式/隐式高阶特征交叉网络 (DCN/EulerNet)、转化率延迟反馈 (Delayed Feedback) 与概率校准",
+    },
+    "multi_task_reranking": {
+        "title": "多任务学习与列表级重排",
+        "en_title": "Multi-Task Learning & Listwise Re-ranking",
+        "desc": "MMoE/PLE 多任务多目标精排、帕累托最优、上下文列表重排 (Re-ranking) 与粗精排级联一致性",
     },
     "rl_bandit_rec": {
         "title": "强化学习与动态探索推荐",
-        "en_title": "RL, Bandits & Long-term Engagement",
-        "desc": "Contextual Bandit 探索与利用 (E&E)、Offline RL 长期留存优化、Slate 列表级策略优化",
+        "en_title": "RL, Bandits & Long-Term Engagement",
+        "desc": "Contextual Bandit 探索与利用 (E&E)、Offline RL 长期留存与生命周期价值 (LTV) 策略优化",
     },
-    "debias_fairness_trust": {
-        "title": "去偏、公平性与可信隐私推荐",
-        "en_title": "Debiasing, Fairness, Privacy & Security",
-        "desc": "曝光/流行度/位置偏差消除、因果推断推荐 (Causal Rec)、群体公平性、联邦推荐与鲁棒防投毒",
-    },
-    "poi_spatiotemporal_rec": {
-        "title": "时空与 POI 本地生活推荐",
-        "en_title": "POI & Spatio-Temporal Recommendation",
-        "desc": "Next-POI 兴趣点推荐、时空轨迹建模、LBS 本地生活与移动出行推荐",
-    },
-    "industrial_system_eval": {
-        "title": "工业界系统架构与评测基准",
-        "en_title": "Industrial RecSys Architecture & Benchmarks",
-        "desc": "工业级召回/排序全链路实战、GPU 端到端加速、线上 A/B 测试经验、开源数据集与评测新范式",
+    "debias_fairness_industrial": {
+        "title": "去偏公平、可信隐私与工业架构",
+        "en_title": "Debiasing, Fairness, Privacy & Industrial Systems",
+        "desc": "曝光/流行度/位置因果去偏 (Causal Rec)、双边公平性、联邦防投毒推荐、工业级全链路架构与评测基准",
     },
 }
 
@@ -122,7 +135,7 @@ def clean_legacy_paper_notes(repo_root: Path):
         docs_dir.mkdir(parents=True, exist_ok=True)
         return
 
-    keep_names = {"assets", "stylesheets", "javascripts", "CNAME", "venues", "topics"}
+    keep_names = {"assets", "stylesheets", "javascripts", "venues", "topics"}
     removed = []
     for item in docs_dir.iterdir():
         if item.name in keep_names:
@@ -130,16 +143,15 @@ def clean_legacy_paper_notes(repo_root: Path):
         if item.is_dir():
             shutil.rmtree(item)
             removed.append(item.name)
-        elif item.is_file() and item.name.endswith(".md"):
+        elif item.is_file():
             item.unlink()
             removed.append(item.name)
 
-    # 清理原仓库的多余 hreflang 映射文件
     hreflang_file = repo_root / ".hreflang_pairs.json"
     if hreflang_file.exists():
         hreflang_file.write_text("{}\n", encoding="utf-8")
 
-    print(f"[Clean] 已清理原仓库历史目录/文件共 {len(removed)} 项。")
+    print(f"[Clean] 已清理原仓库历史目录/残留文件共 {len(removed)} 项。")
 
 
 def scaffold_recsys_structure(repo_root: Path, default_year: str = "2026"):
@@ -150,29 +162,36 @@ def scaffold_recsys_structure(repo_root: Path, default_year: str = "2026"):
     venues_dir.mkdir(parents=True, exist_ok=True)
     topics_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. 创建每个会议/期刊目录及其下的细分方向目录
-    for venue_code, vinfo in VENUES.items():
+    for venue_code in VENUES:
         v_folder = venues_dir / f"{venue_code}{default_year}"
         v_folder.mkdir(parents=True, exist_ok=True)
+        # 清理可能残留的旧分类目录
+        for child in list(v_folder.iterdir()):
+            if child.is_dir() and child.name not in CATEGORIES:
+                shutil.rmtree(child)
         for cat_slug in CATEGORIES:
-            cat_folder = v_folder / cat_slug
-            cat_folder.mkdir(parents=True, exist_ok=True)
+            (v_folder / cat_slug).mkdir(parents=True, exist_ok=True)
 
-    # 2. 在示例目录中写入一篇标准的推荐系统论文解读模板示例 (方便立即预览构建效果)
+    # 清理 topics 下旧分类的 .md 文件
+    for md_f in list(topics_dir.glob("*.md")):
+        if md_f.name != "index.md" and md_f.stem not in CATEGORIES:
+            md_f.unlink()
+
     sample_dir = venues_dir / f"SIGIR{default_year}" / "generative_rec"
     sample_file = sample_dir / "sample_generative_recommendation_semantic_ids.md"
-    if not sample_file.exists():
-        sample_file.write_text(
-            """---
+    sample_file.write_text(
+        """---
 title: "[Paper Note] Generative Recommendation with Hierarchical Semantic IDs (示例模板)"
-description: "[SIGIR 2026][生成式推荐与语义 ID] 推荐系统论文 5 分钟结构化深度解读示例模板"
+description: "[SIGIR 2026][生成式推荐与离散语义 ID] 融合协同图谱与 RQ-VAE 残差量化的端到端生成式推荐框架 (Full-Ranking 评测)"
 tags:
   - SIGIR 2026
-  - 生成式推荐与语义 ID
+  - 生成式推荐与离散语义 ID
   - 序列与会话推荐
   - RQ-VAE
 date: 2026-11-12
 venue: SIGIR2026
+paper_url: "https://arxiv.org/abs/2305.05065"
+code_url: "https://github.com/reczoo/FuxiCTR"
 categories:
   - generative_rec
   - sequential_rec
@@ -181,53 +200,33 @@ categories:
 # Generative Recommendation with Hierarchical Semantic IDs (示例模板)
 
 - **会议/期刊**: SIGIR 2026
-- **主分类**: 生成式推荐与语义 ID (`generative_rec`)
-- **交叉分类**: 序列与会话推荐 (`sequential_rec`)
-- **论文链接**: `https://arxiv.org/abs/xxxx.xxxxx`
-- **开源代码**: `https://github.com/example/generative-rec`
+- **推荐链路定位**: 端到端生成式召回与排序 (End-to-End Generative Retrieval)
+- **研究方向**: 生成式推荐与离散语义 ID (`generative_rec`) / 序列与会话推荐 (`sequential_rec`)
+- **论文原文**: [https://arxiv.org/abs/2305.05065](https://arxiv.org/abs/2305.05065)
+- **开源代码**: [https://github.com/reczoo/FuxiCTR](https://github.com/reczoo/FuxiCTR)
 
 ## TL;DR (核心速览)
 
-本篇为推荐系统知识库初始化示例文档。当你运行 `python scripts/generate_recsys_notes.py` 时，脚本会自动提取论文 PDF 或 arXiv 全文，将其归类至对应的会议/期刊与 14 大推荐系统细分方向，并生成包含 Mermaid 架构图与实验对比表格的 5 分钟精读笔记。
+本篇为推荐系统知识库标准示例文档。针对生成式推荐中离散语义 ID (RQ-VAE) 在长尾冷启动物品上的哈希碰撞与协同信号丢失问题，本文提出协同感知的层次化残差量化与自回归解码框架，在 Amazon Beauty/Sports 等基准的 **Leave-One-Out + Full-Ranking (全库未交互排序)** 协议下取得 Recall@10 提升 8.3%–9.9%。
 
-## Background & Motivation (背景与动机)
+## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
-- **领域背景**: 传统双塔召回依赖内积近似最近邻检索 (ANN)，特征交互能力受限。
-- **现有局限**: 离散语义 ID (如 RQ-VAE) 在长尾冷启动物品上容易发生哈希碰撞 (ID Collision)，且语义空间与协同过滤交互信号存在对齐鸿沟。
-- **核心洞察**: 将协同共现图谱与多模态内容特征联合注入残差量化码本，可在自回归生成阶段同时兼顾语义泛化与协同精准度。
+- **过滤规则与正样本定义**: 采用标准 `5-core` 过滤，保留所有用户-物品评论交互作为隐式正反馈。
+- **数据划分方式 (Splitting Strategy)**: 采用 **Leave-One-Out (留一法)**，最新一次交互作为测试集，倒数第二次作为验证集。
+- **候选集打分协议 (Ranking Protocol)**: 采用无偏的 **Full-Ranking (全量候选物品集排序)**，配合 Beam Search (Beam Size = 20) 解码。
 
-## Method (方法架构)
-
-```mermaid
-flowchart TD
-    A["多模态物品特征 + 协同交互图"] --> B["多模态协同编码器"]
-    B --> C["层次化残差量化 (RQ-VAE) 生成语义 ID"]
-    C --> D["用户历史行为语义 ID 序列"]
-    D --> E["Decoder-only 生成式推荐底座"]
-    E --> F["Beam Search 自回归生成 Top-K 候选物品"]
-```
-
-## Key Experimental Results (核心实验结果)
-
-| 数据集 | 指标 | 传统序列基线 (SASRec) | 生成式基线 (TIGER) | 本文方法 (Ours) | 相对提升 |
-| :--- | :--- | :---: | :---: | :---: | :---: |
-| Beauty | Recall@10 | 0.0612 | 0.0685 | **0.0742** | +8.32% |
-| Beauty | NDCG@10 | 0.0324 | 0.0371 | **0.0408** | +9.97% |
-| Sports | Recall@10 | 0.0351 | 0.0398 | **0.0435** | +9.30% |
-
-## Highlights & Limitations (亮点与局限)
-
-- **核心亮点**: 统一了多模态特征量化与序列自回归生成，显著缓解了冷启动物品的语义碰撞。
-- **潜在局限**: 自回归 Beam Search 在线推理延迟高于传统双塔向量检索，工业界落地需配合投机解码或 KV Cache 压缩。
+| 数据集 | #Users | #Items | #Interactions | 稀疏度 | 评测指标 (Recall@10 / NDCG@10) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Amazon Beauty | 22,363 | 12,101 | 198,502 | 99.93% | **0.0742** / **0.0408** |
+| Amazon Sports | 35,598 | 18,357 | 296,337 | 99.95% | **0.0435** / **0.0226** |
 """,
-            encoding="utf-8",
-        )
+        encoding="utf-8",
+    )
 
-    print(f"[Scaffold] 已创建 {len(VENUES)} 个会议/期刊目录与 {len(CATEGORIES)} 个推荐系统细分类别。")
+    print(f"[Scaffold] 已创建 {len(VENUES)} 个会议/期刊目录与 {len(CATEGORIES)} 个推荐系统正交细分类别。")
 
 
 if __name__ == "__main__":
     root = Path(__file__).resolve().parent.parent
     clean_legacy_paper_notes(root)
     scaffold_recsys_structure(root, default_year="2026")
-    print("[Done] 请继续运行 `python scripts/build_nav_and_index.py` 生成双维度索引与 mkdocs.yml。")

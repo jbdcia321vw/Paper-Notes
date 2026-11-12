@@ -21,7 +21,7 @@ hide:
 .recsys-hero p {
   font-size: 1.05rem;
   opacity: 0.82;
-  max-width: 720px;
+  max-width: 740px;
   margin: 0 auto 1.4rem;
 }
 .recsys-stats {
