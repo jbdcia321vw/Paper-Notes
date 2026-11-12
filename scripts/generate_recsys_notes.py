@@ -328,13 +328,12 @@ def format_figure_context(figures: list) -> str:
 
 def figure_html(fig: dict, rel_path: str) -> str:
     caption = fig.get("caption") or fig.get("label") or "Paper figure"
-    alt = html.escape(caption, quote=True)
+    alt = html.escape(caption, quote=False).replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]").replace("\n", " ")
     cap = html.escape(caption, quote=False)
-    src = html.escape(rel_path, quote=True)
+    src = urllib.parse.quote(rel_path, safe="/.-_~")
     return (
-        '<figure class="paper-figure">\n'
-        f'  <img src="{src}" alt="{alt}" loading="lazy">\n'
-        f'  <figcaption>{cap}</figcaption>\n'
+        '<figure class="paper-figure" markdown="span">\n'
+        f'  ![{alt}]({src})<figcaption>{cap}</figcaption>\n'
         "</figure>"
     )
 

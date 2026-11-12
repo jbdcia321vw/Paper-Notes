@@ -91,14 +91,12 @@ $$\mathbf{E}^{(k)}_{\text{ACE}}=\mathbf{U}^{(k)}\,g_\lambda(\mathbf{S}^{(k)})\cd
 
 其中 $\gamma$ 为缩放因子，用于恢复因 $g_\lambda$ 压缩而损失的嵌入量级（原文在 $\{0.1,0.5,1\}$ 中调参）。所得嵌入直接替换任意 SR 骨干的物品嵌入表初始化。
 
-<figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/figure_1.png" alt="Figure 1: Visualization of three embedding spaces on the Beauty dataset: PCA, whitened PCA, and ACE. Each point is projected onto the top three singular vectors (SVD1–3), where SVD1 and SVD3 correspond to semantically rich and sparse directions, respectively." loading="lazy">
-  <figcaption>Figure 1: Visualization of three embedding spaces on the Beauty dataset: PCA, whitened PCA, and ACE. Each point is projected onto the top three singular vectors (SVD1–3), where SVD1 and SVD3 correspond to semantically rich and sparse directions, respectively.</figcaption>
+<figure class="paper-figure" markdown="span">
+  ![Figure 1: Visualization of three embedding spaces on the Beauty dataset: PCA, whitened PCA, and ACE. Each point is projected onto the top three singular vectors (SVD1–3), where SVD1 and SVD3 correspond to semantically rich and sparse directions, respectively.](../../../../assets/papers/2605.29322v1/figure_1.png)<figcaption>Figure 1: Visualization of three embedding spaces on the Beauty dataset: PCA, whitened PCA, and ACE. Each point is projected onto the top three singular vectors (SVD1–3), where SVD1 and SVD3 correspond to semantically rich and sparse directions, respectively.</figcaption>
 </figure>
 
-<figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/figure_2.png" alt="Figure 2: Normalized eigenvalue spectrum of ACE under dif- ferent 𝜆on the Beauty dataset. Smaller 𝜆flattens the eigen- value spectrum toward isotropy." loading="lazy">
-  <figcaption>Figure 2: Normalized eigenvalue spectrum of ACE under dif- ferent 𝜆on the Beauty dataset. Smaller 𝜆flattens the eigen- value spectrum toward isotropy.</figcaption>
+<figure class="paper-figure" markdown="span">
+  ![Figure 2: Normalized eigenvalue spectrum of ACE under dif- ferent 𝜆on the Beauty dataset. Smaller 𝜆flattens the eigen- value spectrum toward isotropy.](../../../../assets/papers/2605.29322v1/figure_2.png)<figcaption>Figure 2: Normalized eigenvalue spectrum of ACE under dif- ferent 𝜆on the Beauty dataset. Smaller 𝜆flattens the eigen- value spectrum toward isotropy.</figcaption>
 </figure>
 
 ### 4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling & Complexity)
@@ -141,9 +139,8 @@ SASRec 骨干下的关键结果（数值严格取自原文 Table 1）：
 
 **关键观察**：WhitenRec+ 在 Yelp 上（R@10 0.0500）甚至低于简单 PCA 的 LLM2X（0.0590），原文将其归因于"激进白化均匀抹平谱、破坏物品区分所需的语义层级"——这是对本文动机最有力的实证支撑。ACE 在 Yelp 的 NDCG 上增益最大（+6.96% / +6.31%），说明语义层级破坏越严重的场景，可控收缩的收益越明显。
 
-<figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/table_1.png" alt="Table 1: Performance comparison with LLM-as-Extractor baselines across four benchmark datasets using SASRec backbone. The best results are shown in bold, and the second-best are underlined. ‘*’ denotes a statistically significant improvement over all baselines (𝑝&lt; 0.05, one-tailed t-test)." loading="lazy">
-  <figcaption>Table 1: Performance comparison with LLM-as-Extractor baselines across four benchmark datasets using SASRec backbone. The best results are shown in bold, and the second-best are underlined. ‘*’ denotes a statistically significant improvement over all baselines (𝑝&lt; 0.05, one-tailed t-test).</figcaption>
+<figure class="paper-figure" markdown="span">
+  ![Table 1: Performance comparison with LLM-as-Extractor baselines across four benchmark datasets using SASRec backbone. The best results are shown in bold, and the second-best are underlined. ‘*’ denotes a statistically significant improvement over all baselines (𝑝&lt; 0.05, one-tailed t-test).](../../../../assets/papers/2605.29322v1/table_1.png)<figcaption>Table 1: Performance comparison with LLM-as-Extractor baselines across four benchmark datasets using SASRec backbone. The best results are shown in bold, and the second-best are underlined. ‘*’ denotes a statistically significant improvement over all baselines (𝑝&lt; 0.05, one-tailed t-test).</figcaption>
 </figure>
 
 **跨骨干验证**（Table 2，Beauty/Yelp × GRU4Rec/BERT4Rec）：
@@ -157,9 +154,8 @@ SASRec 骨干下的关键结果（数值严格取自原文 Table 1）：
 
 摘要中宣称的 "up to 12.4% Recall@20 / 11.8% NDCG@20" 来自 Yelp+GRU4Rec 的 R@20（+12.42%）与 Beauty+GRU4Rec 的 N@20（0.0466 vs 0.0430，+8.37%）——**注意 NDCG 的 11.8% 在 Table 2 中无法直接对上**，若按 Yelp+GRU4Rec 的 N@20 计算则为 +20.70%，若按 Beauty+GRU4Rec 则为 +8.37%，原文未说明 11.8% 的具体出处，属于**数值口径不清**的问题，审稿时应追问。
 
-<figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/table_2.png" alt="Table 2: Performance comparison against LLM-as-Extractor baselines across two SR backbones on the Beauty and Yelp datasets. The best performance is highlighted in bold, and the second-best is underlined." loading="lazy">
-  <figcaption>Table 2: Performance comparison against LLM-as-Extractor baselines across two SR backbones on the Beauty and Yelp datasets. The best performance is highlighted in bold, and the second-best is underlined.</figcaption>
+<figure class="paper-figure" markdown="span">
+  ![Table 2: Performance comparison against LLM-as-Extractor baselines across two SR backbones on the Beauty and Yelp datasets. The best performance is highlighted in bold, and the second-best is underlined.](../../../../assets/papers/2605.29322v1/table_2.png)<figcaption>Table 2: Performance comparison against LLM-as-Extractor baselines across two SR backbones on the Beauty and Yelp datasets. The best performance is highlighted in bold, and the second-best is underlined.</figcaption>
 </figure>
 
 ### 2. 消融实验与控制变量分析 (Ablation Study)
@@ -172,9 +168,8 @@ SASRec 骨干下的关键结果（数值严格取自原文 Table 1）：
 
 这一"两端下降、中间最优"的 U 型曲线是本文最核心的实证证据，但严格说它**不是控制变量消融**：未做参数量对齐、未与"随机初始化 + 同维度"对照、未单独剥离 $\gamma$ 的影响。
 
-<figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/figure_4.png" alt="Figure 4: Performance of ACE with varying 𝐿2-regularization coefficient 𝜆using SASRec backbone on two datasets." loading="lazy">
-  <figcaption>Figure 4: Performance of ACE with varying 𝐿2-regularization coefficient 𝜆using SASRec backbone on two datasets.</figcaption>
+<figure class="paper-figure" markdown="span">
+  ![Figure 4: Performance of ACE with varying 𝐿2-regularization coefficient 𝜆using SASRec backbone on two datasets.](../../../../assets/papers/2605.29322v1/figure_4.png)<figcaption>Figure 4: Performance of ACE with varying 𝐿2-regularization coefficient 𝜆using SASRec backbone on two datasets.</figcaption>
 </figure>
 
 ### 3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets & Hyperparameters)
@@ -183,9 +178,8 @@ SASRec 骨干下的关键结果（数值严格取自原文 Table 1）：
 - **关键超参数 $\lambda$ 敏感度**: Figure 4 显示 Beauty 与 Yelp 上均呈 U 型，最优 $\lambda$ 落在中等区间；Figure 2 的归一化特征值谱显示 $\lambda$ 越小谱越平坦（趋近各向同性），从几何侧印证了 $\lambda$ 的连续调控能力。
 - **LLM 编码器鲁棒性**: Figure 3 在 F2LLM-4B、Qwen3-Embedding-8B、KaLM-Embedding-Gemma3-12B-2511 三种编码器上，ACE 的 Recall@20 均优于所有基线，相对最强基线 AlphaFuse 提升最高 2.94%，说明增益不绑定特定 LLM 嵌入源。
 
-<figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/figure_3.png" alt="Figure 3: Performance comparison across three different LLM encoders: F2LLM-4B, Qwen3-Embedding-8B (Qwen3- 8B), and KaLM-Embedding-Gemma3-12B-2511 (KaLM-12B), using SASRec backbone on the Beauty dataset." loading="lazy">
-  <figcaption>Figure 3: Performance comparison across three different LLM encoders: F2LLM-4B, Qwen3-Embedding-8B (Qwen3- 8B), and KaLM-Embedding-Gemma3-12B-2511 (KaLM-12B), using SASRec backbone on the Beauty dataset.</figcaption>
+<figure class="paper-figure" markdown="span">
+  ![Figure 3: Performance comparison across three different LLM encoders: F2LLM-4B, Qwen3-Embedding-8B (Qwen3- 8B), and KaLM-Embedding-Gemma3-12B-2511 (KaLM-12B), using SASRec backbone on the Beauty dataset.](../../../../assets/papers/2605.29322v1/figure_3.png)<figcaption>Figure 3: Performance comparison across three different LLM encoders: F2LLM-4B, Qwen3-Embedding-8B (Qwen3- 8B), and KaLM-Embedding-Gemma3-12B-2511 (KaLM-12B), using SASRec backbone on the Beauty dataset.</figcaption>
 </figure>
 
 - **线上 A/B 测试**: **原文仅包含离线实验**，无工业线上验证。
