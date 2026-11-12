@@ -1,4 +1,4 @@
-# 时空与 POI 本地生活推荐 (POI & Spatio-Temporal Recommendation)
+# 📍 时空与 POI 本地生活推荐 (POI & Spatio-Temporal Recommendation)
 
 > **研究范畴**：Next-POI 兴趣点推荐、时空轨迹建模、LBS 本地生活与移动出行推荐
 

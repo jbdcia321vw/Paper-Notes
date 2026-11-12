@@ -1,4 +1,4 @@
-# 对话推荐与可解释性 (Conversational & Explainable Recommendation)
+# 🗣️ 对话推荐与可解释性 (Conversational & Explainable Recommendation)
 
 > **研究范畴**：多轮主动追问对话推荐 (CRS)、推荐理由生成、反事实可解释性与用户意图澄清
 

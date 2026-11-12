@@ -1,4 +1,4 @@
-# 序列与会话推荐 (Sequential & Session-based Recommendation)
+# ⏱️ 序列与会话推荐 (Sequential & Session-based Recommendation)
 
 > **研究范畴**：长短期用户行为序列建模、Transformer/Mamba/RNN 架构、会话匿名推荐与 Next-Item 预测
 

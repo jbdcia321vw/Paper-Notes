@@ -1,4 +1,4 @@
-# [IJCAI (RecSys Track) 2026] 社交与群组推荐
+# [IJCAI (RecSys Track) 2026] 👥 社交与群组推荐
 
 > **方向说明**：社交信任网络传播、社交去噪与同质性建模、群组偏好聚合 (Group Rec) 与意见领袖分析
 

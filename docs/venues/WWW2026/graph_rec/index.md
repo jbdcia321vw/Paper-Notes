@@ -1,4 +1,4 @@
-# [WWW (TheWebConf) 2026] 图神经网络与知识图谱推荐
+# [WWW (TheWebConf) 2026] 🕸️ 图神经网络与知识图谱推荐
 
 > **方向说明**：LightGCN 谱图卷积改进、超图学习 (Hypergraph Rec)、知识图谱推理推荐 (KGRec) 与异构图建模
 

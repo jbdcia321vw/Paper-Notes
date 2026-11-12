@@ -1,4 +1,4 @@
-# 大模型与智能体推荐 (LLM4Rec & Agentic Recommendation)
+# 🧠 大模型与智能体推荐 (LLM4Rec & Agentic Recommendation)
 
 > **研究范畴**：大模型指令微调推荐、In-Context Prompting、知识蒸馏对齐、RecSys Agent 用户行为仿真
 

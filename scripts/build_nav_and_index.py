@@ -3,17 +3,117 @@
 """
 build_nav_and_index.py
 扫描 docs/venues/ 下的所有推荐系统论文 Markdown 笔记，
-自动生成：
-1. 按推荐系统细分类别聚合的跨会议索引页 (docs/topics/<category>.md)
-2. 按顶会/顶刊划分的会议索引页 (docs/venues/<venue>/index.md 及子目录 index.md)
-3. 全站总览首页 (docs/index.md)
-4. 双维度导航配置文件 (mkdocs.yml)
+完整挂载原仓库 Paper-Notes 的 overrides/、stylesheets/extra.css、javascripts/ 与 hooks/，
+并生成全宽门户卡片式首页 (docs/index.md)、14 大推荐细分方向页 (docs/topics/)、22 个会刊页 (docs/venues/) 与 mkdocs.yml。
 """
 
 import re
 from pathlib import Path
 from collections import defaultdict
 from init_clean_recsys_repo import VENUES, CATEGORIES
+
+CAT_ICONS = {
+    "collaborative_filtering": "🤝",
+    "sequential_rec": "⏱️",
+    "generative_rec": "✨",
+    "llm_agent_rec": "🧠",
+    "multimodal_rec": "🧩",
+    "graph_rec": "🕸️",
+    "social_rec": "👥",
+    "cold_start_cross_domain": "❄️",
+    "ctr_multi_task_ranking": "🎯",
+    "conversational_explainable": "🗣️",
+    "rl_bandit_rec": "🎮",
+    "debias_fairness_trust": "⚖️",
+    "poi_spatiotemporal_rec": "📍",
+    "industrial_system_eval": "🏭",
+}
+
+PORTAL_STYLE = """<style>
+.recsys-hero {
+  text-align: center;
+  padding: 2.6rem 1.5rem 2.2rem;
+  margin-bottom: 2rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(63,81,181,0.10) 0%, rgba(33,150,243,0.06) 50%, rgba(156,39,176,0.08) 100%);
+  border: 1px solid rgba(63,81,181,0.16);
+}
+.recsys-hero h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 0 0 0.6rem 0;
+  letter-spacing: -0.02em;
+}
+.recsys-hero p {
+  font-size: 1.05rem;
+  opacity: 0.82;
+  max-width: 720px;
+  margin: 0 auto 1.4rem;
+}
+.recsys-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.recsys-stat-pill {
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  background: var(--md-default-bg-color);
+  border: 1px solid rgba(128,128,128,0.2);
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.recsys-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin: 1.2rem 0 2.2rem;
+}
+.recsys-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.15rem 1.25rem;
+  border-radius: 12px;
+  background: var(--md-default-bg-color);
+  border: 1px solid rgba(128,128,128,0.18);
+  text-decoration: none !important;
+  color: var(--md-default-fg-color) !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.recsys-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  border-color: var(--md-primary-fg-color);
+}
+.recsys-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+.recsys-card-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+.recsys-badge {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(63,81,181,0.12);
+  color: var(--md-primary-fg-color);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.recsys-card-desc {
+  font-size: 0.84rem;
+  opacity: 0.75;
+  line-height: 1.45;
+}
+</style>"""
 
 
 def parse_frontmatter(md_path: Path) -> dict:
@@ -87,23 +187,41 @@ def build_topic_pages(docs_dir: Path, notes: list):
             if c in CATEGORIES:
                 cat_map[c].append(n)
 
+    cards_html = ['<div class="recsys-grid">']
+    for cat_slug, cinfo in CATEGORIES.items():
+        items = cat_map.get(cat_slug, [])
+        icon = CAT_ICONS.get(cat_slug, "📌")
+        cards_html.append(
+            f'  <a class="recsys-card" href="{cat_slug}/">'
+            f'    <div class="recsys-card-head">'
+            f'      <span class="recsys-card-title">{icon} {cinfo["title"]}</span>'
+            f'      <span class="recsys-badge">{len(items)} 篇</span>'
+            f'    </div>'
+            f'    <div class="recsys-card-desc">{cinfo["desc"]}</div>'
+            f'  </a>'
+        )
+    cards_html.append("</div>")
+
     topic_index_lines = [
-        "# 按推荐系统细分类别浏览 (14 大核心方向)",
+        "---",
+        "hide:",
+        "  - toc",
+        "---",
         "",
-        "本页面按**推荐系统研究子方向**跨会议、跨期刊聚合所有论文解读笔记。无论论文发表于 SIGIR、RecSys、KDD、WWW、ACM MM 还是 TOIS、TKDE，均可在此按技术脉络集中检索。",
+        PORTAL_STYLE,
         "",
-        "| 推荐系统细分方向 | 英文名称 | 核心研究范畴 | 收录篇数 |",
-        "| :--- | :--- | :--- | :---: |",
+        "# 🔬 按推荐系统细分类别浏览 (14 大核心方向)",
+        "",
+        "按**推荐系统研究子方向**跨会议、跨期刊聚合所有论文解读笔记。无论论文发表于 SIGIR、RecSys、KDD、WWW、ACM MM 还是 TOIS、TKDE，均可在此按技术脉络集中检索。",
+        "",
+        "\n".join(cards_html),
     ]
 
     for cat_slug, cinfo in CATEGORIES.items():
         items = cat_map.get(cat_slug, [])
-        topic_index_lines.append(
-            f"| [**{cinfo['title']}**]({cat_slug}.md) | {cinfo['en_title']} | {cinfo['desc']} | **{len(items)}** |"
-        )
-
+        icon = CAT_ICONS.get(cat_slug, "📌")
         page_lines = [
-            f"# {cinfo['title']} ({cinfo['en_title']})",
+            f"# {icon} {cinfo['title']} ({cinfo['en_title']})",
             "",
             f"> **研究范畴**：{cinfo['desc']}",
             "",
@@ -131,7 +249,7 @@ def build_topic_pages(docs_dir: Path, notes: list):
 
 
 def build_venue_pages(docs_dir: Path, notes: list, default_year: str = "2026"):
-    """生成 docs/venues/ 下的各顶会/顶刊索引页。"""
+    """生成 docs/venues/ 下的各顶会/顶刊卡片式索引页。"""
     venues_dir = docs_dir / "venues"
     venues_dir.mkdir(parents=True, exist_ok=True)
 
@@ -141,46 +259,42 @@ def build_venue_pages(docs_dir: Path, notes: list, default_year: str = "2026"):
         c_folder = n["path"].parent.name
         venue_map[v_folder][c_folder].append(n)
 
-    venue_root_lines = [
-        "# 按顶会与顶刊浏览 (22 个推荐系统核心会议与期刊)",
-        "",
-        "| 会议/期刊代码 | 全称 | 级别与定位 | 收录篇数 |",
-        "| :--- | :--- | :--- | :---: |",
-    ]
-
+    v_cards = ['<div class="recsys-grid">']
     for venue_code, vinfo in VENUES.items():
         v_folder_name = f"{venue_code}{default_year}"
         v_dir = venues_dir / v_folder_name
         v_dir.mkdir(parents=True, exist_ok=True)
 
         total_v = sum(len(lst) for lst in venue_map[v_folder_name].values())
-        venue_root_lines.append(
-            f"| [**{vinfo['name']} ({default_year})**]({v_folder_name}/index.md) | {vinfo['full_name']} | {vinfo['tier']} | **{total_v}** |"
+        icon = "🏛️" if vinfo["type"] == "conference" else "📖"
+        v_cards.append(
+            f'  <a class="recsys-card" href="{v_folder_name}/">'
+            f'    <div class="recsys-card-head">'
+            f'      <span class="recsys-card-title">{icon} {vinfo["name"]} ({default_year})</span>'
+            f'      <span class="recsys-badge">{total_v} 篇</span>'
+            f'    </div>'
+            f'    <div class="recsys-card-desc">{vinfo["tier"]} · {vinfo["full_name"]}</div>'
+            f'  </a>'
         )
 
-        v_lines = [
-            f"# {vinfo['name']} {default_year} 推荐系统论文解读汇总",
-            "",
-            f"- **英文全称**: {vinfo['full_name']}",
-            f"- **级别定位**: {vinfo['tier']}",
-            f"- **当前收录总数**: **{total_v}** 篇",
-            "",
-            "## 按推荐系统细分方向分布",
-            "",
-            "| 细分方向 | 核心范畴 | 笔记数 |",
-            "| :--- | :--- | :---: |",
-        ]
-
+        sub_cards = ['<div class="recsys-grid">']
         for cat_slug, cinfo in CATEGORIES.items():
             c_dir = v_dir / cat_slug
             c_dir.mkdir(parents=True, exist_ok=True)
             c_items = venue_map[v_folder_name].get(cat_slug, [])
-            v_lines.append(
-                f"| [**{cinfo['title']}**]({cat_slug}/index.md) | {cinfo['desc']} | **{len(c_items)}** |"
+            c_icon = CAT_ICONS.get(cat_slug, "📌")
+            sub_cards.append(
+                f'  <a class="recsys-card" href="{cat_slug}/">'
+                f'    <div class="recsys-card-head">'
+                f'      <span class="recsys-card-title">{c_icon} {cinfo["title"]}</span>'
+                f'      <span class="recsys-badge">{len(c_items)} 篇</span>'
+                f'    </div>'
+                f'    <div class="recsys-card-desc">{cinfo["desc"]}</div>'
+                f'  </a>'
             )
 
             c_lines = [
-                f"# [{vinfo['name']} {default_year}] {cinfo['title']}",
+                f"# [{vinfo['name']} {default_year}] {c_icon} {cinfo['title']}",
                 "",
                 f"> **方向说明**：{cinfo['desc']}",
                 "",
@@ -192,63 +306,144 @@ def build_venue_pages(docs_dir: Path, notes: list, default_year: str = "2026"):
                     c_lines.append(f"- [**{item['title']}**]({item['path'].name}) — {item['description']}")
 
             (c_dir / "index.md").write_text("\n".join(c_lines) + "\n", encoding="utf-8")
+        sub_cards.append("</div>")
 
+        v_lines = [
+            "---",
+            "hide:",
+            "  - toc",
+            "---",
+            "",
+            PORTAL_STYLE,
+            "",
+            f"# {icon} {vinfo['name']} {default_year} 推荐系统论文解读汇总",
+            "",
+            f"- **英文全称**: {vinfo['full_name']}",
+            f"- **级别定位**: {vinfo['tier']} · 当前共收录 **{total_v}** 篇笔记",
+            "",
+            "## 按推荐系统细分方向浏览",
+            "",
+            "\n".join(sub_cards),
+        ]
         (v_dir / "index.md").write_text("\n".join(v_lines) + "\n", encoding="utf-8")
 
+    v_cards.append("</div>")
+    venue_root_lines = [
+        "---",
+        "hide:",
+        "  - toc",
+        "---",
+        "",
+        PORTAL_STYLE,
+        "",
+        "# 🏛️ 按顶会与顶刊浏览 (22 个推荐系统核心会议与期刊)",
+        "",
+        "\n".join(v_cards),
+    ]
     (venues_dir / "index.md").write_text("\n".join(venue_root_lines) + "\n", encoding="utf-8")
 
 
 def build_home_and_mkdocs_yml(repo_root: Path, notes: list, github_user: str = "jbdcia321vw", default_year: str = "2026"):
-    """生成 docs/index.md 首页与轻量级双维度 mkdocs.yml。"""
+    """生成全宽门户卡片式 docs/index.md 与完整挂载原库美化组件的 mkdocs.yml。"""
     docs_dir = repo_root / "docs"
     cat_counts = defaultdict(int)
+    venue_counts = defaultdict(int)
     for n in notes:
         for c in n["categories"]:
             cat_counts[c] += 1
+        venue_counts[n["path"].parent.parent.name] += 1
+
+    topic_cards = ['<div class="recsys-grid">']
+    for cat_slug, cinfo in CATEGORIES.items():
+        icon = CAT_ICONS.get(cat_slug, "📌")
+        topic_cards.append(
+            f'  <a class="recsys-card" href="topics/{cat_slug}/">'
+            f'    <div class="recsys-card-head">'
+            f'      <span class="recsys-card-title">{icon} {cinfo["title"]}</span>'
+            f'      <span class="recsys-badge">{cat_counts[cat_slug]} 篇</span>'
+            f'    </div>'
+            f'    <div class="recsys-card-desc">{cinfo["desc"]}</div>'
+            f'  </a>'
+        )
+    topic_cards.append("</div>")
+
+    venue_cards = ['<div class="recsys-grid">']
+    for venue_code, vinfo in VENUES.items():
+        vf = f"{venue_code}{default_year}"
+        icon = "🏛️" if vinfo["type"] == "conference" else "📖"
+        venue_cards.append(
+            f'  <a class="recsys-card" href="venues/{vf}/">'
+            f'    <div class="recsys-card-head">'
+            f'      <span class="recsys-card-title">{icon} {vinfo["name"]}</span>'
+            f'      <span class="recsys-badge">{venue_counts[vf]} 篇</span>'
+            f'    </div>'
+            f'    <div class="recsys-card-desc">{vinfo["tier"]} · {vinfo["full_name"]}</div>'
+            f'  </a>'
+        )
+    venue_cards.append("</div>")
 
     home_lines = [
-        "# RecSys Paper Notes · 推荐系统顶会顶刊论文 5 分钟精读库",
+        "---",
+        "hide:",
+        "  - navigation",
+        "  - toc",
+        "---",
         "",
-        f"欢迎访问 **RecSys Paper Notes**！本知识库基于 [zhaoyang97/Paper-Notes](https://github.com/zhaoyang97/Paper-Notes) 架构重构，专注于**推荐系统与信息检索领域**，支持**按顶会/顶刊**与**按推荐系统 14 大细分方向**双维度检索。",
+        PORTAL_STYLE,
         "",
-        f"- **当前收录推荐系统论文解读**: **{len(notes)}** 篇",
-        f"- **覆盖核心顶会与顶刊**: **{len(VENUES)}** 个（SIGIR / RecSys / KDD / WWW / WSDM / CIKM / ACM MM / TOIS / TKDE / TORS 等）",
-        f"- **覆盖推荐系统细分方向**: **{len(CATEGORIES)}** 大类（生成式推荐 / 大模型推荐 / 多模态推荐 / 序列推荐 / 协同过滤 / 图推荐 / 社交推荐 / 冷启动与跨域等）",
+        '<div class="recsys-hero">',
+        '  <h1>📚 RecSys Paper Notes</h1>',
+        '  <p>5 分钟读懂一篇推荐系统与信息检索顶会/顶刊论文 · 支持「14 大推荐细分方向 × 22 个核心会刊」双维度检索</p>',
+        '  <div class="recsys-stats">',
+        f'    <span class="recsys-stat-pill">📖 已收录 {len(notes)} 篇精读笔记</span>',
+        f'    <span class="recsys-stat-pill">🔬 {len(CATEGORIES)} 大推荐系统细分方向</span>',
+        f'    <span class="recsys-stat-pill">🏛️ {len(VENUES)} 个顶会与顶级期刊</span>',
+        '  </div>',
+        '</div>',
         "",
-        "## 一、按推荐系统细分类别快速检索",
+        "## 🔬 按推荐系统细分类别浏览 (14 大核心方向)",
         "",
-        "| 推荐系统细分方向 | 核心研究问题 | 笔记数 |",
-        "| :--- | :--- | :---: |",
+        "\n".join(topic_cards),
+        "",
+        "## 🏛️ 按顶会与顶刊浏览 (SIGIR / RecSys / KDD / WWW / ACM MM / TOIS / TKDE)",
+        "",
+        "\n".join(venue_cards),
     ]
-
-    for cat_slug, cinfo in CATEGORIES.items():
-        home_lines.append(
-            f"| [**{cinfo['title']}**](topics/{cat_slug}.md) | {cinfo['desc']} | **{cat_counts[cat_slug]}** |"
-        )
-
-    home_lines.extend([
-        "",
-        "## 二、按核心会议与期刊快速检索",
-        "",
-        "| 类别 | 代表性会议 / 期刊入口 |",
-        "| :--- | :--- |",
-        f"| **IR 与推荐旗舰会议** | [SIGIR](venues/SIGIR{default_year}/index.md) · [RecSys](venues/RecSys{default_year}/index.md) · [WSDM](venues/WSDM{default_year}/index.md) · [CIKM](venues/CIKM{default_year}/index.md) · [ECIR](venues/ECIR{default_year}/index.md) · [SIGIR-AP](venues/SIGIR-AP{default_year}/index.md) |",
-        f"| **数据挖掘与多媒体顶会** | [KDD](venues/KDD{default_year}/index.md) · [WWW](venues/WWW{default_year}/index.md) · [ACM MM](venues/ACM_MM{default_year}/index.md) · [ICDE](venues/ICDE{default_year}/index.md) · [ICDM](venues/ICDM{default_year}/index.md) · [DASFAA](venues/DASFAA{default_year}/index.md) |",
-        f"| **综合 AI/NLP/ML 顶会** | [AAAI](venues/AAAI{default_year}/index.md) · [IJCAI](venues/IJCAI{default_year}/index.md) · [ACL/EMNLP](venues/ACL_EMNLP{default_year}/index.md) · [ICLR/NeurIPS/ICML](venues/ICLR_NeurIPS_ICML{default_year}/index.md) |",
-        f"| **信息系统与数据工程顶刊** | [ACM TOIS](venues/TOIS{default_year}/index.md) · [IEEE TKDE](venues/TKDE{default_year}/index.md) · [ACM TORS](venues/TORS{default_year}/index.md) · [IEEE TMM](venues/TMM{default_year}/index.md) · [ACM TKDD](venues/TKDD{default_year}/index.md) · [ACM TWEB](venues/TWEB{default_year}/index.md) |",
-    ])
-
     (docs_dir / "index.md").write_text("\n".join(home_lines) + "\n", encoding="utf-8")
 
-    # 构建 mkdocs.yml
+    # 检查本地是否存在原仓库的 overrides, extra.css, javascripts, hooks 等文件并自动挂载
+    has_overrides = (repo_root / "overrides").exists()
+    custom_dir_line = "  custom_dir: overrides\n" if has_overrides else ""
+    logo_line = "  logo: assets/papernotes-logo-horizontal.svg\n" if (docs_dir / "assets" / "papernotes-logo-horizontal.svg").exists() else ""
+    favicon_line = "  favicon: assets/favicon.svg\n" if (docs_dir / "assets" / "favicon.svg").exists() else ""
+
+    extra_css_block = ""
+    if (docs_dir / "stylesheets" / "extra.css").exists():
+        extra_css_block = "extra_css:\n  - stylesheets/extra.css\n"
+
+    js_list = []
+    for js_rel in ["javascripts/mathjax.js", "javascripts/search-page.js", "javascripts/title-link.js"]:
+        if (docs_dir / js_rel).exists():
+            js_list.append(f"  - {js_rel}")
+    js_list.append("  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js")
+    extra_js_block = "extra_javascript:\n" + "\n".join(js_list) + "\n"
+
+    hooks_list = []
+    for h_rel in ["hooks/set_build_date.py", "hooks/tags_order.py"]:
+        if (repo_root / h_rel).exists():
+            hooks_list.append(f"  - {h_rel}")
+    hooks_block = ("hooks:\n" + "\n".join(hooks_list) + "\n") if hooks_list else ""
+
     topic_nav_items = ["      - 全部推荐细分方向总览: topics/index.md"]
     for cat_slug, cinfo in CATEGORIES.items():
-        topic_nav_items.append(f"      - {cinfo['title']}: topics/{cat_slug}.md")
+        icon = CAT_ICONS.get(cat_slug, "📌")
+        topic_nav_items.append(f"      - \"{icon} {cinfo['title']}\": topics/{cat_slug}.md")
 
     conf_nav_items = ["      - 全部顶会与顶刊总览: venues/index.md"]
     for venue_code, vinfo in VENUES.items():
         v_folder_name = f"{venue_code}{default_year}"
-        conf_nav_items.append(f"      - {vinfo['name']}: venues/{v_folder_name}/index.md")
+        icon = "🏛️" if vinfo["type"] == "conference" else "📖"
+        conf_nav_items.append(f"      - \"{icon} {vinfo['name']}\": venues/{v_folder_name}/index.md")
 
     mkdocs_content = f"""site_name: RecSys Paper Notes · 推荐系统论文精读库
 site_description: 推荐系统与信息检索顶会顶刊论文解读（SIGIR / RecSys / KDD / WWW / ACM MM / TOIS / TKDE），每篇 5 分钟读懂核心思想
@@ -258,22 +453,25 @@ repo_name: {github_user}/Paper-Notes
 
 theme:
   name: material
-  language: zh
+{custom_dir_line}{logo_line}{favicon_line}  language: zh
   features:
     - navigation.tabs
     - navigation.sections
     - navigation.top
+    - navigation.indexes
     - search.suggest
     - search.highlight
     - content.code.copy
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-7
         name: 切换至深色模式
-    - scheme: slate
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       primary: indigo
       accent: indigo
       toggle:
@@ -285,11 +483,15 @@ plugins:
       lang:
         - zh
         - en
+  - tags
 
+{hooks_block}{extra_css_block}{extra_js_block}
 markdown_extensions:
   - admonition
   - tables
   - attr_list
+  - md_in_html
+  - pymdownx.details
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.superfences:
@@ -298,18 +500,15 @@ markdown_extensions:
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
 
-extra_javascript:
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-
 nav:
-  - 首页总览: index.md
-  - 按推荐细分类别浏览 (14大类):
+  - 🏠 首页总览: index.md
+  - 🔬 按推荐细分类别 (14大类):
 {chr(10).join(topic_nav_items)}
-  - 按顶会与顶刊浏览 (22个会刊):
+  - 🏛️ 按顶会与顶刊 (22个会刊):
 {chr(10).join(conf_nav_items)}
 """
     (repo_root / "mkdocs.yml").write_text(mkdocs_content, encoding="utf-8")
-    print(f"[Build] 已生成双维度索引页与 mkdocs.yml（共索引 {len(notes)} 篇论文笔记）。")
+    print(f"[Build] 已生成全宽卡片式门户首页、双维度索引与挂载原库样式的 mkdocs.yml（共索引 {len(notes)} 篇笔记）。")
 
 
 if __name__ == "__main__":

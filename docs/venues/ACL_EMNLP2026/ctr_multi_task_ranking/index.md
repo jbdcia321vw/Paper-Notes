@@ -1,4 +1,4 @@
-# [ACL / EMNLP (RecSys & CRS) 2026] CTR/CVR 预估与多任务精排
+# [ACL / EMNLP (RecSys & CRS) 2026] 🎯 CTR/CVR 预估与多任务精排
 
 > **方向说明**：高阶特征交叉网络、MMoE/PLE 多目标优化、粗排-精排-重排级联一致性与延迟反馈建模
 

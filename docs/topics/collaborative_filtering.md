@@ -1,4 +1,4 @@
-# 协同过滤与表征学习 (Collaborative Filtering & Representation Learning)
+# 🤝 协同过滤与表征学习 (Collaborative Filtering & Representation Learning)
 
 > **研究范畴**：矩阵分解、双塔召回、对比学习自监督表征、解耦表征与负采样策略
 

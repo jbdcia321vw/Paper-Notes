@@ -1,4 +1,4 @@
-# [ACM TOIS 2026] 大模型与智能体推荐
+# [ACM TOIS 2026] 🧠 大模型与智能体推荐
 
 > **方向说明**：大模型指令微调推荐、In-Context Prompting、知识蒸馏对齐、RecSys Agent 用户行为仿真
 

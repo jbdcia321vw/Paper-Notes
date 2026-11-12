@@ -6,22 +6,28 @@ repo_name: jbdcia321vw/Paper-Notes
 
 theme:
   name: material
+  custom_dir: overrides
+  logo: assets/papernotes-logo-horizontal.svg
+  favicon: assets/favicon.svg
   language: zh
   features:
     - navigation.tabs
     - navigation.sections
     - navigation.top
+    - navigation.indexes
     - search.suggest
     - search.highlight
     - content.code.copy
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-7
         name: 切换至深色模式
-    - scheme: slate
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       primary: indigo
       accent: indigo
       toggle:
@@ -33,11 +39,25 @@ plugins:
       lang:
         - zh
         - en
+  - tags
+
+hooks:
+  - hooks/set_build_date.py
+  - hooks/tags_order.py
+extra_css:
+  - stylesheets/extra.css
+extra_javascript:
+  - javascripts/mathjax.js
+  - javascripts/search-page.js
+  - javascripts/title-link.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 markdown_extensions:
   - admonition
   - tables
   - attr_list
+  - md_in_html
+  - pymdownx.details
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.superfences:
@@ -46,48 +66,45 @@ markdown_extensions:
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
 
-extra_javascript:
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-
 nav:
-  - 首页总览: index.md
-  - 按推荐细分类别浏览 (14大类):
+  - 🏠 首页总览: index.md
+  - 🔬 按推荐细分类别 (14大类):
       - 全部推荐细分方向总览: topics/index.md
-      - 协同过滤与表征学习: topics/collaborative_filtering.md
-      - 序列与会话推荐: topics/sequential_rec.md
-      - 生成式推荐与语义 ID: topics/generative_rec.md
-      - 大模型与智能体推荐: topics/llm_agent_rec.md
-      - 多模态推荐与内容理解: topics/multimodal_rec.md
-      - 图神经网络与知识图谱推荐: topics/graph_rec.md
-      - 社交与群组推荐: topics/social_rec.md
-      - 冷启动与跨域/多场景推荐: topics/cold_start_cross_domain.md
-      - CTR/CVR 预估与多任务精排: topics/ctr_multi_task_ranking.md
-      - 对话推荐与可解释性: topics/conversational_explainable.md
-      - 强化学习与动态探索推荐: topics/rl_bandit_rec.md
-      - 去偏、公平性与可信隐私推荐: topics/debias_fairness_trust.md
-      - 时空与 POI 本地生活推荐: topics/poi_spatiotemporal_rec.md
-      - 工业界系统架构与评测基准: topics/industrial_system_eval.md
-  - 按顶会与顶刊浏览 (22个会刊):
+      - "🤝 协同过滤与表征学习": topics/collaborative_filtering.md
+      - "⏱️ 序列与会话推荐": topics/sequential_rec.md
+      - "✨ 生成式推荐与语义 ID": topics/generative_rec.md
+      - "🧠 大模型与智能体推荐": topics/llm_agent_rec.md
+      - "🧩 多模态推荐与内容理解": topics/multimodal_rec.md
+      - "🕸️ 图神经网络与知识图谱推荐": topics/graph_rec.md
+      - "👥 社交与群组推荐": topics/social_rec.md
+      - "❄️ 冷启动与跨域/多场景推荐": topics/cold_start_cross_domain.md
+      - "🎯 CTR/CVR 预估与多任务精排": topics/ctr_multi_task_ranking.md
+      - "🗣️ 对话推荐与可解释性": topics/conversational_explainable.md
+      - "🎮 强化学习与动态探索推荐": topics/rl_bandit_rec.md
+      - "⚖️ 去偏、公平性与可信隐私推荐": topics/debias_fairness_trust.md
+      - "📍 时空与 POI 本地生活推荐": topics/poi_spatiotemporal_rec.md
+      - "🏭 工业界系统架构与评测基准": topics/industrial_system_eval.md
+  - 🏛️ 按顶会与顶刊 (22个会刊):
       - 全部顶会与顶刊总览: venues/index.md
-      - SIGIR: venues/SIGIR2026/index.md
-      - RecSys: venues/RecSys2026/index.md
-      - WSDM: venues/WSDM2026/index.md
-      - CIKM: venues/CIKM2026/index.md
-      - ECIR: venues/ECIR2026/index.md
-      - SIGIR-AP: venues/SIGIR-AP2026/index.md
-      - KDD: venues/KDD2026/index.md
-      - WWW (TheWebConf): venues/WWW2026/index.md
-      - ACM MM: venues/ACM_MM2026/index.md
-      - ICDE: venues/ICDE2026/index.md
-      - ICDM: venues/ICDM2026/index.md
-      - DASFAA: venues/DASFAA2026/index.md
-      - AAAI (RecSys Track): venues/AAAI2026/index.md
-      - IJCAI (RecSys Track): venues/IJCAI2026/index.md
-      - ACL / EMNLP (RecSys & CRS): venues/ACL_EMNLP2026/index.md
-      - ICLR / NeurIPS / ICML (RecSys): venues/ICLR_NeurIPS_ICML2026/index.md
-      - ACM TOIS: venues/TOIS2026/index.md
-      - IEEE TKDE: venues/TKDE2026/index.md
-      - ACM TORS: venues/TORS2026/index.md
-      - IEEE TMM: venues/TMM2026/index.md
-      - ACM TKDD: venues/TKDD2026/index.md
-      - ACM TWEB: venues/TWEB2026/index.md
+      - "🏛️ SIGIR": venues/SIGIR2026/index.md
+      - "🏛️ RecSys": venues/RecSys2026/index.md
+      - "🏛️ WSDM": venues/WSDM2026/index.md
+      - "🏛️ CIKM": venues/CIKM2026/index.md
+      - "🏛️ ECIR": venues/ECIR2026/index.md
+      - "🏛️ SIGIR-AP": venues/SIGIR-AP2026/index.md
+      - "🏛️ KDD": venues/KDD2026/index.md
+      - "🏛️ WWW (TheWebConf)": venues/WWW2026/index.md
+      - "🏛️ ACM MM": venues/ACM_MM2026/index.md
+      - "🏛️ ICDE": venues/ICDE2026/index.md
+      - "🏛️ ICDM": venues/ICDM2026/index.md
+      - "🏛️ DASFAA": venues/DASFAA2026/index.md
+      - "🏛️ AAAI (RecSys Track)": venues/AAAI2026/index.md
+      - "🏛️ IJCAI (RecSys Track)": venues/IJCAI2026/index.md
+      - "🏛️ ACL / EMNLP (RecSys & CRS)": venues/ACL_EMNLP2026/index.md
+      - "🏛️ ICLR / NeurIPS / ICML (RecSys)": venues/ICLR_NeurIPS_ICML2026/index.md
+      - "📖 ACM TOIS": venues/TOIS2026/index.md
+      - "📖 IEEE TKDE": venues/TKDE2026/index.md
+      - "📖 ACM TORS": venues/TORS2026/index.md
+      - "📖 IEEE TMM": venues/TMM2026/index.md
+      - "📖 ACM TKDD": venues/TKDD2026/index.md
+      - "📖 ACM TWEB": venues/TWEB2026/index.md
