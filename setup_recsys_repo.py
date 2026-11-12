@@ -21,6 +21,12 @@ FILES = {
 
 def main():
     root = Path(__file__).resolve().parent
+    existing = [rel_path for rel_path in FILES if (root / rel_path).exists()]
+    if existing and "--force" not in sys.argv[1:]:
+        print("[Error] 仓库已有生成脚本/工作流，setup_recsys_repo.py 会用内置旧模板覆盖它们。")
+        print("        日常生成请用 python scripts/run_pipeline.py；如确认要重置仓库，请追加 --force。")
+        return 1
+
     for rel_path, content in FILES.items():
         target = root / rel_path
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -31,11 +37,13 @@ def main():
         p = root / old_f
         if p.exists():
             p.unlink()
-    (root / ".gitignore").write_text("site/\n.cache_pdfs/\n__pycache__/\n*.pyc\n.venv/\n.env\n", encoding="utf-8")
+    (root / ".gitignore").write_text("site/\n.cache_pdfs/\nlogs/\n__pycache__/\n*.pyc\n.venv/\n.env\n", encoding="utf-8")
 
     subprocess.run([sys.executable, str(root / "scripts/init_clean_recsys_repo.py")], check=True)
     subprocess.run([sys.executable, str(root / "scripts/build_nav_and_index.py")], check=True)
     print("\n[Success] 22 个会刊 x 16 大推荐正交分类架构及原文/开源代码链接支持已全部更新完成！")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -12,8 +12,9 @@ generate_recsys_notes.py
   4. 一键遍历 16 大方向自动填充（仅本地试点，生产禁用）：
      python scripts/generate_recsys_notes.py --seed-all-categories --venue RecSys --year 2026
 
-默认模型为 DeepSeek `deepseek-chat`（可用 LLM_MODEL 覆盖），API Key 支持
+默认模型为 DeepSeek `deepseek-flash`（可用 LLM_MODEL 覆盖），API Key 支持
 `LLM_API_KEY` 或 `DEEPSEEK_API_KEY`，支持断点续传与并发。
+默认关闭 thinking 并限制输入/输出长度以降低 token 成本。
 """
 
 import csv
@@ -24,13 +25,14 @@ import re
 import sys
 import json
 import time
+import threading
 import urllib.request
 import urllib.parse
 import urllib.error
 import xml.etree.ElementTree as ET
 import argparse
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -39,6 +41,7 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from init_clean_recsys_repo import VENUES, CATEGORIES, SUPPORTED_YEARS, DEFAULT_YEAR
 from extract_pdf_figures import extract_figures
+from run_logging import ProgressReporter, RunLog, format_duration, format_money
 
 # 16 大推荐系统正交细分类别的代表性检索词（用于 --seed-all-categories）
 CATEGORY_SEED_QUERIES = {
@@ -65,7 +68,177 @@ CATEGORY_LIST_STR = "\n".join(
 )
 
 DEFAULT_BASE_URL = "https://api.deepseek.com/v1"
-DEFAULT_MODEL = "deepseek-chat"
+DEFAULT_MODEL = "deepseek-flash"
+DEFAULT_MAX_INPUT_CHARS = 36000
+DEFAULT_MAX_OUTPUT_TOKENS = 8192
+
+USAGE_LOCK = threading.Lock()
+USAGE_TOTALS = {
+    "requests": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0,
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 0,
+    "cost_usd": 0.0,
+}
+
+# DeepSeek 官方定价（USD / 1M tokens，高峰价；非高峰为 5 折）
+PRICING_USD_PER_M = {
+    "deepseek-flash": {
+        "cache_hit": 0.006,
+        "cache_miss": 0.30,
+        "output": 1.20,
+    },
+    "deepseek-v4-pro": {
+        "cache_hit": 0.044,
+        "cache_miss": 1.32,
+        "output": 3.96,
+    },
+}
+
+
+def _as_int(value) -> int:
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def record_usage(usage, model: str = "") -> None:
+    """累计 API usage，用于运行结束后的 token 与成本报告。"""
+    if not isinstance(usage, dict):
+        return
+    prompt = _as_int(usage.get("prompt_tokens"))
+    completion = _as_int(usage.get("completion_tokens"))
+    total = _as_int(usage.get("total_tokens")) or (prompt + completion)
+    cache_hit = _as_int(usage.get("prompt_cache_hit_tokens"))
+    cache_miss = _as_int(usage.get("prompt_cache_miss_tokens"))
+    details = usage.get("prompt_tokens_details")
+    if not cache_hit and isinstance(details, dict):
+        cache_hit = _as_int(details.get("cached_tokens"))
+    if not cache_miss:
+        cache_miss = max(prompt - cache_hit, 0)
+    cost = _usage_cost_usd(
+        {
+            "prompt_cache_hit_tokens": cache_hit,
+            "prompt_cache_miss_tokens": cache_miss,
+            "completion_tokens": completion,
+        },
+        model,
+    )
+    with USAGE_LOCK:
+        USAGE_TOTALS["requests"] += 1
+        USAGE_TOTALS["prompt_tokens"] += prompt
+        USAGE_TOTALS["completion_tokens"] += completion
+        USAGE_TOTALS["total_tokens"] += total
+        USAGE_TOTALS["prompt_cache_hit_tokens"] += cache_hit
+        USAGE_TOTALS["prompt_cache_miss_tokens"] += cache_miss
+        if cost is not None:
+            USAGE_TOTALS["cost_usd"] += cost
+
+
+def is_peak_now() -> bool:
+    """DeepSeek 高峰时段：UTC 周一至周五 01:00-04:00、06:00-10:00。"""
+    now = datetime.now(timezone.utc)
+    if now.weekday() >= 5:
+        return False
+    return (1 <= now.hour < 4) or (6 <= now.hour < 10)
+
+
+def _pricing_for_model(model: str):
+    name = (model or "").lower()
+    if "pro" in name:
+        return PRICING_USD_PER_M["deepseek-v4-pro"]
+    if "deepseek" in name or not name:
+        return PRICING_USD_PER_M["deepseek-flash"]
+    return None
+
+
+def _usage_cost_usd(usage: dict, model: str):
+    prices = _pricing_for_model(model)
+    if not prices:
+        return None
+    multiplier = 1.0 if is_peak_now() else 0.5
+    hit = _as_int(usage.get("prompt_cache_hit_tokens"))
+    miss = _as_int(usage.get("prompt_cache_miss_tokens"))
+    completion = _as_int(usage.get("completion_tokens"))
+    return multiplier * (
+        hit / 1_000_000 * prices["cache_hit"]
+        + miss / 1_000_000 * prices["cache_miss"]
+        + completion / 1_000_000 * prices["output"]
+    )
+
+
+def estimate_usage_cost_usd(model: str):
+    """按 DeepSeek 官方价估算本次运行成本；中国法定节假日未单独扣除。"""
+    prices = _pricing_for_model(model)
+    if not prices:
+        return None
+    if USAGE_TOTALS["cost_usd"] > 0:
+        return USAGE_TOTALS["cost_usd"]
+    return _usage_cost_usd(USAGE_TOTALS, model)
+
+
+def print_usage_summary(
+    model: str = "",
+    processed: int = 0,
+    success: int = 0,
+    elapsed_seconds: float = None,
+    log: RunLog = None,
+) -> None:
+    """打印 token、缓存命中率、总花费、平均每篇花费与耗时。"""
+    if not USAGE_TOTALS["requests"] and elapsed_seconds is None:
+        return
+
+    lines = []
+    if USAGE_TOTALS["requests"]:
+        prompt = USAGE_TOTALS["prompt_tokens"]
+        hit = USAGE_TOTALS["prompt_cache_hit_tokens"]
+        hit_rate = (hit / prompt * 100) if prompt else 0.0
+        lines.append(
+            "[Usage] requests={requests} prompt={prompt} completion={completion} "
+            "total={total} cache_hit={hit} ({rate:.1f}%)".format(
+                requests=USAGE_TOTALS["requests"],
+                prompt=prompt,
+                completion=USAGE_TOTALS["completion_tokens"],
+                total=USAGE_TOTALS["total_tokens"],
+                hit=hit,
+                rate=hit_rate,
+            )
+        )
+
+    cost = estimate_usage_cost_usd(model)
+    if cost is not None and USAGE_TOTALS["requests"]:
+        lines.append(
+            f"[Cost] 本次总花费约 {format_money(cost)}"
+            "（按请求时高峰/非高峰价格估算；中国法定节假日未单独扣除）"
+        )
+        if processed > 0:
+            lines.append(
+                f"[Cost] 平均每篇（按 {processed} 篇任务）约 {format_money(cost / processed)}"
+            )
+        if success > 0 and success != processed:
+            lines.append(
+                f"[Cost] 平均每篇成功生成（按 {success} 篇）约 {format_money(cost / success)}"
+            )
+
+    if elapsed_seconds is not None:
+        lines.append(f"[Time] 总耗时 {format_duration(elapsed_seconds)}")
+        if processed > 0:
+            lines.append(
+                f"[Time] 平均每篇（按 {processed} 篇任务）{format_duration(elapsed_seconds / processed)}"
+            )
+        if success > 0 and success != processed:
+            lines.append(
+                f"[Time] 平均每篇成功生成（按 {success} 篇）{format_duration(elapsed_seconds / success)}"
+            )
+
+    print()
+    for line in lines:
+        print(line)
+        if log:
+            log.write(line)
 
 
 def resolve_api_key(explicit: str = "") -> str:
@@ -88,7 +261,7 @@ def resolve_base_url(explicit: str = "") -> str:
 
 
 def resolve_model(explicit: str = "") -> str:
-    """解析模型名：显式参数 > LLM_MODEL > DEEPSEEK_MODEL > deepseek-chat。"""
+    """解析模型名：显式参数 > LLM_MODEL > DEEPSEEK_MODEL > deepseek-flash。"""
     return (
         explicit
         or os.environ.get("LLM_MODEL", "")
@@ -105,28 +278,51 @@ def call_chat_completion(
     temperature: float = 0.0,
     timeout: int = 180,
     response_format: dict = None,
+    max_tokens: int = None,
+    thinking: bool = False,
 ) -> str:
-    """调用兼容 OpenAI Chat Completions 的接口，返回 assistant 文本。"""
+    """调用兼容 OpenAI Chat Completions 的接口，返回 assistant 文本。
+
+    `thinking=False` 会显式关闭 DeepSeek 的思考模式，避免隐藏 reasoning token。
+    若第三方兼容接口不接受该字段，HTTP 400 时会自动去掉后重试一次。
+    """
     endpoint = base_url.rstrip("/") + "/chat/completions"
     payload = {"model": model, "messages": messages, "temperature": temperature}
     if response_format:
         payload["response_format"] = response_format
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        endpoint,
-        data=data,
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        },
-        method="POST",
-    )
-    try:
+    if max_tokens:
+        payload["max_tokens"] = max_tokens
+    if thinking is not None:
+        payload["thinking"] = {"type": "enabled" if thinking else "disabled"}
+
+    def _post(request_payload):
+        data = json.dumps(request_payload).encode("utf-8")
+        req = urllib.request.Request(
+            endpoint,
+            data=data,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}",
+            },
+            method="POST",
+        )
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            res_json = json.loads(resp.read().decode("utf-8"))
+            return json.loads(resp.read().decode("utf-8"))
+
+    try:
+        res_json = _post(payload)
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", errors="replace")[:1200]
-        raise RuntimeError(f"LLM HTTP {e.code}: {body}") from e
+        if e.code == 400 and "thinking" in payload:
+            payload.pop("thinking", None)
+            try:
+                res_json = _post(payload)
+            except urllib.error.HTTPError as retry_error:
+                retry_body = retry_error.read().decode("utf-8", errors="replace")[:1200]
+                raise RuntimeError(f"LLM HTTP {retry_error.code}: {retry_body}") from retry_error
+        else:
+            raise RuntimeError(f"LLM HTTP {e.code}: {body}") from e
+    record_usage(res_json.get("usage") if isinstance(res_json, dict) else None, model)
     try:
         return res_json["choices"][0]["message"]["content"].strip()
     except (KeyError, IndexError, TypeError) as e:
@@ -333,6 +529,27 @@ def extract_text_from_pdf(pdf_path: Path, max_chars: int = 52000) -> str:
         return ""
 
 
+def compact_paper_content(text: str, max_chars: int = DEFAULT_MAX_INPUT_CHARS) -> str:
+    """压缩送入 LLM 的论文文本：去掉参考文献/致谢，并限制总字符数。"""
+    if not text:
+        return text
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    text = re.sub(r"[ \t]+\n", "\n", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+
+    for pattern in (
+        r"\n\s*(?:references|bibliography)\s*\n",
+        r"\n\s*acknowledg(?:e)?ments?\s*\n",
+    ):
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match and match.start() > 2000:
+            text = text[:match.start()]
+
+    if max_chars and max_chars > 0:
+        text = text[:max_chars]
+    return text
+
+
 def _zh_figure_label(label: str) -> str:
     """把 Figure 1 / Table 2 转成中文“图 1 / 表 2”，作为翻译失败时的兜底。"""
     label = label or ""
@@ -380,6 +597,8 @@ def translate_figure_captions(figures: list, api_key: str, base_url: str, model:
             temperature=0.0,
             timeout=120,
             response_format={"type": "json_object"},
+            max_tokens=2048,
+            thinking=False,
         )
         raw = re.sub(r"^```(?:json)?\s*", "", raw)
         raw = re.sub(r"\s*```$", "", raw)
@@ -404,11 +623,17 @@ def format_figure_context(figures: list) -> str:
     """把图表清单压缩成适合放进 LLM 提示词的文本。"""
     lines = []
     for fig in figures:
-        caption = re.sub(r"\s+", " ", fig.get("caption_zh") or fig.get("caption", "")).strip()
+        zh = re.sub(r"\s+", " ", fig.get("caption_zh") or "").strip()
+        en = re.sub(r"\s+", " ", fig.get("caption") or "").strip()
+        label = _zh_figure_label(fig.get("label"))
+        if zh and zh != label:
+            caption = zh
+        elif en:
+            caption = f"{zh or label}: {en}" if zh else en
+        else:
+            caption = fig.get("label") or "Paper figure"
         if len(caption) > 320:
             caption = caption[:317] + "..."
-        if not caption:
-            caption = fig.get("label", "Paper figure")
         lines.append(f"- {fig['token']} {caption}")
     return "\n".join(lines)
 
@@ -639,8 +864,10 @@ def call_llm_api(
     model: str,
     forced_cat: str = "",
     figure_context: str = "",
+    max_output_tokens: int = None,
+    thinking: bool = False,
 ) -> str:
-    """调用兼容 OpenAI 格式的大模型接口（默认 DeepSeek deepseek-chat）生成结构化 Markdown 笔记。"""
+    """调用兼容 OpenAI 格式的大模型接口（默认 DeepSeek deepseek-flash）生成结构化 Markdown 笔记。"""
     cat_hint = f"\n优先归入推荐系统分类标识：`{forced_cat}`" if forced_cat else ""
     figure_hint = ""
     if figure_context:
@@ -671,6 +898,8 @@ def call_llm_api(
         model=model,
         temperature=0.2,
         timeout=180,
+        max_tokens=max_output_tokens,
+        thinking=thinking,
     )
     raw = re.sub(r"^```(?:markdown|yaml)?\s*\n", "", raw)
     raw = re.sub(r"\n```\s*$", "", raw)
@@ -792,6 +1021,9 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
             )
             if figures and not args.no_figure_translation:
                 figures = translate_figure_captions(figures, args.api_key, args.base_url, args.model)
+            elif figures:
+                for fig in figures:
+                    fig.setdefault("caption_zh", _zh_figure_label(fig.get("label")))
             figure_context = format_figure_context(figures)
             if figures:
                 print(f"  [Figures] {item['title'][:45]} -> {len(figures)} 张图表")
@@ -803,13 +1035,15 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
     for attempt in range(1, args.retries + 1):
         try:
             md_note = call_llm_api(
-                item["content"],
+                compact_paper_content(item["content"], args.max_input_chars),
                 f"{venue} {year}",
                 args.api_key,
                 args.base_url,
                 args.model,
                 forced_cat=forced_cat,
                 figure_context=figure_context,
+                max_output_tokens=args.max_output_tokens,
+                thinking=args.thinking,
             )
             md_note = normalize_frontmatter(md_note, venue, year, item.get("paper_url", ""), item.get("code_url", ""))
             ok, reason = validate_note(md_note, venue, year)
@@ -937,13 +1171,17 @@ def main():
     parser.add_argument("--allow-abstract", action="store_true", help="允许仅凭摘要生成笔记（不推荐，默认关闭）")
     parser.add_argument("--overwrite", action="store_true", help="强制覆盖已存在的同名笔记")
     parser.add_argument("--no-figures", action="store_true", help="不提取、不插入 PDF 图表")
-    parser.add_argument("--no-figure-translation", action="store_true", help="不将图注翻译为中文")
+    parser.add_argument("--no-figure-translation", action="store_true", help="不调用 LLM 翻译图注，改用“图 n/表 n”中文编号兜底")
     parser.add_argument("--max-figures", type=int, default=8, help="每篇论文最多提取图表数（默认 8）")
     parser.add_argument("--figure-dpi", type=int, default=200, help="图表渲染 DPI（默认 200）")
+    parser.add_argument("--max-input-chars", type=int, default=DEFAULT_MAX_INPUT_CHARS, help="送入 LLM 的论文最大字符数（默认 36000；0 表示不限制）")
+    parser.add_argument("--max-output-tokens", type=int, default=DEFAULT_MAX_OUTPUT_TOKENS, help="单次生成最大输出 token（默认 8192；0 表示用 API 默认）")
+    parser.add_argument("--thinking", action="store_true", help="启用模型 thinking/reasoning（默认关闭以节省 token）")
     parser.add_argument("--api-key", default="", help="大模型 API Key（或设置 LLM_API_KEY / DEEPSEEK_API_KEY）")
     parser.add_argument("--base-url", default="", help="API Base URL（默认 https://api.deepseek.com/v1）")
-    parser.add_argument("--model", default="", help="模型名称，默认 deepseek-chat（可用 LLM_MODEL / DEEPSEEK_MODEL 覆盖）")
+    parser.add_argument("--model", default="", help="模型名称，默认 deepseek-flash（可用 LLM_MODEL / DEEPSEEK_MODEL 覆盖）")
     args = parser.parse_args()
+    run_start = time.monotonic()
 
     args.api_key = resolve_api_key(args.api_key)
     args.base_url = resolve_base_url(args.base_url)
@@ -1025,23 +1263,50 @@ def main():
         print("[Info] 没有可处理的论文任务。")
         return
 
+    log = RunLog("generate")
+    log.write(
+        f"START tasks={len(tasks)} workers={args.workers} model={args.model} "
+        f"venue={default_venue} year={default_year} thinking={args.thinking} "
+        f"max_input_chars={args.max_input_chars} max_output_tokens={args.max_output_tokens} "
+        f"max_figures={args.max_figures} translate_figures={not args.no_figure_translation}"
+    )
+
     print(f"\n[Start] 共收集 {len(tasks)} 篇待处理论文，启用 {args.workers} 个并发线程调用 {args.model} ...\n")
+    generation_start = time.monotonic()
+    reporter = ProgressReporter(
+        total=len(tasks),
+        label="生成笔记",
+        log=log,
+        cost_fn=lambda: estimate_usage_cost_usd(args.model),
+    )
+    reporter.start()
     records = []
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
         future_map = {
             executor.submit(process_single_paper, item, default_venue, default_year, docs_dir, args): item
             for item in tasks
         }
-        for idx, fut in enumerate(as_completed(future_map), 1):
+        for fut in as_completed(future_map):
             item = future_map[fut]
             try:
                 msg, record = fut.result()
-                print(f"[{idx}/{len(tasks)}] {msg}")
+                if msg.startswith("[OK]"):
+                    status = "ok"
+                elif msg.startswith("[Skip]"):
+                    status = "skip"
+                elif msg.startswith("[Error]"):
+                    status = "error"
+                else:
+                    status = "other"
+                reporter.update(status, title=item.get("title", ""), detail=msg)
                 if record:
                     records.append(record)
             except Exception as e:
-                print(f"[{idx}/{len(tasks)}] [Error] 处理失败 ({item['title'][:45]}): {e}")
+                detail = f"[Error] 处理失败 ({item['title'][:45]}): {e}"
+                reporter.update("error", title=item.get("title", ""), detail=detail)
 
+    reporter.finish()
+    generation_elapsed = time.monotonic() - generation_start
     append_manifest(repo_root, records)
 
     print("\n[Index] 正在重新构建分类/年份/会刊导航索引与卡片计数...")
@@ -1060,6 +1325,18 @@ def main():
     build_venue_pages(docs_dir, all_notes, all_years)
     build_home_and_mkdocs_yml(repo_root, all_notes, all_years)
     print(f"[Done] 本次成功生成 {len(records)} 篇，全库现已收录 {len(all_notes)} 篇推荐系统论文解读！")
+    print_usage_summary(
+        args.model,
+        processed=len(tasks),
+        success=len(records),
+        elapsed_seconds=generation_elapsed,
+        log=log,
+    )
+    total_elapsed = time.monotonic() - run_start
+    print(f"[Time] 本次运行总耗时（含抓取/索引）{format_duration(total_elapsed)}")
+    print(f"[Log] 详细日志: {log.path}")
+    log.write(f"TOTAL elapsed={format_duration(total_elapsed)} generated={len(records)}")
+    log.close()
 
 
 if __name__ == "__main__":

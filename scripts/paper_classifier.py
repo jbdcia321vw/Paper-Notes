@@ -18,7 +18,8 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 from init_clean_recsys_repo import CATEGORIES
-from generate_recsys_notes import call_chat_completion
+from generate_recsys_notes import call_chat_completion, estimate_usage_cost_usd
+from run_logging import ProgressReporter, RunLog
 
 DEFAULT_CACHE_PATH = SCRIPT_DIR.parent / "data" / "papers" / ".classification_cache.json"
 
@@ -112,7 +113,7 @@ def classify_one(
     last_error = ""
     for attempt in range(1, retries + 1):
         try:
-            kwargs = {"temperature": 0.0, "timeout": timeout}
+            kwargs = {"temperature": 0.0, "timeout": timeout, "max_tokens": 512, "thinking": False}
             if attempt == 1:
                 kwargs["response_format"] = {"type": "json_object"}
             raw = call_chat_completion(
@@ -176,6 +177,8 @@ def classify_items(
     retries: int = 2,
     cache_path: Path = DEFAULT_CACHE_PATH,
     refresh: bool = False,
+    log: RunLog = None,
+    label: str = "LLM 分类",
 ) -> dict:
     """并发分类，返回 {arxiv_id: result}，并复用本地缓存。"""
     cache_path = Path(cache_path) if cache_path else None
@@ -194,6 +197,13 @@ def classify_items(
             pending.append(item)
 
     if pending:
+        reporter = ProgressReporter(
+            total=len(pending),
+            label=label,
+            log=log,
+            cost_fn=lambda: estimate_usage_cost_usd(model),
+        )
+        reporter.start()
         with ThreadPoolExecutor(max_workers=max(1, workers)) as executor:
             future_map = {
                 executor.submit(
@@ -207,7 +217,7 @@ def classify_items(
                 ): item
                 for item in pending
             }
-            for idx, future in enumerate(as_completed(future_map), 1):
+            for future in as_completed(future_map):
                 item = future_map[future]
                 arxiv_id = str(item.get("arxiv_id", "")).strip()
                 try:
@@ -222,11 +232,13 @@ def classify_items(
                     }
                 results[arxiv_id] = result
                 cache[f"{model}:{arxiv_id}"] = result
-                print(
-                    f"  [LLM {idx}/{len(pending)}] {arxiv_id} -> "
-                    f"{result['category'] or '-'} ({result['confidence']:.2f}) "
-                    f"{result['reason'][:50]}"
+                status = "error" if result.get("source") == "error" else "ok"
+                detail = (
+                    f"{arxiv_id} -> {result['category'] or '-'} "
+                    f"({result['confidence']:.2f}) {result['reason'][:50]}"
                 )
+                reporter.update(status, title=item.get("title", ""), detail=detail)
+        reporter.finish()
         save_cache(cache_path, cache)
 
     return results

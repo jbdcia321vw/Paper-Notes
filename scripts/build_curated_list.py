@@ -15,6 +15,7 @@ challenge / 技术报告，并用 LLM 根据标题与摘要判断推荐相关性
 import csv
 import re
 import sys
+import time
 import argparse
 from pathlib import Path
 
@@ -25,11 +26,13 @@ if str(SCRIPT_DIR) not in sys.path:
 from init_clean_recsys_repo import CATEGORIES
 from generate_recsys_notes import (
     _fetch_arxiv_entries,
+    print_usage_summary,
     resolve_api_key,
     resolve_base_url,
     resolve_model,
 )
 from paper_classifier import DEFAULT_CACHE_PATH, classify_items
+from run_logging import RunLog, format_duration
 
 CATEGORY_KEYWORDS = {
     "collaborative_filtering": ["collaborative filtering", "matrix factorization", "two-tower", "two tower", "item-item", "implicit feedback", "embedding retrieval"],
@@ -151,9 +154,16 @@ def main():
     parser.add_argument("--llm-cache", default=str(DEFAULT_CACHE_PATH), help="LLM 分类缓存路径")
     parser.add_argument("--refresh-llm-cache", action="store_true", help="忽略本地 LLM 分类缓存")
     args = parser.parse_args()
+    run_start = time.monotonic()
+    log = RunLog("build-list")
+    log.write(
+        f"START venue={args.venue} year={args.year} max_results={args.max_results} "
+        f"no_llm={args.no_llm} workers={args.llm_workers}"
+    )
 
     query = f'all:"{args.venue} {args.year}"'
     print(f"[Query] {query} (max_results={args.max_results})")
+    log.write(f"QUERY {query} max_results={args.max_results}")
     papers = _fetch_arxiv_entries(
         {"search_query": query, "max_results": args.max_results, "sortBy": "submittedDate", "sortOrder": "descending"},
         cache_dir=None,
@@ -197,6 +207,7 @@ def main():
                 retries=args.llm_retries,
                 cache_path=Path(args.llm_cache),
                 refresh=args.refresh_llm_cache,
+                log=log,
             )
             print(f"[LLM] 完成 {len(llm_results)} 篇。")
 
@@ -240,6 +251,18 @@ def main():
         print(f"  - [{row['category']}] {row['title'][:90]} ({row['arxiv_id']})")
     if len(rows) > 15:
         print(f"  ... 其余 {len(rows) - 15} 篇见 CSV")
+    elapsed = time.monotonic() - run_start
+    print_usage_summary(
+        resolve_model(args.llm_model),
+        processed=len(candidates),
+        success=len(rows),
+        elapsed_seconds=elapsed,
+        log=log,
+    )
+    print(f"[Time] 候选名单总耗时 {format_duration(elapsed)}")
+    print(f"[Log] 详细日志: {log.path}")
+    log.write(f"TOTAL elapsed={format_duration(elapsed)} candidates={len(candidates)} rows={len(rows)}")
+    log.close()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,60 @@
+version: 1
+updated_at: "2026-11-12"
+
+sources:
+  official:
+    accepted_papers: "{official_url}"
+  dblp:
+    conference_toc: "https://dblp.org/db/conf/{dblp_slug}/{dblp_slug}{year}.html"
+    journal_toc: "https://dblp.org/db/journals/{dblp_slug}/{dblp_slug}{volume}.html"
+    search_api: "https://dblp.org/search/publ/api?q={query}&format=json&h={limit}"
+  acm:
+    proceedings_toc: "https://dl.acm.org/doi/proceedings/10.1145/{proceedings_id}"
+    article: "https://dl.acm.org/doi/10.1145/{proceedings_id}.{article_id}"
+    doi: "https://doi.org/10.1145/{proceedings_id}.{article_id}"
+  ieee:
+    proceedings_toc: "https://ieeexplore.ieee.org/xpl/conhome/{conhome_id}/proceeding"
+    article: "https://ieeexplore.ieee.org/document/{document_id}"
+    journal_issue: "https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber={punumber}"
+  openalex:
+    works: "https://api.openalex.org/works?filter=primary_location.source.id:{source_id},publication_year:{year}&per-page=200&page={page}"
+  crossref:
+    work: "https://api.crossref.org/works?filter=doi:{doi}"
+    container: "https://api.crossref.org/works?filter=container-title:{container_title},from-pub-date:{year}-01-01,until-pub-date:{year}-12-31&rows=1000&cursor={cursor}"
+  semantic_scholar:
+    search: "https://api.semanticscholar.org/graph/v1/paper/search?query={query}&fields=title,authors,externalIds,openAccessPdf,venue,year&limit=100"
+  acl_anthology:
+    event: "https://aclanthology.org/events/{venue}-{year}/"
+  pmlr:
+    volume: "https://proceedings.mlr.press/v{volume}/"
+  neurips:
+    year: "https://papers.nips.cc/paper_files/paper/{year}"
+  openreview:
+    group: "https://openreview.net/group?id={venue}.cc/{year}/Conference"
+  aaai:
+    issue: "https://ojs.aaai.org/index.php/AAAI/issue/view/{issue_id}"
+  ijcai:
+    year: "https://www.ijcai.org/proceedings/{year}/"
+
+access_notes:
+  dblp: "May return an Anubis challenge; use a browser session, cookies, or cached HTML."
+  acm: "Direct requests may return 403; use a browser session, cookies, or cached HTML."
+  openalex: "Add a polite mailto parameter and cache responses; unauthenticated requests may return 429."
+  crossref: "Add a polite mailto parameter and cache responses; unauthenticated requests may return 429."
+
+venues:
+  SIGIR:
+    "2026":
+      type: conference
+      official_url: "https://sigir2026.org/en-AU/pages/program/accepted-papers"
+      dblp_slug: "sigir"
+      acm_proceedings_id: "3805712"
+      ieee_conhome_id: null
+      openalex_source_id: null
+      resolved:
+        dblp_toc: "https://dblp.org/db/conf/sigir/sigir2026.html"
+        acm_proceedings_toc: "https://dl.acm.org/doi/proceedings/10.1145/3805712"
+        official_accepted_papers: "https://sigir2026.org/en-AU/pages/program/accepted-papers"
+      examples:
+        acm_article: "https://dl.acm.org/doi/10.1145/3805712.3809606"
+        acm_doi: "https://doi.org/10.1145/3805712.3809606"

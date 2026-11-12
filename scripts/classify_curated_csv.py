@@ -14,6 +14,7 @@ classify_curated_csv.py
 import argparse
 import csv
 import sys
+import time
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -23,12 +24,14 @@ if str(SCRIPT_DIR) not in sys.path:
 from init_clean_recsys_repo import CATEGORIES
 from generate_recsys_notes import (
     fetch_arxiv_by_ids,
+    print_usage_summary,
     resolve_api_key,
     resolve_base_url,
     resolve_model,
 )
 from paper_classifier import DEFAULT_CACHE_PATH, classify_items
 from build_curated_list import classify as heuristic_classify
+from run_logging import RunLog, format_duration
 
 FIELDNAMES = ["title", "arxiv_id", "paper_url", "code_url", "category", "venue", "year"]
 
@@ -61,6 +64,7 @@ def main():
     parser.add_argument("--refresh", action="store_true", help="忽略本地 LLM 分类缓存")
     parser.add_argument("--cache", default=str(DEFAULT_CACHE_PATH), help="LLM 分类缓存路径")
     args = parser.parse_args()
+    run_start = time.monotonic()
 
     repo_root = SCRIPT_DIR.parent
     if args.csv:
@@ -81,6 +85,11 @@ def main():
         return
     base_url = resolve_base_url(args.base_url)
     model = resolve_model(args.model)
+    log = RunLog("classify")
+    log.write(
+        f"START files={len(csv_paths)} workers={args.workers} retries={args.retries} "
+        f"model={model} no_remove={args.no_remove} dry_run={args.dry_run}"
+    )
 
     file_rows = {}
     all_ids = []
@@ -124,6 +133,7 @@ def main():
         retries=args.retries,
         cache_path=Path(args.cache),
         refresh=args.refresh,
+        log=log,
     )
 
     for csv_path, rows in file_rows.items():
@@ -179,6 +189,19 @@ def main():
             print("  [Dry-run] 未写入")
 
     print("\n[Done] LLM 分类复核完成。")
+    elapsed = time.monotonic() - run_start
+    success = sum(1 for result in results.values() if result.get("source") != "error")
+    print_usage_summary(
+        model,
+        processed=len(items),
+        success=success,
+        elapsed_seconds=elapsed,
+        log=log,
+    )
+    print(f"[Time] 分类复核总耗时 {format_duration(elapsed)}")
+    print(f"[Log] 详细日志: {log.path}")
+    log.write(f"TOTAL elapsed={format_duration(elapsed)} items={len(items)} success={success}")
+    log.close()
 
 
 if __name__ == "__main__":

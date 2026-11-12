@@ -1,10 +1,10 @@
 # 🧠 大语言模型推荐 (LLM4Rec)
 
-**SIGIR 2026** · **13** 篇论文解读
+**SIGIR 2026** · **19** 篇论文解读
 
 > **方向说明**：LLM 指令微调推荐、In-Context 列表重排、语义表征增强、大模型向轻量推荐模型知识蒸馏
 
-🔥 **高频主题：** 大语言模型推荐 ×11 · 召回 ×4 · 端到端生成式 ×3
+🔥 **高频主题：** 大语言模型推荐 ×16 · 召回 ×4 · 生成式端到端 ×4 · 端到端生成式 ×4 · GRPO ×2 · LLM4Rec ×2 · 重排 ×2
 
 <dl>
 <dt><strong><a href="ace_anisotropy_controllable_embedding_for_llm_enhanced_sequential_recommend/">ACE: Anisotropy-Controllable Embedding for LLM-enhanced Sequential Recommendation</a></strong></dt>
@@ -23,6 +23,10 @@
 <dd>
 <p>将显式评分建模为序数语义锚点，在LLM隐空间做强度感知对齐，保留细粒度偏好强度，成对偏好准确率最高提升44.9%。</p>
 </dd>
+<dt><strong><a href="factorized_latent_reasoning_for_llm_based_recommendation/">Factorized Latent Reasoning for LLM-based Recommendation</a></strong></dt>
+<dd>
+<p>将 LLM 隐空间推理分解为 K 个正交偏好因子，配合 GRPO 隐空间强化学习，在 Amazon 四域上以全库排序取得稳定提升。</p>
+</dd>
 <dt><strong><a href="filling_the_gaps_selective_knowledge_augmentation_for_llm_recommenders/">Filling the Gaps: Selective Knowledge Augmentation for LLM Recommenders</a></strong></dt>
 <dd>
 <p>提出 KnowSA_CKP，用比较式知识探测量化 LLM 对物品的协同知识缺口，仅对知识贫乏物品做选择性增强，免微调提升 Recall@1 与上下文效率。</p>
@@ -34,6 +38,10 @@
 <dt><strong><a href="l2rec_towards_dual_view_understanding_of_llms_for_personalized_recommendati/">L2Rec: Towards Dual-View Understanding of LLMs for Personalized Recommendation</a></strong></dt>
 <dd>
 <p>在 LLM 参数空间用双视图个性化 MoE (LoRA) 分别适配行为/语义视图，ACF 融合，四数据集 N@10 提升 3.87%–8.02%，线上 CTR +9.24%。</p>
+</dd>
+<dt><strong><a href="lwgr_lagrangian_constrained_personalized_world_knowledge_for_generative_rec/">LWGR: Lagrangian-Constrained Personalized World Knowledge for Generative Recommendation</a></strong></dt>
+<dd>
+<p>用 OPQ 并行码本生成用户个性化软指令提取 LLM 世界知识，并以拉格朗日原始-对偶约束可控融合进生成式推荐，离线最高 +11.23%，线上广告收入 +1.35%</p>
 </dd>
 <dt><strong><a href="modular_representation_compression_adapting_llms_for_efficient_and_effectiv/">Modular Representation Compression: Adapting LLMs for Efficient and Effective Recommendations</a></strong></dt>
 <dd>
@@ -51,12 +59,28 @@
 <dd>
 <p>将 LLM 画像视为检索信号，用监督/自监督双重分布塑形引导基座推荐模型，全库排序下 NDCG@10 最高提升 8.44%</p>
 </dd>
+<dt><strong><a href="recgpt_mobile_on_device_large_language_models_for_user_intent_understanding/">RecGPT-Mobile: On-Device Large Language Models for User Intent Understanding in Taobao Feed Recommendation</a></strong></dt>
+<dd>
+<p>将 Qwen3-0.6B 量化后部署于手机端作为意图理解 Agent，把隐式行为翻译为显式搜索意图 query，配合自适应 Prompt 与意图漂移触发机制，线上平均 +1.8% CLICK / +2.7% PAY / +2.5% GMV。</p>
+</dd>
+<dt><strong><a href="res_mr_risk_aware_reasoning_for_explainable_and_safe_medication_recommendat/">RES-MR: Risk-Aware Reasoning for Explainable and Safe Medication Recommendation</a></strong></dt>
+<dd>
+<p>两阶段 LLM 框架：KG 检索增强推理蒸馏 + 双因子解耦原型驱动的风险感知 RL 策略优化，实现可解释且个性化安全的用药推荐。</p>
+</dd>
 <dt><strong><a href="rethinking_semantic_collaborative_integration_why_alignment_is_not_enough/">Rethinking Semantic–Collaborative Integration: Why Alignment Is Not Enough</a></strong></dt>
 <dd>
 <p>论证语义-协同表征仅部分共享，全局对齐会压制视图私有信号；提出互补融合视角与诊断指标，最小融合在稀疏基准上超越对齐范式。</p>
 </dd>
+<dt><strong><a href="think_when_needed_model_aware_reasoning_routing_for_llm_based_ranking/">Think When Needed: Model-Aware Reasoning Routing for LLM-based Ranking</a></strong></dt>
+<dd>
+<p>提出轻量即插即用路由器，基于排序感知特征与模型感知难度信号，逐实例决定是否触发推理，实现精度-效率帕累托最优。</p>
+</dd>
 <dt><strong><a href="unifying_search_and_recommendation_in_llms_via_gradient_multi_subspace_tuni/">Unifying Search and Recommendation in LLMs via Gradient Multi-Subspace Tuning</a></strong></dt>
 <dd>
 <p>GEMS 用多子空间梯度分解缓解 S&amp;R 梯度冲突，并用零空间投影保留通用知识，在 Qilin/Amazon 上大幅超越 PEFT 与统一 S&amp;R 基线。</p>
+</dd>
+<dt><strong><a href="verifiable_reasoning_for_llm_based_generative_recommendation/">Verifiable Reasoning for LLM-based Generative Recommendation</a></strong></dt>
+<dd>
+<p>提出 reason-verify-recommend 范式，用混合验证器+代理偏好预测+单调性正则，在四个数据集上显著提升生成式推荐效果。</p>
 </dd>
 </dl>

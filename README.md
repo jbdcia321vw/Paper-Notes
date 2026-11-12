@@ -42,6 +42,9 @@ scripts/
   generate_recsys_notes.py
   extract_pdf_figures.py
   build_nav_and_index.py
+  run_pipeline.py       # 一键串联生成/索引/构建
+  run_logging.py        # 日志、进度条、耗时与费用格式化
+  check_site_links.py   # 检查 site/ 本地链接
 ```
 
 ## 🚀 本地运行
@@ -59,12 +62,21 @@ python scripts/init_clean_recsys_repo.py
 # 配置 DeepSeek API Key（也兼容 LLM_API_KEY）
 $env:DEEPSEEK_API_KEY = "sk-..."
 
+# 推荐：一键批处理（默认 balanced，自动构建导航与站点并检查链接）
+python scripts/run_pipeline.py --profile balanced
+
+# 小规模试点：只处理前 5 篇，只看将执行的命令
+python scripts/run_pipeline.py --profile fast --limit 5 --dry-run
+
+# 高峰时段自动等到非高峰再跑（DeepSeek 非高峰价为 5 折）
+python scripts/run_pipeline.py --profile balanced --off-peak-wait
+
 # 可选：从 arXiv 主会录用信号生成候选名单（默认用 LLM 判断相关性与分类）
 python scripts/build_curated_list.py --venue SIGIR --year 2026 --max-results 300
 python scripts/build_curated_list.py --venue RecSys --year 2026 --max-results 200
 
-# 对已有候选名单做 LLM 复核：修正分类并删除非推荐相关条目
-python scripts/classify_curated_csv.py --all --workers 4
+# 对已有候选名单做 LLM 复核：默认只修正分类，不删除条目
+python scripts/classify_curated_csv.py --all --workers 4 --no-remove
 
 # 生成笔记（生产推荐：策展 CSV）
 # 小规模试点：只处理名单前 5 篇
@@ -95,7 +107,7 @@ title,arxiv_id,paper_url,code_url,category,venue,year
 
 ## ✅ 生成质量约束
 
-- 默认模型：DeepSeek `deepseek-chat`，可通过 `LLM_MODEL` / `DEEPSEEK_MODEL` 覆盖
+- 默认模型：DeepSeek `deepseek-flash`，可通过 `LLM_MODEL` / `DEEPSEEK_MODEL` 覆盖
 - API Key：优先 `LLM_API_KEY`，其次 `DEEPSEEK_API_KEY`；也可用 `--api-key` 显式传入
 - 自动校验：YAML Frontmatter、`venue`/`year` 一致性、合法分类、必需章节、模板占位符
 - 失败自动重试（`--retries`）
@@ -103,6 +115,37 @@ title,arxiv_id,paper_url,code_url,category,venue,year
 - 候选名单默认用 LLM 复核相关性与分类；`build_curated_list.py --no-llm` 可回退到关键词启发式
 - LLM 分类结果缓存在 `data/papers/.classification_cache.json`，`--refresh` 可强制刷新
 - `--seed-all-categories` 与 `--arxiv-query` 仅供本地试点，生产收录请使用策展 CSV
+
+## 💰 Token 成本优化
+
+`run_pipeline.py` 提供三档预设：
+
+| Profile | 输入上限 | 输出上限 | 图表 | 图注翻译 | 适用场景 |
+| :--- | ---: | ---: | ---: | :--- | :--- |
+| `fast` | 28k 字符 | 5k token | 6 张 | 否（中文编号兜底） | 大批量初筛 |
+| `balanced` | 36k 字符 | 7k token | 8 张 | 否（中文编号兜底） | 默认生产 |
+| `quality` | 52k 字符 | 10k token | 10 张 | 是 | 重点论文 |
+
+已内置的成本控制：
+
+- **关闭 thinking**：DeepSeek 默认开启 thinking，会额外产生 reasoning token；脚本默认显式关闭，只有 `--thinking` 才开启。
+- **压缩输入**：自动去掉参考文献/致谢并限制 `--max-input-chars`，避免把整篇 PDF 全部送入模型。
+- **限制输出**：`--max-output-tokens` 防止模型生成过长笔记。
+- **图注翻译可选**：`run_pipeline.py` 的 `fast`/`balanced` 默认使用“图 n/表 n”中文编号兜底，省掉每篇一次额外翻译调用；`quality` 或 `--translate-figures` 才调用 LLM 翻译。
+- **非高峰运行**：DeepSeek 非高峰价为高峰的 5 折；`--off-peak-wait` 会自动等待。
+- **自动缓存**：DeepSeek Context Caching 默认开启，稳定的 system prompt 前缀可命中缓存；运行结束会打印 token、缓存命中率与近似成本。
+- **断点续传**：已存在笔记默认跳过，避免重复生成。
+
+> 高峰时段（UTC）：周一至周五 01:00–04:00、06:00–10:00；中国法定节假日按官方规则视为非高峰。
+
+## 📊 运行日志、进度与费用报告
+
+生成笔记、分类复核和 `run_pipeline.py` 运行时都会输出实时进度：
+
+- 控制台进度条显示完成数、成功/跳过/失败数、已用时间、ETA 和当前累计花费。
+- 每篇论文的状态、重试原因和错误会写入 `logs/` 下的日志文件，便于中断后排查。
+- 运行结束会报告总 token、缓存命中率、总花费（USD 与近似 CNY）、平均每篇花费，以及总耗时和平均每篇耗时。
+- `logs/` 已加入 `.gitignore`，不会提交到仓库。
 
 ## 🖼️ 论文图表
 
@@ -118,6 +161,9 @@ python scripts/generate_recsys_notes.py --papers-csv data/papers/SIGIR2026.csv -
 # 关闭图表提取
 python scripts/generate_recsys_notes.py --papers-csv data/papers/SIGIR2026.csv --no-figures
 
+# 不调用 LLM 翻译图注，使用“图 n/表 n”中文编号兜底（省 token）
+python scripts/generate_recsys_notes.py --papers-csv data/papers/SIGIR2026.csv --no-figure-translation
+
 # 单独提取某个 PDF 的图表
 python scripts/extract_pdf_figures.py --pdf .cache_pdfs/2605.29322v1.pdf --out docs/assets/papers/2605.29322v1
 ```
@@ -128,4 +174,4 @@ python scripts/extract_pdf_figures.py --pdf .cache_pdfs/2605.29322v1.pdf --out d
 
 ## 🔄 自动构建
 
-`.github/workflows/init_and_deploy.yml` 负责构建并部署 MkDocs 站点。生产流程应只运行索引构建与 `mkdocs build`，不要在 CI 中自动抓取论文或生成笔记。
+`.github/workflows/init_and_deploy.yml` 负责构建并部署 MkDocs 站点。手动触发时可通过 `papers_csv` + `profile` 调用 `run_pipeline.py` 生成笔记；普通 push 只重建索引并部署，不会自动抓取论文或消耗 token。
