@@ -1,18 +1,6 @@
-.DS_Store
-.search_index.json
-INDEX.md
-site/
-site_fast/
-.preview/
-mkdocs_preview.yml
-docs_fast/
-mkdocs-fast.yml
+﻿site/
 __pycache__/
-STATS_UPDATE.md
-**/TODO.md
+*.pyc
+.venv/
+.env
 
-src/
-tests/
-pyproject.toml
-SOFTWARE_DOC.md
-paper_notes.egg-info/
