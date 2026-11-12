@@ -4240,15 +4240,11 @@
 <div class="arithmatex">\[\mathbf{E}^{(k)}_{\text{ACE}}=\mathbf{U}^{(k)}\,g_\lambda(\mathbf{S}^{(k)})\cdot\gamma,\]</div>
 <p>其中 <span class="arithmatex">\(\gamma\)</span> 为缩放因子，用于恢复因 <span class="arithmatex">\(g_\lambda\)</span> 压缩而损失的嵌入量级（原文在 <span class="arithmatex">\(\{0.1,0.5,1\}\)</span> 中调参）。所得嵌入直接替换任意 SR 骨干的物品嵌入表初始化。</p>
 <figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/figure_1.png" alt="Figure 1: Visualization of three embedding spaces on the Beauty dataset: PCA, whitened PCA, and ACE. Each point is projected onto the top three singular vectors (SVD1–3), where SVD1 and SVD3 correspond to semantically rich and sparse directions, respectively." loading="lazy">
-  <figcaption>Figure 1: Visualization of three embedding spaces on the Beauty dataset: PCA, whitened PCA, and ACE. Each point is projected onto the top three singular vectors (SVD1–3), where SVD1 and SVD3 correspond to semantically rich and sparse directions, respectively.</figcaption>
+  <img alt="Figure 1: Visualization of three embedding spaces on the Beauty dataset: PCA, whitened PCA, and ACE. Each point is projected onto the top three singular vectors (SVD1–3), where SVD1 and SVD3 correspond to semantically rich and sparse directions, respectively." src="../../../../../assets/papers/2605.29322v1/figure_1.png" /><figcaption>Figure 1: Visualization of three embedding spaces on the Beauty dataset: PCA, whitened PCA, and ACE. Each point is projected onto the top three singular vectors (SVD1–3), where SVD1 and SVD3 correspond to semantically rich and sparse directions, respectively.</figcaption>
 </figure>
-
 <figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/figure_2.png" alt="Figure 2: Normalized eigenvalue spectrum of ACE under dif- ferent 𝜆on the Beauty dataset. Smaller 𝜆flattens the eigen- value spectrum toward isotropy." loading="lazy">
-  <figcaption>Figure 2: Normalized eigenvalue spectrum of ACE under dif- ferent 𝜆on the Beauty dataset. Smaller 𝜆flattens the eigen- value spectrum toward isotropy.</figcaption>
+  <img alt="Figure 2: Normalized eigenvalue spectrum of ACE under dif- ferent 𝜆on the Beauty dataset. Smaller 𝜆flattens the eigen- value spectrum toward isotropy." src="../../../../../assets/papers/2605.29322v1/figure_2.png" /><figcaption>Figure 2: Normalized eigenvalue spectrum of ACE under dif- ferent 𝜆on the Beauty dataset. Smaller 𝜆flattens the eigen- value spectrum toward isotropy.</figcaption>
 </figure>
-
 <h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
 <ul>
 <li><strong>损失函数</strong>: ACE 本身<strong>无梯度训练</strong>——式 (3) 有闭式解，实际计算只需一次 SVD + 逐奇异值标量收缩，无迭代、无学习率。下游 SR 骨干沿用各自原损失（SASRec/BERT4Rec 的交叉熵 next-item 损失、GRU4Rec 的 BPR/CE 类损失），原文未对骨干损失做修改。</li>
@@ -4402,10 +4398,8 @@
 </table>
 <p><strong>关键观察</strong>：WhitenRec+ 在 Yelp 上（R@10 0.0500）甚至低于简单 PCA 的 LLM2X（0.0590），原文将其归因于"激进白化均匀抹平谱、破坏物品区分所需的语义层级"——这是对本文动机最有力的实证支撑。ACE 在 Yelp 的 NDCG 上增益最大（+6.96% / +6.31%），说明语义层级破坏越严重的场景，可控收缩的收益越明显。</p>
 <figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/table_1.png" alt="Table 1: Performance comparison with LLM-as-Extractor baselines across four benchmark datasets using SASRec backbone. The best results are shown in bold, and the second-best are underlined. ‘*’ denotes a statistically significant improvement over all baselines (𝑝&lt; 0.05, one-tailed t-test)." loading="lazy">
-  <figcaption>Table 1: Performance comparison with LLM-as-Extractor baselines across four benchmark datasets using SASRec backbone. The best results are shown in bold, and the second-best are underlined. ‘*’ denotes a statistically significant improvement over all baselines (𝑝&lt; 0.05, one-tailed t-test).</figcaption>
+  <img alt="Table 1: Performance comparison with LLM-as-Extractor baselines across four benchmark datasets using SASRec backbone. The best results are shown in bold, and the second-best are underlined. ‘*’ denotes a statistically significant improvement over all baselines (𝑝&lt; 0.05, one-tailed t-test)." src="../../../../../assets/papers/2605.29322v1/table_1.png" /><figcaption>Table 1: Performance comparison with LLM-as-Extractor baselines across four benchmark datasets using SASRec backbone. The best results are shown in bold, and the second-best are underlined. ‘*’ denotes a statistically significant improvement over all baselines (𝑝&lt; 0.05, one-tailed t-test).</figcaption>
 </figure>
-
 <p><strong>跨骨干验证</strong>（Table 2，Beauty/Yelp × GRU4Rec/BERT4Rec）：</p>
 <table>
 <thead>
@@ -4450,10 +4444,8 @@
 </table>
 <p>摘要中宣称的 "up to 12.4% Recall@20 / 11.8% NDCG@20" 来自 Yelp+GRU4Rec 的 R@20（+12.42%）与 Beauty+GRU4Rec 的 N@20（0.0466 vs 0.0430，+8.37%）——<strong>注意 NDCG 的 11.8% 在 Table 2 中无法直接对上</strong>，若按 Yelp+GRU4Rec 的 N@20 计算则为 +20.70%，若按 Beauty+GRU4Rec 则为 +8.37%，原文未说明 11.8% 的具体出处，属于<strong>数值口径不清</strong>的问题，审稿时应追问。</p>
 <figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/table_2.png" alt="Table 2: Performance comparison against LLM-as-Extractor baselines across two SR backbones on the Beauty and Yelp datasets. The best performance is highlighted in bold, and the second-best is underlined." loading="lazy">
-  <figcaption>Table 2: Performance comparison against LLM-as-Extractor baselines across two SR backbones on the Beauty and Yelp datasets. The best performance is highlighted in bold, and the second-best is underlined.</figcaption>
+  <img alt="Table 2: Performance comparison against LLM-as-Extractor baselines across two SR backbones on the Beauty and Yelp datasets. The best performance is highlighted in bold, and the second-best is underlined." src="../../../../../assets/papers/2605.29322v1/table_2.png" /><figcaption>Table 2: Performance comparison against LLM-as-Extractor baselines across two SR backbones on the Beauty and Yelp datasets. The best performance is highlighted in bold, and the second-best is underlined.</figcaption>
 </figure>
-
 <h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
 <p><strong>原文未提供标准消融表</strong>（如 w/o 重建损失、w/o 正则项、随机初始化对照）。但通过 <span class="arithmatex">\(\lambda\)</span> 的极端取值可间接读出两项分工：</p>
 <ul>
@@ -4463,10 +4455,8 @@
 </ul>
 <p>这一"两端下降、中间最优"的 U 型曲线是本文最核心的实证证据，但严格说它<strong>不是控制变量消融</strong>：未做参数量对齐、未与"随机初始化 + 同维度"对照、未单独剥离 <span class="arithmatex">\(\gamma\)</span> 的影响。</p>
 <figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/figure_4.png" alt="Figure 4: Performance of ACE with varying 𝐿2-regularization coefficient 𝜆using SASRec backbone on two datasets." loading="lazy">
-  <figcaption>Figure 4: Performance of ACE with varying 𝐿2-regularization coefficient 𝜆using SASRec backbone on two datasets.</figcaption>
+  <img alt="Figure 4: Performance of ACE with varying 𝐿2-regularization coefficient 𝜆using SASRec backbone on two datasets." src="../../../../../assets/papers/2605.29322v1/figure_4.png" /><figcaption>Figure 4: Performance of ACE with varying 𝐿2-regularization coefficient 𝜆using SASRec backbone on two datasets.</figcaption>
 </figure>
-
 <h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
 <ul>
 <li><strong>长尾/冷启动分桶</strong>: <strong>原文未报告</strong>按物品交互频次或用户活跃度分桶的细粒度分析，无法判断增益是否主要来自头部热门物品。</li>
@@ -4474,10 +4464,8 @@
 <li><strong>LLM 编码器鲁棒性</strong>: Figure 3 在 F2LLM-4B、Qwen3-Embedding-8B、KaLM-Embedding-Gemma3-12B-2511 三种编码器上，ACE 的 Recall@20 均优于所有基线，相对最强基线 AlphaFuse 提升最高 2.94%，说明增益不绑定特定 LLM 嵌入源。</li>
 </ul>
 <figure class="paper-figure">
-  <img src="../../../../assets/papers/2605.29322v1/figure_3.png" alt="Figure 3: Performance comparison across three different LLM encoders: F2LLM-4B, Qwen3-Embedding-8B (Qwen3- 8B), and KaLM-Embedding-Gemma3-12B-2511 (KaLM-12B), using SASRec backbone on the Beauty dataset." loading="lazy">
-  <figcaption>Figure 3: Performance comparison across three different LLM encoders: F2LLM-4B, Qwen3-Embedding-8B (Qwen3- 8B), and KaLM-Embedding-Gemma3-12B-2511 (KaLM-12B), using SASRec backbone on the Beauty dataset.</figcaption>
+  <img alt="Figure 3: Performance comparison across three different LLM encoders: F2LLM-4B, Qwen3-Embedding-8B (Qwen3- 8B), and KaLM-Embedding-Gemma3-12B-2511 (KaLM-12B), using SASRec backbone on the Beauty dataset." src="../../../../../assets/papers/2605.29322v1/figure_3.png" /><figcaption>Figure 3: Performance comparison across three different LLM encoders: F2LLM-4B, Qwen3-Embedding-8B (Qwen3- 8B), and KaLM-Embedding-Gemma3-12B-2511 (KaLM-12B), using SASRec backbone on the Beauty dataset.</figcaption>
 </figure>
-
 <ul>
 <li><strong>线上 A/B 测试</strong>: <strong>原文仅包含离线实验</strong>，无工业线上验证。</li>
 </ul>
