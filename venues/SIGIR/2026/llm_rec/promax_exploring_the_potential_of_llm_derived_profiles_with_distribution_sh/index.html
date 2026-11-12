@@ -1,0 +1,4528 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="[SIGIR 2026][大语言模型推荐] 将 LLM 画像视为检索信号，用监督/自监督双重分布塑形引导基座推荐模型，全库排序下 NDCG@10 最高提升 8.44%">
+      
+      
+      
+        <link rel="canonical" href="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/promax_exploring_the_potential_of_llm_derived_profiles_with_distribution_sh/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+
+  <title>[Paper Note] ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems</title>
+
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+
+
+
+
+
+
+<meta name="robots" content="index,follow,max-snippet:180,max-image-preview:large" />
+<meta name="googlebot" content="index,follow,max-snippet:180,max-image-preview:large" />
+
+
+<script>
+(function() {
+  function markChromeNoSnippet() {
+    var selectors = [
+      '.md-header', '.md-tabs', '.md-sidebar', '.md-search',
+      '.md-footer', '.md-source', '.md-top'
+    ];
+    selectors.forEach(function(selector) {
+      document.querySelectorAll(selector).forEach(function(node) {
+        node.setAttribute('data-nosnippet', '');
+      });
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', markChromeNoSnippet);
+  } else {
+    markChromeNoSnippet();
+  }
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="keywords" content="SIGIR 2026, 大语言模型推荐, 召回, LLM 用户画像, 分布塑形, 稠密检索" />
+
+
+<meta property="article:tag" content="SIGIR 2026" />
+
+<meta property="article:tag" content="大语言模型推荐" />
+
+<meta property="article:tag" content="召回" />
+
+<meta property="article:tag" content="LLM 用户画像" />
+
+<meta property="article:tag" content="分布塑形" />
+
+<meta property="article:tag" content="稠密检索" />
+
+
+
+
+<!-- OpenGraph & Twitter Card -->
+<meta property="og:site_name" content="RecSys Paper Notes · 推荐系统论文精读库" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/promax_exploring_the_potential_of_llm_derived_profiles_with_distribution_sh/" />
+<meta property="og:title" content="[Paper Note] ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems" />
+<meta property="og:description" content="[SIGIR 2026][大语言模型推荐] 将 LLM 画像视为检索信号，用监督/自监督双重分布塑形引导基座推荐模型，全库排序下 NDCG@10 最高提升 8.44%" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="[Paper Note] ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems" />
+<meta name="twitter:description" content="[SIGIR 2026][大语言模型推荐] 将 LLM 画像视为检索信号，用监督/自监督双重分布塑形引导基座推荐模型，全库排序下 NDCG@10 最高提升 8.44%" />
+
+
+<!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://papernotes.org/#organization",
+  "name": "AI Paper Notes",
+  "alternateName": "论文笔记",
+  "url": "https://papernotes.org/",
+  "sameAs": [
+    "https://github.com/zhaoyang97/Paper-Notes",
+    "https://en.papernotes.org/"
+  ]
+}
+</script>
+
+<!-- JSON-LD: ScholarlyArticle (paper page) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "name": "[Paper Note] ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems",
+  "headline": "[Paper Note] ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems",
+  "description": "[SIGIR 2026][\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350] \u5c06 LLM \u753b\u50cf\u89c6\u4e3a\u68c0\u7d22\u4fe1\u53f7\uff0c\u7528\u76d1\u7763/\u81ea\u76d1\u7763\u53cc\u91cd\u5206\u5e03\u5851\u5f62\u5f15\u5bfc\u57fa\u5ea7\u63a8\u8350\u6a21\u578b\uff0c\u5168\u5e93\u6392\u5e8f\u4e0b NDCG@10 \u6700\u9ad8\u63d0\u5347 8.44%",
+  "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/promax_exploring_the_potential_of_llm_derived_profiles_with_distribution_sh/",
+  "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/promax_exploring_the_potential_of_llm_derived_profiles_with_distribution_sh/",
+  "inLanguage": "zh-CN",
+  "isAccessibleForFree": true,
+  "learningResourceType": "AI paper note",
+  "genre": "论文解读",
+  
+  "keywords": "SIGIR 2026, \u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350, \u53ec\u56de, LLM \u7528\u6237\u753b\u50cf, \u5206\u5e03\u5851\u5f62, \u7a20\u5bc6\u68c0\u7d22",
+  "about": [
+    { "@type": "Thing", "name": "SIGIR 2026" },
+    { "@type": "Thing", "name": "\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350" },
+    { "@type": "Thing", "name": "\u53ec\u56de" },
+    { "@type": "Thing", "name": "LLM \u7528\u6237\u753b\u50cf" },
+    { "@type": "Thing", "name": "\u5206\u5e03\u5851\u5f62" },
+    { "@type": "Thing", "name": "\u7a20\u5bc6\u68c0\u7d22" }
+  ],
+  
+  "datePublished": "2026-11-12",
+  "dateModified": "2026-11-12",
+  "author": { "@id": "https://papernotes.org/#organization" },
+  "publisher": { "@id": "https://papernotes.org/#organization" }
+}
+</script>
+
+
+<!-- JSON-LD: BreadcrumbList -->
+
+
+
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "AI Paper Notes",
+      "item": "https://jbdcia321vw.github.io/Paper-Notes/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "[Paper Note] ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems",
+      "item": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/promax_exploring_the_potential_of_llm_derived_profiles_with_distribution_sh/"
+    }
+  ]
+}
+</script>
+
+
+
+<!-- Lazy-load search worker: defer search_index.json download until user opens search -->
+<!-- Index is title-only (~7MB, slimmed by hooks/slim_search_index.py post-build) -->
+<!-- Mobile: redirect to Bing site search (no search index download at all) -->
+<!-- Desktop: create search worker lazily only when user focuses on search input -->
+<script>
+(function() {
+  var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  // ── Bilingual query expansion mapping (中↔英) ──
+  var P = [
+    "上下文学习|in-context learning","持续学习|continual learning","课程学习|curriculum learning",
+    "小样本学习|few-shot learning","零样本|zero-shot","元学习|meta-learning",
+    "模仿学习|imitation learning","主动学习|active learning","自监督学习|self-supervised learning",
+    "多任务学习|multi-task learning","迁移学习|transfer learning","强化学习|reinforcement learning",
+    "对比学习|contrastive learning","知识蒸馏|knowledge distillation","联邦学习|federated learning",
+    "微调|fine-tuning","预训练|pre-training","指令微调|instruction tuning",
+    "合成数据|synthetic data","数据增强|data augmentation",
+    "推理|reasoning","空间推理|spatial reasoning","视觉推理|visual reasoning",
+    "幻觉|hallucination","越狱攻击|jailbreak","对齐|alignment","奖励模型|reward model",
+    "偏好优化|preference optimization","推测解码|speculative decoding","长上下文|long context",
+    "知识编辑|knowledge editing","知识图谱|knowledge graph","代码生成|code generation",
+    "多智能体|multi-agent","具身智能|embodied ai","视觉定位|visual grounding",
+    "文生图|text-to-image","视频生成|video generation","新视角合成|novel view synthesis",
+    "运动生成|motion generation","鲁棒性|robustness","对抗攻击|adversarial attack",
+    "差分隐私|differential privacy","可解释性|interpretability","泛化|generalization",
+    "不确定性|uncertainty","异常检测|anomaly detection","因果推理|causal inference",
+    "基础模型|foundation model","世界模型|world model","扩散模型|diffusion model",
+    "目标检测|object detection","语义分割|semantic segmentation","实例分割|instance segmentation",
+    "图像分割|image segmentation","点云|point cloud","深度估计|depth estimation",
+    "光流|optical flow","姿态估计|pose estimation","图像复原|image restoration",
+    "图像生成|image generation","图像编辑|image editing","超分辨率|super-resolution",
+    "视频理解|video understanding","动作识别|action recognition","视觉问答|visual question answering",
+    "文生视频|text-to-video","语音识别|speech recognition","自动驾驶|autonomous driving",
+    "遥感|remote sensing","医学影像|medical imaging","模型压缩|model compression",
+    "量化|quantization","多模态|multi-modal","跨模态|cross-modal",
+    "图神经网络|graph neural network","注意力机制|attention mechanism",
+    "域适应|domain adaptation","领域泛化|domain generalization","分布外|out-of-distribution",
+    "开放词汇|open-vocabulary","人脸识别|face recognition","机器翻译|machine translation",
+    "情感分析|sentiment analysis","文档理解|document understanding","问答|question answering",
+    "轨迹预测|trajectory prediction","图像修复|image inpainting","去噪|denoising",
+    "模型剪枝|model pruning","参数高效微调|parameter-efficient fine-tuning",
+    "灾难性遗忘|catastrophic forgetting","3D目标检测|3d object detection",
+  ];
+  var M = {};
+  P.forEach(function(p) { var s = p.split('|'); M[s[0]] = s[1]; M[s[1]] = s[0]; });
+
+  function expand(q) {
+    var ql = q.toLowerCase().trim();
+    if (M[ql]) return q + ' ' + M[ql];
+    var extra = [], seen = {};
+    for (var t in M) {
+      if (ql.indexOf(t) !== -1 && !seen[M[t]]) { seen[M[t]] = true; extra.push(M[t]); }
+    }
+    return extra.length ? q + ' ' + extra.join(' ') : q;
+  }
+  window.__pnExpand = expand;
+
+  // ── Press Enter in the header search box → open the full /search/ results page ──
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    var t = e.target;
+    if (!t || !t.classList || !t.classList.contains('md-search__input')) return;
+    e.preventDefault(); e.stopPropagation();
+    var i = location.pathname.indexOf('/search/');
+    var b = i >= 0 ? location.pathname.slice(0, i + 1) : '/';
+    var v = t.value.trim();
+    location.href = b + 'search/' + (v ? '?q=' + encodeURIComponent(v) : '');
+  }, true);
+
+  // ── Mobile: disable search worker entirely, use Bing ──
+  if (isMobile) {
+    if (window.Worker) {
+      var origWorkerMobile = window.Worker;
+      window.Worker = function(url) {
+        if (typeof url === 'string' && url.indexOf('search') !== -1) {
+          return { postMessage: function(){}, terminate: function(){}, onmessage: null };
+        }
+        return new origWorkerMobile(url);
+      };
+    }
+    document.addEventListener('click', function(e) {
+      var el = e.target.closest('label[for="__search"], .md-search__icon, .md-header__button[data-md-component="search"]');
+      if (!el) return;
+      e.preventDefault(); e.stopPropagation();
+      var q = prompt('搜索论文笔记');
+      if (q && q.trim()) {
+        window.open('https://www.bing.com/search?q=site:papernotes.org+' + encodeURIComponent(q.trim()), '_blank');
+      }
+    }, true);
+    return;
+  }
+
+  // ── Desktop: lazy-load search worker (only download index when user opens search) ──
+  if (window.Worker) {
+    var OrigWorker = window.Worker;
+    window.Worker = function(url, opts) {
+      // Non-search workers: create immediately
+      if (typeof url !== 'string' || url.indexOf('search') === -1) {
+        return new OrigWorker(url, opts);
+      }
+
+      // Search worker: create a lazy proxy
+      var realWorker = null;
+      var queued = [];
+      var proxy = {
+        onmessage: null,
+        onerror: null,
+        terminate: function() { if (realWorker) realWorker.terminate(); },
+        postMessage: function(msg) {
+          // Sanitize + bilingual-expand the query before it reaches lunr.
+          if (msg && typeof msg.data === 'string' && msg.data.length > 0 && msg.data.length < 200) {
+            // Strip lunr query-syntax metacharacters. A literal ':' (field
+            // separator), '~' (fuzzy), '^' (boost) or '*' (wildcard) in the raw
+            // text makes lunr throw QueryParseError -> 0 results. This is why
+            // pasting a paper's full title like "Cog-RAG: Cognitive-Inspired ..."
+            // returned "no results": the ':' broke the query parser.
+            var cleaned = msg.data.replace(/[:~^*]/g, ' ').replace(/\s+/g, ' ').trim();
+            msg = Object.assign({}, msg, { data: expand(cleaned) });
+          }
+          if (realWorker) {
+            realWorker.postMessage(msg);
+          } else {
+            queued.push(msg);
+          }
+        },
+        addEventListener: function(type, fn) {
+          if (type === 'message') proxy.onmessage = fn;
+          else if (type === 'error') proxy.onerror = fn;
+        },
+        removeEventListener: function() {}
+      };
+
+      // Materialize the real worker (called once when user opens search)
+      function materialize() {
+        if (realWorker) return;
+        realWorker = new OrigWorker(url, opts);
+        realWorker.onmessage = function(e) {
+          if (typeof proxy.onmessage === 'function') proxy.onmessage(e);
+        };
+        realWorker.onerror = function(e) {
+          if (typeof proxy.onerror === 'function') proxy.onerror(e);
+        };
+        // Flush queued messages
+        for (var i = 0; i < queued.length; i++) realWorker.postMessage(queued[i]);
+        queued = [];
+      }
+
+      // Trigger worker creation when user opens search
+      function onSearchOpen() {
+        materialize();
+        // Clean up listeners after first trigger
+        document.removeEventListener('focusin', onFocusIn, true);
+        var cb = document.getElementById('__search');
+        if (cb) cb.removeEventListener('change', onSearchOpen);
+      }
+
+      function onFocusIn(e) {
+        if (e.target && e.target.classList && e.target.classList.contains('md-search__input')) {
+          onSearchOpen();
+        }
+      }
+
+      // Listen for search input focus or search checkbox toggle
+      document.addEventListener('focusin', onFocusIn, true);
+      var searchCheckbox = document.getElementById('__search');
+      if (searchCheckbox) {
+        searchCheckbox.addEventListener('change', onSearchOpen);
+      }
+
+      return proxy;
+    };
+    window.Worker.prototype = OrigWorker.prototype;
+  }
+})();
+</script>
+
+<!-- Add deep-search fallback link in search results (both mobile and desktop) -->
+<script>
+(function() {
+  // Inject a "全文深度搜索 via Bing" link at the bottom of search results.
+  //
+  // IMPORTANT: we must NOT use a MutationObserver on `.md-search` with
+  // subtree:true and then appendChild into `.md-search-result`, because the
+  // append mutates the observed subtree → triggers the observer again → infinite
+  // loop → tab OOM ("喔唷，崩溃啦 / Out of Memory"). Instead we listen to the
+  // search input's `input` event (which does NOT fire from our own DOM
+  // mutations) and debounce updates to the fallback link.
+  var lastQuery = null;
+  var scheduled = false;
+
+  function updateLink() {
+    scheduled = false;
+    var input = document.querySelector('.md-search__input');
+    var output = document.querySelector('.md-search-result');
+    if (!input || !output) return;
+
+    var query = input.value.trim();
+
+    // Only touch the DOM if query actually changed — avoids churn while user
+    // is typing and prevents redundant re-renders.
+    if (query === lastQuery) return;
+    lastQuery = query;
+
+    var existing = output.querySelector('.deep-search-link');
+    if (!query) {
+      if (existing) existing.remove();
+      return;
+    }
+
+    var encoded = encodeURIComponent(query);
+    var site = 'site:papernotes.org+';
+    var html =
+      '<a href="https://www.bing.com/search?q=' + site + encoded +
+      '" target="_blank" rel="noopener" style="color:var(--md-accent-fg-color);font-size:0.85rem;">' +
+      '🔍 全文深度搜索「' + query.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '」(via Bing)</a>' +
+      '<span style="display:block;font-size:0.75rem;color:var(--md-default-fg-color--light);margin-top:2px;">' +
+      '站内搜索仅匹配标题、标签和关键词，点此搜索全文内容</span>';
+
+    if (existing) {
+      existing.innerHTML = html;
+    } else {
+      var link = document.createElement('div');
+      link.className = 'deep-search-link';
+      link.style.cssText = 'padding:12px 16px;text-align:center;border-top:1px solid var(--md-default-fg-color--lightest);';
+      link.innerHTML = html;
+      output.appendChild(link);
+    }
+  }
+
+  function schedule() {
+    if (scheduled) return;
+    scheduled = true;
+    // Defer to rAF so we merge rapid events and run after Material renders
+    // its own results.
+    (window.requestAnimationFrame || function(fn){setTimeout(fn,16);})(updateLink);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var input = document.querySelector('.md-search__input');
+    if (!input) return;
+    input.addEventListener('input', schedule);
+    input.addEventListener('focus', schedule);
+  });
+})();
+</script>
+
+<!-- Promote near-exact title matches to the top of search results -->
+<script>
+(function() {
+  // Why: lunr (BM25) length-normalization penalizes long titles, so pasting a
+  // paper's FULL title can rank that paper BELOW shorter titles that merely
+  // share one common token (e.g. "hypergraph"). We re-rank the *rendered*
+  // results client-side: when one result's title covers almost all of the
+  // query's words, we move it to the top. We never use a MutationObserver
+  // (it would loop → OOM); we re-apply on the input event with a few short
+  // delayed passes so it survives Material's async re-render.
+  var SEP = /[\s\u200b\-\.\,\!\?\;\:\(\)\[\]\{\}\/\|]+/;
+  function toks(s) {
+    return (s || '').toLowerCase().split(SEP).filter(function(t){ return t.length >= 2; });
+  }
+  function promote() {
+    var input = document.querySelector('.md-search__input');
+    var list = document.querySelector('.md-search-result__list');
+    if (!input || !list) return;
+    var q = input.value.trim();
+    if (q.length < 8) return;                 // only long, title-like queries
+    var qToks = toks(q);
+    if (qToks.length < 3) return;             // leave short keyword searches alone
+    var qSet = {}; qToks.forEach(function(t){ qSet[t] = true; });
+    var items = [].slice.call(list.children).filter(function(el){
+      return el.classList && el.classList.contains('md-search-result__item');
+    });
+    if (items.length < 2) return;
+    var best = null, bestScore = 0;
+    items.forEach(function(it) {
+      var h = it.querySelector('h1, .md-search-result__title');
+      var tToks = toks(h ? h.textContent : '');
+      if (!tToks.length) return;
+      var tSet = {}; tToks.forEach(function(t){ tSet[t] = true; });
+      var hit = 0; qToks.forEach(function(t){ if (tSet[t]) hit++; });
+      var coverage = hit / qToks.length;      // share of query words found in title
+      if (coverage > bestScore) { bestScore = coverage; best = it; }
+    });
+    // Only reorder when the best title clearly IS what the user typed.
+    if (best && bestScore >= 0.8 && best !== list.firstElementChild) {
+      list.insertBefore(best, list.firstElementChild);
+    }
+  }
+  function schedule() {
+    [180, 420, 800].forEach(function(d){ setTimeout(promote, d); });
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    var input = document.querySelector('.md-search__input');
+    if (input) input.addEventListener('input', schedule);
+  });
+})();
+</script>
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#promax-exploring-the-potential-of-llm-derived-profiles-with-distribution-shaping-for-recommender-systems-llm" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+
+<header class="md-header" data-md-component="header" data-nosnippet>
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../../../.." title="RecSys Paper Notes · 推荐系统论文精读库" class="md-header__button md-logo" aria-label="RecSys Paper Notes · 推荐系统论文精读库" data-md-component="logo">
+      
+  <img src="../../../../../assets/papernotes-logo-horizontal.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            RecSys Paper Notes · 推荐系统论文精读库
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              [Paper Note] ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换至深色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换至深色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换至浅色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换至浅色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jbdcia321vw/Paper-Notes" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jbdcia321vw/Paper-Notes
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs" data-nosnippet>
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  🏠 首页总览
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../topics/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  🔬 按推荐细分类别 (16大类)
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../years/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  🗓️ 按会议年份浏览
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  🏛️ 按顶会与顶刊 (22个会刊)
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+  
+    
+    
+    <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" data-nosnippet >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="RecSys Paper Notes · 推荐系统论文精读库" class="md-nav__button md-logo" aria-label="RecSys Paper Notes · 推荐系统论文精读库" data-md-component="logo">
+      
+  <img src="../../../../../assets/papernotes-logo-horizontal.svg" alt="logo">
+
+    </a>
+    RecSys Paper Notes · 推荐系统论文精读库
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jbdcia321vw/Paper-Notes" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jbdcia321vw/Paper-Notes
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏠 首页总览
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../topics/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔬 按推荐细分类别 (16大类)
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🔬 按推荐细分类别 (16大类)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/collaborative_filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🤝 协同过滤与双塔召回
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/graph_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🕸️ 图神经网络与知识图谱推荐
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/self_supervised_denoising/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔄 自监督对比学习与交互去噪
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/sequential_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ⏱️ 序列与会话推荐
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/generative_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ✨ 生成式推荐与离散语义 ID
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/llm_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧠 大语言模型推荐 (LLM4Rec)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/agent_conversational_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🗣️ 对话推荐与智能体仿真
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/multimodal_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧩 多模态推荐与内容理解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/social_group_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    👥 社交与群组推荐
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/cold_start_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ❄️ 冷启动与长尾推荐
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/cross_domain_multi_scenario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🌐 跨域与多场景推荐
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/poi_spatiotemporal_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📍 时空轨迹与 POI 本地生活推荐
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/ctr_feature_interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🎯 CTR/CVR 预估与特征交叉
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/multi_task_reranking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ⚖️ 多任务学习与列表级重排
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/rl_bandit_rec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🎮 强化学习与动态探索推荐
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../topics/debias_fairness_industrial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🛡️ 去偏公平、可信隐私与工业架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../years/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🗓️ 按会议年份浏览
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🗓️ 按会议年份浏览
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../years/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026 年
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ 按顶会与顶刊 (22个会刊)
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ 按顶会与顶刊 (22个会刊)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ SIGIR
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ SIGIR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../RecSys/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ RecSys
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ RecSys
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../RecSys/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../WSDM/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ WSDM
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ WSDM
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../WSDM/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../CIKM/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ CIKM
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ CIKM
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../CIKM/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../ECIR/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ ECIR
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ ECIR
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../ECIR/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../SIGIR-AP/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ SIGIR-AP
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_7" id="__nav_4_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ SIGIR-AP
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../SIGIR-AP/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../KDD/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ KDD
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_8" id="__nav_4_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ KDD
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../KDD/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../WWW/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ WWW (TheWebConf)
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_9" id="__nav_4_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ WWW (TheWebConf)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../WWW/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../ACM_MM/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ ACM MM
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_10" id="__nav_4_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ ACM MM
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../ACM_MM/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../ICDE/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ ICDE
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_11" id="__nav_4_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ ICDE
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../ICDE/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../ICDM/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ ICDM
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_12" id="__nav_4_12_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ ICDM
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../ICDM/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_13" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../DASFAA/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ DASFAA
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_13" id="__nav_4_13_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ DASFAA
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../DASFAA/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_14" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../AAAI/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ AAAI (RecSys Track)
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_14" id="__nav_4_14_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ AAAI (RecSys Track)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../AAAI/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_15" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../IJCAI/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ IJCAI (RecSys Track)
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_15" id="__nav_4_15_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ IJCAI (RecSys Track)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../IJCAI/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_16" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../ACL_EMNLP/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ ACL / EMNLP (RecSys & CRS)
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_16" id="__nav_4_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ ACL / EMNLP (RecSys & CRS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../ACL_EMNLP/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_17" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../ICLR_NeurIPS_ICML/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🏛️ ICLR / NeurIPS / ICML (RecSys)
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_17" id="__nav_4_17_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🏛️ ICLR / NeurIPS / ICML (RecSys)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../ICLR_NeurIPS_ICML/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_18" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../TOIS/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 ACM TOIS
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_18" id="__nav_4_18_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    📖 ACM TOIS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TOIS/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_19" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../TKDE/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 IEEE TKDE
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_19" id="__nav_4_19_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_19_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_19">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    📖 IEEE TKDE
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TKDE/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_20" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../TORS/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 ACM TORS
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_20" id="__nav_4_20_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_20_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_20">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    📖 ACM TORS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TORS/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_21" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../TMM/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 IEEE TMM
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_21" id="__nav_4_21_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_21_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_21">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    📖 IEEE TMM
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TMM/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_22" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../TKDD/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 ACM TKDD
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_22" id="__nav_4_22_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_22_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_22">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    📖 ACM TKDD
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TKDD/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_23" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../TWEB/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 ACM TWEB
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_23" id="__nav_4_23_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_23_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_23">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    📖 ACM TWEB
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../TWEB/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+        </div>
+      </div>
+    </div>
+  
+  
+    
+    
+    <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" data-nosnippet >
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TL;DR (核心速览)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#background-motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Background &amp; Motivation (背景与动机)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#problem-formulation-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problem Formulation &amp; Method (问题定义与方法架构)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-notations-input-representations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-overall-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 整体流水线 (Overall Architecture)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-key-designs-formulations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experimental-setup-evaluation-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-experimental-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Experimental Results (核心实验结果)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-main-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 主实验对比 (Main Results)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-ablation-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 消融实验与控制变量分析 (Ablation Study)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#highlights-limitations-critiques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+
+  
+  
+  
+  
+<aside class="paper-seo-summary" aria-label="论文摘要">
+  <p class="paper-seo-summary__desc">[SIGIR 2026][大语言模型推荐] 将 LLM 画像视为检索信号，用监督/自监督双重分布塑形引导基座推荐模型，全库排序下 NDCG@10 最高提升 8.44%</p>
+  
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 大语言模型推荐 · 召回 · LLM 用户画像 · 分布塑形 · 稠密检索</p>
+  
+</aside>
+  
+
+
+                  
+
+  <nav class="md-tags" >
+    
+      
+      
+      
+      
+        <span class="md-tag">SIGIR 2026</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">大语言模型推荐</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">召回</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">LLM 用户画像</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">分布塑形</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">稠密检索</span>
+      
+    
+  </nav>
+
+
+  
+  
+
+
+<h1 id="promax-exploring-the-potential-of-llm-derived-profiles-with-distribution-shaping-for-recommender-systems-llm">ProMax: Exploring the Potential of LLM-derived Profiles with Distribution Shaping for Recommender Systems (探索 LLM 派生画像结合分布塑形在推荐系统中的潜力)</h1>
+<ul>
+<li><strong>会议/期刊</strong>: SIGIR 2026</li>
+<li><strong>推荐链路定位</strong>: 召回 (Retrieval) — 画像引导的候选检索 + 基座模型训练增强</li>
+<li><strong>研究方向</strong>: 大语言模型推荐 (LLM4Rec) / 协同过滤与双塔召回</li>
+<li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2604.26231v1">https://arxiv.org/abs/2604.26231v1</a></li>
+<li><strong>开源代码</strong>: <a href="https://github.com/BlueGhostYi/ProRec">https://github.com/BlueGhostYi/ProRec</a></li>
+</ul>
+<h2 id="tldr">TL;DR (核心速览)</h2>
+<p>针对 LLM 派生用户/物品画像"如何真正增强推荐"这一未解问题，ProMax 从检索视角出发，先用稠密检索验证画像蕴含强协同信号，再提出监督分布塑形（以画像分布为软标签、熵加权）与自监督分布塑形（原始交互 vs. 画像检索增强交互的双向一致性）两个即插即用损失，不改变基座架构。在 Amazon-Book/Yelp/Steam 三数据集、全库排序协议下，集成 LightGCN 后 NDCG@10 相对最强基线 ProEx 分别提升 8.44%/4.75%/3.31%。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<ul>
+<li><strong>领域背景与主流范式</strong>: 通用推荐（general recommendation）主流范式是基于隐式反馈的 ID 嵌入协同过滤（MF、LR-GCCF、LightGCN、SimGCL），在统一隐空间中学习用户/物品表征，推理仅需一次内积或浅层投影。为缓解交互稀疏，近年兴起"LLM 作为语义增强器"路线：用 LLM 从物品标题、描述、评论中抽取结构化画像，再经文本编码器转为向量注入推荐模型（RLMRec、KAR、IRLLRec、ProEx 等）。</li>
+<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
+<li><strong>机制不明</strong>：画像为何能增强推荐缺乏解释，多数工作默认"拼接即有用"，未分析画像在特征空间中的作用方式。</li>
+<li><strong>非线性对齐引入语义损失</strong>：RLMRec 等用 MLP 强制画像维度与 ID 嵌入对齐，IRLLRec 构造多模态意图，ProEx 构造多份画像——额外人工设计与训练开销，且语言空间与推荐空间缺乏天然对齐，融合时引入语义不一致与噪声。</li>
+<li><strong>画像仅作辅助特征被"边缘化"</strong>：把高维抽象画像降格为外围信号，削弱其跨物品泛化性与抽象性；而直接用画像替换 ID 嵌入（AlphaRec）又会丢失细粒度区分能力（画像说"喜欢科幻"，但无法区分"哪一部科幻"），且画像冗余噪声会污染训练。</li>
+<li><strong>核心挑战 (Key Challenge)</strong>: 画像来自预训练语言空间，ID 嵌入来自推荐场景塑造的协同空间，二者联系天然薄弱；简单拼接/加深网络/常规对比学习都无法回答"画像到底以何种形式、在何处起作用"。</li>
+<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者用 Pilot Study（图 2(a)）在 Amazon-Book 上可视化画像表征分布，发现：(i) 目标用户与其相似用户、交互物品在画像空间中高度聚集，说明 LLM 画像<strong>本身蕴含显著协同信号</strong>；(ii) 用户画像与物品画像在特征空间中被清晰分离（红色虚线），说明二者由不同管线生成、语义信号不同。由此得出结论：画像无需被"塞回"模型二次训练，而应作为<strong>检索信号与分布级监督</strong>来引导基座模型。</li>
+</ul>
+<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
+<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
+<ul>
+<li>用户集 <span class="arithmatex">\(\mathcal{U}=\{u_1,\dots,u_M\}\)</span>（<span class="arithmatex">\(M\)</span> 用户），物品集 <span class="arithmatex">\(\mathcal{I}=\{i_1,\dots,i_N\}\)</span>（<span class="arithmatex">\(N\)</span> 物品）。</li>
+<li>用户 <span class="arithmatex">\(u\)</span> 的历史交互向量 <span class="arithmatex">\(\mathbf{x}_u\in\mathbb{R}^{1\times N}\)</span>，交互过则 <span class="arithmatex">\(x_{ui}=1.0\)</span>。</li>
+<li>基座模型 <span class="arithmatex">\(f_\Theta\)</span> 学习用户/物品嵌入 <span class="arithmatex">\(\mathbf{z}_u,\mathbf{z}_i\in\mathbb{R}^{1\times d}\)</span>（默认 <span class="arithmatex">\(d=32\)</span>），输出偏好分 <span class="arithmatex">\(p_\Theta(j|u)\)</span>。</li>
+<li>LLM 画像：物品侧画像 <span class="arithmatex">\(P_i\)</span>（由标题、描述、采样评论生成），用户侧画像 <span class="arithmatex">\(P_u\)</span>（聚合物品-用户关系生成）；文本编码器 <span class="arithmatex">\(f_{\text{text}}\)</span> 将画像转为语义表征 <span class="arithmatex">\(\mathbf{c}_u=f_{\text{text}}(P_u)\in\mathbb{R}^{1\times d_s}\)</span>，<span class="arithmatex">\(d_s\gg d\)</span>。</li>
+<li>降维后画像表征 <span class="arithmatex">\(\tilde{\mathbf{c}}_u\in\mathbb{R}^{1\times\kappa}\)</span>，实验中 <span class="arithmatex">\(\kappa=d=32\)</span>。</li>
+</ul>
+<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
+<p>数据流：LLM 生成画像 → 文本编码 → PCA 降维 → 用户侧/物品侧稠密检索 → 稀疏度水平偏移控制预算 → LLM 重排 → 构造增强交互集 <span class="arithmatex">\(\mathcal{M}'_u\)</span> → 基座模型训练时叠加两个分布塑形损失。</p>
+<pre class="mermaid"><code>flowchart TD
+    A["输入层: 物品标题/描述/评论 + 用户历史交互"] --&gt; B["LLM 画像生成 P_i, P_u"]
+    B --&gt; C["文本编码 + PCA 降维至 κ 维"]
+    C --&gt; D["用户侧稠密检索: Top-K 相似用户"]
+    D --&gt; E["物品侧稠密检索: 候选物品集 C_u"]
+    E --&gt; F["稀疏度水平偏移: 确定每用户预算 K_u"]
+    F --&gt; G["LLM 重排 (GPT-4o-mini) 得 R_u^LLM"]
+    G --&gt; H["增强交互集 M'_u = M_u ∪ R_u^LLM"]
+    H --&gt; I["基座推荐模型 f_Θ (LightGCN 等)"]
+    C --&gt; J["画像分布 p_LLM(i|u)"]
+    I --&gt; K["监督分布塑形 L_SDR + 自监督分布塑形 L_S2DR"]
+    J --&gt; K
+    K --&gt; L["总损失 L_ProMax = L_rec + λ1·L_SDR + λ2·L_S2DR"]</code></pre>
+<figure class="paper-figure">
+  <img alt="图1：所提出的ProMax的信息流。" src="../../../../../assets/papers/2604.26231v1/figure_1.png" /><figcaption>图1：所提出的ProMax的信息流。</figcaption>
+</figure>
+<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
+<p><strong>(1) 画像降维（PCA 压缩）</strong>：对全体用户画像求均值 <span class="arithmatex">\(\boldsymbol{\mu}\)</span> 与协方差 <span class="arithmatex">\(\boldsymbol{\Sigma}=\mathbf{V}\text{diag}(\boldsymbol{\Lambda})\mathbf{V}^\top\)</span>，取前 <span class="arithmatex">\(\kappa\)</span> 个主成分 <span class="arithmatex">\(\{\mathbf{v}_1,\dots,\mathbf{v}_\kappa\}\)</span>，中心化后投影：</p>
+<div class="arithmatex">\[\tilde{\mathbf{c}}_u=\big(\mathbf{v}_1^\top(\mathbf{c}_u-\boldsymbol{\mu}),\dots,\mathbf{v}_\kappa^\top(\mathbf{c}_u-\boldsymbol{\mu})\big)\in\mathbb{R}^{1\times\kappa}.\]</div>
+<p>物理直觉：高维语义表征含大量弱语义冗余维度，PCA 在保留语义信息的同时把维度压到与 ID 嵌入一致（<span class="arithmatex">\(\kappa=d\)</span>），使后续检索与分布计算开销可忽略。</p>
+<p><strong>(2) 画像引导候选检索（双阶段）</strong>：
+- 用户侧：<span class="arithmatex">\(\mathcal{R}^{\text{user}}_u=\text{TopK}\big(\{s(\tilde{\mathbf{c}}_u,\tilde{\mathbf{c}}_v)\mid v\in\mathcal{U}\setminus\{u\}\}\big)\)</span>，<span class="arithmatex">\(s\)</span> 为余弦相似度，<span class="arithmatex">\(K=100\)</span>。
+- 物品侧：统计相似用户交互过、目标用户未交互的物品计数 <span class="arithmatex">\(\text{count}_{\mathcal{R}^{\text{user}}_u}(i)\)</span>，按 item-based CF 思路排序：</p>
+<div class="arithmatex">\[\mathcal{R}^{\text{item}}_u=\text{Rank}\Big(\Big\{\tfrac{1}{\sqrt{\text{count}_{\mathcal{R}^{\text{user}}_u}(i)}}\,s(\tilde{\mathbf{c}}^*_u,\tilde{\mathbf{c}}_i)\ \Big|\ i\in\mathcal{C}_u\Big\}\Big),\]</div>
+<p>其中 <span class="arithmatex">\(\tilde{\mathbf{c}}^*_u=\bigoplus_{j\in\mathcal{M}_u}\tilde{\mathbf{c}}_j/|\mathcal{M}_u|\)</span> 为交互物品画像的均值池化，<span class="arithmatex">\(\tfrac{1}{\sqrt{\text{count}}}\)</span> 用于抑制流行度偏置。统计仅限相似用户集内，避免全局偏置。</p>
+<p><strong>(3) 稀疏度水平偏移 (Sparsity Level Shift)</strong>：以全体用户交互数的四分位数 <span class="arithmatex">\(\{Q_{0.25},Q_{0.5},Q_{0.75}\}\)</span> 将用户分为最稀疏 <span class="arithmatex">\(U_1\)</span>、稀疏 <span class="arithmatex">\(U_2\)</span>、常规 <span class="arithmatex">\(U_3\)</span>、活跃 <span class="arithmatex">\(U_4\)</span> 四组，令</p>
+<div class="arithmatex">\[K_u=\max\big(0,\ T(|\mathcal{M}_u|)-|\mathcal{M}_u|+1\big),\quad T(|\mathcal{M}_u|)=\min\{Q\in\{Q_{0.25},Q_{0.5},Q_{0.75}\}:|\mathcal{M}_u|&lt;Q\}.\]</div>
+<p>即把每个用户的交互数抬升到"下一档"，避免固定预算对长尾用户过度主导、对头部用户几乎无影响。随后用 LLM（GPT-4o-mini）对 <span class="arithmatex">\(\mathcal{R}^{\text{item}}_u\)</span> 重排得 <span class="arithmatex">\(\mathcal{R}^{\text{LLM}}_u\)</span>（图 3 给出指令模板与输入输出示例），最终 <span class="arithmatex">\(\mathcal{M}'_u=\{i\mid i\in\mathcal{M}_u\ \text{or}\ i\in\mathcal{R}^{\text{LLM}}_u\}\)</span>。LLM 重排既做细粒度语义过滤、缓解曝光偏置，又以检索集为候选池规避幻觉。</p>
+<p><figure class="paper-figure" markdown="span">
+  <img alt="图2：(a) 一个采样目标用户的画像表示分布，及其相似用户和交互物品；(b) 在Amazon-Book数据集上应用稀疏度水平偏移前后的分位数分布比较。" src="../../../../../assets/papers/2604.26231v1/figure_2.png" /><figcaption>图2：(a) 一个采样目标用户的画像表示分布，及其相似用户和交互物品；(b) 在Amazon-Book数据集上应用稀疏度水平偏移前后的分位数分布比较。</figcaption>
+</figure></p>
+<figure class="paper-figure">
+  <img alt="图3：基于LLM的重排序过程的详细指令，以及输入和输出示例。" src="../../../../../assets/papers/2604.26231v1/figure_3.png" /><figcaption>图3：基于LLM的重排序过程的详细指令，以及输入和输出示例。</figcaption>
+</figure>
+<p><strong>(4) 双重分布塑形</strong>：定义分布 <span class="arithmatex">\(p_*(i|u)=\text{Softmax}_{i\in\mathcal{I}}\big(s(\mathbf{e}_u,\mathbf{e}_i)/\tau\big)\)</span>，<span class="arithmatex">\(\tau=0.2\)</span>；对基座模型 <span class="arithmatex">\(\mathbf{e}=\mathbf{z}\)</span>，对画像 <span class="arithmatex">\(\mathbf{e}=\tilde{\mathbf{c}}\)</span>。
+- <strong>监督分布塑形 (SDR)</strong>：以画像分布为软标签（stop-gradient），熵加权：</p>
+<div class="arithmatex">\[\mathcal{L}_{\text{SDR}}=-\frac{1}{|\mathcal{U}_B|}\sum_{u\in\mathcal{U}_B}w(u)\sum_{i\in\mathcal{I}}\text{sg}\big[p_{\text{LLM}}(i|u)\big]\log p_\Theta(i|u),\]</div>
+<p>其中 <span class="arithmatex">\(w(u)=1-\hat{H}(u)\)</span>，<span class="arithmatex">\(\hat{H}(u)=H(u)/\log|\mathcal{I}|\)</span>，<span class="arithmatex">\(H(u)=-\sum_i p_{\text{LLM}}(i|u)\log p_{\text{LLM}}(i|u)\)</span>。直觉：画像分布越集中（熵越低）说明 LLM 越确信，监督权重越大；该损失推动模型超越对已观测交互的记忆，对未观测物品给出偏好分布。
+- <strong>自监督分布塑形 (S2DR)</strong>：对同一用户，原始交互集 <span class="arithmatex">\(\mathcal{M}_u\)</span> 与增强集 <span class="arithmatex">\(\mathcal{M}'_u\)</span> 产生语义不同的表征，强制双向一致性：</p>
+<div class="arithmatex">\[\mathcal{L}_{\text{S2DR}}=-\frac{1}{2|\mathcal{B}|}\sum_{\langle u,i\rangle\in\mathcal{B}}\sum_{o\in\{\mathcal{M}_u,\mathcal{M}'_u\}}\big[\log p_\Theta(i^{\bar{o}}|u^o)\big],\]</div>
+<p>其中 <span class="arithmatex">\(u^o,i^o\)</span> 为交互集 <span class="arithmatex">\(o\)</span> 输入模型所得的用户/物品语义源，<span class="arithmatex">\(\bar{o}\)</span> 为相反视图。此外还引入同质节点（用户-用户、物品-物品）间的对比对齐。该模块缓解对原始画像的过度依赖，抵御 LLM 噪声与幻觉。</p>
+<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
+<ul>
+<li><strong>损失函数</strong>：<span class="arithmatex">\(\mathcal{L}_{\text{ProMax}}=\mathcal{L}_{\text{rec}}+\lambda_1\cdot\mathcal{L}_{\text{SDR}}+\lambda_2\cdot\mathcal{L}_{\text{S2DR}}\)</span>，<span class="arithmatex">\(\mathcal{L}_{\text{rec}}\)</span> 为基座成对排序损失（BPR 类）。<span class="arithmatex">\(\lambda_1\in[0,2]\)</span>、<span class="arithmatex">\(\lambda_2\in[0,0.2]\)</span>，最优值：Amazon-Book 上 <span class="arithmatex">\(\lambda_1=1.5,\lambda_2=0.05\)</span>；Yelp/Steam 上 <span class="arithmatex">\(\lambda_1=0.5,\lambda_2=0.1\)</span>。</li>
+<li><strong>训练负采样策略</strong>：原文未显式报告负采样细节，仅说明"交互过的物品为正样本，其余为负样本"，沿用基座模型（LightGCN/BPR）默认设置；SDR 的软标签覆盖全物品集，S2DR 为批内双向视图对比，均非显式负采样。</li>
+<li><strong>时间与空间复杂度</strong>：<span class="arithmatex">\(\mathcal{L}_{\text{SDR}}\)</span> 为 <span class="arithmatex">\(O(|\mathcal{B}|N\max(d,\kappa))\)</span>，<span class="arithmatex">\(\mathcal{L}_{\text{S2DR}}\)</span> 为 <span class="arithmatex">\(O(|\mathcal{B}|^2 d)\)</span>，均低于基座编码开销。画像生成、PCA 降维、稠密检索、LLM 重排全部在预处理阶段完成，与推荐模型训练解耦；因 <span class="arithmatex">\(\kappa\ll d_s\)</span>，检索耗时在实际中可忽略。图 6 显示 ProMax 训练耗时高于基座但低于 ProEx，性能最优。</li>
+</ul>
+<h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
+<ul>
+<li><strong>数据集统计与预处理</strong>: 三个极稀疏数据集，过滤评分低于 3.0 的交互，交互过即正样本：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">数据集 (Dataset)</th>
+<th style="text-align: center;">用户数 (#Users)</th>
+<th style="text-align: center;">物品数 (#Items)</th>
+<th style="text-align: center;">交互数 (#Interactions)</th>
+<th style="text-align: center;">稀疏度 (Sparsity)</th>
+<th style="text-align: left;">模态/辅助特征说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Amazon-Book</td>
+<td style="text-align: center;">11,000</td>
+<td style="text-align: center;">9,332</td>
+<td style="text-align: center;">200,860</td>
+<td style="text-align: center;">99.80%</td>
+<td style="text-align: left;">书籍标题/描述/用户评论，画像来自 RLMRec</td>
+</tr>
+<tr>
+<td style="text-align: left;">Yelp</td>
+<td style="text-align: center;">11,091</td>
+<td style="text-align: center;">11,010</td>
+<td style="text-align: center;">277,535</td>
+<td style="text-align: center;">99.77%</td>
+<td style="text-align: left;">商户评论文本</td>
+</tr>
+<tr>
+<td style="text-align: left;">Steam</td>
+<td style="text-align: center;">23,310</td>
+<td style="text-align: center;">5,237</td>
+<td style="text-align: center;">525,922</td>
+<td style="text-align: center;">99.57%</td>
+<td style="text-align: left;">游戏描述与评论文本</td>
+</tr>
+</tbody>
+</table>
+<figure class="paper-figure">
+  <img alt="表1：数据集统计信息。" src="../../../../../assets/papers/2604.26231v1/table_1.png" /><figcaption>表1：数据集统计信息。</figcaption>
+</figure>
+<ul>
+<li><strong>数据划分方式 (Splitting Strategy)</strong>: 按 <strong>3:1:1 比例划分</strong>训练/验证/测试集（非时间戳切分，原文未说明是否按全局时间排序，存在一定未来信息泄露风险，属该基准的常见设定）。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: <strong>Full-Ranking（全库排序）</strong>，对每个用户对全量未交互物品打分，无负采样偏差。</li>
+<li><strong>评价指标与显著性检验</strong>: Recall@10/20、NDCG@10/20；所有模型嵌入维度 <span class="arithmatex">\(d=32\)</span>、LightGCN 三层图卷积、无 dropout、学习率 1.0e-3、批大小 4096、Xavier 初始化、Adam 优化；10 个随机种子取平均；采用<strong>双尾配对 <span class="arithmatex">\(t\)</span> 检验</strong>，表 2 报告 <span class="arithmatex">\(p\)</span> 值（最低至 <span class="arithmatex">\(9.6\times10^{-9}\)</span>，全部远小于 0.05）。</li>
+</ul>
+<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
+<p>以 LightGCN 为统一基座，对比 9 个 LLM 增强基线（KAR、LLMRec、CARec、RLMRec-C/G、AlphaRec/AlphaRec+、LLMESR、AlphaFuse、IRLLRec、ProEx）：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">数据集</th>
+<th style="text-align: left;">指标</th>
+<th style="text-align: center;">基座 LightGCN</th>
+<th style="text-align: center;">最强基线 ProEx</th>
+<th style="text-align: center;">本文 ProMax</th>
+<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;"><span class="arithmatex">\(p\)</span> 值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Amazon-Book</td>
+<td style="text-align: left;">R@10 / N@10</td>
+<td style="text-align: center;">0.0915 / 0.0694</td>
+<td style="text-align: center;">0.1008 / 0.0770</td>
+<td style="text-align: center;"><strong>0.1079 / 0.0835</strong></td>
+<td style="text-align: center;">+7.04% / +8.44%</td>
+<td style="text-align: center;">3.6e-7 / 9.6e-9</td>
+</tr>
+<tr>
+<td style="text-align: left;">Amazon-Book</td>
+<td style="text-align: left;">R@20 / N@20</td>
+<td style="text-align: center;">0.1411 / 0.0856</td>
+<td style="text-align: center;">0.1533 / 0.0940</td>
+<td style="text-align: center;"><strong>0.1603 / 0.1006</strong></td>
+<td style="text-align: center;">+4.57% / +7.02%</td>
+<td style="text-align: center;">2.2e-7 / 8.0e-9</td>
+</tr>
+<tr>
+<td style="text-align: left;">Yelp</td>
+<td style="text-align: left;">R@10 / N@10</td>
+<td style="text-align: center;">0.0706 / 0.0580</td>
+<td style="text-align: center;">0.0800 / 0.0653</td>
+<td style="text-align: center;"><strong>0.0826 / 0.0684</strong></td>
+<td style="text-align: center;">+3.25% / +4.75%</td>
+<td style="text-align: center;">1.2e-5 / 4.3e-8</td>
+</tr>
+<tr>
+<td style="text-align: left;">Yelp</td>
+<td style="text-align: left;">R@20 / N@20</td>
+<td style="text-align: center;">0.1157 / 0.0733</td>
+<td style="text-align: center;">0.1308 / 0.0826</td>
+<td style="text-align: center;"><strong>0.1338 / 0.0858</strong></td>
+<td style="text-align: center;">+2.29% / +3.87%</td>
+<td style="text-align: center;">9.3e-8 / 5.9e-7</td>
+</tr>
+<tr>
+<td style="text-align: left;">Steam</td>
+<td style="text-align: left;">R@10 / N@10</td>
+<td style="text-align: center;">0.0852 / 0.0687</td>
+<td style="text-align: center;">0.0937 / 0.0756</td>
+<td style="text-align: center;"><strong>0.0965 / 0.0781</strong></td>
+<td style="text-align: center;">+2.99% / +3.31%</td>
+<td style="text-align: center;">1.3e-7 / 1.9e-8</td>
+</tr>
+<tr>
+<td style="text-align: left;">Steam</td>
+<td style="text-align: left;">R@20 / N@20</td>
+<td style="text-align: center;">0.1348 / 0.0855</td>
+<td style="text-align: center;">0.1473 / 0.0939</td>
+<td style="text-align: center;"><strong>0.1500 / 0.0964</strong></td>
+<td style="text-align: center;">+1.83% / +2.66%</td>
+<td style="text-align: center;">3.3e-7 / 2.1e-8</td>
+</tr>
+</tbody>
+</table>
+<figure class="paper-figure">
+  <img alt="表2：在Amazon-Book、Yelp和Steam数据集上关于Recall@N（缩写为R@N）和NDCG@N（缩写为N@N）的总体性能比较，其中N∈[10, 20]。每个数据集和指标上表现最佳的模型以粗体突出显示。'Improv.%'表示ProMax相对于最佳基线基于双尾配对t检验的相对改进。" src="../../../../../assets/papers/2604.26231v1/table_2.png" /><figcaption>表2：在Amazon-Book、Yelp和Steam数据集上关于Recall@N（缩写为R@N）和NDCG@N（缩写为N@N）的总体性能比较，其中N∈[10, 20]。每个数据集和指标上表现最佳的模型以粗体突出显示。'Improv.%'表示ProMax相对于最佳基线基于双尾配对t检验的相对改进。</figcaption>
+</figure>
+<p><strong>模型无关性验证</strong>（图 4）：ProMax 集成到 MF、LR-GCCF、LightGCN、SimGCL 四个基座，所有数据集全部指标均有提升。以 Recall@20 为例，LightGCN 上分别提升 13.3%（Amazon-Book）、15.64%（Yelp）、12.28%（Steam）；GCCF 受益次之（原文归因于其冗余特征变换被额外监督缓解）；SimGCL 提升最小（其自监督信号已丰富，ProMax 更多是互补）。</p>
+<figure class="paper-figure">
+  <img alt="图4：ProMax与基础模型MF [22]、LR-GCCF（缩写为GCCF）[5]、LightGCN（缩写为LGCN）[10]和SimGCL [42]在Amazon-Book、Yelp和Steam数据集上关于Recall@10/20和NDCG@10/20的性能比较。" src="../../../../../assets/papers/2604.26231v1/figure_4.png" /><figcaption>图4：ProMax与基础模型MF [22]、LR-GCCF（缩写为GCCF）[5]、LightGCN（缩写为LGCN）[10]和SimGCL [42]在Amazon-Book、Yelp和Steam数据集上关于Recall@10/20和NDCG@10/20的性能比较。</figcaption>
+</figure>
+<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
+<p>三个变体：V1 移除自监督分布塑形（式 14）；V2 移除监督分布塑形（式 12）；V3 用原始候选集 <span class="arithmatex">\(\mathcal{R}^{\text{item}}_u\)</span> 替换 LLM 重排集 <span class="arithmatex">\(\mathcal{R}^{\text{LLM}}_u\)</span>（同样施加稀疏度偏移以保证公平）。</p>
+<ul>
+<li>所有变体均显著优于基座，说明核心组件有效；相对 ProMax 均有不同程度下降，说明两个分布塑形缺一不可——V1 仅依赖原始画像，V2 缺失 LLM 画像的直接引导。</li>
+<li>V3 略逊于 ProMax，验证 LLM 细粒度语义重排的必要性与有效性（提升幅度较小，属"锦上添花"）。</li>
+<li>原文未报告参数量对齐或图度数匹配的额外控制变量消融。</li>
+</ul>
+<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
+<ul>
+<li><strong>交互频次分桶</strong>（图 5）：按四分位分 <span class="arithmatex">\(U_1\)</span>（最稀疏）至 <span class="arithmatex">\(U_4\)</span>（活跃）四组，ProMax 在<strong>所有用户组</strong>均优于四个基座，且对低活跃组提升尤为明显；<strong>常规用户组 <span class="arithmatex">\(U_3\)</span> 提升最大</strong>——因稀疏度偏移后 <span class="arithmatex">\(U_3\)</span> 获得最多潜在交互，候选集显著扩充；活跃用户 <span class="arithmatex">\(U_4\)</span> 因交互已充足几乎不受影响。这直接验证了稀疏度水平偏移的设计动机。</li>
+<li><strong>超参敏感度</strong>（图 8）：<span class="arithmatex">\(\lambda_1\)</span> 最优值 Amazon-Book 1.5、Yelp/Steam 0.5；<span class="arithmatex">\(\lambda_2\)</span> 最优值 0.05/0.1/0.1。Amazon-Book 趋势与其他两数据集不同（归因于数据分布差异），但 ProMax 对两超参整体鲁棒，未精确取到最优组合时性能仍稳定。</li>
+<li><strong>效率对比</strong>（图 6）：基座 LightGCN 训练耗时最低但性能最弱；RLMRec 中等开销、明显增益；ProEx 性能更高但耗时显著增加（多画像策略）；ProMax 在三数据集上性能最优，额外耗时相对基座属"适度"范围。</li>
+<li><strong>线上 A/B 测试</strong>: 原文未报告，仅含离线实验。</li>
+</ul>
+<figure class="paper-figure">
+  <img alt="图5：ProMax和四个基础模型（MF、GCCF、LightGCN和SimGCL）在(a) Amazon-Book和(b) Yelp数据集上不同交互稀疏度水平下的性能。" src="../../../../../assets/papers/2604.26231v1/figure_5.png" /><figcaption>图5：ProMax和四个基础模型（MF、GCCF、LightGCN和SimGCL）在(a) Amazon-Book和(b) Yelp数据集上不同交互稀疏度水平下的性能。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="图6：ProMax与不同方法在平均运行时间（左y轴，越低越好）和推荐性能（右y轴，越高越好）方面的比较。" src="../../../../../assets/papers/2604.26231v1/figure_6.png" /><figcaption>图6：ProMax与不同方法在平均运行时间（左y轴，越低越好）和推荐性能（右y轴，越高越好）方面的比较。</figcaption>
+</figure>
+<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
+<ul>
+<li><strong>核心亮点与可迁移性</strong>:</li>
+<li><strong>视角转换</strong>：把 LLM 画像从"待融合的特征"重新定义为"检索信号 + 分布级软监督"，绕开语言空间与协同空间的强制对齐难题，无需额外 MLP/adapter，架构零改动、即插即用。</li>
+<li><strong>熵加权软标签</strong>：用画像分布熵 <span class="arithmatex">\(w(u)=1-\hat{H}(u)\)</span> 自适应校准监督强度，是对 LLM 不确定性的一种轻量、可解释的利用方式，可迁移到任何"外部软标签蒸馏"场景。</li>
+<li><strong>稀疏度水平偏移</strong>：按分位数把用户交互抬升到下一档，兼顾长尾扶持与头部不扰动，是一个简洁且可复用的数据增强预算分配策略。</li>
+<li><strong>双向一致性自监督</strong>：原始视图与画像检索增强视图互为监督，天然缓解 LLM 幻觉噪声，思路可迁移到其他"外部知识增强"的自监督框架。</li>
+<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
+<li><strong>评估协议</strong>：3:1:1 随机划分而非全局时间戳切分，存在未来信息穿越风险；且仅三个中等规模公开数据集，缺少工业级大规模验证与线上 A/B。</li>
+<li><strong>LLM 依赖与成本</strong>：画像生成 + GPT-4o-mini 重排均为预处理阶段的外部 API 调用，论文未报告 token 成本、重排延迟与失败率；LLM 版本更替会带来画像分布漂移，可复现性受外部服务影响。</li>
+<li><strong>负采样与损失细节缺失</strong>：<span class="arithmatex">\(\mathcal{L}_{\text{rec}}\)</span> 的具体形式、批内负采样方式未明确交代；S2DR 的批内双向对比在 <span class="arithmatex">\(|\mathcal{B}|=4096\)</span> 下的实际显存开销未报告。</li>
+<li><strong>提升幅度递减</strong>：Steam 上相对 ProEx 的 NDCG@10 提升仅 3.31%，且 V3 消融显示 LLM 重排贡献有限，核心增益主要来自两个分布塑形损失，LLM 重排的边际价值需更细粒度论证。</li>
+<li><strong>画像质量上限</strong>：方法效果受制于初始画像质量（沿用 RLMRec 画像），若画像本身噪声大，熵加权只能缓解而非根治；论文未做画像质量劣化的鲁棒性压力测试。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ — 检索视角重释画像 + 双重分布塑形，思路简洁且有洞察，但组件（软标签蒸馏、一致性正则、分位数预算）均为已有技术的巧妙组合。</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ — 全库排序、10 种子、配对 <span class="arithmatex">\(t\)</span> 检验、9 个 LLM 基线 + 4 个基座模型无关性验证、稀疏度分桶充分；扣分于随机划分与缺少线上验证。</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ — 公式推导清晰、算法伪代码完整、动机图（图 2）直观；部分符号（如式 4 中 <span class="arithmatex">\(\mathbf{v}_\kappa\)</span> 重复出现）存在笔误，负采样细节略欠。</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ — 即插即用、预处理与训练解耦、代码已开源；但依赖 LLM API 的预处理成本与画像漂移是落地主要顾虑。</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        
+<footer class="md-footer" data-nosnippet>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+
+      <script src="../../../../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../../../../javascripts/mathjax.js"></script>
+      
+        <script src="../../../../../javascripts/search-page.js"></script>
+      
+        <script src="../../../../../javascripts/title-link.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+
+
+  </body>
+</html>
