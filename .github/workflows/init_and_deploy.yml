@@ -1,4 +1,4 @@
-name: Initialize RecSys Repo & Deploy MkDocs
+name: Build & Deploy RecSys Paper Notes
 
 on:
   push:
@@ -7,22 +7,26 @@ on:
   workflow_dispatch:
     inputs:
       clean_legacy_papers:
-        description: "是否清空原仓库 2.3 万篇 CV/NLP 论文并初始化推荐系统目录"
+        description: "是否迁移旧目录结构并删除示例笔记（仅首次初始化时勾选）"
         required: false
-        default: "true"
-      arxiv_query:
-        description: "可选：自动从 arXiv 抓取并生成推荐论文解读的关键词（需配置 LLM_API_KEY Secret）"
+        default: "false"
+      papers_csv:
+        description: "可选：策展名单 CSV 路径（如 data/papers/SIGIR2026.csv，需配置 LLM_API_KEY Secret）"
         required: false
         default: ""
-      target_venue:
-        description: "目标归档会议/期刊目录（如 SIGIR2026, RecSys2026, TOIS2026）"
+      limit:
+        description: "每个 CSV 最多处理前 N 篇（0 表示全部）"
         required: false
-        default: "SIGIR2026"
+        default: "0"
 
 permissions:
   contents: write
   pages: write
   id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
@@ -30,6 +34,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -37,38 +43,34 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: |
-          pip install mkdocs-material pypdf
+        run: pip install -r requirements.txt
 
-      - name: Clean legacy CV/NLP papers & scaffold RecSys directories
-        if: github.event.inputs.clean_legacy_papers == 'true' || !cancelled()
-        run: |
-          python scripts/init_clean_recsys_repo.py
+      - name: Migrate legacy structure (manual only)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.clean_legacy_papers == 'true'
+        run: python scripts/init_clean_recsys_repo.py
 
-      - name: Optional - Fetch & generate new RecSys paper notes via LLM
-        if: github.event.inputs.arxiv_query != ''
+      - name: Generate notes from curated CSV (manual only)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.papers_csv != ''
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_BASE_URL: ${{ secrets.LLM_BASE_URL || 'https://api.deepseek.com/v1' }}
           LLM_MODEL: ${{ secrets.LLM_MODEL || 'deepseek-chat' }}
         run: |
           python scripts/generate_recsys_notes.py \
-            --venue "${{ github.event.inputs.target_venue }}" \
-            --arxiv-query "${{ github.event.inputs.arxiv_query }}" \
-            --max-papers 5
+            --papers-csv "${{ github.event.inputs.papers_csv }}" \
+            --limit "${{ github.event.inputs.limit }}" \
+            --workers 2
 
-      - name: Build dual-dimension indices & mkdocs.yml
-        run: |
-          python scripts/build_nav_and_index.py
+      - name: Build indices & mkdocs.yml
+        run: python scripts/build_nav_and_index.py
 
-      - name: Commit updated notes & clean structure back to repo
+      - name: Commit generated notes & indices
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git diff --staged --quiet || git commit -m "chore(recsys): update RecSys paper notes and dual-axis navigation"
+          git diff --staged --quiet || git commit -m "chore(recsys): update notes and navigation"
           git push
 
       - name: Deploy MkDocs to GitHub Pages
-        run: |
-          mkdocs gh-deploy --force
+        run: mkdocs gh-deploy --force

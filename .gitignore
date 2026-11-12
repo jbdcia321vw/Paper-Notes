@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 .venv/
 .env
+data/papers/.classification_cache.json

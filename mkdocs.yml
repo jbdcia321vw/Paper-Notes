@@ -1,5 +1,5 @@
 site_name: RecSys Paper Notes · 推荐系统论文精读库
-site_description: 推荐系统与信息检索顶会顶刊论文解读（SIGIR / RecSys / KDD / WWW / ACM MM / TOIS / TKDE），每篇 5 分钟读懂核心思想
+site_description: 推荐系统与信息检索顶会顶刊论文解读（SIGIR / RecSys / KDD / WWW / ACM MM / TOIS / TKDE），按会刊与年份分类，每篇 5 分钟读懂核心思想
 site_url: https://jbdcia321vw.github.io/Paper-Notes/
 repo_url: https://github.com/jbdcia321vw/Paper-Notes
 repo_name: jbdcia321vw/Paper-Notes
@@ -86,27 +86,74 @@ nav:
       - "⚖️ 多任务学习与列表级重排": topics/multi_task_reranking.md
       - "🎮 强化学习与动态探索推荐": topics/rl_bandit_rec.md
       - "🛡️ 去偏公平、可信隐私与工业架构": topics/debias_fairness_industrial.md
+  - 🗓️ 按会议年份浏览:
+      - 全部年份总览: years/index.md
+      - "2026 年": years/2026.md
   - 🏛️ 按顶会与顶刊 (22个会刊):
       - 全部顶会与顶刊总览: venues/index.md
-      - "🏛️ SIGIR": venues/SIGIR2026/index.md
-      - "🏛️ RecSys": venues/RecSys2026/index.md
-      - "🏛️ WSDM": venues/WSDM2026/index.md
-      - "🏛️ CIKM": venues/CIKM2026/index.md
-      - "🏛️ ECIR": venues/ECIR2026/index.md
-      - "🏛️ SIGIR-AP": venues/SIGIR-AP2026/index.md
-      - "🏛️ KDD": venues/KDD2026/index.md
-      - "🏛️ WWW (TheWebConf)": venues/WWW2026/index.md
-      - "🏛️ ACM MM": venues/ACM_MM2026/index.md
-      - "🏛️ ICDE": venues/ICDE2026/index.md
-      - "🏛️ ICDM": venues/ICDM2026/index.md
-      - "🏛️ DASFAA": venues/DASFAA2026/index.md
-      - "🏛️ AAAI (RecSys Track)": venues/AAAI2026/index.md
-      - "🏛️ IJCAI (RecSys Track)": venues/IJCAI2026/index.md
-      - "🏛️ ACL / EMNLP (RecSys & CRS)": venues/ACL_EMNLP2026/index.md
-      - "🏛️ ICLR / NeurIPS / ICML (RecSys)": venues/ICLR_NeurIPS_ICML2026/index.md
-      - "📖 ACM TOIS": venues/TOIS2026/index.md
-      - "📖 IEEE TKDE": venues/TKDE2026/index.md
-      - "📖 ACM TORS": venues/TORS2026/index.md
-      - "📖 IEEE TMM": venues/TMM2026/index.md
-      - "📖 ACM TKDD": venues/TKDD2026/index.md
-      - "📖 ACM TWEB": venues/TWEB2026/index.md
+      - "🏛️ SIGIR":
+          - 会刊总览: venues/SIGIR/index.md
+          - "2026": venues/SIGIR/2026/index.md
+      - "🏛️ RecSys":
+          - 会刊总览: venues/RecSys/index.md
+          - "2026": venues/RecSys/2026/index.md
+      - "🏛️ WSDM":
+          - 会刊总览: venues/WSDM/index.md
+          - "2026": venues/WSDM/2026/index.md
+      - "🏛️ CIKM":
+          - 会刊总览: venues/CIKM/index.md
+          - "2026": venues/CIKM/2026/index.md
+      - "🏛️ ECIR":
+          - 会刊总览: venues/ECIR/index.md
+          - "2026": venues/ECIR/2026/index.md
+      - "🏛️ SIGIR-AP":
+          - 会刊总览: venues/SIGIR-AP/index.md
+          - "2026": venues/SIGIR-AP/2026/index.md
+      - "🏛️ KDD":
+          - 会刊总览: venues/KDD/index.md
+          - "2026": venues/KDD/2026/index.md
+      - "🏛️ WWW (TheWebConf)":
+          - 会刊总览: venues/WWW/index.md
+          - "2026": venues/WWW/2026/index.md
+      - "🏛️ ACM MM":
+          - 会刊总览: venues/ACM_MM/index.md
+          - "2026": venues/ACM_MM/2026/index.md
+      - "🏛️ ICDE":
+          - 会刊总览: venues/ICDE/index.md
+          - "2026": venues/ICDE/2026/index.md
+      - "🏛️ ICDM":
+          - 会刊总览: venues/ICDM/index.md
+          - "2026": venues/ICDM/2026/index.md
+      - "🏛️ DASFAA":
+          - 会刊总览: venues/DASFAA/index.md
+          - "2026": venues/DASFAA/2026/index.md
+      - "🏛️ AAAI (RecSys Track)":
+          - 会刊总览: venues/AAAI/index.md
+          - "2026": venues/AAAI/2026/index.md
+      - "🏛️ IJCAI (RecSys Track)":
+          - 会刊总览: venues/IJCAI/index.md
+          - "2026": venues/IJCAI/2026/index.md
+      - "🏛️ ACL / EMNLP (RecSys & CRS)":
+          - 会刊总览: venues/ACL_EMNLP/index.md
+          - "2026": venues/ACL_EMNLP/2026/index.md
+      - "🏛️ ICLR / NeurIPS / ICML (RecSys)":
+          - 会刊总览: venues/ICLR_NeurIPS_ICML/index.md
+          - "2026": venues/ICLR_NeurIPS_ICML/2026/index.md
+      - "📖 ACM TOIS":
+          - 会刊总览: venues/TOIS/index.md
+          - "2026": venues/TOIS/2026/index.md
+      - "📖 IEEE TKDE":
+          - 会刊总览: venues/TKDE/index.md
+          - "2026": venues/TKDE/2026/index.md
+      - "📖 ACM TORS":
+          - 会刊总览: venues/TORS/index.md
+          - "2026": venues/TORS/2026/index.md
+      - "📖 IEEE TMM":
+          - 会刊总览: venues/TMM/index.md
+          - "2026": venues/TMM/2026/index.md
+      - "📖 ACM TKDD":
+          - 会刊总览: venues/TKDD/index.md
+          - "2026": venues/TKDD/2026/index.md
+      - "📖 ACM TWEB":
+          - 会刊总览: venues/TWEB/index.md
+          - "2026": venues/TWEB/2026/index.md

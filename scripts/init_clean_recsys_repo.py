@@ -128,14 +128,27 @@ CATEGORIES = {
 }
 
 
+SUPPORTED_YEARS = ["2026"]
+DEFAULT_YEAR = "2026"
+
+
 def clean_legacy_paper_notes(repo_root: Path):
-    """清空原仓库中非推荐系统的 2.3 万篇 CV/NLP/ML 历史目录，保留主题框架。"""
+    """清空原仓库中非推荐系统的 2.3 万篇 CV/NLP/ML 历史目录，保留主题框架与站点级文件。"""
     docs_dir = repo_root / "docs"
     if not docs_dir.exists():
         docs_dir.mkdir(parents=True, exist_ok=True)
         return
 
-    keep_names = {"assets", "stylesheets", "javascripts", "venues", "topics"}
+    keep_names = {
+        "assets",
+        "stylesheets",
+        "javascripts",
+        "venues",
+        "topics",
+        "years",
+        "index.md",
+        "robots.txt",
+    }
     removed = []
     for item in docs_dir.iterdir():
         if item.name in keep_names:
@@ -154,79 +167,72 @@ def clean_legacy_paper_notes(repo_root: Path):
     print(f"[Clean] 已清理原仓库历史目录/残留文件共 {len(removed)} 项。")
 
 
-def scaffold_recsys_structure(repo_root: Path, default_year: str = "2026"):
-    """创建「按会议/期刊划分 (docs/venues/)」与「按推荐类别划分 (docs/topics/)」的双维度骨架。"""
+def _migrate_flat_venue_dirs(venues_dir: Path, years) -> int:
+    """把旧的 venues/<VENUE><YEAR>/<category>/ 迁移到 venues/<VENUE>/<YEAR>/<category>/。"""
+    moved = 0
+    for venue_code in VENUES:
+        for year in years:
+            old_dir = venues_dir / f"{venue_code}{year}"
+            if not old_dir.exists():
+                continue
+            new_dir = venues_dir / venue_code / year
+            new_dir.mkdir(parents=True, exist_ok=True)
+            for child in list(old_dir.iterdir()):
+                if child.is_dir() and child.name in CATEGORIES:
+                    target_cat = new_dir / child.name
+                    target_cat.mkdir(parents=True, exist_ok=True)
+                    for f in child.iterdir():
+                        if f.is_file() and f.name != "index.md":
+                            target = target_cat / f.name
+                            if not target.exists():
+                                shutil.move(str(f), str(target))
+                                moved += 1
+                elif child.is_dir():
+                    shutil.rmtree(child)
+            shutil.rmtree(old_dir)
+    return moved
+
+
+def scaffold_recsys_structure(repo_root: Path, years=None):
+    """创建 venues/<VENUE>/<YEAR>/<category>/ 与 topics/、years/ 骨架。"""
+    years = years or SUPPORTED_YEARS
     docs_dir = repo_root / "docs"
     venues_dir = docs_dir / "venues"
     topics_dir = docs_dir / "topics"
+    years_dir = docs_dir / "years"
     venues_dir.mkdir(parents=True, exist_ok=True)
     topics_dir.mkdir(parents=True, exist_ok=True)
+    years_dir.mkdir(parents=True, exist_ok=True)
+
+    moved = _migrate_flat_venue_dirs(venues_dir, years)
 
     for venue_code in VENUES:
-        v_folder = venues_dir / f"{venue_code}{default_year}"
-        v_folder.mkdir(parents=True, exist_ok=True)
-        # 清理可能残留的旧分类目录
-        for child in list(v_folder.iterdir()):
-            if child.is_dir() and child.name not in CATEGORIES:
-                shutil.rmtree(child)
-        for cat_slug in CATEGORIES:
-            (v_folder / cat_slug).mkdir(parents=True, exist_ok=True)
+        for year in years:
+            v_year_dir = venues_dir / venue_code / year
+            v_year_dir.mkdir(parents=True, exist_ok=True)
+            # 清理可能残留的旧分类目录
+            for child in list(v_year_dir.iterdir()):
+                if child.is_dir() and child.name not in CATEGORIES:
+                    shutil.rmtree(child)
+            for cat_slug in CATEGORIES:
+                (v_year_dir / cat_slug).mkdir(parents=True, exist_ok=True)
 
     # 清理 topics 下旧分类的 .md 文件
     for md_f in list(topics_dir.glob("*.md")):
         if md_f.name != "index.md" and md_f.stem not in CATEGORIES:
             md_f.unlink()
 
-    sample_dir = venues_dir / f"SIGIR{default_year}" / "generative_rec"
-    sample_file = sample_dir / "sample_generative_recommendation_semantic_ids.md"
-    sample_file.write_text(
-        """---
-title: "[Paper Note] Generative Recommendation with Hierarchical Semantic IDs (示例模板)"
-description: "[SIGIR 2026][生成式推荐与离散语义 ID] 融合协同图谱与 RQ-VAE 残差量化的端到端生成式推荐框架 (Full-Ranking 评测)"
-tags:
-  - SIGIR 2026
-  - 生成式推荐与离散语义 ID
-  - 序列与会话推荐
-  - RQ-VAE
-date: 2026-11-12
-venue: SIGIR2026
-paper_url: "https://arxiv.org/abs/2305.05065"
-code_url: "https://github.com/reczoo/FuxiCTR"
-categories:
-  - generative_rec
-  - sequential_rec
----
+    # 删除任何示例/演示笔记，避免计入真实收录统计
+    for sample in venues_dir.rglob("sample_*.md"):
+        sample.unlink()
 
-# Generative Recommendation with Hierarchical Semantic IDs (示例模板)
-
-- **会议/期刊**: SIGIR 2026
-- **推荐链路定位**: 端到端生成式召回与排序 (End-to-End Generative Retrieval)
-- **研究方向**: 生成式推荐与离散语义 ID (`generative_rec`) / 序列与会话推荐 (`sequential_rec`)
-- **论文原文**: [https://arxiv.org/abs/2305.05065](https://arxiv.org/abs/2305.05065)
-- **开源代码**: [https://github.com/reczoo/FuxiCTR](https://github.com/reczoo/FuxiCTR)
-
-## TL;DR (核心速览)
-
-本篇为推荐系统知识库标准示例文档。针对生成式推荐中离散语义 ID (RQ-VAE) 在长尾冷启动物品上的哈希碰撞与协同信号丢失问题，本文提出协同感知的层次化残差量化与自回归解码框架，在 Amazon Beauty/Sports 等基准的 **Leave-One-Out + Full-Ranking (全库未交互排序)** 协议下取得 Recall@10 提升 8.3%–9.9%。
-
-## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
-
-- **过滤规则与正样本定义**: 采用标准 `5-core` 过滤，保留所有用户-物品评论交互作为隐式正反馈。
-- **数据划分方式 (Splitting Strategy)**: 采用 **Leave-One-Out (留一法)**，最新一次交互作为测试集，倒数第二次作为验证集。
-- **候选集打分协议 (Ranking Protocol)**: 采用无偏的 **Full-Ranking (全量候选物品集排序)**，配合 Beam Search (Beam Size = 20) 解码。
-
-| 数据集 | #Users | #Items | #Interactions | 稀疏度 | 评测指标 (Recall@10 / NDCG@10) |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| Amazon Beauty | 22,363 | 12,101 | 198,502 | 99.93% | **0.0742** / **0.0408** |
-| Amazon Sports | 35,598 | 18,357 | 296,337 | 99.95% | **0.0435** / **0.0226** |
-""",
-        encoding="utf-8",
+    print(
+        f"[Scaffold] 已创建 {len(VENUES)} 个会刊 × {len(years)} 个年份 × "
+        f"{len(CATEGORIES)} 个推荐系统正交细分类别目录（迁移旧笔记 {moved} 篇）。"
     )
-
-    print(f"[Scaffold] 已创建 {len(VENUES)} 个会议/期刊目录与 {len(CATEGORIES)} 个推荐系统正交细分类别。")
 
 
 if __name__ == "__main__":
     root = Path(__file__).resolve().parent.parent
     clean_legacy_paper_notes(root)
-    scaffold_recsys_structure(root, default_year="2026")
+    scaffold_recsys_structure(root)
