@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][去偏公平与工业架构] 首个上下文认知型位置点击模型，用 Beta 分布刻画相关性与位置偏置的认知不确定性，提出自归一化与位置条件化梯度估计实现稳定优化">
+        <meta name="description" content="[SIGIR 2026][去偏公平与工业架构] 首个上下文认知 PBM：用 Beta 分布刻画相关性与位置偏置的认知不确定性，以自归一化+位置条件化梯度估计稳定训练，测试集对数似然显著优于点式 PBM。">
       
       
       
@@ -108,20 +108,18 @@
 
 
 
-<meta name="keywords" content="SIGIR, 去偏公平与工业架构, 召回/重排前置的点击建模与无偏评估, 认知不确定性 (Epistemic Uncertainty), 位置偏置点击模型 (PBM), 证据深度学习 (Evidential Deep Learning)" />
+<meta name="keywords" content="SIGIR 2026, 去偏公平与工业架构, 召回/重排前置的点击建模与无偏评估, 认知不确定性 (Evidential Learning), 位置偏置解耦 (PBM)" />
 
 
-<meta property="article:tag" content="SIGIR" />
+<meta property="article:tag" content="SIGIR 2026" />
 
 <meta property="article:tag" content="去偏公平与工业架构" />
 
 <meta property="article:tag" content="召回/重排前置的点击建模与无偏评估" />
 
-<meta property="article:tag" content="认知不确定性 (Epistemic Uncertainty)" />
+<meta property="article:tag" content="认知不确定性 (Evidential Learning)" />
 
-<meta property="article:tag" content="位置偏置点击模型 (PBM)" />
-
-<meta property="article:tag" content="证据深度学习 (Evidential Deep Learning)" />
+<meta property="article:tag" content="位置偏置解耦 (PBM)" />
 
 
 
@@ -131,10 +129,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/an_epistemic_position_based_click_model_from_interactions_to_epistemic_dist/" />
 <meta property="og:title" content="[Paper Note] An Epistemic Position-Based Click Model: From Interactions to Epistemic Distributions of Relevance and Bias" />
-<meta property="og:description" content="[SIGIR 2026][去偏公平与工业架构] 首个上下文认知型位置点击模型，用 Beta 分布刻画相关性与位置偏置的认知不确定性，提出自归一化与位置条件化梯度估计实现稳定优化" />
+<meta property="og:description" content="[SIGIR 2026][去偏公平与工业架构] 首个上下文认知 PBM：用 Beta 分布刻画相关性与位置偏置的认知不确定性，以自归一化+位置条件化梯度估计稳定训练，测试集对数似然显著优于点式 PBM。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] An Epistemic Position-Based Click Model: From Interactions to Epistemic Distributions of Relevance and Bias" />
-<meta name="twitter:description" content="[SIGIR 2026][去偏公平与工业架构] 首个上下文认知型位置点击模型，用 Beta 分布刻画相关性与位置偏置的认知不确定性，提出自归一化与位置条件化梯度估计实现稳定优化" />
+<meta name="twitter:description" content="[SIGIR 2026][去偏公平与工业架构] 首个上下文认知 PBM：用 Beta 分布刻画相关性与位置偏置的认知不确定性，以自归一化+位置条件化梯度估计稳定训练，测试集对数似然显著优于点式 PBM。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +158,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] An Epistemic Position-Based Click Model: From Interactions to Epistemic Distributions of Relevance and Bias",
   "headline": "[Paper Note] An Epistemic Position-Based Click Model: From Interactions to Epistemic Distributions of Relevance and Bias",
-  "description": "[SIGIR 2026][\u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784] \u9996\u4e2a\u4e0a\u4e0b\u6587\u8ba4\u77e5\u578b\u4f4d\u7f6e\u70b9\u51fb\u6a21\u578b\uff0c\u7528 Beta \u5206\u5e03\u523b\u753b\u76f8\u5173\u6027\u4e0e\u4f4d\u7f6e\u504f\u7f6e\u7684\u8ba4\u77e5\u4e0d\u786e\u5b9a\u6027\uff0c\u63d0\u51fa\u81ea\u5f52\u4e00\u5316\u4e0e\u4f4d\u7f6e\u6761\u4ef6\u5316\u68af\u5ea6\u4f30\u8ba1\u5b9e\u73b0\u7a33\u5b9a\u4f18\u5316",
+  "description": "[SIGIR 2026][\u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784] \u9996\u4e2a\u4e0a\u4e0b\u6587\u8ba4\u77e5 PBM\uff1a\u7528 Beta \u5206\u5e03\u523b\u753b\u76f8\u5173\u6027\u4e0e\u4f4d\u7f6e\u504f\u7f6e\u7684\u8ba4\u77e5\u4e0d\u786e\u5b9a\u6027\uff0c\u4ee5\u81ea\u5f52\u4e00\u5316+\u4f4d\u7f6e\u6761\u4ef6\u5316\u68af\u5ea6\u4f30\u8ba1\u7a33\u5b9a\u8bad\u7ec3\uff0c\u6d4b\u8bd5\u96c6\u5bf9\u6570\u4f3c\u7136\u663e\u8457\u4f18\u4e8e\u70b9\u5f0f PBM\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/an_epistemic_position_based_click_model_from_interactions_to_epistemic_dist/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/an_epistemic_position_based_click_model_from_interactions_to_epistemic_dist/",
   "inLanguage": "zh-CN",
@@ -168,14 +166,13 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR, \u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784, \u53ec\u56de/\u91cd\u6392\u524d\u7f6e\u7684\u70b9\u51fb\u5efa\u6a21\u4e0e\u65e0\u504f\u8bc4\u4f30, \u8ba4\u77e5\u4e0d\u786e\u5b9a\u6027 (Epistemic Uncertainty), \u4f4d\u7f6e\u504f\u7f6e\u70b9\u51fb\u6a21\u578b (PBM), \u8bc1\u636e\u6df1\u5ea6\u5b66\u4e60 (Evidential Deep Learning)",
+  "keywords": "SIGIR 2026, \u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784, \u53ec\u56de/\u91cd\u6392\u524d\u7f6e\u7684\u70b9\u51fb\u5efa\u6a21\u4e0e\u65e0\u504f\u8bc4\u4f30, \u8ba4\u77e5\u4e0d\u786e\u5b9a\u6027 (Evidential Learning), \u4f4d\u7f6e\u504f\u7f6e\u89e3\u8026 (PBM)",
   "about": [
-    { "@type": "Thing", "name": "SIGIR" },
+    { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784" },
     { "@type": "Thing", "name": "\u53ec\u56de/\u91cd\u6392\u524d\u7f6e\u7684\u70b9\u51fb\u5efa\u6a21\u4e0e\u65e0\u504f\u8bc4\u4f30" },
-    { "@type": "Thing", "name": "\u8ba4\u77e5\u4e0d\u786e\u5b9a\u6027 (Epistemic Uncertainty)" },
-    { "@type": "Thing", "name": "\u4f4d\u7f6e\u504f\u7f6e\u70b9\u51fb\u6a21\u578b (PBM)" },
-    { "@type": "Thing", "name": "\u8bc1\u636e\u6df1\u5ea6\u5b66\u4e60 (Evidential Deep Learning)" }
+    { "@type": "Thing", "name": "\u8ba4\u77e5\u4e0d\u786e\u5b9a\u6027 (Evidential Learning)" },
+    { "@type": "Thing", "name": "\u4f4d\u7f6e\u504f\u7f6e\u89e3\u8026 (PBM)" }
   ],
   
   "datePublished": "2026-11-12",
@@ -3951,10 +3948,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -3965,7 +3962,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -3973,22 +3970,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -3996,32 +3993,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4048,12 +4023,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4071,7 +4046,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4079,10 +4054,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4095,10 +4070,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations-rating" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
       
     </span>
   </a>
@@ -4106,10 +4081,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#rating" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rating (四维评分)
+        论文图表
       
     </span>
   </a>
@@ -4135,9 +4110,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][去偏公平与工业架构] 首个上下文认知型位置点击模型，用 Beta 分布刻画相关性与位置偏置的认知不确定性，提出自归一化与位置条件化梯度估计实现稳定优化</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][去偏公平与工业架构] 首个上下文认知 PBM：用 Beta 分布刻画相关性与位置偏置的认知不确定性，以自归一化+位置条件化梯度估计稳定训练，测试集对数似然显著优于点式 PBM。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR · 去偏公平与工业架构 · 召回/重排前置的点击建模与无偏评估 · 认知不确定性 (Epistemic Uncertainty) · 位置偏置点击模型 (PBM) · 证据深度学习 (Evidential Deep Learning)</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 去偏公平与工业架构 · 召回/重排前置的点击建模与无偏评估 · 认知不确定性 (Evidential Learning) · 位置偏置解耦 (PBM)</p>
   
 </aside>
   
@@ -4151,7 +4126,7 @@
       
       
       
-        <span class="md-tag">SIGIR</span>
+        <span class="md-tag">SIGIR 2026</span>
       
     
       
@@ -4172,21 +4147,14 @@
       
       
       
-        <span class="md-tag">认知不确定性 (Epistemic Uncertainty)</span>
+        <span class="md-tag">认知不确定性 (Evidential Learning)</span>
       
     
       
       
       
       
-        <span class="md-tag">位置偏置点击模型 (PBM)</span>
-      
-    
-      
-      
-      
-      
-        <span class="md-tag">证据深度学习 (Evidential Deep Learning)</span>
+        <span class="md-tag">位置偏置解耦 (PBM)</span>
       
     
   </nav>
@@ -4196,169 +4164,228 @@
   
 
 
-<h1 id="an-epistemic-position-based-click-model-from-interactions-to-epistemic-distributions-of-relevance-and-bias">An Epistemic Position-Based Click Model: From Interactions to Epistemic Distributions of Relevance and Bias (认知型位置点击模型：从交互到相关性与偏置的认知分布)</h1>
+<h1 id="an-epistemic-position-based-click-model-from-interactions-to-epistemic-distributions-of-relevance-and-bias">An Epistemic Position-Based Click Model: From Interactions to Epistemic Distributions of Relevance and Bias (认知位置点击模型：从交互到相关性与偏置的认知分布)</h1>
 <ul>
-<li><strong>会议/期刊</strong>: SIGIR 2026 (第49届国际ACM SIGIR会议, Melbourne, VIC, Australia)</li>
-<li><strong>推荐链路定位</strong>: 点击建模 / 无偏学习排序 (Unbiased LTR) 的底层组件——为 IPS 类去偏与离线策略评估提供参数与置信度，服务于召回/重排前的相关性估计与排序评估</li>
-<li><strong>研究方向</strong>: 去偏公平与工业架构 (主) / CTR 预估与特征交叉 (次)</li>
+<li><strong>会议/期刊</strong>: SIGIR 2026</li>
+<li><strong>作者与机构</strong>: Oscar Rolando Ramirez Milian, Harrie Oosterhuis（University of Amsterdam；工作完成于 Radboud University Nijmegen）</li>
+<li><strong>推荐链路定位</strong>: 召回/重排前置的点击建模与无偏离线评估（为 IPS 类无偏 LTR 提供倾向估计）</li>
+<li><strong>研究方向</strong>: 去偏公平与工业架构 / CTR 预估与特征交叉</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2607.18712v1">https://arxiv.org/abs/2607.18712v1</a></li>
-<li><strong>开源代码</strong>: 暂未开源（原文声明 "our implementation will be made available upon publication"，正则预提取未发现代码链接）</li>
+<li><strong>开源代码</strong>: 暂未开源（论文声明发表后放出）</li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对位置点击模型 (PBM) 仅给出频率派点估计、无法表达认知不确定性的痛点，本文提出首个上下文认知型 PBM：对每个位置偏置 <span class="arithmatex">\(\theta_k\)</span> 与相关性 <span class="arithmatex">\(\zeta_{q,d}\)</span> 输出 Beta 分布，并用证据深度学习最大化边缘似然。为解决高维蒙特卡洛梯度数值下溢与高方差问题，提出自归一化 (self-normalization) 与位置条件化 (conditioning on position bias) 两项技术。在半合成 MSLR-Web10k / Istella-S 上，认知 PBM 测试集对数似然显著高于点估计 PBM，且约 100 epoch 即收敛（点估计 1200 epoch 仍未收敛）。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>位置偏置点击模型（PBM）把点击拆成 <span class="arithmatex">\(\theta_k\zeta_{q,d}\)</span>，但所有现有方法（EM 类点击模型、IPS 无偏 LTR）只给<strong>频率派点估计</strong>，无法回答"这个相关性/偏置估计有多可信"。本文提出首个<strong>上下文认知 PBM</strong>：对每个 <span class="arithmatex">\(\theta_k\)</span> 与 <span class="arithmatex">\(\zeta_{q,d}\)</span> 输出一个 Beta 分布（<span class="arithmatex">\(\alpha,\beta\)</span>），用证据深度学习最大化边缘似然。核心难点是优化——朴素 Monte Carlo 策略梯度因似然值极小、维度极高而数值下溢且方差爆炸。作者给出三项技术：log-sum-exp 数值稳定、<strong>对位置偏置条件化</strong>降方差、<strong>自归一化</strong>梯度。在 Istella-S / MSLR-Web10k 半合成点击上，认知 PBM 测试集对数似然<strong>反超点式 PBM</strong>，且 100 epoch 即收敛（点式 1200 epoch 未收敛）。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 位置点击模型 (PBM) 将点击概率分解为 <span class="arithmatex">\(P[C=1|q,d,k]=P[E=1|k]P[R=1|q,d]=\theta_k\zeta_{q,d}\)</span>，是 IPS 无偏学习排序与离线策略评估的基石假设。现有参数估计分两派：(1) 点击模型族以极大似然拟合 <span class="arithmatex">\((\theta,\zeta)\)</span>；(2) 无偏 LTR 通过位置随机化估计倾向 <span class="arithmatex">\(\rho[E=1|k]\)</span> 再做 IPS 估计 <span class="arithmatex">\(\hat\zeta^{IPS}_{q,d}\)</span>。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>仅点估计、无置信度</strong>：所有 SOTA 方法（含 NN 点击模型、IPS 系列）只输出单一数值，无法告知下游任务该估计有多可靠、风险多大。</li>
-<li><strong>可辨识性差</strong>：PBM 以概率乘积解释观测，通常存在大量不同 <span class="arithmatex">\((\theta,\zeta)\)</span> 组合能同等好地解释同一份点击数据，点估计任意选一个，掩盖了这种模糊性。</li>
-<li><strong>非上下文贝叶斯模型的短板</strong>：Liu et al. 的贝叶斯点击模型用查表法，无法处理未见/长尾文档。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 直接对边缘似然 <span class="arithmatex">\(\mathcal{L}=\mathbb{E}_{\theta,\zeta}[\prod P(M|N,\theta,\zeta)]\)</span> 做蒙特卡洛估计时，因 <span class="arithmatex">\(\tilde\zeta,\tilde\theta\)</span> 维度极高（<span class="arithmatex">\(|\mathcal{D}|\gg K\)</span>），样本似然 <span class="arithmatex">\(\tilde L^{(i)}\ll 1\)</span> 导致数值下溢，且策略梯度方差爆炸——朴素估计器根本无法学习有意义的分布。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者从证据深度学习出发，将每个 PBM 参数视为 Beta 随机变量，网络预测 <span class="arithmatex">\((\alpha,\beta)\)</span> 而非点值；并借鉴自归一化重要性采样与 Rao-Blackwell 化思想（对位置偏置条件化以降低方差），配合 log-sum-exp 数值稳定化，使优化可行。</li>
+<li><strong>主流范式</strong>: PBM 假设 <span class="arithmatex">\(P[C{=}1|q,d,k]=\theta_k\zeta_{q,d}\)</span>，参数通过极大似然（点击模型族）或位置随机化+IPS（无偏 LTR）估计，下游用于去偏排序与离线评估。</li>
+<li><strong>前人局限</strong>: ① 只输出点估计，无任何置信度信号，下游无法评估"用这个倾向估计做 IPS 的风险"；② PBM 是概率乘积结构，多组 <span class="arithmatex">\((\theta,\zeta)\)</span> 可同等解释同一份点击日志（可辨识性差），点估计的方差被完全掩盖。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 唯一已有的贝叶斯点击模型（Liu et al. BBM）是<strong>非上下文</strong>的查表模型，无法泛化到未见/长尾 query-item；而 PBM 参数天然落在 <span class="arithmatex">\((0,1)\)</span>，Beta 分布是共轭且自然的认知分布载体。</li>
+<li><strong>本文切入点</strong>: 把 PBM 参数视为随机变量，用神经网络从 <span class="arithmatex">\(X_{q,d}\)</span> 预测 Beta 参数，将"点估计"升级为"认知分布"，并解决由此带来的优化病态问题。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>查询-物品对 <span class="arithmatex">\((q,d)\in\mathcal{D}\)</span>，特征向量 <span class="arithmatex">\(X_{q,d}\)</span>；位置 <span class="arithmatex">\(k\in\{1,\dots,K\}\)</span>。</li>
-<li><span class="arithmatex">\(N_{q,d,k}\)</span>：展示次数；<span class="arithmatex">\(M_{q,d,k}\)</span>：点击次数；<span class="arithmatex">\(W_{q,d,k}=N_{q,d,k}-M_{q,d,k}\)</span>：未点击展示次数。</li>
-<li>假设 <span class="arithmatex">\(|\mathcal{D}|\gg K\)</span>（推荐/检索场景普遍成立）。</li>
-<li>点击独立 Bernoulli，故 <span class="arithmatex">\(M_{q,d,k}|N_{q,d,k},\theta_k,\zeta_{q,d}\sim\text{Binomial}(N_{q,d,k},\ \theta_k\zeta_{q,d})\)</span>。</li>
-<li>认知建模：<span class="arithmatex">\(\theta_k\sim\text{Beta}(\alpha_k,\beta_k)\)</span>（查表学习，因 <span class="arithmatex">\(K\)</span> 小）；<span class="arithmatex">\(\zeta_{q,d}\sim\text{Beta}(\alpha_{q,d},\beta_{q,d})\)</span>（神经网络由 <span class="arithmatex">\(X_{q,d}\)</span> 预测，因 <span class="arithmatex">\(|\mathcal{D}|\)</span> 巨大）。各变量独立，联合密度为边缘密度乘积。</li>
-<li>网络输出：均值 <span class="arithmatex">\(\mu\in(0,1)\)</span>（sigmoid）与置信度 <span class="arithmatex">\(\nu\in[1,\infty)\)</span>（<span class="arithmatex">\(|x|+1\)</span> 变换），再换算 <span class="arithmatex">\(\alpha=\mu\nu,\ \beta=(1-\mu)\nu\)</span>。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>输入 query-item 特征 <span class="arithmatex">\(X_{q,d}\)</span> 与位置 ID；相关性塔（3 层 MLP，64-64-32）输出均值 <span class="arithmatex">\(\mu\in(0,1)\)</span>（sigmoid）与置信度 <span class="arithmatex">\(\nu\in[1,\infty)\)</span>（<span class="arithmatex">\(|x|+1\)</span>），换算为 <span class="arithmatex">\(\alpha=\mu\nu,\ \beta=(1-\mu)\nu\)</span>；位置偏置因 <span class="arithmatex">\(K\)</span> 很小直接用查表学习 <span class="arithmatex">\((\alpha_k,\beta_k)\)</span>。所有 <span class="arithmatex">\(\theta_k,\zeta_{q,d}\)</span> 视为独立 Beta 随机变量，训练目标是最大化对观测点击的边缘似然 <span class="arithmatex">\(\mathcal{L}=\mathbb{E}_{\theta,\zeta}\big[\prod_{q,d,k}\mathrm{Bin}(M_{q,d,k};N_{q,d,k},\theta_k\zeta_{q,d})\big]\)</span>，推理时取分布均值作为点击概率预测，分布宽度即认知不确定性。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 查询-物品特征 X_{q,d} / 位置 ID k"] --&gt; B["双分支表征: NN(3×64,64,32) 预测相关性 (α_{q,d},β_{q,d}); 查表预测位置偏置 (α_k,β_k)"]
-    B --&gt; C["Beta 分布采样: ζ̃ ~ Beta(α_{q,d},β_{q,d}), θ̃ ~ Beta(α_k,β_k)"]
-    C --&gt; D["条件化似然估计: 对 ζ 采样平均得 J̃_{q,d}(θ^{(i)}), 再对 θ 采样做 LSE 聚合"]
-    D --&gt; E["自归一化梯度 + 熵正则 → 更新网络与查表参数"]
-    E --&gt; F["输出: 点击概率预测 + 相关性/位置偏置的认知分布 (均值+置信度)"]</code></pre>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(a) 认知 PBM 的边缘似然目标</strong>：将点估计 PBM 的似然替换为对参数分布的期望：
-$<span class="arithmatex">\(\mathcal{L}=\int P(M|N,\zeta,\theta)\,p(\zeta|\alpha_\zeta,\beta_\zeta)\,p(\theta|\alpha_\theta,\beta_\theta)\,d\zeta\,d\theta=\mathbb{E}_{\theta,\zeta}\Big[\prod_{q,d,k}P(M_{q,d,k}|N_{q,d,k},\theta_k,\zeta_{q,d})\Big].\)</span>$
-物理直觉：不再锁定单一参数，而是让模型在"多个能解释数据的参数假设"上分配概率质量，从而表达认知不确定性。</p>
-<p><strong>(b) 数值稳定 + 位置条件化的似然估计</strong>：朴素估计 <span class="arithmatex">\(\log\tilde{\mathcal{L}}=\text{LSE}(\tilde\ell^{(1)},\dots,\tilde\ell^{(S)})-\log S\)</span> 仍会因某样本主导而低估。作者利用 <span class="arithmatex">\(\theta\)</span> 与 <span class="arithmatex">\(\zeta\)</span> 独立、且 <span class="arithmatex">\(K\ll|\mathcal{D}|\)</span>，先对 <span class="arithmatex">\(\zeta\)</span> 采样平均、再对 <span class="arithmatex">\(\theta\)</span> 采样聚合：
-$<span class="arithmatex">\(\tilde J^{(i)}_{q,d}=\frac{1}{S_{rel}}\sum_{j=1}^{S_{rel}}\tilde J_{q,d}(\theta^{(i)},\zeta^{(j)}_{q,d}),\quad \log\tilde{\mathcal{L}}\approx\text{LSE}\Big(\sum_{q,d}\log\tilde J^{(1)}_{q,d},\dots,\sum_{q,d}\log\tilde J^{(S_{pos})}_{q,d}\Big)-\log S_{pos}.\)</span>$
-由方差分解 <span class="arithmatex">\(\mathbb{V}_\theta[\mathbb{E}_\zeta[\cdot|\theta]]\le\mathbb{V}_{\theta,\zeta}[\cdot]\)</span> 保证条件化估计器方差更低，且使 LSE 内各值更接近，缓解下溢。</p>
-<p><strong>(c) 自归一化梯度</strong>：因 <span class="arithmatex">\(\tilde L^{(i)}\approx 0\)</span> 导致梯度近零，作者用 <span class="arithmatex">\(\nabla\log\mathcal{L}=\nabla\mathcal{L}/\mathcal{L}\)</span> 做自归一化，等价于对样本似然做 softmax 加权：
-$<span class="arithmatex">\(\nabla\log\tilde{\mathcal{L}}\approx\frac{1}{S}\sum_{i=1}^{S}\sigma(\tilde\ell^{(i)})\big(\nabla\log p(\tilde\zeta^{(i)})+\nabla\log p(\tilde\theta^{(i)})\big),\)</span>$
-其中 <span class="arithmatex">\(\sigma\)</span> 为基于 LSE 的 softmax。位置偏置与相关性梯度分别按式 (35)(37) 估计。关键点：保持梯度方向、归一化极小幅度，使优化稳定。</p>
-<p><strong>(d) 熵正则（修正版）</strong>：因位置参数参与更多点击概率，标准熵对参数加权不均，作者改为按 <span class="arithmatex">\(1/|\mathcal{D}|\)</span> 与 <span class="arithmatex">\(1/K\)</span> 归一化的 <span class="arithmatex">\(\bar{\mathcal{H}}'\)</span>，加到对数似然上：<span class="arithmatex">\(\log\tilde{\mathcal{L}}'=\log\tilde{\mathcal{L}}+\lambda\bar{\mathcal{H}}'\)</span>，鼓励在多个等价假设间分散概率、防止坍缩为点估计。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 最大化 <span class="arithmatex">\(\log\tilde{\mathcal{L}}'=\log\tilde{\mathcal{L}}+\lambda\bar{\mathcal{H}}'\)</span>（<span class="arithmatex">\(\lambda\ge0\)</span>，默认 0，实验中扫描至 0.25）。无 BPR/InfoNCE 类对比损失，本质是二项似然的证据化边缘似然。</li>
-<li><strong>负采样策略</strong>: 不涉及负采样。监督信号为展示-点击计数 <span class="arithmatex">\((N,M)\)</span>，点击/未点击由二项分布自然建模（<span class="arithmatex">\(W=N-M\)</span> 即隐式负例）。</li>
-<li><strong>时间与空间复杂度</strong>: 训练需 <span class="arithmatex">\(S_{pos}\times S_{rel}\)</span> 次 Beta 采样（默认各 60），batch 为 12k（认知）/35k（点估计）<span class="arithmatex">\(q,d\)</span> 对；推理时网络前向输出 <span class="arithmatex">\((\mu,\nu)\)</span> 即得分布参数，无需 Beam Search 或 ANN。原文未报告具体 ms/request 延迟与峰值显存。</li>
-</ul>
+    A["query-item 特征 X_q,d + 位置 ID k"] --&gt; B["相关性塔 MLP → μ, ν → Beta(α_q,d, β_q,d)"]
+    A --&gt; C["位置查表 → Beta(α_k, β_k)"]
+    B --&gt; D["采样 ζ, θ 构造 PBM 似然"]
+    C --&gt; D
+    D --&gt; E["LSE 稳定 + 位置条件化 + 自归一化梯度"]
+    E --&gt; F["输出点击概率均值 + 认知分布宽度"]</code></pre>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>认知 PBM 的 Beta 边缘似然（把点估计换成分布）</strong>：痛点是不确定性不可见 <span class="arithmatex">\(\to\)</span> 令 <span class="arithmatex">\(\theta_k\sim\mathrm{Beta}(\alpha_k,\beta_k)\)</span>、<span class="arithmatex">\(\zeta_{q,d}\sim\mathrm{Beta}(\alpha_{q,d},\beta_{q,d})\)</span> 且相互独立，目标为
+$<span class="arithmatex">\(\mathcal{L}=\mathbb{E}_{\theta,\zeta}\Big[\textstyle\prod_{q,d,k}\binom{N}{M}(\theta_k\zeta_{q,d})^{M}(1-\theta_k\zeta_{q,d})^{W}\Big].\)</span>$
+直觉：分布越宽 = 数据越不足以确定该参数，下游可直接读取风险；且 <span class="arithmatex">\(\nu\)</span> 提供了点式模型没有的"中性初始化"自由度。</p>
+</li>
+<li>
+<p><strong>位置条件化 + 自归一化梯度（让优化真正跑起来）</strong>：痛点：<span class="arithmatex">\(\tilde L^{(i)}\ll 1\)</span> 导致下溢，且 <span class="arithmatex">\(\theta,\zeta\)</span> 联合采样维度极高使策略梯度方差不可用。作者先按 <span class="arithmatex">\(K\ll|D|\)</span> 的事实<strong>对 <span class="arithmatex">\(\theta\)</span> 条件化</strong>，把内层 <span class="arithmatex">\(\zeta\)</span> 期望解析/采样近似为 <span class="arithmatex">\(\tilde J_{q,d}^{(i)}=\frac{1}{S_{rel}}\sum_j \tilde J_{q,d}(\theta^{(i)},\zeta^{(j)})\)</span>，由全方差公式有 <span class="arithmatex">\(\mathbb{V}_\theta[\mathbb{E}_\zeta[\cdot|\theta]]\le\mathbb{V}_{\theta,\zeta}[\cdot]\)</span>，方差严格下降；再用 log-sum-exp 计算 <span class="arithmatex">\(\log\tilde{\mathcal{L}}=\mathrm{LSE}(\tilde\ell^{(1..S)})-\log S\)</span> 防下溢；最后用自归一化（等价于优化 <span class="arithmatex">\(\nabla\log\mathcal{L}=\nabla\mathcal{L}/\mathcal{L}\)</span>）把近零似然值转成 softmax 权重：
+$<span class="arithmatex">\(\nabla\log\tilde{\mathcal{L}}\approx\frac{1}{S}\sum_i \sigma(\tilde\ell^{(i)})\,\nabla\log p(\tilde\theta^{(i)},\tilde\zeta^{(i)}).\)</span>$
+直觉：梯度<strong>方向</strong>比幅值重要，自归一化既稳住数值又保留方向。</p>
+</li>
+<li>
+<p><strong>训练目标、正则与推理开销</strong>：总目标 <span class="arithmatex">\(\log\tilde{\mathcal{L}}'=\log\tilde{\mathcal{L}}+\lambda\bar{\mathcal{H}}'\)</span>，其中 <span class="arithmatex">\(\bar{\mathcal{H}}'=\frac{1}{|D|}\sum_{q,d}H(\alpha_{q,d},\beta_{q,d})+\frac{1}{K}\sum_k H(\alpha_k,\beta_k)\)</span> 按参数量做归一以平衡位置/相关性两侧；<span class="arithmatex">\(\lambda\)</span> 温和（<span class="arithmatex">\(\le 10^{-3}\)</span>）可降置信度而不损似然，<span class="arithmatex">\(\lambda=0.25\)</span> 则分布过宽不可用。无需负采样（似然式训练，非对比式）；推理仅一次前向，成本与点式 PBM 同阶，额外开销在训练期的 <span class="arithmatex">\(S_{pos}\times S_{rel}=60\times60\)</span> 采样。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 采用两个 LTR 基准，均为专家标注相关性 <span class="arithmatex">\(y_{q,d}\in\{0,1,2,3,4\}\)</span>，使用官方 train/val/test 划分（MSLR 仅用 fold-1）：</li>
+<li><strong>数据集与预处理</strong>（半合成，因需 ground-truth 参数）：</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Queries)</th>
-<th style="text-align: center;">物品数 (#Docs/Query 均值)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">MSLR-Web-10K</td>
-<td style="text-align: center;">30,000</td>
-<td style="text-align: center;">~125</td>
-<td style="text-align: center;">10^5 模拟 query 交互</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: left;">136 维 query-doc 特征</td>
-</tr>
-<tr>
-<td style="text-align: left;">Istella-S</td>
-<td style="text-align: center;">33,018</td>
-<td style="text-align: center;">~103</td>
-<td style="text-align: center;">10^5 模拟 query 交互</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: left;">220 维 query-doc 特征</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 沿用数据集官方 train/val/test 划分；点击为<strong>半合成模拟</strong>——从 train/val/test 均匀采样 query（有放回），用真实 PBM 生成 top-5 排序（<span class="arithmatex">\(K=5\)</span>）上的点击，真值参数 <span class="arithmatex">\(\theta_k=1/k\)</span>、<span class="arithmatex">\(\zeta_{q,d}=0.9(y_{q,d}/4)+0.1\)</span>。日志策略为 2 层 64 单元 NN 的 Plackett-Luce 排序模型，在 30 个随机训练 query 上监督训练。<strong>无数据泄露风险</strong>（合成点击与真值参数分离，测试集点击独立生成）。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 非传统 Full-Ranking/Sampled Ranking，而是<strong>测试集点击的对数似然</strong>（预测精度）+ 认知分布可视化（位置偏置分布、相关性 <span class="arithmatex">\(\mu/\nu\)</span> 统计）+ 下游排序器期望点击数预测（分布偏移场景）。</li>
-<li><strong>评价指标与显著性检验</strong>: 主指标为测试集点击平均对数似然；15 次独立运行，95% 置信区间用 Student's <span class="arithmatex">\(t\)</span> 分布（14 自由度），作者称方法间差异"统计显著"。网络结构 3 层 (64,64,32)，训练 1500 epoch。</li>
-</ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
-<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>原文主结果为对数似然学习曲线（图 2），非传统表格。关键结论（15 次运行，95% CI）：</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">点估计 PBM</th>
-<th style="text-align: center;">朴素 MC + 基线校正</th>
-<th style="text-align: center;">自归一化+条件化 (Ours)</th>
-<th style="text-align: center;">相对表现</th>
+<th style="text-align: center;">#Queries</th>
+<th style="text-align: center;">平均文档/Query</th>
+<th style="text-align: center;">#Features</th>
+<th style="text-align: center;">相关性标签</th>
+<th style="text-align: left;">说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Istella-S</td>
-<td style="text-align: left;">测试集对数似然</td>
-<td style="text-align: center;">收敛慢（1200 epoch 未收敛）</td>
-<td style="text-align: center;">几乎不提升</td>
-<td style="text-align: center;"><strong>最高，~100 epoch 收敛</strong></td>
-<td style="text-align: center;">显著更高</td>
+<td style="text-align: left;">MSLR-Web10k</td>
+<td style="text-align: center;">30,000（仅 fold-1）</td>
+<td style="text-align: center;">125</td>
+<td style="text-align: center;">136</td>
+<td style="text-align: center;">0–4</td>
+<td style="text-align: left;">LTR 标准集，自带 train/val/test 划分</td>
 </tr>
 <tr>
-<td style="text-align: left;">MSLR-Web10k</td>
-<td style="text-align: left;">测试集对数似然</td>
-<td style="text-align: center;">收敛慢</td>
-<td style="text-align: center;">几乎不提升</td>
-<td style="text-align: center;"><strong>最高，~100 epoch 收敛</strong></td>
-<td style="text-align: center;">显著更高</td>
+<td style="text-align: left;">Istella-S</td>
+<td style="text-align: center;">33,018</td>
+<td style="text-align: center;">103</td>
+<td style="text-align: center;">220</td>
+<td style="text-align: center;">0–4</td>
+<td style="text-align: left;">LTR 标准集，自带划分</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li>自归一化单独使用可提升似然，但<strong>基线校正反而降低其收敛点</strong>；自归一化+条件化（无论是否加基线校正）取得最高似然。</li>
-<li>认知 PBM 不仅未牺牲精度，反而<strong>收敛更快、似然更高</strong>；作者归因于 <span class="arithmatex">\(\nu\)</span> 参数带来的中性初始化（初始近均匀分布），避免点估计模型"自信地锁定随机初值"。</li>
+<li><strong>点击生成协议</strong>: 从 train/val/test 均匀采样 <span class="arithmatex">\(10^5\)</span> 次 query 交互，在 top-5 排序（<span class="arithmatex">\(K=5\)</span>）上按真值 PBM 采样点击：<span class="arithmatex">\(\theta_k=1/k\)</span>，<span class="arithmatex">\(\zeta_{q,d}=0.9(y_{q,d}/4)+0.1\)</span>；日志策略为 2 层 64 单元 MLP 的 Plackett-Luce 排序器（30 个随机训练 query 监督训练）。</li>
+<li><strong>评估协议</strong>: 在<strong>测试集</strong>上计算点击的<strong>平均对数似然</strong>（越高越好），15 次独立运行，Student-<span class="arithmatex">\(t\)</span>（df=14）95% 置信区间；不确定性质量因无标准指标，采用<strong>分布可视化 + 均值/置信度统计量</strong>（<span class="arithmatex">\(\mu_{q,d}\)</span>、<span class="arithmatex">\(\nu_{q,d}\)</span> 的均值与样本标准差）间接评估。</li>
+<li><strong>对比基线</strong>: 点式 PBM（同结构 MLP 直接输出 <span class="arithmatex">\(\zeta\)</span>）、朴素 MC + baseline correction、自归一化（±b.c.）、自归一化+条件化（±b.c.）；训练 1500 epoch，batch 12k（认知）/35k（点式）。</li>
 </ul>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
+<p>测试集平均对数似然（<span class="arithmatex">\(10^4\)</span> 量级，越高越好；数值取自图 2 收敛区间）：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">方法</th>
+<th style="text-align: center;">Istella-S</th>
+<th style="text-align: center;">MSLR-Web10k</th>
+<th style="text-align: center;">收敛速度</th>
+<th style="text-align: left;">备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Pointwise PBM</td>
+<td style="text-align: center;">≈ -4.55</td>
+<td style="text-align: center;">≈ -3.30</td>
+<td style="text-align: center;">&gt;1200 epoch 未收敛</td>
+<td style="text-align: left;">点估计基线</td>
+</tr>
+<tr>
+<td style="text-align: left;">Naïve MC + b.c.</td>
+<td style="text-align: center;">≈ -4.55（几乎不升）</td>
+<td style="text-align: center;">≈ -3.30（几乎不升）</td>
+<td style="text-align: center;">失败</td>
+<td style="text-align: left;">梯度不稳</td>
+</tr>
+<tr>
+<td style="text-align: left;">Self-norm.</td>
+<td style="text-align: center;">≈ -4.30</td>
+<td style="text-align: center;">≈ -3.10</td>
+<td style="text-align: center;">中等</td>
+<td style="text-align: left;">系统性低估参数</td>
+</tr>
+<tr>
+<td style="text-align: left;">Self-norm. + b.c.</td>
+<td style="text-align: center;">略差于 Self-norm.</td>
+<td style="text-align: center;">略差于 Self-norm.</td>
+<td style="text-align: center;">中等</td>
+<td style="text-align: left;">b.c. 反而有害</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Self-norm. + Cond.</strong></td>
+<td style="text-align: center;"><strong>≈ -4.05（最优）</strong></td>
+<td style="text-align: center;"><strong>≈ -2.90（最优）</strong></td>
+<td style="text-align: center;"><strong>~100 epoch</strong></td>
+<td style="text-align: left;">分布贴合真值</td>
+</tr>
+<tr>
+<td style="text-align: left;">Self-norm. + Cond. + b.c.</td>
+<td style="text-align: center;">与上行相当</td>
+<td style="text-align: center;">与上行相当</td>
+<td style="text-align: center;">~100 epoch</td>
+<td style="text-align: left;">b.c. 无增益</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>说明：原文以学习曲线（图 2）呈现，未给单点表格；上表为曲线收敛平台期的读数量级，趋势在两数据集上高度一致且 95% CI 不重叠。</p>
+</blockquote>
+<figure class="paper-figure">
+  <img alt="图2：使用不同方法训练的点式PBM和认知PBM在1500个训练轮次中预测的测试集点击的对数似然。X轴：训练轮次；Y轴：测试集上点击的平均对数似然。阴影区域表示使用自由度为14的学生t分布计算的95%置信区间。结果基于15次独立运行。" src="../../../../../assets/papers/2607.18712v1/figure_2.png" /><figcaption>图2：使用不同方法训练的点式PBM和认知PBM在1500个训练轮次中预测的测试集点击的对数似然。X轴：训练轮次；Y轴：测试集上点击的平均对数似然。阴影区域表示使用自由度为14的学生t分布计算的95%置信区间。结果基于15次独立运行。</figcaption>
+</figure>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">配置</th>
+<th style="text-align: center;">对数似然</th>
+<th style="text-align: left;">位置偏置分布形态</th>
+<th style="text-align: left;">相关性 <span class="arithmatex">\(\mu\)</span>/<span class="arithmatex">\(\nu\)</span> 行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">w/o 自归一化（Naïve+b.c.）</td>
+<td style="text-align: center;">最差，几乎不学习</td>
+<td style="text-align: left;">极宽、无信息</td>
+<td style="text-align: left;"><span class="arithmatex">\(\mu\)</span> 的 s.s.d≈0（所有文档同值），<span class="arithmatex">\(\nu\)</span> 极低且无区分</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o 条件化（仅 Self-norm.）</td>
+<td style="text-align: center;">中等</td>
+<td style="text-align: left;">过度集中且<strong>系统性低估</strong></td>
+<td style="text-align: left;"><span class="arithmatex">\(\nu\)</span> 持续增大 → 过度自信</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o 熵正则（<span class="arithmatex">\(\lambda=0\)</span>）</td>
+<td style="text-align: center;">最优</td>
+<td style="text-align: left;">贴合真值</td>
+<td style="text-align: left;">置信度偏高</td>
+</tr>
+<tr>
+<td style="text-align: left;"><span class="arithmatex">\(\lambda=10^{-3}\)</span></td>
+<td style="text-align: center;">近似最优</td>
+<td style="text-align: left;">均值略移、部分变宽</td>
+<td style="text-align: left;"><span class="arithmatex">\(\nu\)</span> 下降，仍可用</td>
+</tr>
+<tr>
+<td style="text-align: left;"><span class="arithmatex">\(\lambda=0.25\)</span></td>
+<td style="text-align: center;">显著下降</td>
+<td style="text-align: left;">过宽、不可用</td>
+<td style="text-align: left;">置信度崩塌</td>
+</tr>
+</tbody>
+</table>
+<figure class="paper-figure">
+  <img alt="图3：使用不同方法优化的认知PBM预测的分布以及点式PBM的预测。" src="../../../../../assets/papers/2607.18712v1/figure_3.png" /><figcaption>图3：使用不同方法优化的认知PBM预测的分布以及点式PBM的预测。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="图4：优化过程中认知PBM的相关性分布统计。X轴：训练轮次；Y轴：所有查询-文档对q,d上预测均值μq,d和置信度νq,d的平均值或采样标准差。" src="../../../../../assets/papers/2607.18712v1/figure_4.png" /><figcaption>图4：优化过程中认知PBM的相关性分布统计。X轴：训练轮次；Y轴：所有查询-文档对q,d上预测均值μq,d和置信度νq,d的平均值或采样标准差。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="图5：正则化对各种统计量的影响。X轴：训练轮次；Y轴：所指示指标的值。" src="../../../../../assets/papers/2607.18712v1/figure_5.png" /><figcaption>图5：正则化对各种统计量的影响。X轴：训练轮次；Y轴：所指示指标的值。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="图6：在权重λ=0.001和λ=0.25下应用熵正则化获得的位置偏差分布（参见图3）。" src="../../../../../assets/papers/2607.18712v1/figure_6.png" /><figcaption>图6：在权重λ=0.001和λ=0.25下应用熵正则化获得的位置偏差分布（参见图3）。</figcaption>
+</figure>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>认知模型不是"用精度换不确定性"，而是双赢</strong>：Self-norm.+Cond. 的测试对数似然高于点式 PBM，且 100 epoch 收敛 vs. 点式 1200 epoch 仍未收敛；作者归因于 <span class="arithmatex">\(\nu\)</span> 带来的<strong>中性初始化</strong>（初始近似均匀分布），而点式模型被迫以 logit 初始化"自信地"押注约 0.5 的错误初值。</li>
+<li><strong>条件化是分布正确性的分水岭</strong>：仅自归一化时 <span class="arithmatex">\(\theta_1\)</span>–<span class="arithmatex">\(\theta_5\)</span> 被系统性低估（如 Istella 上 <span class="arithmatex">\(\theta_2\)</span> 收敛到 0.37 而真值 0.50），加入位置条件化后五个位置分布均覆盖真值（0.50/0.33/0.25/0.20 附近），说明降方差直接转化为参数可辨识性。</li>
+<li><strong>熵正则只能"温和使用"</strong>：<span class="arithmatex">\(\lambda\le10^{-3}\)</span> 时似然几乎不降而 <span class="arithmatex">\(\nu\)</span> 明显下降（不确定性更诚实）；<span class="arithmatex">\(\lambda=0.25\)</span> 时似然大幅下滑且位置分布退化为无信息宽分布——这与证据学习"最优点收敛到 Dirac"的理论批评一致，说明熵正则是启发式补丁而非原理性修正。</li>
+</ol>
+<figure class="paper-figure">
+  <img alt="图7：使用不同单一特征作为排序器时预期点击数的点式预测和认知预测。垂直线表示真实值。" src="../../../../../assets/papers/2607.18712v1/figure_7.png" /><figcaption>图7：使用不同单一特征作为排序器时预期点击数的点式预测和认知预测。垂直线表示真实值。</figcaption>
+</figure>
+<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
 <ul>
-<li><strong>梯度估计技术消融</strong>（图 2/3/4）：朴素估计 → 分布极平坦、<span class="arithmatex">\(\mu\)</span> 标准差近零（所有文档同值），完全失败；仅自归一化 → 分布过窄、系统性低估所有参数；自归一化+条件化 → 分布集中于真值附近，<span class="arithmatex">\(\mu_{q,d}\)</span> 与 <span class="arithmatex">\(\nu_{q,d}\)</span> 标准差高（能区分不同 query-doc），最合理。<strong>条件化是捕获正确分布形状的关键贡献项</strong>。</li>
-<li><strong>熵正则消融</strong>（图 5/6）：<span class="arithmatex">\(\lambda\le10^{-3}\)</span> 几乎不损似然但降低平均置信度 <span class="arithmatex">\(\nu\)</span>；<span class="arithmatex">\(\lambda=0.25\)</span> 导致似然与置信度大幅下降、位置偏置分布过宽不可用。结论：适度正则可维持近最优似然，极端正则会失效。</li>
-<li>消融对照未显式做参数量对齐，但点估计与认知模型共享相同网络骨架（仅输出头不同），属较严格控制。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 PBM/EM 类点击模型与 IPS 无偏 LTR（Joachims 2017、Wang 2018），本文首次给出<strong>上下文相关</strong>的分布估计而非倾向点值；相比 Liu et al. BBM 的贝叶斯查表模型，本文用特征网络泛化到未见 query-item，解决长尾不可估问题；相比 Knyazev &amp; Oosterhuis (RecSys'23) 的 Beta 置信度推荐，本文把 Beta 证据学习搬到<strong>位置偏置解耦</strong>这一更病态的乘积似然场景并给出专用优化。</li>
+<li><strong>可迁移亮点</strong>: ① "对低维变量条件化 + 对高维变量采样"的降方差套路可直接用于任何含全局/局部两层隐变量的生成式推荐模型；② 自归一化梯度（softmax 加权策略梯度）是训练似然极小的概率乘积模型（如曝光-点击联合生成模型）的通用稳定器。</li>
+<li><strong>审稿级局限批判</strong>: ① 评估为<strong>半合成</strong>，真值 PBM 与模型假设完全一致，真实日志下的模型错配（model misspecification）未检验；② 认知分布形状<strong>无客观指标</strong>，仅靠可视化与间接统计量判断，且证据学习已知会收敛到 Dirac，分布宽度的"正确性"缺乏理论保证；③ 训练需 <span class="arithmatex">\(60\times60\)</span> 采样，成本高于点式模型，工业级日志规模下的可扩展性未讨论。</li>
+<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐</li>
 </ul>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
-<ul>
-<li><strong>未见数据泛化</strong>：认知 PBM 在测试集（未见 query-doc）上仍能给出合理不确定性，而查表式贝叶斯模型无法处理未见/长尾文档（定性对比，原文未做分桶数值表）。</li>
-<li><strong>关键超参</strong>：熵正则权重 <span class="arithmatex">\(\lambda\)</span>（0 → 0.25 扫描，<span class="arithmatex">\(10^{-3}\)</span> 为温和有效区间）；采样数 <span class="arithmatex">\(S=60\)</span>（条件化时 <span class="arithmatex">\(S_{pos}=S_{rel}=60\)</span>）；训练 epoch 1500。</li>
-<li><strong>下游任务（排序器评估，图 7）</strong>：对三个单特征排序器预测期望点击数，认知分布多数质量落在真值附近，精度与点估计相当，但额外提供误差范围指示；点估计个体预测误差较大且无置信度。</li>
-<li><strong>线上 A/B 测试</strong>: 原文仅包含半合成离线实验，无线上 A/B。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li>首个上下文认知型点击模型，将证据深度学习引入 PBM，为 IPS 去偏与离线策略评估提供"带置信度的倾向/相关性"，可直接迁移到推荐系统的无偏评估与探索-利用。</li>
-<li>自归一化 + 位置条件化梯度估计是通用技巧，可迁移到任何高维潜变量边缘似然的蒙特卡洛优化（如贝叶斯双塔、生成式推荐的潜变量训练）。</li>
-<li>中性初始化带来的收敛加速是一个有价值的经验发现。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>理论收敛缺陷</strong>：作者自承证据深度学习的最优解会坍缩为 Dirac delta（引 Bengs et al.、Juergens et al.），本文目标同样存在此问题，仅靠熵正则+早停作启发式缓解，缺乏理论保证。</li>
-<li><strong>评估主观性</strong>：认知分布"形状是否正确"无客观指标，仅靠可视化目测；半合成设置虽可控，但真值 PBM 假设与真实点击行为存在差距，泛化性存疑。</li>
-<li><strong>缺少效率报告</strong>：未报告训练/推理耗时、显存，60×60 采样在 <span class="arithmatex">\(|\mathcal{D}|\)</span> 巨大时的可扩展性未量化。</li>
-<li><strong>无真实工业数据/线上验证</strong>，下游排序器评估仅 3 个单特征排序器，规模有限。</li>
-<li>与点估计 PBM 的似然对比未完全排除初始化差异这一混淆因素（作者亦承认是"speculate"）。</li>
-</ul>
-<h2 id="rating">Rating (四维评分)</h2>
-<ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （首个认知型点击模型，问题切入新颖；但证据深度学习框架本身非首创）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （半合成可控、15 次运行带 CI，但缺客观不确定性度量与效率报告，无真实数据）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （推导完整、诚实讨论理论缺陷，符号略密）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （为无偏评估提供置信度有实用潜力，但采样开销与理论缺陷限制直接落地；代码暂未开源）</li>
-</ul>
+<h2 id="_1">论文图表</h2>
+<figure class="paper-figure">
+  <img alt="图1：基于位置的点击模型的两种深度学习实现方式的示意图比较。" src="../../../../../assets/papers/2607.18712v1/figure_1.png" /><figcaption>图1：基于位置的点击模型的两种深度学习实现方式的示意图比较。</figcaption>
+</figure>
 
 
 

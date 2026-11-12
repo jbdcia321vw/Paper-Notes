@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][对话推荐与智能体仿真] 提出 InPE 标注数据集与 COPE 混合专家架构，将对话推荐建模为结构化动作空间上的序贯决策，实现阶段感知的偏好诱导策略动态切换。">
+        <meta name="description" content="[SIGIR 2026][对话推荐与智能体仿真] 提出 InPE 标注数据集与 COPE 分层 MoE 架构，将偏好引出建模为阶段感知的策略选择，Recall@10 提升 14.6%。">
       
       
       
@@ -108,18 +108,18 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 对话推荐与智能体仿真, 对话策略/多轮交互, 偏好诱导策略, 混合专家MoE, 阶段感知路由" />
+<meta name="keywords" content="SIGIR 2026, 对话推荐与智能体仿真, 重排, 偏好引出策略, 混合专家, 阶段感知路由" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
 
 <meta property="article:tag" content="对话推荐与智能体仿真" />
 
-<meta property="article:tag" content="对话策略/多轮交互" />
+<meta property="article:tag" content="重排" />
 
-<meta property="article:tag" content="偏好诱导策略" />
+<meta property="article:tag" content="偏好引出策略" />
 
-<meta property="article:tag" content="混合专家MoE" />
+<meta property="article:tag" content="混合专家" />
 
 <meta property="article:tag" content="阶段感知路由" />
 
@@ -131,10 +131,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/agent_conversational_rec/when_and_how_to_ask_dynamic_preference_elicitation_strategies_for_conversat/" />
 <meta property="og:title" content="[Paper Note] When and How to Ask: Dynamic Preference Elicitation Strategies for Conversational Recommendation" />
-<meta property="og:description" content="[SIGIR 2026][对话推荐与智能体仿真] 提出 InPE 标注数据集与 COPE 混合专家架构，将对话推荐建模为结构化动作空间上的序贯决策，实现阶段感知的偏好诱导策略动态切换。" />
+<meta property="og:description" content="[SIGIR 2026][对话推荐与智能体仿真] 提出 InPE 标注数据集与 COPE 分层 MoE 架构，将偏好引出建模为阶段感知的策略选择，Recall@10 提升 14.6%。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] When and How to Ask: Dynamic Preference Elicitation Strategies for Conversational Recommendation" />
-<meta name="twitter:description" content="[SIGIR 2026][对话推荐与智能体仿真] 提出 InPE 标注数据集与 COPE 混合专家架构，将对话推荐建模为结构化动作空间上的序贯决策，实现阶段感知的偏好诱导策略动态切换。" />
+<meta name="twitter:description" content="[SIGIR 2026][对话推荐与智能体仿真] 提出 InPE 标注数据集与 COPE 分层 MoE 架构，将偏好引出建模为阶段感知的策略选择，Recall@10 提升 14.6%。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +160,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] When and How to Ask: Dynamic Preference Elicitation Strategies for Conversational Recommendation",
   "headline": "[Paper Note] When and How to Ask: Dynamic Preference Elicitation Strategies for Conversational Recommendation",
-  "description": "[SIGIR 2026][\u5bf9\u8bdd\u63a8\u8350\u4e0e\u667a\u80fd\u4f53\u4eff\u771f] \u63d0\u51fa InPE \u6807\u6ce8\u6570\u636e\u96c6\u4e0e COPE \u6df7\u5408\u4e13\u5bb6\u67b6\u6784\uff0c\u5c06\u5bf9\u8bdd\u63a8\u8350\u5efa\u6a21\u4e3a\u7ed3\u6784\u5316\u52a8\u4f5c\u7a7a\u95f4\u4e0a\u7684\u5e8f\u8d2f\u51b3\u7b56\uff0c\u5b9e\u73b0\u9636\u6bb5\u611f\u77e5\u7684\u504f\u597d\u8bf1\u5bfc\u7b56\u7565\u52a8\u6001\u5207\u6362\u3002",
+  "description": "[SIGIR 2026][\u5bf9\u8bdd\u63a8\u8350\u4e0e\u667a\u80fd\u4f53\u4eff\u771f] \u63d0\u51fa InPE \u6807\u6ce8\u6570\u636e\u96c6\u4e0e COPE \u5206\u5c42 MoE \u67b6\u6784\uff0c\u5c06\u504f\u597d\u5f15\u51fa\u5efa\u6a21\u4e3a\u9636\u6bb5\u611f\u77e5\u7684\u7b56\u7565\u9009\u62e9\uff0cRecall@10 \u63d0\u5347 14.6%\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/agent_conversational_rec/when_and_how_to_ask_dynamic_preference_elicitation_strategies_for_conversat/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/agent_conversational_rec/when_and_how_to_ask_dynamic_preference_elicitation_strategies_for_conversat/",
   "inLanguage": "zh-CN",
@@ -168,13 +168,13 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u5bf9\u8bdd\u63a8\u8350\u4e0e\u667a\u80fd\u4f53\u4eff\u771f, \u5bf9\u8bdd\u7b56\u7565/\u591a\u8f6e\u4ea4\u4e92, \u504f\u597d\u8bf1\u5bfc\u7b56\u7565, \u6df7\u5408\u4e13\u5bb6MoE, \u9636\u6bb5\u611f\u77e5\u8def\u7531",
+  "keywords": "SIGIR 2026, \u5bf9\u8bdd\u63a8\u8350\u4e0e\u667a\u80fd\u4f53\u4eff\u771f, \u91cd\u6392, \u504f\u597d\u5f15\u51fa\u7b56\u7565, \u6df7\u5408\u4e13\u5bb6, \u9636\u6bb5\u611f\u77e5\u8def\u7531",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u5bf9\u8bdd\u63a8\u8350\u4e0e\u667a\u80fd\u4f53\u4eff\u771f" },
-    { "@type": "Thing", "name": "\u5bf9\u8bdd\u7b56\u7565/\u591a\u8f6e\u4ea4\u4e92" },
-    { "@type": "Thing", "name": "\u504f\u597d\u8bf1\u5bfc\u7b56\u7565" },
-    { "@type": "Thing", "name": "\u6df7\u5408\u4e13\u5bb6MoE" },
+    { "@type": "Thing", "name": "\u91cd\u6392" },
+    { "@type": "Thing", "name": "\u504f\u597d\u5f15\u51fa\u7b56\u7565" },
+    { "@type": "Thing", "name": "\u6df7\u5408\u4e13\u5bb6" },
     { "@type": "Thing", "name": "\u9636\u6bb5\u611f\u77e5\u8def\u7531" }
   ],
   
@@ -3951,10 +3951,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -3965,7 +3965,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -3973,22 +3973,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -3996,32 +3996,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4048,12 +4026,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4071,7 +4049,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4079,10 +4057,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4095,10 +4073,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations-rating" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
       
     </span>
   </a>
@@ -4106,10 +4084,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#rating" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rating (四维评分)
+        论文图表
       
     </span>
   </a>
@@ -4135,9 +4113,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][对话推荐与智能体仿真] 提出 InPE 标注数据集与 COPE 混合专家架构，将对话推荐建模为结构化动作空间上的序贯决策，实现阶段感知的偏好诱导策略动态切换。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][对话推荐与智能体仿真] 提出 InPE 标注数据集与 COPE 分层 MoE 架构，将偏好引出建模为阶段感知的策略选择，Recall@10 提升 14.6%。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 对话推荐与智能体仿真 · 对话策略/多轮交互 · 偏好诱导策略 · 混合专家MoE · 阶段感知路由</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 对话推荐与智能体仿真 · 重排 · 偏好引出策略 · 混合专家 · 阶段感知路由</p>
   
 </aside>
   
@@ -4165,21 +4143,21 @@
       
       
       
-        <span class="md-tag">对话策略/多轮交互</span>
+        <span class="md-tag">重排</span>
       
     
       
       
       
       
-        <span class="md-tag">偏好诱导策略</span>
+        <span class="md-tag">偏好引出策略</span>
       
     
       
       
       
       
-        <span class="md-tag">混合专家MoE</span>
+        <span class="md-tag">混合专家</span>
       
     
       
@@ -4196,160 +4174,154 @@
   
 
 
-<h1 id="when-and-how-to-ask-dynamic-preference-elicitation-strategies-for-conversational-recommendation">When and How to Ask: Dynamic Preference Elicitation Strategies for Conversational Recommendation (何时与如何提问：对话推荐中的动态偏好诱导策略)</h1>
+<h1 id="when-and-how-to-ask-dynamic-preference-elicitation-strategies-for-conversational-recommendation">When and How to Ask: Dynamic Preference Elicitation Strategies for Conversational Recommendation (何时与如何提问：对话推荐中的动态偏好引出策略)</h1>
 <ul>
 <li><strong>会议/期刊</strong>: SIGIR 2026</li>
-<li><strong>推荐链路定位</strong>: 对话策略层 (Dialogue Policy) / 端到端生成式 (End-to-End Generative) — 系统在每一轮决定"是否诱导偏好、用何种策略诱导、是否推荐"</li>
-<li><strong>研究方向</strong>: 对话推荐与智能体仿真 (agent_conversational_rec) / 大语言模型推荐 (llm_rec)</li>
-<li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2607.06765v1">https://arxiv.org/abs/2607.06765v1</a></li>
-<li><strong>开源代码</strong>: <a href="https://github.com/juanfacabian/InPE">https://github.com/juanfacabian/InPE</a> （数据集与代码仓库）</li>
+<li><strong>作者与机构</strong>: Feng Xia, Xi Wang (University of Sheffield); Shuo Zhang (Bloomberg)</li>
+<li><strong>推荐链路定位</strong>: 对话交互策略层（端到端生成式对话推荐）</li>
+<li><strong>研究方向</strong>: 对话推荐与智能体仿真 / 大语言模型推荐</li>
+<li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2607.06765v1">论文原文链接</a></li>
+<li><strong>开源代码</strong>: <a href="https://github.com/juanfacabian/InPE">开源代码仓库链接</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对对话推荐系统 (CRS) 中"何时提问、如何提问"这一被忽视的问题，作者通过 328 人用户研究实证发现偏好诱导策略具有<strong>阶段依赖性</strong>（早期属性型提问有效、后期物品型对比更优），据此构建了带细粒度策略标注的 <strong>InPE</strong> 数据集（基于 INSPIRED，6,719 条 turn 级样本），并提出 <strong>COPE</strong>——以冻结 Qwen3-8B 为骨干、LoRA 专家 + 两级硬路由的混合专家架构。在 InPE 上 Recall@10 达 0.314（较最强基线 ReFICR 的 0.274 提升约 14.6%），成对胜率 0.604。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>现有对话推荐系统（CRS）普遍采用单一、静态的偏好引出策略（多为属性提问），忽视了"何时问、怎么问"随对话阶段动态变化这一核心问题。本文通过 328 人用户研究证实：早期阶段属性式提问占优（63%），后期物品式提问反超（65%），据此构建 InPE 细粒度标注数据集，并提出 COPE——基于冻结 LLM 主干 + 分层硬路由 MoE 的策略感知架构。在 InPE 上 Full-Ranking 协议下 Recall@10 达 0.314，较最强基线 ReFICR 相对提升 14.6%，成对胜率 0.604。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 对话推荐系统 (CRS) 通过多轮自然语言交互主动收集用户偏好。现有偏好诱导方法按 Gao et al. 综述分为两大类：<strong>属性型 (attribute-based)</strong>——询问"你喜欢什么类型电影"等属性问题；<strong>物品型 (item-based)</strong>——呈现具体物品让用户比较/选择（如成对比较、多选一）。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>单一静态策略</strong>：绝大多数 CRS 在整个对话中固定使用一种诱导策略（属性型常被当作默认），缺乏跨对话阶段的动态切换机制。</li>
-<li><strong>物品型诱导被低估</strong>：现有工作大量聚焦属性问题的生成与排序（Priyogi、Zou et al.、Lei et al.、Ren et al.），物品型策略仅在有限或 ad hoc 场景使用。</li>
-<li><strong>主动式策略缺乏细粒度上下文感知</strong>：已有主动式 CRS（如基于 RL 的图策略、MCMIPL 多选问题）依赖固定阶段启发式或单一主动行为，缺少细粒度、上下文感知的策略切换。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 用户偏好随对话推进从"抽象"自然演化到"具体"，因此不存在普适最优的单一策略；但现有 CRS 数据集<strong>缺乏策略级标注</strong>，无法支撑阶段感知的建模与学习。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者先做<strong>用户研究 (Pilot Study)</strong>：328 名众包参与者、8 个对话场景（覆盖偏好探索/精化/推荐后调整三阶段）。结果（Figure 1）显示：早期阶段属性型选择占比高达 63%，随偏好具体化物品型稳步上升并在后期反超（后期约 65%）。同时 54%/59% 用户认为单一属性型/物品型策略"多数情况有效"，但仅 21%/25% 认为"所有情况都够用"。这直接引出三个 RQ 与"结构化动作空间 + 序贯决策"的建模思路。</li>
+<li><strong>主流范式</strong>: 现有 CRS 的偏好引出分为属性式（问类型/导演）与物品式（呈现具体物品供比较）两大类，但绝大多数系统在整段对话中固定使用单一策略，属性式常被当作默认选项。</li>
+<li><strong>前人局限</strong>: 其一，静态策略无法适配用户偏好从"抽象"到"具体"的自然演化，早期有效的问题在后期变得低效；其二，现有主动式 CRS 多聚焦"是否提问"的二元决策，缺乏对"用哪种策略提问"的细粒度建模，且缺少带策略级标注的公开数据。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 用户研究显示策略偏好呈显著阶段依赖——属性式在阶段 1 获 63% 选择率，物品式在阶段 8 升至 65%；且 54%/59% 用户认为单一策略仅在"多数情况"有效，仅 21%/25% 认为"始终"有效。</li>
+<li><strong>本文切入点</strong>: 将对话推荐重构为结构化动作空间上的序贯决策，用 MoE 显式分离"决策执行通路"，让不同策略专家各司其职。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户集 <span class="arithmatex">\(\mathcal{U}\)</span>、物品集 <span class="arithmatex">\(\mathcal{V}\)</span>。</li>
-<li>第 <span class="arithmatex">\(t\)</span> 轮对话上下文 <span class="arithmatex">\(C_t = \{u_1, s_1, \dots, u_{t-1}, s_{t-1}, u_t\}\)</span>，其中 <span class="arithmatex">\(u_i, s_i\)</span> 分别为用户与系统话语。</li>
-<li>策略 <span class="arithmatex">\(\pi: C_t \to A_t\)</span>，动作 <span class="arithmatex">\(A_t = \langle a_t, \sigma_t, \phi_t \rangle\)</span> 为三元组：</li>
-<li><span class="arithmatex">\(a_t \in \mathcal{A}_{act}\)</span>：高层意图 ∈ {Preference Elicitation, Item Recommendation, General Chat}；</li>
-<li><span class="arithmatex">\(\sigma_t \in \mathcal{A}_{pe}\)</span>：诱导策略 ∈ {Attribute, Item, Hybrid}；</li>
-<li><span class="arithmatex">\(\phi_t \in \mathcal{A}_{rec}\)</span>：推荐目标（排序逻辑/优先级）。</li>
-<li>骨干：Qwen3-8B（冻结），LoRA rank <span class="arithmatex">\(r=8\)</span>、<span class="arithmatex">\(\alpha=16\)</span>，最大序列长度 2048 tokens。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：对话上下文 <span class="arithmatex">\(C_t\)</span> → 冻结 LLM 提取末位隐状态 <span class="arithmatex">\(h_t\)</span> → 两级路由器（任务级 → 策略级）预测专家索引 → 激活对应 LoRA 专家生成响应/推荐。训练时用 ground-truth 标签做 teacher-forced 路由，推理时用路由器预测。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>COPE 以冻结的 Qwen3-8B 为共享主干，在其旁挂载多个轻量 LoRA 适配器作为"专家"（偏好引出专家再细分为属性/物品/混合三个子专家，另有推荐专家与通用交互专家）。每轮对话先由共享主干编码上下文得到末位隐状态，再经两级路由器依次预测任务类型与引出策略，硬路由激活对应专家生成回复；推荐轮额外接物品排序头做对比学习。训练时用真值标签教师强制路由，推理时用预测路由，实现"决策—执行"解耦。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 对话上下文 C_t (用户/系统多轮话语)"] --&gt; B["冻结 LLM 骨干 Qwen3-8B 提取 h_t"]
-    B --&gt; C["任务级路由器: Elicit / Recommend / General"]
-    C --&gt;|Elicit| D["策略级路由器: Attribute / Item / Hybrid"]
-    C --&gt;|Recommend| E["Recommendation Expert + Item Ranking Head"]
-    C --&gt;|General| F["General Interaction Expert"]
-    D --&gt; G["Elicitation Experts (Attr/Item/Hybrid)"]
-    E --&gt; H["生成响应 / 排序打分"]
+    A["对话上下文 C_t"] --&gt; B["冻结 LLM 主干编码 h_t"]
+    B --&gt; C["任务级路由器: Elicit/Recommend/General"]
+    C --&gt;|Elicit| D["策略级路由器: Attr/Item/Hybrid"]
+    C --&gt;|Recommend| E["推荐专家 + 物品排序头"]
+    C --&gt;|General| F["通用交互专家"]
+    D --&gt; G["属性/物品/混合子专家"]
+    E --&gt; H["回复生成 / 物品排序"]
     F --&gt; H
     G --&gt; H</code></pre>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 显式决策分解的概率建模</strong>。传统 LLM-based CRS 直接最大化 <span class="arithmatex">\(P(s_t|C_t)\)</span> 的 token 似然（式 1），决策逻辑隐式嵌入序列。COPE 引入中间监督信号 <span class="arithmatex">\(A_t\)</span>，将响应生成分解为：</p>
-<div class="arithmatex">\[P(s_t|C_t) = \sum_{A_t \in \mathcal{A}} P(s_t|C_t, A_t)\, P(A_t|C_t)\]</div>
-<p>物理直觉：把"说什么"与"做什么决策"解耦，使策略选择成为可监督、可解释的显式变量。</p>
-<p><strong>(2) 层级硬路由的 MoE 输出</strong>。所有专家共享冻结骨干 <span class="arithmatex">\(\Phi\)</span>，仅各自持有轻量 LoRA 参数 <span class="arithmatex">\(\Delta\Psi_k\)</span>：</p>
-<div class="arithmatex">\[y_t = \Phi(C_t) + \sum_{k \in \mathcal{E}} \mathbb{I}(\gamma_t = k)\cdot \Delta\Psi_k(C_t)\]</div>
-<p>其中 <span class="arithmatex">\(\gamma_t\)</span> 为激活专家索引。与常规 MoE（追求容量扩展）不同，COPE 的 MoE 目的是<strong>分离决策执行通路</strong>、学习策略专属行为模式；硬路由（单专家激活）避免梯度干扰。</p>
-<p><strong>(3) 两级路由器</strong>。取骨干末位隐状态 <span class="arithmatex">\(h_t = \text{LLM}(C_t;\Theta_{frozen})[-1]\)</span>，先做任务级 softmax：</p>
-<div class="arithmatex">\[P(a_t|C_t) = \text{Softmax}(W_{task} h_t + b_{task})\]</div>
-<p>当 <span class="arithmatex">\(a_t = \text{Elicit}\)</span> 时再做策略级 softmax：</p>
-<div class="arithmatex">\[P(\sigma_t|C_t, a_t=\text{Elicit}) = \text{Softmax}(W_{str} h_t + b_{str})\]</div>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>总损失</strong>（多目标加权和）：</li>
-<li>路由损失 <span class="arithmatex">\(\mathcal{L}_{route} = -\lambda_\alpha \sum_t \log P(\alpha_t^*|C_t) - \lambda_\sigma \sum_t \mathbb{I}(\alpha_t^*=\text{Elicit})\log P(\sigma_t^*|C_t,\alpha_t^*)\)</span>；</li>
-<li>专家 SFT 损失 <span class="arithmatex">\(\mathcal{L}_{sft} = -\sum_i \log P(x_i|x_{&lt;i}, C_t;\Delta\Psi_{\gamma_t})\)</span>；</li>
-<li>推荐对比损失（InfoNCE，温度 <span class="arithmatex">\(\tau\)</span>）：
-    $<span class="arithmatex">\(\mathcal{L}_{rec} = -\log \frac{\exp(\text{sim}(e_u,e_{i^+})/\tau)}{\exp(\text{sim}(e_u,e_{i^+})/\tau) + \sum_{j=1}^{N}\exp(\text{sim}(e_u,e_{i^-}^{(j)})/\tau)}\)</span>$</li>
-<li>权重（Table 5）：<span class="arithmatex">\(w_{sft}=0.5\)</span>，<span class="arithmatex">\(w_{task}=1.0\)</span>，<span class="arithmatex">\(w_{eli}=1.0\)</span>，<span class="arithmatex">\(w_{rec}=1.0\)</span>，LoRA dropout <span class="arithmatex">\(P_{drop}=0.05\)</span>。</li>
-<li><strong>负采样策略</strong>：推荐专家使用 InfoNCE 对比损失，物品嵌入由预训练 LLM 文本表征初始化；原文未明确报告负例采样方式（Uniform / In-batch / Hard Negative 均未说明），<strong>原文未报告</strong>具体负例构造细节。</li>
-<li><strong>训练/推理机制</strong>：训练阶段 teacher-forced 路由（仅更新被激活专家 + 路由器），推理阶段由路由器预测 <span class="arithmatex">\(\hat\gamma_t = \arg\max P(\alpha_t,\sigma_t|C_t)\)</span> 动态选专家。优化器 AdamW，峰值学习率 <span class="arithmatex">\(2\times10^{-5}\)</span>，warmup 0.03，batch size 8 × 4 梯度累积 = 有效 32，1 epoch，单卡 A100 80GB、BF16。</li>
-<li><strong>复杂度</strong>：由于骨干冻结、仅训练 LoRA 与路由器，可训练参数量极小；推理时每轮需一次 LLM 前向 + 两次轻量线性路由，无需 Beam Search 展开（响应由单专家生成）。原文未报告具体 ms/request 延迟与峰值显存数值。</li>
-</ul>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>结构化动作空间与决策显式化</strong>：传统 LLM-based CRS 仅优化 token 级似然 <span class="arithmatex">\(\mathcal{L}_{LM}\)</span>，决策逻辑隐式埋在序列里。本文将系统动作定义为三元组 <span class="arithmatex">\(A_t=\langle a_t,\sigma_t,\phi_t\rangle\)</span>（意图、引出策略、推荐目标），并将生成分解为 <span class="arithmatex">\(P(s_t|C_t)=\sum_{A_t}P(s_t|C_t,A_t)P(A_t|C_t)\)</span>。直觉是：把"何时问/怎么问"提升为可监督的中间变量，使策略选择成为可学习、可解释的显式目标。</p>
+</li>
+<li>
+<p><strong>分层硬路由 MoE</strong>：常规 MoE 用于扩容，本文用于分离行为通路。输出为 <span class="arithmatex">\(y_t=\Phi(C_t)+\sum_{k}\mathbb{I}(\gamma_t=k)\cdot\Delta\Psi_k(C_t)\)</span>，其中 <span class="arithmatex">\(\gamma_t\)</span> 由两级 Softmax 路由器给出：<span class="arithmatex">\(P(a_t|C_t)=\text{Softmax}(W_{task}h_t+b_{task})\)</span>，仅当 <span class="arithmatex">\(a_t=\text{Elicit}\)</span> 时再算 <span class="arithmatex">\(P(\sigma_t|C_t,a_t)\)</span>。硬路由保证各专家梯度互不干扰，避免多目标间的表征拉扯。</p>
+</li>
+<li>
+<p><strong>多任务损失与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}_{total}=w_{sft}\mathcal{L}_{sft}+w_{task}\mathcal{L}_{route}^{\alpha}+w_{eli}\mathcal{L}_{route}^{\sigma}+w_{rec}\mathcal{L}_{rec}\)</span>，其中推荐专家用 InfoNCE 对比损失（物品嵌入由预训练 LLM 文本表征初始化，负样本为批内负例）。LoRA 秩 <span class="arithmatex">\(r=8\)</span>、<span class="arithmatex">\(\alpha=16\)</span>，仅训练适配器与路由器，推理时单专家激活，开销与单适配器模型相当。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 基于 INSPIRED 语料构建 InPE，原始 INSPIRED 含 999 段多轮对话、平均 21.15 轮/对话、共 10,576 个对话 turn。LLM（Qwen3-32B）初筛出 3,437 个候选 turn（32.5%），人工验证确认 60.07% 需要偏好诱导。最终 InPE 含 <strong>6,719 个 turn 级样本</strong>。</li>
+<li><strong>数据集与预处理</strong>: InPE 由 INSPIRED 增强而来，LLM（Qwen3-32B）初筛 10,576 轮中的 3,437 轮（32.5%）为候选，人工确认 60.07% 确需引出，最终得 6,719 个轮级样本。</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">INSPIRED (原始)</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">10,576 turns / 999 dialogues</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">电影领域多轮对话</td>
-</tr>
-<tr>
-<td style="text-align: left;">InPE (本文)</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">6,719 turn-level samples</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">任务标签 + 策略标签 + 目标物品 + 成对响应偏好</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>标注统计 (Table 1)</strong>: Q1 偏好诱导需求 Yes 2,063 (60.02%) / No 1,374 (39.97%)；Q2 策略类型 Attribute 497 (24.09%) / Item 595 (28.84%) / Hybrid 969 (46.97%)。对话行为分布：General 46.3%、Elicitation 19.8%、Recommendation 33.9%。</li>
-<li><strong>标注质量</strong>: 三人独立标注 + 多数投票，Krippendorff's <span class="arithmatex">\(\alpha\)</span>：Q1 = 0.244（较低，反映"是否需要诱导"的主观性），Q2 = 0.531（中等，策略类型可区分度较好）。人工偏好评估（Table 3）：策略感知响应优于原始响应，Item 89.34%、Attribute 95.50%、Hybrid 89.85%。</li>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: <strong>Ratio Split 6:2:2</strong>（train/val/test），按 turn 级样本划分。<strong>注意</strong>：按 turn 随机划分存在同一对话的相邻 turn 跨集合的潜在信息泄露风险，原文未讨论此问题。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 推荐质量用 <strong>Recall@1/10/50</strong>，但原文<strong>未明确说明是 Full-Ranking 还是 Sampled Ranking</strong>（未报告候选集规模与负例比例），这是评估协议上的重要缺口。</li>
-<li><strong>评价指标</strong>: (i) 推荐质量 Recall@k；(ii) 决策质量 Task Accuracy、Strategy Accuracy；(iii) 响应质量 Pairwise Win Rate、Log-likelihood Margin <span class="arithmatex">\(\Delta LL = \mathbb{E}[\frac{\log P(y_w)}{|y_w|} - \frac{\log P(y_l)}{|y_l|}]\)</span>。原文<strong>未报告</strong>多随机种子方差或配对显著性检验。</li>
-</ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
-<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p><strong>推荐性能 (Table 6)</strong>：</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">邻域/KG 基线 (NBCRS/KBRD/KGSF/TREA)</th>
-<th style="text-align: center;">LLM 最强基线 (ReFICR)</th>
-<th style="text-align: center;">本文 COPE</th>
-<th style="text-align: center;">相对提升 (vs ReFICR)</th>
+<th style="text-align: center;">#Dialogues</th>
+<th style="text-align: center;">#Turn Samples</th>
+<th style="text-align: center;">任务分布</th>
+<th style="text-align: center;">策略分布</th>
+<th style="text-align: left;">标注说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">InPE</td>
-<td style="text-align: left;">Recall@1</td>
-<td style="text-align: center;">0.023–0.057</td>
-<td style="text-align: center;">0.135</td>
-<td style="text-align: center;"><strong>0.144</strong></td>
-<td style="text-align: center;">+6.67%</td>
-</tr>
-<tr>
-<td style="text-align: left;">InPE</td>
-<td style="text-align: left;">Recall@10</td>
-<td style="text-align: center;">0.145–0.165</td>
-<td style="text-align: center;">0.274</td>
-<td style="text-align: center;"><strong>0.314</strong></td>
-<td style="text-align: center;">+14.60%</td>
-</tr>
-<tr>
-<td style="text-align: left;">InPE</td>
-<td style="text-align: left;">Recall@50</td>
-<td style="text-align: center;">0.210–0.346</td>
-<td style="text-align: center;">0.396</td>
-<td style="text-align: center;"><strong>0.442</strong></td>
-<td style="text-align: center;">+11.62%</td>
+<td style="text-align: center;">999</td>
+<td style="text-align: center;">6,719</td>
+<td style="text-align: center;">通用 46.3% / 引出 19.8% / 推荐 33.9%</td>
+<td style="text-align: center;">混合 46.97% / 物品 28.84% / 属性 24.09%</td>
+<td style="text-align: left;">三标注者多数投票，Krippendorff's <span class="arithmatex">\(\alpha\)</span>: Q1=0.244, Q2=0.531</td>
 </tr>
 </tbody>
 </table>
-<p>提示型 LLM 基线（Qwen3-8B R@10=0.094、Llama3-8B-Instruct R@10=0.086）显著落后，说明无任务微调与主动决策引导时 LLM 推荐能力有限。</p>
-<p><strong>响应质量成对评估 (Table 7)</strong>：</p>
+<ul>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 轮级样本按 6:2:2 比例划分训练/验证/测试。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 物品推荐采用 Recall@k（k=1/10/50）排序评测；决策质量用 Task Accuracy 与 Strategy Accuracy；回复质量用人工标注偏好对 <span class="arithmatex">\((y_w,y_l)\)</span> 计算成对胜率与对数似然边际 <span class="arithmatex">\(\Delta LL\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: 基线含邻域法 NBCRS、KG 法 KBRD/KGSF/TREA、LLM 增强法 ReFICR、零样本 Qwen3-8B 与 LLaMA3-8B-Instruct。主干 Qwen3-8B，学习率 <span class="arithmatex">\(2\times10^{-5}\)</span>，有效批大小 32，单卡 A100 80GB。</li>
+</ul>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
+<p>表 6 推荐性能（InPE，Recall@k）：</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">方法</th>
+<th style="text-align: left;">Method</th>
+<th style="text-align: center;">R@1</th>
+<th style="text-align: center;">R@10</th>
+<th style="text-align: center;">R@50</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">NBCRS</td>
+<td style="text-align: center;">0.023</td>
+<td style="text-align: center;">0.160</td>
+<td style="text-align: center;">0.273</td>
+</tr>
+<tr>
+<td style="text-align: left;">KBRD</td>
+<td style="text-align: center;">0.056</td>
+<td style="text-align: center;">0.145</td>
+<td style="text-align: center;">0.210</td>
+</tr>
+<tr>
+<td style="text-align: left;">KGSF</td>
+<td style="text-align: center;">0.057</td>
+<td style="text-align: center;">0.165</td>
+<td style="text-align: center;">0.256</td>
+</tr>
+<tr>
+<td style="text-align: left;">TREA</td>
+<td style="text-align: center;">0.047</td>
+<td style="text-align: center;">0.147</td>
+<td style="text-align: center;">0.346</td>
+</tr>
+<tr>
+<td style="text-align: left;">ReFICR</td>
+<td style="text-align: center;">0.135</td>
+<td style="text-align: center;">0.274</td>
+<td style="text-align: center;">0.396</td>
+</tr>
+<tr>
+<td style="text-align: left;">Qwen3-8B (zero-shot)</td>
+<td style="text-align: center;">0.013</td>
+<td style="text-align: center;">0.094</td>
+<td style="text-align: center;">0.156</td>
+</tr>
+<tr>
+<td style="text-align: left;">LLaMA3-8B-Instruct</td>
+<td style="text-align: center;">0.031</td>
+<td style="text-align: center;">0.086</td>
+<td style="text-align: center;">0.148</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>COPE (Ours)</strong></td>
+<td style="text-align: center;"><strong>0.144</strong></td>
+<td style="text-align: center;"><strong>0.314</strong></td>
+<td style="text-align: center;"><strong>0.442</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Improv. vs ReFICR</td>
+<td style="text-align: center;">+6.7%</td>
+<td style="text-align: center;">+14.6%</td>
+<td style="text-align: center;">+11.6%</td>
+</tr>
+</tbody>
+</table>
+<p>表 7 成对回复质量评估：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Method</th>
 <th style="text-align: center;">Win Rate↑</th>
 <th style="text-align: center;">Margin↑</th>
 </tr>
@@ -4377,12 +4349,12 @@
 </tr>
 </tbody>
 </table>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p><strong>Table 8 专家消融</strong>：</p>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<p>表 8 专家移除消融：</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">变体</th>
+<th style="text-align: left;">Variant</th>
 <th style="text-align: center;">Task Acc</th>
 <th style="text-align: center;">Eli Acc</th>
 <th style="text-align: center;">Recall@10</th>
@@ -4420,12 +4392,11 @@
 </tr>
 </tbody>
 </table>
-<p><strong>关键反直觉发现</strong>：移除全部专家的统一变体 (w/o all) 在 Task Acc、Eli Acc、Recall@10 上反而最高，但成对胜率最差 (0.525)。作者解释：单一 adapter 能学到稳定的决策与检索信号，但生成的是缺乏策略感知细节的通用响应。这暴露了<strong>准确率指标与生成质量指标之间的张力</strong>——也说明 COPE 的收益主要来自"响应质量/策略感知"而非纯排序精度。消融未严格控制参数量对齐（w/o all 可训练参数更少），存在混淆因素。</p>
-<p><strong>路由干预分析 (Table 9)</strong>：</p>
+<p>表 9 路由干预实验：</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Router 设置</th>
+<th style="text-align: left;">Router</th>
 <th style="text-align: center;">Task Acc</th>
 <th style="text-align: center;">ELI@1</th>
 <th style="text-align: center;">R@10</th>
@@ -4452,39 +4423,50 @@
 </tr>
 </tbody>
 </table>
-<p>Ground Truth 路由下 R@10 升至 0.342，说明<strong>专家本身有效，瓶颈在路由准确率</strong>（Prediction 仅 0.617 Task Acc）；随机路由则崩溃至 0.051，证明专家选择至关重要。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>策略感知是主要增益来源，而非 LLM 规模</strong>：零样本 Qwen3-8B 的 R@10 仅 0.094，远低于 COPE 的 0.314；同为 LLM 主干的 ReFICR 也落后 14.6%，说明显式建模引出策略比单纯依赖 LLM 隐能力更关键。</li>
+<li><strong>路由精度是当前瓶颈，专家本身已足够强</strong>：真值路由下 R@10 升至 0.342（较预测路由 +8.9%），而随机路由暴跌至 0.051，证明性能天花板由策略选择准确率（0.711）而非专家容量决定。</li>
+<li><strong>统一单适配器"指标虚高但体验差"</strong>：w/o all 变体在 Task Acc（0.639）与 Recall@10（0.335）上反而最高，但成对胜率仅 0.525，说明单一适配器倾向生成泛化回复，牺牲了策略感知的对话质量——这正是 MoE 分离通路的价值所在。</li>
+</ol>
+<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
 <ul>
-<li><strong>阶段分桶分析 (Figure 5)</strong>：路由激活呈现清晰的阶段模式——属性型策略集中于早期 turn，物品型在后期增多，Hybrid 全程稳定；子策略层面 <code>select</code> 在中后期主导（多关联 item/hybrid），<code>filling</code> 偏早期（关联 attribute，高效缩小候选空间），<code>confirm</code> 较少且集中于中间 turn。策略转移矩阵显示 GEN 是最常见的下一策略，REC 与 GEN 有显著自转移，ELI 自转移低、更多转向 GEN。</li>
-<li><strong>超参敏感度</strong>：原文仅报告 Table 5 的固定权重配置，<strong>未报告</strong> <span class="arithmatex">\(\tau\)</span>、<span class="arithmatex">\(\lambda_\alpha/\lambda_\sigma\)</span>、LoRA rank 或专家数量的敏感度曲线。</li>
-<li><strong>线上 A/B 测试</strong>：<strong>原文仅包含离线实验</strong>，无线上 A/B 结果。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 ReFICR 等 LLM 增强 CRS，本文不依赖 LLM 隐式习得策略，而是用显式动作空间 + 分层路由监督；相较 KBRD/KGSF 等 KG 法，本文不依赖外部知识图谱，转而挖掘对话内部的策略时序结构；相较传统 RL 主动式 CRS，本文用 MoE 硬路由替代策略梯度，训练更稳定。</li>
+<li><strong>可迁移亮点</strong>: (1) "教师强制路由训练 + 预测路由推理"的解耦范式可迁移至任意多意图对话系统；(2) 用 LLM 初筛 + 人工验证的半自动标注流程，可低成本复用于其他策略级标注任务。</li>
+<li><strong>审稿级局限批判</strong>: 其一，Q1 标注一致性仅 <span class="arithmatex">\(\alpha=0.244\)</span>，偏好引出必要性判断主观性强，标签噪声可能传导至路由监督；其二，仅在单一 InPE 数据集（源自 INSPIRED 电影域）验证，跨域泛化与在线 A/B 效果未知；其三，路由准确率 0.617 距真值上限仍有明显差距，级联误差在多轮对话中可能累积。</li>
+<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
 </ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>"阶段感知策略切换"的问题洞察</strong>有实证支撑（328 人用户研究 + 标注数据分布双重印证），可迁移到客服对话、教育辅导、电商导购等所有需要主动信息获取的交互系统。</li>
-<li><strong>结构化动作空间 + 显式决策分解</strong>（式 2）将隐式策略选择变为可监督变量，比纯 prompt 或纯 RL 更可控、可解释。</li>
-<li><strong>冻结骨干 + LoRA 专家 + 硬路由</strong>的参数高效范式，工程上易落地，且路由干预实验清晰定位了"瓶颈在路由而非专家"。</li>
-<li>
-<p>InPE 数据集填补了策略级细粒度标注的空白，具备独立基准价值。</p>
-</li>
-<li>
-<p><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</p>
-</li>
-<li><strong>评估协议不透明</strong>：Recall@k 未说明 Full-Ranking 还是 Sampled Ranking、候选集规模与负例构造；6:2:2 按 turn 随机划分可能造成同对话相邻 turn 跨集合泄露，削弱结论可信度。</li>
-<li><strong>消融结论自相矛盾</strong>：w/o all 在三个准确率/召回指标上均最优，却仅凭成对胜率判定 Full 模型"最鲁棒"，且未做参数量对齐控制，说服力不足。</li>
-<li><strong>路由准确率是硬瓶颈</strong>（Task Acc 0.617），而 Q1 标注的 Krippendorff's <span class="arithmatex">\(\alpha\)</span> 仅 0.244，标注噪声可能直接限制路由上限；作者未讨论标注噪声对路由学习的影响。</li>
-<li><strong>单数据集、单领域（电影）</strong>：仅在 InPE 上评估，缺乏跨领域（电商/音乐）与跨数据集泛化验证；基线中 KG 方法未针对 LLM 时代重训，比较公平性存疑。</li>
-<li><strong>统计严谨性缺失</strong>：无多随机种子方差、无显著性检验；无推理延迟/显存报告，工业落地价值难以量化。</li>
-<li><strong>"Hybrid 占比最高 (46.97%)"</strong> 与二分类用户研究（仅 attribute vs item）之间的张力未被充分解释。</li>
-</ul>
-<h2 id="rating">Rating (四维评分)</h2>
-<ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （阶段感知策略切换的问题定义 + 结构化动作空间 MoE 有新颖性，但 MoE/LoRA 组件本身较常规）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （用户研究与标注扎实，但排名协议不透明、划分有泄露风险、缺显著性检验、单数据集）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化清晰、公式完整、图表丰富；但消融解读与部分统计口径不够严谨）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （参数高效、数据集开源、路由机制可解释，落地门槛低；但缺延迟数据与线上验证）</li>
-</ul>
+<h2 id="_1">论文图表</h2>
+<figure class="paper-figure">
+  <img alt="图1：对话各阶段偏好引出策略的用户选择比例。x轴表示从抽象偏好到具体偏好的推进过程（阶段1–8），y轴表示基于属性和基于物品的策略选择比例。" src="../../../../../assets/papers/2607.06765v1/figure_1.png" /><figcaption>图1：对话各阶段偏好引出策略的用户选择比例。x轴表示从抽象偏好到具体偏好的推进过程（阶段1–8），y轴表示基于属性和基于物品的策略选择比例。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="图2：逐步标注流程概览。" src="../../../../../assets/papers/2607.06765v1/figure_2.png" /><figcaption>图2：逐步标注流程概览。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="表1：偏好引出与策略选择的总体标注统计。" src="../../../../../assets/papers/2607.06765v1/table_1.png" /><figcaption>表1：偏好引出与策略选择的总体标注统计。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="表2：案例研究：测试集中展示阶段感知策略使用的示例对话" src="../../../../../assets/papers/2607.06765v1/table_2.png" /><figcaption>表2：案例研究：测试集中展示阶段感知策略使用的示例对话</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="图3：标注对话轮次中不同引出策略的比例。" src="../../../../../assets/papers/2607.06765v1/figure_3.png" /><figcaption>图3：标注对话轮次中不同引出策略的比例。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="表3：不同策略类型下人类对策略感知回复的偏好。" src="../../../../../assets/papers/2607.06765v1/table_3.png" /><figcaption>表3：不同策略类型下人类对策略感知回复的偏好。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="表4：策略标注的标注者间一致性。" src="../../../../../assets/papers/2607.06765v1/table_4.png" /><figcaption>表4：策略标注的标注者间一致性。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="图4：我们提出的对话推荐框架概览。" src="../../../../../assets/papers/2607.06765v1/figure_4.png" /><figcaption>图4：我们提出的对话推荐框架概览。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="表5：关键超参数配置。" src="../../../../../assets/papers/2607.06765v1/table_5.png" /><figcaption>表5：关键超参数配置。</figcaption>
+</figure>
+<figure class="paper-figure">
+  <img alt="表7：在InPE数据集上的成对评估。" src="../../../../../assets/papers/2607.06765v1/table_7.png" /><figcaption>表7：在InPE数据集上的成对评估。</figcaption>
+</figure>
 
 
 
