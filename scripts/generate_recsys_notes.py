@@ -302,6 +302,22 @@ def extract_code_and_paper_urls(text: str, default_paper_url: str = "") -> tuple
     return paper_url, code_url, clean_code_urls
 
 
+def _normalize_unicode_escapes(text: str) -> str:
+    """把 PDF 中字面量 \\uXXXX 解码为真实 Unicode，并移除孤立代理字符。"""
+    decoded = text
+    if "\\u" in text:
+        decoded = re.sub(
+            r"\\u([0-9a-fA-F]{4})",
+            lambda m: chr(int(m.group(1), 16)),
+            text,
+        )
+        try:
+            decoded = decoded.encode("utf-16", "surrogatepass").decode("utf-16")
+        except UnicodeDecodeError:
+            decoded = decoded.encode("utf-16", "surrogatepass").decode("utf-16", "replace")
+    return decoded.encode("utf-8", "ignore").decode("utf-8")
+
+
 def extract_text_from_pdf(pdf_path: Path, max_chars: int = 52000) -> str:
     """使用 pypdf 提取 PDF 论文全文文本。"""
     try:
@@ -311,7 +327,7 @@ def extract_text_from_pdf(pdf_path: Path, max_chars: int = 52000) -> str:
         for page in reader.pages:
             pages_text.append(page.extract_text() or "")
         full_text = "\n".join(pages_text)
-        return full_text[:max_chars]
+        return _normalize_unicode_escapes(full_text)[:max_chars]
     except Exception as e:
         print(f"  [Warn] 解析 PDF 失败 ({pdf_path.name}): {e}")
         return ""
@@ -424,6 +440,25 @@ def apply_figure_placeholders(md_note: str, figures: list, rel_paths: dict) -> s
             continue
         used.add(token)
         md_note = md_note.replace(token, figure_html(fig, rel_path))
+
+    md_note = re.sub(
+        r"(</figure>)[ \t]*(?:图|表|Figure|Table)\s*\d+[^\n]*",
+        r"\1",
+        md_note,
+        flags=re.IGNORECASE,
+    )
+
+    caption_norms = {
+        re.sub(r"\s+", "", fig.get("caption_zh") or fig.get("caption") or "")
+        for fig in figures
+    }
+
+    def _drop_duplicate_caption_line(match):
+        line = match.group(1)
+        return "</figure>" if re.sub(r"\s+", "", line) in caption_norms else match.group(0)
+
+    md_note = re.sub(r"</figure>\n([^\n]+)", _drop_duplicate_caption_line, md_note)
+    md_note = re.sub(r"\[\[(?:FIG|TABLE):\d+\]\]", "", md_note)
 
     unused = [fig for fig in figures if fig["token"] not in used]
     if unused:

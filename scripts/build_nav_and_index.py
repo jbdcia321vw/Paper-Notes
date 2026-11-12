@@ -408,7 +408,7 @@ def build_year_pages(docs_dir: Path, notes: list, years: list):
             count = year_map[year].get(venue_code, 0)
             icon = "🏛️" if vinfo["type"] == "conference" else "📖"
             venue_cards.append(
-                f'  <a class="recsys-card" href="../venues/{venue_code}/{year}/">'
+                f'  <a class="recsys-card" href="../../venues/{venue_code}/{year}/">'
                 f'    <div class="recsys-card-head">'
                 f'      <span class="recsys-card-title">{icon} {vinfo["name"]}</span>'
                 f'      <span class="recsys-badge">{count} 篇</span>'

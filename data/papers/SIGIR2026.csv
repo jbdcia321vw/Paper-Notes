@@ -24,7 +24,7 @@ Rethinking Semantic Collaborative Integration: Why Alignment Is Not Enough,2604.
 WPGRec: Wavelet Packet Guided Graph Enhanced Sequential Recommendation,2604.21305v1,https://arxiv.org/abs/2604.21305v1,,sequential_rec,SIGIR,2026
 Discrete Preference Learning for Personalized Multimodal Generation,2604.20434v1,https://arxiv.org/abs/2604.20434v1,,multimodal_rec,SIGIR,2026
 Modular Representation Compression: Adapting LLMs for Efficient and Effective Recommendations,2604.18146v2,https://arxiv.org/abs/2604.18146v2,,llm_rec,SIGIR,2026
-R&F-Inventory: A Large-Scale Dataset for Monotonic Inventory Estimation in Reach and Frequency Advertising,2604.16821v1,https://arxiv.org/abs/2604.16821v1,https://github.com/pengyunshan/RF-Inventory,ctr_feature_interaction,SIGIR,2026
+R&F-Inventory: A Large-Scale Dataset for Monotonic Inventory Estimation in Reach and Frequency Advertising,2604.16821v1,https://arxiv.org/abs/2604.16821v1,https://github.com/pengyunshan/RF-Inventory,debias_fairness_industrial,SIGIR,2026
 Meituan Merchant Business Diagnosis via Policy-Guided Dual-Process User Simulation,2604.15190v1,https://arxiv.org/abs/2604.15190v1,,agent_conversational_rec,SIGIR,2026
 GenRec: A Preference-Oriented Generative Framework for Large-Scale Recommendation,2604.14878v1,https://arxiv.org/abs/2604.14878v1,,generative_rec,SIGIR,2026
 Well Begun is Half Done: Training-Free and Model-Agnostic Semantically Guaranteed User Representation Initialization for Multimodal Recommendation,2604.14839v1,https://arxiv.org/abs/2604.14839v1,,multimodal_rec,SIGIR,2026
@@ -39,7 +39,7 @@ Pay Attention to Sequence Split: Uncovering the Impacts of Sub-Sequence Splittin
 FAVE: Flow-based Average Velocity Establishment for Sequential Recommendation,2604.04427v1,https://arxiv.org/abs/2604.04427v1,,generative_rec,SIGIR,2026
 FLAME: Condensing Ensemble Diversity into a Single Network for Efficient Sequential Recommendation,2604.04038v3,https://arxiv.org/abs/2604.04038v3,https://github.com/woo-joo/FLAME_SIGIR26,sequential_rec,SIGIR,2026
 "Semantic IDs for Recommender Systems at Snapchat: Use Cases, Technical Challenges, and Design Choices",2604.03949v1,https://arxiv.org/abs/2604.03949v1,,generative_rec,SIGIR,2026
-CS3: Efficient Online Capability Synergy for Two-Tower Recommendation,2604.22761v2,https://arxiv.org/abs/2604.22761v2,,collaborative_filtering,SIGIR,2026
+CS3: Efficient Online Capability Synergy for Two-Tower Recommendation,2604.19269v1,https://arxiv.org/abs/2604.19269v1,,collaborative_filtering,SIGIR,2026
 SIGMA: A Semantic-Grounded Instruction-Driven Generative Multi-Task Recommender at AliExpress,2602.22913v2,https://arxiv.org/abs/2602.22913v2,,generative_rec,SIGIR,2026
 Conv-FinRe: A Conversational and Longitudinal Benchmark for Utility-Grounded Financial Recommendation,2602.16990v2,https://arxiv.org/abs/2602.16990v2,,agent_conversational_rec,SIGIR,2026
 Additive Control Variates Dominate Self-Normalisation in Off-Policy Evaluation,2602.14914v3,https://arxiv.org/abs/2602.14914v3,,rl_bandit_rec,SIGIR,2026
