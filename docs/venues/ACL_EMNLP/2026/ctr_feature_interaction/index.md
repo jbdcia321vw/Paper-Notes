@@ -1,4 +1,6 @@
-# [ACL / EMNLP (RecSys & CRS) 2026] 🎯 CTR/CVR 预估与特征交叉
+# 🎯 CTR/CVR 预估与特征交叉
+
+**ACL / EMNLP (RecSys & CRS) 2026** · **0** 篇论文解读
 
 > **方向说明**：显式/隐式高阶特征交叉网络 (DCN/EulerNet)、转化率延迟反馈 (Delayed Feedback) 与概率校准
 

@@ -265,6 +265,10 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐
+
+### 四、图表与图注语言规范
+- 正文引用图表时统一使用中文“图 n / 表 n”，不要写 Figure/Table。
+- 所有图注（figcaption）必须使用中文；保留数学符号、数据集名、模型名与专有名词。
 """
 
 
@@ -313,11 +317,78 @@ def extract_text_from_pdf(pdf_path: Path, max_chars: int = 52000) -> str:
         return ""
 
 
+def _zh_figure_label(label: str) -> str:
+    """把 Figure 1 / Table 2 转成中文“图 1 / 表 2”，作为翻译失败时的兜底。"""
+    label = label or ""
+    m = re.search(r"\b(?:Figure|Fig\.?)\s*(\d+)", label, re.IGNORECASE)
+    if m:
+        return f"图 {m.group(1)}"
+    m = re.search(r"\bTable\s*(\d+)", label, re.IGNORECASE)
+    if m:
+        return f"表 {m.group(1)}"
+    return "论文图表"
+
+
+def translate_figure_captions(figures: list, api_key: str, base_url: str, model: str) -> list:
+    """将英文图注批量翻译为中文，写入 fig['caption_zh']。"""
+    if not figures:
+        return figures
+    if not api_key:
+        for fig in figures:
+            fig.setdefault("caption_zh", _zh_figure_label(fig.get("label")))
+        return figures
+
+    captions = {
+        fig["token"]: re.sub(r"\s+", " ", fig.get("caption", "")).strip()
+        for fig in figures
+        if fig.get("caption")
+    }
+    if not captions:
+        for fig in figures:
+            fig.setdefault("caption_zh", _zh_figure_label(fig.get("label")))
+        return figures
+
+    prompt = (
+        "请把下列论文图注翻译成简洁、准确的中文。保留 Figure/Table 编号（分别译为“图/表”）、"
+        "数学符号、数据集名、模型名与专有名词，不要添加原文没有的信息。"
+        "所有图注必须输出中文，不得保留英文原句。"
+        "只输出一个 JSON 对象，键为 token，值为中文图注，不要输出 Markdown 代码块。\n\n"
+        + json.dumps(captions, ensure_ascii=False, indent=2)
+    )
+    try:
+        raw = call_chat_completion(
+            [{"role": "user", "content": prompt}],
+            api_key=api_key,
+            base_url=base_url,
+            model=model,
+            temperature=0.0,
+            timeout=120,
+            response_format={"type": "json_object"},
+        )
+        raw = re.sub(r"^```(?:json)?\s*", "", raw)
+        raw = re.sub(r"\s*```$", "", raw)
+        data = json.loads(raw)
+        if not isinstance(data, dict):
+            raise ValueError("响应不是 JSON 对象")
+        mapping = data.get("translations") if isinstance(data.get("translations"), dict) else data
+        for fig in figures:
+            zh = mapping.get(fig["token"])
+            if isinstance(zh, str) and zh.strip():
+                fig["caption_zh"] = re.sub(r"\s+", " ", zh).strip()
+            else:
+                fig["caption_zh"] = _zh_figure_label(fig.get("label"))
+    except Exception as e:
+        print(f"  [Warn] 图注翻译失败，使用中文编号兜底: {e}")
+        for fig in figures:
+            fig.setdefault("caption_zh", _zh_figure_label(fig.get("label")))
+    return figures
+
+
 def format_figure_context(figures: list) -> str:
     """把图表清单压缩成适合放进 LLM 提示词的文本。"""
     lines = []
     for fig in figures:
-        caption = re.sub(r"\s+", " ", fig.get("caption", "")).strip()
+        caption = re.sub(r"\s+", " ", fig.get("caption_zh") or fig.get("caption", "")).strip()
         if len(caption) > 320:
             caption = caption[:317] + "..."
         if not caption:
@@ -327,7 +398,7 @@ def format_figure_context(figures: list) -> str:
 
 
 def figure_html(fig: dict, rel_path: str) -> str:
-    caption = fig.get("caption") or fig.get("label") or "Paper figure"
+    caption = fig.get("caption_zh") or fig.get("caption") or fig.get("label") or "论文图表"
     alt = html.escape(caption, quote=False).replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]").replace("\n", " ")
     cap = html.escape(caption, quote=False)
     src = urllib.parse.quote(rel_path, safe="/.-_~")
@@ -542,7 +613,8 @@ def call_llm_api(
             "\n\n### 可用论文图表（请插入占位符）\n"
             "请在正文最相关的位置插入下列占位符（例如方法、实验设置或结果段落），"
             "每张图最多使用一次。占位符必须原样保留，不要改写、不要编造图片路径，"
-            "也不要把占位符放进代码块：\n"
+            "也不要把占位符放进代码块。图注已提供中文版本；正文引用图表时统一写"
+            "“图 n / 表 n”，不要写 Figure/Table：\n"
             f"{figure_context}\n"
         )
     messages = [
@@ -683,6 +755,8 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
                 dpi=args.figure_dpi,
                 max_figures=args.max_figures,
             )
+            if figures and not args.no_figure_translation:
+                figures = translate_figure_captions(figures, args.api_key, args.base_url, args.model)
             figure_context = format_figure_context(figures)
             if figures:
                 print(f"  [Figures] {item['title'][:45]} -> {len(figures)} 张图表")
@@ -748,6 +822,7 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
                 "filename": fig["filename"],
                 "label": fig["label"],
                 "page": fig["page"],
+                "caption_zh": fig.get("caption_zh", ""),
             }
             for fig in figures
         ],
@@ -827,6 +902,7 @@ def main():
     parser.add_argument("--allow-abstract", action="store_true", help="允许仅凭摘要生成笔记（不推荐，默认关闭）")
     parser.add_argument("--overwrite", action="store_true", help="强制覆盖已存在的同名笔记")
     parser.add_argument("--no-figures", action="store_true", help="不提取、不插入 PDF 图表")
+    parser.add_argument("--no-figure-translation", action="store_true", help="不将图注翻译为中文")
     parser.add_argument("--max-figures", type=int, default=8, help="每篇论文最多提取图表数（默认 8）")
     parser.add_argument("--figure-dpi", type=int, default=200, help="图表渲染 DPI（默认 200）")
     parser.add_argument("--api-key", default="", help="大模型 API Key（或设置 LLM_API_KEY / DEEPSEEK_API_KEY）")

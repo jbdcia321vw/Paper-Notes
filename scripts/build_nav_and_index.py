@@ -12,6 +12,7 @@ build_nav_and_index.py
 5. 双维度 + 年份导航配置文件 (mkdocs.yml)
 """
 
+import html
 import re
 from pathlib import Path
 from collections import defaultdict
@@ -143,6 +144,7 @@ def parse_frontmatter(md_path: Path) -> dict:
         "paper_url": "",
         "code_url": "",
         "categories": [],
+        "tags": [],
         "path": md_path,
     }
     m = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
@@ -173,6 +175,25 @@ def parse_frontmatter(md_path: Path) -> dict:
         if c in CATEGORIES and c not in valid_cats:
             valid_cats.append(c)
     meta["categories"] = valid_cats
+
+    tags = []
+    in_tags = False
+    for line in fm.splitlines():
+        if re.match(r"^tags:\s*", line):
+            in_tags = True
+            inline_tags = re.match(r"^tags:\s*\[(.*?)\]", line)
+            if inline_tags:
+                tags.extend(t.strip().strip("'\"") for t in inline_tags.group(1).split(","))
+                in_tags = False
+            continue
+        if not in_tags:
+            continue
+        tag_match = re.match(r"^\s*-\s*(.+?)\s*$", line)
+        if tag_match:
+            tags.append(tag_match.group(1).strip("'\""))
+        elif line.strip():
+            in_tags = False
+    meta["tags"] = [t for t in tags if t]
     return meta
 
 
@@ -189,6 +210,31 @@ def format_resource_links(item: dict) -> str:
     if item.get("code_url"):
         links.append(f"[💻 代码]({item['code_url']})")
     return " · ".join(links) if links else "-"
+
+
+def _esc(value: str) -> str:
+    return html.escape(value or "", quote=True)
+
+
+def note_url(rel_from_docs: str) -> str:
+    """把 venues/.../note.md 转成 use_directory_urls 下的 note/ 目录链接。"""
+    return rel_from_docs[:-3] + "/" if rel_from_docs.endswith(".md") else rel_from_docs.rstrip("/") + "/"
+
+
+def render_paper_dl(items: list, href_for) -> str:
+    """按原版 Paper-Notes 的 <dl><dt><dd> 结构渲染论文列表。"""
+    lines = ["<dl>"]
+    for item in items:
+        title = _esc(item.get("title", ""))
+        desc = re.sub(r"^(?:\[[^\]]+\]\s*)+", "", item.get("description") or "").strip()
+        desc = _esc(desc or "点击查看核心思想与实验协议精读")
+        href = _esc(href_for(item))
+        lines.append(f'<dt><strong><a href="{href}">{title}</a></strong></dt>')
+        lines.append("<dd>")
+        lines.append(f"<p>{desc}</p>")
+        lines.append("</dd>")
+    lines.append("</dl>")
+    return "\n".join(lines)
 
 
 def parse_note_path(md_file: Path, docs_dir: Path):
@@ -306,17 +352,10 @@ def build_topic_pages(docs_dir: Path, notes: list):
         if not items:
             page_lines.append("*暂无论文笔记。*")
         else:
-            page_lines.extend([
-                "| 会议/期刊 | 年份 | 论文标题 (点击查看 5 分钟精读) | 原文与开源代码 | 核心速览 |",
-                "| :---: | :---: | :--- | :---: | :--- |",
-            ])
-            for item in sorted(items, key=lambda x: (x["venue"], x["year"], x["title"])):
-                rel_link = "../" + item["rel_from_docs"]
-                desc = md_cell(item["description"] or "点击查看核心思想与实验协议精读")
-                res_links = format_resource_links(item)
-                page_lines.append(
-                    f"| `{item['venue']}` | {item['year']} | [**{md_cell(item['title'])}**]({rel_link}) | {res_links} | {desc} |"
-                )
+            sorted_items = sorted(items, key=lambda x: (x["venue"], x["year"], x["title"].lower()))
+            page_lines.append(
+                render_paper_dl(sorted_items, lambda item: "../../" + note_url(item["rel_from_docs"]))
+            )
 
         (topics_dir / f"{cat_slug}.md").write_text("\n".join(page_lines) + "\n", encoding="utf-8")
 
@@ -479,23 +518,11 @@ def build_venue_pages(docs_dir: Path, notes: list, years: list):
             year_dir = venue_dir / year
             year_dir.mkdir(parents=True, exist_ok=True)
             total_y = sum(len(items) for items in venue_map[venue_code][year].values())
-
-            cat_cards = ['<div class="recsys-grid">']
-            for cat_slug, cinfo in CATEGORIES.items():
-                c_dir = year_dir / cat_slug
-                c_dir.mkdir(parents=True, exist_ok=True)
-                c_items = venue_map[venue_code][year].get(cat_slug, [])
-                c_icon = CAT_ICONS.get(cat_slug, "📌")
-                cat_cards.append(
-                    f'  <a class="recsys-card" href="{cat_slug}/">'
-                    f'    <div class="recsys-card-head">'
-                    f'      <span class="recsys-card-title">{c_icon} {cinfo["title"]}</span>'
-                    f'      <span class="recsys-badge">{len(c_items)} 篇</span>'
-                    f'    </div>'
-                    f'    <div class="recsys-card-desc">{cinfo["desc"]}</div>'
-                    f'  </a>'
-                )
-            cat_cards.append("</div>")
+            active_cats = [
+                (cat_slug, cinfo, venue_map[venue_code][year].get(cat_slug, []))
+                for cat_slug, cinfo in CATEGORIES.items()
+                if venue_map[venue_code][year].get(cat_slug, [])
+            ]
 
             year_lines = [
                 "---",
@@ -503,17 +530,29 @@ def build_venue_pages(docs_dir: Path, notes: list, years: list):
                 "  - toc",
                 "---",
                 "",
-                PORTAL_STYLE,
-                "",
                 f"# {icon} {vinfo['name']} {year} 推荐系统论文解读",
                 "",
-                f"- **英文全称**: {vinfo['full_name']}",
-                f"- **级别定位**: {vinfo['tier']} · 当前年份共收录 **{total_y}** 篇笔记",
+                f"{total_y} 篇 {vinfo['name']} {year} 论文解读，覆盖 {len(active_cats)} 个推荐系统细分方向。"
+                "每篇均包含一句话总结、核心思想、实验设置与审稿级批判，5 分钟读懂一篇论文。",
                 "",
-                "## 按推荐系统细分方向浏览",
-                "",
-                "\n".join(cat_cards),
+                '<div class="conf-index">',
             ]
+            for cat_slug, cinfo, c_items in active_cats:
+                c_icon = CAT_ICONS.get(cat_slug, "📌")
+                sorted_items = sorted(c_items, key=lambda x: x["title"].lower())
+                year_lines.append("<hr />")
+                year_lines.append(f'<h2 id="{cat_slug}">{c_icon} {cinfo["title"]} ({len(c_items)})</h2>')
+                year_lines.append(
+                    render_paper_dl(
+                        sorted_items[:10],
+                        lambda item, cs=cat_slug: f"{cs}/{item['path'].stem}/",
+                    )
+                )
+                if len(c_items) > 10:
+                    year_lines.append(
+                        f'<p><a href="{cat_slug}/">查看全部{len(c_items)}篇「{cinfo["title"]}」论文 →</a></p>'
+                    )
+            year_lines.append("</div>")
             (year_dir / "index.md").write_text("\n".join(year_lines) + "\n", encoding="utf-8")
 
             for cat_slug, cinfo in CATEGORIES.items():
@@ -521,7 +560,9 @@ def build_venue_pages(docs_dir: Path, notes: list, years: list):
                 c_items = venue_map[venue_code][year].get(cat_slug, [])
                 c_icon = CAT_ICONS.get(cat_slug, "📌")
                 c_lines = [
-                    f"# [{vinfo['name']} {year}] {c_icon} {cinfo['title']}",
+                    f"# {c_icon} {cinfo['title']}",
+                    "",
+                    f"**{vinfo['name']} {year}** · **{len(c_items)}** 篇论文解读",
                     "",
                     f"> **方向说明**：{cinfo['desc']}",
                     "",
@@ -529,15 +570,45 @@ def build_venue_pages(docs_dir: Path, notes: list, years: list):
                 if not c_items:
                     c_lines.append("*当前会议在该年份、该细分方向下暂无论文笔记。*")
                 else:
-                    c_lines.extend([
-                        "| 论文标题 (点击查看 5 分钟精读) | 原文与开源代码 | 核心速览 |",
-                        "| :--- | :---: | :--- |",
-                    ])
-                    for item in sorted(c_items, key=lambda x: x["title"]):
-                        res_links = format_resource_links(item)
-                        c_lines.append(
-                            f"| [**{md_cell(item['title'])}**]({item['path'].name}) | {res_links} | {md_cell(item['description'])} |"
-                        )
+                    cross_links = []
+                    for other_year, other_cats in venue_map[venue_code].items():
+                        if other_year == year:
+                            continue
+                        count = len(other_cats.get(cat_slug, []))
+                        if count:
+                            cross_links.append(
+                                f"[{vinfo['name']} {other_year} ({count})](../../{other_year}/{cat_slug}/)"
+                            )
+                    for other_venue, other_years in venue_map.items():
+                        if other_venue == venue_code:
+                            continue
+                        for other_year, other_cats in other_years.items():
+                            count = len(other_cats.get(cat_slug, []))
+                            if count:
+                                cross_links.append(
+                                    f"[{VENUES[other_venue]['name']} {other_year} ({count})]"
+                                    f"(../../../{other_venue}/{other_year}/{cat_slug}/)"
+                                )
+                    if cross_links:
+                        c_lines.append("📌 **同领域跨会议浏览：** " + " · ".join(cross_links))
+                        c_lines.append("")
+
+                    tag_counts = defaultdict(int)
+                    excluded = {vinfo["name"], f"{vinfo['name']} {year}", year, cinfo["title"]}
+                    for item in c_items:
+                        for tag in item.get("tags", []):
+                            if tag and tag not in excluded:
+                                tag_counts[tag] += 1
+                    hot = sorted(
+                        [(tag, n) for tag, n in tag_counts.items() if n >= 2],
+                        key=lambda x: (-x[1], x[0]),
+                    )[:8]
+                    if hot:
+                        c_lines.append("🔥 **高频主题：** " + " · ".join(f"{tag} ×{n}" for tag, n in hot))
+                        c_lines.append("")
+
+                    sorted_items = sorted(c_items, key=lambda x: x["title"].lower())
+                    c_lines.append(render_paper_dl(sorted_items, lambda item: item["path"].stem + "/"))
                 (c_dir / "index.md").write_text("\n".join(c_lines) + "\n", encoding="utf-8")
 
 

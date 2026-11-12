@@ -1,4 +1,6 @@
-# [ACL / EMNLP (RecSys & CRS) 2026] 🧠 大语言模型推荐 (LLM4Rec)
+# 🧠 大语言模型推荐 (LLM4Rec)
+
+**ACL / EMNLP (RecSys & CRS) 2026** · **0** 篇论文解读
 
 > **方向说明**：LLM 指令微调推荐、In-Context 列表重排、语义表征增强、大模型向轻量推荐模型知识蒸馏
 

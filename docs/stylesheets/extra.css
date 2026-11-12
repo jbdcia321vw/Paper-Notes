@@ -423,6 +423,20 @@
   contain-intrinsic-size: 0 80px;
 }
 
+.md-typeset .conf-index dl {
+  margin: 0.35rem 0 0.8rem;
+}
+.md-typeset .conf-index dt {
+  margin-top: 0.7rem;
+}
+.md-typeset .conf-index dd {
+  margin: 0.2rem 0 0 1.2rem;
+}
+.md-typeset .conf-index dd p {
+  margin: 0.1rem 0 0.35rem;
+  color: var(--md-default-fg-color--light);
+}
+
 /* ── Conference index intro block (above paper list) ── */
 
 /* 1) Stats bar: 4 numbers (notes / official / areas / coverage) */
