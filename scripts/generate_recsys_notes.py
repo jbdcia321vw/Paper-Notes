@@ -1,20 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-generate_recsys_notes.py
-支持四种填充模式（均按 venues/<VENUE>/<YEAR>/<category>/ 归档）：
-  1. 本地 PDF 文件夹批量全文精读：
-     python scripts/generate_recsys_notes.py --pdf-dir ./my_pdfs --venue SIGIR --year 2026
-  2. 按关键词从 arXiv 自动检索 + 下载 PDF 全文（仅建议本地试点）：
-     python scripts/generate_recsys_notes.py --venue SIGIR --year 2026 --arxiv-query "generative recommendation" --max-papers 5
-  3. 按策展 CSV 名单逐篇抓取 arXiv 全文（生产推荐）：
-     python scripts/generate_recsys_notes.py --papers-csv data/papers/SIGIR2026.csv
-  4. 一键遍历 16 大方向自动填充（仅本地试点，生产禁用）：
-     python scripts/generate_recsys_notes.py --seed-all-categories --venue RecSys --year 2026
-
-默认模型为 DeepSeek `deepseek-flash`（可用 LLM_MODEL 覆盖），API Key 支持
-`LLM_API_KEY` 或 `DEEPSEEK_API_KEY`，支持断点续传与并发。
-默认关闭 thinking 并限制输入/输出长度以降低 token 成本。
+generate_recsys_notes.py (v3.2 高密度精读 Note 版 —— 拒绝流水账，每篇 5 分钟读懂核心思想)
+核心改进：
+  1. 提示词定位为「高密度精读笔记 (Concise Paper Note)」而非「论文逐段复述流水账」：
+     - 全文严格控制在 1,800–2,600 字（约 2,500–3,500 Tokens），只写本文相对于前人的增量创新 (Delta)，砍掉常规符号罗列与基础公式抄写。
+     - 每一小节均设有明确的字数与条目上限（如背景 4 条短句、关键设计仅提炼 2-3 个核心创新点且每点限 150 字 + 1 个核心公式），既彻底根除超长截断报错，又让笔记可读性真正达到“5分钟读懂核心思想”。
+  2. 保留 arXiv 原生 HTML 公式/表格无损提取、YAML Frontmatter 自动修复与推荐系统评估协议核查。
 """
 
 import csv
@@ -69,7 +61,7 @@ CATEGORY_LIST_STR = "\n".join(
 
 DEFAULT_BASE_URL = "https://api.deepseek.com/v1"
 DEFAULT_MODEL = "deepseek-flash"
-DEFAULT_MAX_INPUT_CHARS = 36000
+DEFAULT_MAX_INPUT_CHARS = 65000
 DEFAULT_MAX_OUTPUT_TOKENS = 8192
 
 USAGE_LOCK = threading.Lock()
@@ -106,7 +98,6 @@ def _as_int(value) -> int:
 
 
 def record_usage(usage, model: str = "") -> None:
-    """累计 API usage，用于运行结束后的 token 与成本报告。"""
     if not isinstance(usage, dict):
         return
     prompt = _as_int(usage.get("prompt_tokens"))
@@ -139,7 +130,6 @@ def record_usage(usage, model: str = "") -> None:
 
 
 def is_peak_now() -> bool:
-    """DeepSeek 高峰时段：UTC 周一至周五 01:00-04:00、06:00-10:00。"""
     now = datetime.now(timezone.utc)
     if now.weekday() >= 5:
         return False
@@ -171,7 +161,6 @@ def _usage_cost_usd(usage: dict, model: str):
 
 
 def estimate_usage_cost_usd(model: str):
-    """按 DeepSeek 官方价估算本次运行成本；中国法定节假日未单独扣除。"""
     prices = _pricing_for_model(model)
     if not prices:
         return None
@@ -187,7 +176,6 @@ def print_usage_summary(
     elapsed_seconds: float = None,
     log: RunLog = None,
 ) -> None:
-    """打印 token、缓存命中率、总花费、平均每篇花费与耗时。"""
     if not USAGE_TOTALS["requests"] and elapsed_seconds is None:
         return
 
@@ -242,7 +230,6 @@ def print_usage_summary(
 
 
 def resolve_api_key(explicit: str = "") -> str:
-    """解析 API Key：显式参数 > LLM_API_KEY > DEEPSEEK_API_KEY。"""
     return (
         explicit
         or os.environ.get("LLM_API_KEY", "")
@@ -251,7 +238,6 @@ def resolve_api_key(explicit: str = "") -> str:
 
 
 def resolve_base_url(explicit: str = "") -> str:
-    """解析 Base URL：显式参数 > LLM_BASE_URL > DEEPSEEK_BASE_URL > DeepSeek 默认值。"""
     return (
         explicit
         or os.environ.get("LLM_BASE_URL", "")
@@ -261,7 +247,6 @@ def resolve_base_url(explicit: str = "") -> str:
 
 
 def resolve_model(explicit: str = "") -> str:
-    """解析模型名：显式参数 > LLM_MODEL > DEEPSEEK_MODEL > deepseek-flash。"""
     return (
         explicit
         or os.environ.get("LLM_MODEL", "")
@@ -276,21 +261,16 @@ def call_chat_completion(
     base_url: str,
     model: str,
     temperature: float = 0.0,
-    timeout: int = 180,
+    timeout: int = 240,
     response_format: dict = None,
     max_tokens: int = None,
     thinking: bool = False,
 ) -> str:
-    """调用兼容 OpenAI Chat Completions 的接口，返回 assistant 文本。
-
-    `thinking=False` 会显式关闭 DeepSeek 的思考模式，避免隐藏 reasoning token。
-    若第三方兼容接口不接受该字段，HTTP 400 时会自动去掉后重试一次。
-    """
     endpoint = base_url.rstrip("/") + "/chat/completions"
     payload = {"model": model, "messages": messages, "temperature": temperature}
     if response_format:
         payload["response_format"] = response_format
-    if max_tokens:
+    if max_tokens and max_tokens > 0:
         payload["max_tokens"] = max_tokens
     if thinking is not None:
         payload["thinking"] = {"type": "enabled" if thinking else "disabled"}
@@ -313,54 +293,56 @@ def call_chat_completion(
         res_json = _post(payload)
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", errors="replace")[:1200]
-        if e.code == 400 and "thinking" in payload:
-            payload.pop("thinking", None)
+        if e.code == 400:
+            if payload.get("max_tokens", 0) > 8192:
+                payload["max_tokens"] = 8192
+            else:
+                payload.pop("thinking", None)
             try:
                 res_json = _post(payload)
-            except urllib.error.HTTPError as retry_error:
-                retry_body = retry_error.read().decode("utf-8", errors="replace")[:1200]
-                raise RuntimeError(f"LLM HTTP {retry_error.code}: {retry_body}") from retry_error
+            except urllib.error.HTTPError as e2:
+                payload.pop("thinking", None)
+                payload.pop("max_tokens", None)
+                try:
+                    res_json = _post(payload)
+                except urllib.error.HTTPError as retry_error:
+                    retry_body = retry_error.read().decode("utf-8", errors="replace")[:1200]
+                    raise RuntimeError(f"LLM HTTP {retry_error.code}: {retry_body}") from retry_error
         else:
             raise RuntimeError(f"LLM HTTP {e.code}: {body}") from e
+
     record_usage(res_json.get("usage") if isinstance(res_json, dict) else None, model)
     try:
-        return res_json["choices"][0]["message"]["content"].strip()
+        choice = res_json["choices"][0]
+        return (choice["message"].get("content") or "").strip()
     except (KeyError, IndexError, TypeError) as e:
         raise RuntimeError(f"LLM 响应格式异常: {str(res_json)[:800]}") from e
 
 
-SYSTEM_PROMPT = f"""你是一位在推荐系统（Recommender Systems）与信息检索（Information Retrieval）领域深耕多年的资深研究员与顶会审稿人（SIGIR / RecSys / KDD / WWW / TOIS / TKDE）。
-请对输入的推荐系统学术论文全文进行严谨、深度的技术拆解，输出符合 Paper-Notes 规范的中文 Markdown 论文精读笔记（5分钟读懂核心思想与实验细节）。
+SYSTEM_PROMPT = f"""你是一位推荐系统（Recommender Systems）与信息检索（Information Retrieval）领域的资深研究员。
+你的任务是将输入的学术论文提炼为一篇**高信息密度、5分钟即可读懂核心思想的精读笔记（Concise Paper Note）**，而不是写冗长的全文翻译或逐段复述的流水账！
 
-### 一、16 大推荐系统正交分类归档要求
-请先从以下 16 个推荐系统细分方向中，为该论文选择 **1 个最核心的主分类 (primary_category)** 和 **1-2 个交叉分类 (secondary_categories)**：
+### 一、16 大推荐系统正交分类归档
+请从以下 16 个推荐系统细分方向中，为该论文选择 **1 个主分类** 和 **最多 1-2 个交叉分类**：
 {CATEGORY_LIST_STR}
 
-### 二、推荐系统领域审稿级拆解准则（核心硬性要求）
-1. **必须提取并展示论文原文 URL 与开源代码 URL**：
-   - 在 YAML Frontmatter 中必须准确填写 `paper_url: "论文原文链接"` 和 `code_url: "开源代码链接"`（若原文和正则预提取均未发现开源代码链接，则 `code_url: ""` 留空，并在正文元数据栏写“暂未开源”）。
-   - 在正文开头的元数据列表中，将论文原文与开源代码渲染为可点击的 Markdown 超链接。
-2. **严抠评估协议与数据划分 (Evaluation Protocol & Splitting)**：
-   - **过滤与正样本定义**：是否采用 `5-core` / `10-core` 过滤？隐式反馈如何界定正样本（全交互 vs. 评分阈值 $\\ge 4$ vs. 有效观看时长/购买）？
-   - **数据集划分策略**：是 **留一法 (Leave-One-Out, LOO)**、**按比例划分 (Ratio Split, 如 8:1:1)**、**全局时间戳切分 (Global Temporal Split，防数据穿越)**，还是 **冷启动/跨域划分 (Zero-shot / Cold-start / Overlapping-user Split)**？是否存在未来信息泄露（Data Leakage）风险？
-   - **候选集打分协议**：是无偏的 **全库排序 (Full-Ranking / All-Ranking，对全量未交互物品打分)**，还是有偏的 **负采样排序 (Sampled Ranking，如 1 正配 99/999 负样本)**？
-3. **还原张量维度、负采样与损失函数 (Algebraic & Training Rigor)**：
-   - 写明关键特征维度（Embedding 维度 $d$、多模态编码器如 CLIP/LLaMA/ResNet 及其原始维度、序列最大截断长度 $L$、RQ-VAE 码本层数与大小）。
-   - 写明训练阶段的**负采样策略**（Uniform 随机采样、In-batch 负采样、Popularity 采样、Dynamic Hard Negative 难负例挖掘，或免负采样）及完整损失函数公式（BPR、InfoNCE 温度系数 $\\tau$、BCE、扩散/流匹配损失等）。
-4. **计算开销与统计严谨性 (Efficiency & Statistical Rigor)**：
-   - 区分**离线预处理/构图/量化耗时**与**在线训练单 Epoch 耗时 / 在线单次推理延迟 (ms/request)** 及峰值显存 (Peak GPU Memory)。
-   - 标注实验是否包含多随机种子方差、配对显著性检验（Paired $t$-test / Wilcoxon / Bootstrap $p < 0.05$）以及控制变量的消融基线（如参数量对齐、图度数匹配等）。
-5. **100% 忠实于原文数据**：所有实验表格数值、数据集统计量必须严格提取自论文原文，严禁凭空捏造数据；若原文未提及某项指标或未做线上 A/B 测试，请明确注明“原文未报告”。
+### 二、「高密度精读 Note」写作铁律（严禁流水账，严控篇幅！）
+1. **定位是“精炼笔记 (Note)”，全文总字数严格控制在 1,800–2,600 中文字符以内**：
+   - **砍掉一切常识性流水账**：不要单独开章节罗列常规数学符号（如解释什么是用户集 $\\mathcal{{U}}$、物品集 $\\mathcal{{I}}$），不要抄写常规 Transformer Attention、GCN 邻接矩阵归一化或标准 BPR/InfoNCE 的基础教科书定义！
+   - **只写本文的“增量创新 (Delta)”**：每个模块只用 2-3 句话讲清楚 **「前人卡在哪里 $\\to$ 本文改了哪一步算子/损失 $\\to$ 核心公式长什么样 $\\to$ 为什么这样改有效（物理直觉）」**。
+   - 若开启了思考模式（Thinking），思考过程请控制在 800 字以内，把输出配额留给完整的实验表格与洞察。
+2. **推荐系统核心要素一个不能少（短小但刀刀见血）**：
+   - **评估协议必查**：用精炼短句点明数据集过滤（如 `5-core`）、划分方式（`Leave-One-Out` / `比例划分` / `全局时间戳切分` / `冷启动划分`）、候选打分协议（无偏 `Full-Ranking 全库排序` vs. `Sampled 负采样排序`）以及训练负采样策略。
+   - **实验表格必全**：主实验表保留原文 **5–8 个最具代表性的主流 Baseline** 与核心指标数值（加粗最优并标出 `Improv.%`），消融实验单独列一张紧凑表格，并在表后写出 **3 条结合具体数字的归因发现（Key Findings）**。
 
-### 三、输出 Markdown 模板规范
-你的输出必须直接以 YAML Frontmatter 开头（严禁在最外层包裹 ```markdown 代码块），严格遵循以下章节结构：
+### 三、输出 Markdown 模板规范（第 1 行必须是 `---`，严格使用以下二级标题！）
 ---
 title: "[Paper Note] 论文英文原名"
 description: "[会议或期刊名][主分类中文名] 一句话概括核心方法、评估协议与关键收益（80字以内）"
 tags:
   - 会议或期刊名
   - 主分类中文名
-  - 推荐链路阶段(如召回/精排/重排/生成式端到端)
+  - 推荐链路阶段(如召回/粗排/精排/重排/生成式端到端)
   - 核心技术词1
   - 核心技术词2
 date: {datetime.now().strftime('%Y-%m-%d')}
@@ -376,106 +358,85 @@ categories:
 # 论文英文原名 (附中文直译标题)
 
 - **会议/期刊**: 会议或期刊名
-- **推荐链路定位**: 召回 (Retrieval) / 粗排 (Pre-ranking) / 精排 (CTR/Multi-Task Ranking) / 重排 (Re-ranking) / 端到端生成式 (End-to-End Generative)
+- **作者与机构**: 论文主要作者与核心机构
+- **推荐链路定位**: 召回 / 粗排 / 精排 / 重排 / 端到端生成式
 - **研究方向**: 主分类中文名 / 次分类中文名
 - **论文原文**: [论文原文链接](论文原文完整URL)
 - **开源代码**: [开源代码仓库链接](开源代码完整URL) （若无开源代码则写“暂未开源”）
 
-## TL;DR (核心速览)
+## TL;DR (1分钟核心速览)
 
-用 150 字以内精炼概括：本文针对推荐系统什么具体场景与核心痛点？提出了什么核心算子或训练范式？在什么评估协议（如 Full-Ranking）和数据集上取得了多少相对提升？
+用 120–160 字直接点明：本文针对推荐系统什么核心痛点？提出了什么核心方法？在什么评估协议（如 Full-Ranking）和基准数据集上取得了多少相对提升？
 
-## Background & Motivation (背景与动机)
+## Background & Motivation (背景与核心矛盾)
 
-- **领域背景与主流范式**: 当前该推荐子方向的主流建模范式是什么？
-- **现有方法局限 (Limitations of Prior Work)**: 现有代表性基线在表征对齐、交互稀疏性、长序列复杂度或工业落地上存在哪 2-3 个具体矛盾？
-- **核心挑战 (Key Challenge)**: 为什么简单的特征拼接、增加网络深度或常规对比学习无法解决该问题？
-- **核心洞察与切入点 (Key Insight)**: 作者通过什么理论分析或先验观察（Pilot Study）引出了本文的设计？
+（每条严格控制在 1-2 句话以内，直奔主题：）
+- **主流范式**: 当前该子方向的主流做法是什么？
+- **前人局限**: 现有代表作在什么具体场景或数据分布下会失效（列出 2 个核心矛盾）？
+- **核心洞察 (Key Insight)**: 作者观察到了什么关键现象或理论性质？
+- **本文切入点**: 一句话说明本文如何破局。
 
-## Problem Formulation & Method (问题定义与方法架构)
+## Method (核心方法设计)
 
-### 1. 符号定义与输入表征 (Notations & Input Representations)
+### 1. 整体框架 (Overall Architecture)
 
-明确列出用户集 $\\mathcal{{U}}$、物品集 $\\mathcal{{I}}$、交互矩阵/序列、多模态/辅助特征维度，以及模型的输入与输出形式。
-
-### 2. 整体流水线 (Overall Architecture)
-
-详细说明数据流向：特征提取与投影 $\\to$ 核心交互/图传播/序列生成模块 $\\to$ 预测打分或解码输出。并附上一段合法的 Mermaid 架构流程图：
+用一段精炼文字（150–220字）串起模型从输入、核心模块交互到训练与推理解码的完整闭环，并附上一个简洁的 Mermaid 流程图：
 
 ```mermaid
 flowchart TD
-    A["输入层: 用户历史序列 / 物品多模态与ID特征"] --> B["核心表征与对齐模块"]
-    B --> C["打分预测 / 生成式解码层"]
+    A["输入特征/历史序列"] --> B["核心创新模块"]
+    B --> C["预测打分/生成解码"]
 ```
 
-### 3. 核心模块设计与数学原理 (Key Designs & Formulations)
+### 2. 关键设计拆解 (Key Designs)
 
-分 2-3 点深入拆解本文的核心创新模块（必须给出关键矩阵/张量运算公式、维度变化以及为什么这样设计的物理直觉）。
-
-### 4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling & Complexity)
-
-- **损失函数**: 完整写出总损失函数 $\\mathcal{{L}}$ 及其各分项权重、温度系数 $\\tau$。
-- **训练负采样策略**: 明确说明采用何种负采样（如 In-batch、Uniform、Hard Negative 或免负采样自回归）。
-- **时间与空间复杂度**: 对比本文方法与主流基线在离线预处理、训练阶段和在线推理阶段（如是否支持 ANN 向量检索或需 Beam Search）的理论复杂度与实际耗时/显存开销。
+只提炼本文最重要的 **2–3 个核心创新点**（严禁罗列常规预处理或普通网络层；每点控制在 150 字以内 + 1 个最核心的数学公式）：
+1. **创新设计一（名称 + 一句话作用）**：痛点起因 $\\to$ 核心算子与公式 $\\to$ 为什么有效的直觉。
+2. **创新设计二（名称 + 一句话作用）**：痛点起因 $\\to$ 核心算子与公式 $\\to$ 为什么有效的直觉。
+3. **训练目标、负采样与推理效率**：写出总损失函数 $\\mathcal{{L}}$、训练负采样策略（Uniform / In-batch / Hard Negative / 免负采样）及在线推理开销。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
-- **数据集统计与预处理**: 提取原文使用的基准数据集（如 Amazon、Yelp、Gowalla、MovieLens、KuaiRec、工业数据集等）及过滤规则（如 `5-core`）：
+- **数据集与预处理**: 列出数据集统计表及过滤方式（如 `5-core`）：
 
-| 数据集 (Dataset) | 用户数 (#Users) | 物品数 (#Items) | 交互数 (#Interactions) | 稀疏度/密度 (Sparsity) | 模态/辅助特征说明 |
+| 数据集 | #Users | #Items | #Interactions | 稀疏度/密度 | 特征/场景说明 |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| (按原文提取) | - | - | - | - | - |
 
-- **数据划分方式 (Splitting Strategy)**: 明确标注是 **Leave-One-Out (留一法)**、**Ratio Split (如 8:1:1)**、**Global Temporal Split (全局时间戳切分)** 还是 **Cold-Start Split**，并说明是否存在数据泄露风险。
-- **排名评测协议 (Ranking Protocol)**: 明确标注是 **Full-Ranking (全库未交互物品排序)** 还是 **Sampled Ranking (采样负例排序，注明正负例比例)**。
-- **评价指标与显著性检验**: 列出具体指标（如 `Recall@10/20`、`NDCG@10/20`、`AUC`、`GAUC`、长尾覆盖率等）、Embedding 维度 $d$ 对齐情况，以及是否进行了配对统计显著性检验（如 $p < 0.05$）。
+- **数据划分与防穿越 (Splitting Strategy)**: 标注是 `Leave-One-Out`、`比例划分`、`全局时间戳切分` 还是 `冷启动划分`。
+- **排名评测协议 (Ranking Protocol)**: 标注是无偏 `Full-Ranking (全库未交互排序)` 还是 `Sampled Ranking (采样排序，注明正负比)`。
+- **对比基线与超参设置**: 简述对比的基线类别、Embedding 维度 $d$ 及显著性检验标准（如 $p < 0.05$）。
 
-## Key Experimental Results (核心实验结果)
+## Key Experimental Results (实验关键数据)
 
 ### 1. 主实验对比 (Main Results)
 
-提取原文主实验表格中的关键数据集结果（包含各类最强 Baseline、本文方法数值及相对次优基线的提升比例 `Improv.`）：
+提取原文主实验表（保留 **5–8 个代表性 SOTA 基线** 与核心指标列，加粗最优值，标出提升幅度 `Improv.`）：
 
-| 数据集 | 指标 | 传统/协同过滤基线 | 序列/图/多模态最强基线 | 本文方法 (Ours) | 相对提升 (Improv.) |
-| :--- | :--- | :---: | :---: | :---: | :---: |
-| (按原文提取) | Recall@10 / NDCG@10 / AUC | - | - | **-** | +x.xx% |
+### 2. 消融实验 (Ablation Study)
 
-### 2. 消融实验与控制变量分析 (Ablation Study)
+用紧凑的 Markdown 表格展示各核心组件移除后（`w/o ...`）的性能变化。
 
-提取原文消融实验表格或结论，明确移除各核心子模块后的性能下降幅度，并指出哪一个模块贡献最大、消融对照是否严格控制了参数量或图拓扑度数。
+### 3. 关键实验发现 (Key Findings)
 
-### 3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets & Hyperparameters)
+结合主实验、消融实验、长尾/稀疏分桶实验或线上 A/B 测试的具体数字，写出 **3 条一针见血的定量归因结论**（每条 1-2 句话）。
 
-- **用户/物品交互频次分桶表现**: 在长尾物品（Tail Items）或少交互冷启动用户群上的提升是否显著大于热门头部物品？
-- **关键超参数敏感度**: 温度系数 $\\tau$、损失权重、网络层数 $L$ 或码本大小变化对性能的影响趋势。
-- **线上 A/B 测试结果 (Online A/B Test，如有)**: 若包含工业界线上实验，列出真实业务场景、实验周期、流量占比及 CTR/CVR/GMV/留存率等线上指标收益（若无则注明“原文仅包含离线实验”）。
+## Highlights, Limitations & Rating (亮点、对比与审稿评价)
 
-## Highlights, Limitations & Critiques (亮点、局限与审稿级批判)
-
-- **核心亮点与可迁移性**: 哪些算子、特征对齐方式或损失函数设计具有普适性，可直接迁移到其他推荐子任务？
-- **局限性与审稿视角批判 (Critical Limitations)**: 从顶会审稿人视角客观指出本文的潜在短板（如评估协议局限、在线推理延迟、超参敏感度或理论与实现落差等）。
-
-## Rating (四维评分)
-
-- **方法创新性 (Novelty)**: ⭐⭐⭐⭐
-- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐
-- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐
-- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐
+- **与代表作对比 (vs. Prior Work)**: 用 2-3 行简明对比本文与最相关的 2-3 篇前人基线的本质区别。
+- **可迁移亮点**: 1-2 个可直接迁移到其他推荐任务的技巧。
+- **审稿级局限批判**: 客观指出 2 个潜在短板（如推理延迟、评估局限或超参敏感度）。
+- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
 ### 四、图表与图注语言规范
-- 正文引用图表时统一使用中文“图 n / 表 n”，不要写 Figure/Table。
-- 所有图注（figcaption）必须使用中文；保留数学符号、数据集名、模型名与专有名词。
+- 正文引用图表时统一使用中文“图 n / 表 n”，所有图注（figcaption）必须使用中文。
 """
 
 
 def extract_code_and_paper_urls(text: str, default_paper_url: str = "") -> tuple:
-    """使用正则表达式从论文摘要、作者注释及 PDF 全文中自动挖掘开源代码链接与 DOI/arXiv 原文链接。"""
-    # 匹配 GitHub / GitLab / HuggingFace / Gitee 开源代码仓库链接
     code_matches = re.findall(
         r"https?://(?:github\.com|gitlab\.com|huggingface\.co|gitee\.com)/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+",
         text,
     )
-    # 过滤掉常见的无关公共库链接
     ignore_repos = {"huggingface.co/datasets", "github.com/pytorch", "github.com/tensorflow", "github.com/google"}
     clean_code_urls = []
     for u in code_matches:
@@ -499,7 +460,6 @@ def extract_code_and_paper_urls(text: str, default_paper_url: str = "") -> tuple
 
 
 def _normalize_unicode_escapes(text: str) -> str:
-    """把 PDF 中字面量 \\uXXXX 解码为真实 Unicode，并移除孤立代理字符。"""
     decoded = text
     if "\\u" in text:
         decoded = re.sub(
@@ -514,8 +474,83 @@ def _normalize_unicode_escapes(text: str) -> str:
     return decoded.encode("utf-8", "ignore").decode("utf-8")
 
 
-def extract_text_from_pdf(pdf_path: Path, max_chars: int = 52000) -> str:
-    """使用 pypdf 提取 PDF 论文全文文本。"""
+def _fetch_arxiv_html_text(arxiv_id: str, max_chars: int = 80000) -> str:
+    """优先尝试从 https://arxiv.org/html/<arxiv_id> 提取原生 LaTeX 公式 (alttext) 与 HTML 实验表格。"""
+    if not arxiv_id:
+        return ""
+    url = f"https://arxiv.org/html/{arxiv_id}"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "RecSys-Paper-Notes/3.2"})
+        with urllib.request.urlopen(req, timeout=25) as resp:
+            if resp.status != 200:
+                return ""
+            raw_html = resp.read().decode("utf-8", errors="ignore")
+    except Exception:
+        return ""
+
+    try:
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(raw_html, "html.parser")
+        for math_tag in soup.find_all("math"):
+            alt = math_tag.get("alttext")
+            if alt:
+                math_tag.replace_with(f" ${alt.strip()}$ ")
+
+        for table in soup.find_all("table"):
+            rows_md = []
+            for tr in table.find_all("tr"):
+                cells = [re.sub(r"\s+", " ", c.get_text(" ", strip=True)) for c in tr.find_all(["th", "td"])]
+                if any(cells):
+                    rows_md.append("| " + " | ".join(cells) + " |")
+            if rows_md:
+                ncols = rows_md[0].count("|") - 1
+                if ncols > 0:
+                    sep = "| " + " | ".join(["---"] * ncols) + " |"
+                    rows_md.insert(1, sep)
+                table.replace_with("\n\n" + "\n".join(rows_md) + "\n\n")
+
+        for tag in soup.find_all(["script", "style", "nav", "header", "footer"]):
+            tag.decompose()
+        for bib in soup.select(".ltx_bibliography, #bib"):
+            bib.decompose()
+
+        article = soup.find("article") or soup.find("main") or soup.body or soup
+        text = article.get_text("\n", strip=False)
+        text = re.sub(r"[ \t]+\n", "\n", text)
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        return _normalize_unicode_escapes(text.strip())[:max_chars]
+    except Exception:
+        return ""
+
+
+def extract_text_from_pdf(pdf_path: Path, max_chars: int = 80000) -> str:
+    try:
+        import pdfplumber
+        pages_out = []
+        with pdfplumber.open(str(pdf_path)) as pdf:
+            for page in pdf.pages:
+                p_txt = page.extract_text(x_tolerance=2, y_tolerance=3) or ""
+                tables = page.extract_tables() or []
+                t_strs = []
+                for tb in tables:
+                    clean_rows = []
+                    for row in tb:
+                        if not row:
+                            continue
+                        cells = [re.sub(r"\s+", " ", (c or "").strip()) for c in row]
+                        if any(cells):
+                            clean_rows.append("| " + " | ".join(cells) + " |")
+                    if len(clean_rows) >= 2:
+                        t_strs.append("\n".join(clean_rows))
+                if t_strs:
+                    p_txt += "\n\n[Extracted Page Tables]:\n" + "\n\n".join(t_strs)
+                pages_out.append(p_txt)
+        full_text = "\n\n".join(pages_out)
+        if len(full_text.strip()) > 500:
+            return _normalize_unicode_escapes(full_text)[:max_chars]
+    except Exception:
+        pass
+
     try:
         from pypdf import PdfReader
         reader = PdfReader(str(pdf_path))
@@ -530,20 +565,31 @@ def extract_text_from_pdf(pdf_path: Path, max_chars: int = 52000) -> str:
 
 
 def compact_paper_content(text: str, max_chars: int = DEFAULT_MAX_INPUT_CHARS) -> str:
-    """压缩送入 LLM 的论文文本：去掉参考文献/致谢，并限制总字符数。"""
     if not text:
         return text
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     text = re.sub(r"[ \t]+\n", "\n", text)
     text = re.sub(r"\n{3,}", "\n\n", text)
 
-    for pattern in (
-        r"\n\s*(?:references|bibliography)\s*\n",
-        r"\n\s*acknowledg(?:e)?ments?\s*\n",
-    ):
-        match = re.search(pattern, text, re.IGNORECASE)
-        if match and match.start() > 2000:
-            text = text[:match.start()]
+    half_pos = len(text) // 2
+    ref_match = re.search(
+        r"\n\s*(?:\d+\.?\s+|I+V?X*\.?\s+)?(?:references|bibliography)\s*\n",
+        text[half_pos:],
+        re.IGNORECASE,
+    )
+    if ref_match:
+        ref_start = half_pos + ref_match.start()
+        tail = text[ref_start:]
+        app_match = re.search(
+            r"\n\s*(?:appendix|appendices|supplementary\s+material|[A-Z]\.\s+[A-Z])",
+            tail[200:],
+            re.IGNORECASE,
+        )
+        if app_match:
+            app_start = ref_start + 200 + app_match.start()
+            text = text[:ref_start] + "\n\n[... References Omitted ...]\n\n" + text[app_start:]
+        else:
+            text = text[:ref_start]
 
     if max_chars and max_chars > 0:
         text = text[:max_chars]
@@ -551,7 +597,6 @@ def compact_paper_content(text: str, max_chars: int = DEFAULT_MAX_INPUT_CHARS) -
 
 
 def _zh_figure_label(label: str) -> str:
-    """把 Figure 1 / Table 2 转成中文“图 1 / 表 2”，作为翻译失败时的兜底。"""
     label = label or ""
     m = re.search(r"\b(?:Figure|Fig\.?)\s*(\d+)", label, re.IGNORECASE)
     if m:
@@ -563,7 +608,6 @@ def _zh_figure_label(label: str) -> str:
 
 
 def translate_figure_captions(figures: list, api_key: str, base_url: str, model: str) -> list:
-    """将英文图注批量翻译为中文，写入 fig['caption_zh']。"""
     if not figures:
         return figures
     if not api_key:
@@ -620,7 +664,6 @@ def translate_figure_captions(figures: list, api_key: str, base_url: str, model:
 
 
 def format_figure_context(figures: list) -> str:
-    """把图表清单压缩成适合放进 LLM 提示词的文本。"""
     lines = []
     for fig in figures:
         zh = re.sub(r"\s+", " ", fig.get("caption_zh") or "").strip()
@@ -651,7 +694,6 @@ def figure_html(fig: dict, rel_path: str) -> str:
 
 
 def apply_figure_placeholders(md_note: str, figures: list, rel_paths: dict) -> str:
-    """替换 LLM 插入的 [[FIG:n]] / [[TABLE:n]]，未使用的图表追加到文末。"""
     if not figures:
         return md_note
 
@@ -700,7 +742,6 @@ def apply_figure_placeholders(md_note: str, figures: list, rel_paths: dict) -> s
 
 
 def split_venue_year(venue_arg: str, year_arg: str = ""):
-    """兼容 --venue SIGIR2026 旧写法，返回 (venue, year)。"""
     venue_arg = (venue_arg or "").strip()
     m = re.fullmatch(r"([A-Za-z_\-]+?)(\d{4})", venue_arg)
     if m:
@@ -709,7 +750,6 @@ def split_venue_year(venue_arg: str, year_arg: str = ""):
 
 
 def infer_venue_from_comment(comment: str, default_venue: str, default_year: str = DEFAULT_YEAR):
-    """从 arXiv comment 中推断会刊与年份，返回 (venue, year)。"""
     if not comment:
         return default_venue, default_year
     c_upper = comment.upper()
@@ -753,9 +793,8 @@ def infer_venue_from_comment(comment: str, default_venue: str, default_year: str
 
 
 def _fetch_arxiv_entries(api_params: dict, cache_dir: Path = None, download_pdf: bool = True):
-    """调用 arXiv API，下载 PDF 全文，返回统一结构的论文任务列表。"""
     url = "https://export.arxiv.org/api/query?" + urllib.parse.urlencode(api_params)
-    req = urllib.request.Request(url, headers={"User-Agent": "RecSys-Paper-Notes/2.3"})
+    req = urllib.request.Request(url, headers={"User-Agent": "RecSys-Paper-Notes/3.2"})
     with urllib.request.urlopen(req, timeout=30) as resp:
         xml_data = resp.read()
 
@@ -788,13 +827,23 @@ def _fetch_arxiv_entries(api_params: dict, cache_dir: Path = None, download_pdf:
             pdf_file = cache_dir / f"{re.sub(r'[^a-zA-Z0-9._-]', '_', arxiv_id)}.pdf"
             if not pdf_file.exists():
                 try:
-                    pdf_req = urllib.request.Request(pdf_url, headers={"User-Agent": "RecSys-Paper-Notes/2.3"})
+                    pdf_req = urllib.request.Request(pdf_url, headers={"User-Agent": "RecSys-Paper-Notes/3.2"})
                     with urllib.request.urlopen(pdf_req, timeout=60) as p_resp:
                         pdf_file.write_bytes(p_resp.read())
                 except Exception as e:
                     print(f"  [Warn] 下载 arXiv PDF 失败 ({arxiv_id}): {e}")
                     pdf_file = None
-            if pdf_file is not None and pdf_file.exists():
+
+            html_cache = cache_dir / f"{re.sub(r'[^a-zA-Z0-9._-]', '_', arxiv_id)}.html.txt"
+            if html_cache.exists():
+                full_body = html_cache.read_text(encoding="utf-8", errors="ignore")
+            else:
+                html_text = _fetch_arxiv_html_text(arxiv_id)
+                if len(html_text) > 2500:
+                    html_cache.write_text(html_text, encoding="utf-8")
+                    full_body = html_text
+
+            if not full_body and pdf_file is not None and pdf_file.exists():
                 full_body = extract_text_from_pdf(pdf_file)
 
         combined_raw = f"{comment}\n{summary}\n{full_body}"
@@ -810,7 +859,7 @@ def _fetch_arxiv_entries(api_params: dict, cache_dir: Path = None, download_pdf:
             f"Abstract:\n{summary}\n\n"
         )
         if full_body:
-            content_str += f"Full Paper Text Extracted from PDF:\n{full_body}"
+            content_str += f"Full Paper Text (with LaTeX formulas & experimental tables):\n{full_body}"
 
         papers.append({
             "title": title,
@@ -827,7 +876,6 @@ def _fetch_arxiv_entries(api_params: dict, cache_dir: Path = None, download_pdf:
 
 
 def fetch_arxiv_papers(query: str, max_results: int = 5, cache_dir: Path = None, download_pdf: bool = True):
-    """按关键词检索 arXiv 论文。"""
     params = {
         "search_query": f"all:({query}) AND (cat:cs.IR OR cat:cs.AI OR cat:cs.LG)",
         "sortBy": "submittedDate",
@@ -837,17 +885,21 @@ def fetch_arxiv_papers(query: str, max_results: int = 5, cache_dir: Path = None,
     return _fetch_arxiv_entries(params, cache_dir=cache_dir, download_pdf=download_pdf)
 
 
-def fetch_arxiv_by_ids(arxiv_ids, cache_dir: Path = None, download_pdf: bool = True):
-    """按 arXiv ID 列表精确抓取论文全文（用于策展名单）。"""
-    ids = [i.strip() for i in arxiv_ids if i and i.strip()]
+def fetch_arxiv_by_ids(arxiv_ids, cache_dir: Path = None, download_pdf: bool = True, batch_size: int = 40):
+    ids = [re.sub(r"v\d+$", "", i.strip()) for i in arxiv_ids if i and i.strip()]
     if not ids:
         return []
-    params = {"id_list": ",".join(ids), "max_results": len(ids)}
-    return _fetch_arxiv_entries(params, cache_dir=cache_dir, download_pdf=download_pdf)
+    all_papers = []
+    for start in range(0, len(ids), batch_size):
+        chunk = ids[start : start + batch_size]
+        params = {"id_list": ",".join(chunk), "max_results": len(chunk)}
+        all_papers.extend(_fetch_arxiv_entries(params, cache_dir=cache_dir, download_pdf=download_pdf))
+        if start + batch_size < len(ids):
+            time.sleep(1.0)
+    return all_papers
 
 
 def load_curated_csv(csv_path: Path):
-    """读取策展名单 CSV：title, arxiv_id, paper_url, code_url, category, venue, year。"""
     rows = []
     with csv_path.open("r", encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
@@ -867,7 +919,7 @@ def call_llm_api(
     max_output_tokens: int = None,
     thinking: bool = False,
 ) -> str:
-    """调用兼容 OpenAI 格式的大模型接口（默认 DeepSeek deepseek-flash）生成结构化 Markdown 笔记。"""
+    """调用兼容 OpenAI 格式的大模型接口（默认 DeepSeek deepseek-flash）生成高密度 Markdown Note。"""
     cat_hint = f"\n优先归入推荐系统分类标识：`{forced_cat}`" if forced_cat else ""
     figure_hint = ""
     if figure_context:
@@ -879,14 +931,17 @@ def call_llm_api(
             "“图 n / 表 n”，不要写 Figure/Table：\n"
             f"{figure_context}\n"
         )
+    effective_max_tokens = max_output_tokens
+    if thinking and effective_max_tokens and effective_max_tokens < 12000:
+        effective_max_tokens = 12000
+
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {
             "role": "user",
             "content": (
                 f"目标所属会议/期刊目录标识：`{venue}`{cat_hint}\n\n"
-                "请严格按照推荐系统评估协议规范深入解读以下论文，"
-                "并确保准确填入 paper_url 与 code_url："
+                "请将以下论文提炼为一篇 **1,800–2,600 字的高密度精读笔记 (Paper Note)**——只写增量创新、核心公式、评估协议与完整实验对比表，严禁写成冗长的逐段翻译流水账！第 1 行必须直接以 `---` 开启 YAML Frontmatter："
                 f"{figure_hint}\n\n{paper_text}"
             ),
         },
@@ -896,9 +951,9 @@ def call_llm_api(
         api_key=api_key,
         base_url=base_url,
         model=model,
-        temperature=0.2,
-        timeout=180,
-        max_tokens=max_output_tokens,
+        temperature=0.15,
+        timeout=240,
+        max_tokens=effective_max_tokens,
         thinking=thinking,
     )
     raw = re.sub(r"^```(?:markdown|yaml)?\s*\n", "", raw)
@@ -909,13 +964,6 @@ def call_llm_api(
 def slugify(title: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9]+", "_", title.lower()).strip("_")
     return slug[:75] or f"paper_{int(time.time())}"
-
-
-REQUIRED_SECTIONS = [
-    "## TL;DR",
-    "## Experimental Setup",
-    "## Key Experimental Results",
-]
 
 
 def extract_primary_category(md_content: str, fallback: str = "collaborative_filtering") -> str:
@@ -937,23 +985,78 @@ def _set_frontmatter_field(frontmatter: str, name: str, value: str) -> str:
     return frontmatter.rstrip() + f"\n{name}: {value}"
 
 
-def normalize_frontmatter(md_note: str, venue: str, year: str, paper_url: str = "", code_url: str = "") -> str:
-    """强制校正 LLM 输出中的 venue/year/paper_url/code_url，避免归档路径与元数据不一致。"""
-    m = re.match(r"^(---\s*\n)(.*?)(\n---\s*\n)", md_note, re.DOTALL)
-    if not m:
-        return md_note
-    fm = m.group(2)
-    fm = _set_frontmatter_field(fm, "venue", venue)
-    fm = _set_frontmatter_field(fm, "year", year)
-    if paper_url:
-        fm = _set_frontmatter_field(fm, "paper_url", f'"{paper_url}"')
-    if code_url:
-        fm = _set_frontmatter_field(fm, "code_url", f'"{code_url}"')
-    return m.group(1) + fm + m.group(3) + md_note[m.end():]
+def ensure_and_normalize_frontmatter(
+    md_note: str,
+    title: str,
+    venue: str,
+    year: str,
+    paper_url: str = "",
+    code_url: str = "",
+    fallback_cat: str = "collaborative_filtering",
+) -> str:
+    md_note = md_note.strip()
+    md_note = re.sub(r"^```(?:yaml|markdown)?\s*\n(---\s*\n.*?\n---)\s*\n```\s*\n", r"\1\n\n", md_note, flags=re.DOTALL)
+
+    m = re.search(r"(?:^|\n)---\s*\n(.*?)\n---\s*\n", md_note[:2500], re.DOTALL)
+    if m and m.start() < 300:
+        fm = m.group(1)
+        body = md_note[m.end():].lstrip()
+        body = re.sub(r"^```\s*\n", "", body)
+    elif re.match(r"^title:\s*", md_note):
+        h1_match = re.search(r"\n#\s+", md_note)
+        if h1_match:
+            fm = md_note[:h1_match.start()].strip().rstrip("-").strip()
+            body = md_note[h1_match.start():].lstrip()
+        else:
+            fm = ""
+            body = md_note
+    else:
+        fm = ""
+        body = md_note
+
+    cat_slug = fallback_cat if fallback_cat in CATEGORIES else "collaborative_filtering"
+    cat_title = CATEGORIES[cat_slug]["title"]
+    safe_title = title.replace('"', "'")
+
+    if not fm:
+        fm = (
+            f'title: "[Paper Note] {safe_title}"\n'
+            f'description: "[{venue} {year}][{cat_title}] {safe_title}"\n'
+            f"tags:\n"
+            f"  - {venue} {year}\n"
+            f"  - {cat_title}\n"
+            f"date: {datetime.now().strftime('%Y-%m-%d')}\n"
+            f"venue: {venue}\n"
+            f"year: {year}\n"
+            f'paper_url: "{paper_url}"\n'
+            f'code_url: "{code_url}"\n'
+            f"categories:\n"
+            f"  - {cat_slug}"
+        )
+    else:
+        fm = _set_frontmatter_field(fm, "venue", venue)
+        fm = _set_frontmatter_field(fm, "year", year)
+        if paper_url:
+            fm = _set_frontmatter_field(fm, "paper_url", f'"{paper_url}"')
+        if code_url:
+            fm = _set_frontmatter_field(fm, "code_url", f'"{code_url}"')
+        if "categories:" not in fm:
+            fm = fm.rstrip() + f"\ncategories:\n  - {cat_slug}"
+
+    if not body.startswith("#"):
+        body = f"# {title}\n\n" + body
+
+    return f"---\n{fm.strip()}\n---\n\n{body.strip()}\n"
+
+
+SECTION_PATTERNS = [
+    ("TL;DR", r"^##+\s+.*?(?:TL;DR|核心速览|速读|Executive Summary)"),
+    ("Experimental Setup", r"^##+\s+.*?(?:Experimental Setup|实验设置|评估协议|Evaluation Protocol)"),
+    ("Key Experimental Results", r"^##+\s+.*?(?:Experimental Results|实验结果|关键实验|实验关键数据|Main Results)"),
+]
 
 
 def validate_note(md_note: str, venue: str, year: str) -> tuple:
-    """生成后自动校验：Frontmatter、必需章节、分类、占位符与年份一致性。"""
     if not md_note.startswith("---"):
         return False, "缺少 YAML Frontmatter"
     m = re.match(r"^---\s*\n(.*?)\n---\s*\n", md_note, re.DOTALL)
@@ -961,9 +1064,9 @@ def validate_note(md_note: str, venue: str, year: str) -> tuple:
         return False, "Frontmatter 未正确闭合"
     fm = m.group(1)
 
-    for section in REQUIRED_SECTIONS:
-        if section not in md_note:
-            return False, f"缺少必需章节: {section}"
+    for label, pat in SECTION_PATTERNS:
+        if not re.search(pat, md_note, re.IGNORECASE | re.MULTILINE):
+            return False, f"缺少必需章节: ## {label}"
 
     fm_venue = re.search(r"^venue:\s*['\"]?([^'\"\n]+)", fm, re.MULTILINE)
     if not fm_venue or fm_venue.group(1).strip() != venue:
@@ -977,14 +1080,13 @@ def validate_note(md_note: str, venue: str, year: str) -> tuple:
     if not any(c in CATEGORIES for c in cats):
         return False, "categories 中缺少合法分类 slug"
 
-    if "(按原文提取)" in md_note or "论文英文原名" in md_note:
+    if "论文英文原名" in md_note:
         return False, "输出仍包含模板占位符"
 
     return True, ""
 
 
 def process_single_paper(item: dict, default_venue: str, default_year: str, docs_dir: Path, args):
-    """生成单篇笔记，返回 (状态消息, manifest 记录或 None)。"""
     slug = slugify(item["title"])
     venue = item.get("venue") or default_venue
     year = item.get("year") or default_year
@@ -1034,6 +1136,7 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
     md_note = ""
     for attempt in range(1, args.retries + 1):
         try:
+            use_thinking = args.thinking if attempt == 1 else False
             md_note = call_llm_api(
                 compact_paper_content(item["content"], args.max_input_chars),
                 f"{venue} {year}",
@@ -1043,9 +1146,17 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
                 forced_cat=forced_cat,
                 figure_context=figure_context,
                 max_output_tokens=args.max_output_tokens,
-                thinking=args.thinking,
+                thinking=use_thinking,
             )
-            md_note = normalize_frontmatter(md_note, venue, year, item.get("paper_url", ""), item.get("code_url", ""))
+            md_note = ensure_and_normalize_frontmatter(
+                md_note,
+                title=item["title"],
+                venue=venue,
+                year=year,
+                paper_url=item.get("paper_url", ""),
+                code_url=item.get("code_url", ""),
+                fallback_cat=forced_cat or "collaborative_filtering",
+            )
             ok, reason = validate_note(md_note, venue, year)
             if ok:
                 break
@@ -1102,7 +1213,6 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
 
 
 def tasks_from_curated_csv(csv_path: Path, cache_dir: Path, download_pdf: bool, limit: int = 0):
-    """读取策展名单，按 arXiv ID 抓取全文，并保留名单中的会刊/年份/分类信息。"""
     rows = load_curated_csv(csv_path)
     if limit and limit > 0:
         rows = rows[:limit]
@@ -1113,11 +1223,12 @@ def tasks_from_curated_csv(csv_path: Path, cache_dir: Path, download_pdf: bool, 
             m = re.search(r"arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})", row.get("paper_url", ""))
             aid = m.group(1) if m else ""
         if aid:
-            row["arxiv_id"] = aid
-            ids.append(aid)
+            aid_clean = re.sub(r"v\d+$", "", aid.strip())
+            row["arxiv_id"] = aid_clean
+            ids.append(aid_clean)
 
     fetched = fetch_arxiv_by_ids(ids, cache_dir=cache_dir, download_pdf=download_pdf)
-    by_id = {p["arxiv_id"]: p for p in fetched}
+    by_id = {re.sub(r"v\d+$", "", p["arxiv_id"]): p for p in fetched}
     tasks = []
     for row in rows:
         aid = row.get("arxiv_id", "")
@@ -1155,7 +1266,7 @@ def append_manifest(repo_root: Path, records: list):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="批量生成推荐系统论文全文精读笔记，归档至 venues/<VENUE>/<YEAR>/<category>/")
+    parser = argparse.ArgumentParser(description="批量生成推荐系统论文高密度精读笔记，归档至 venues/<VENUE>/<YEAR>/<category>/")
     parser.add_argument("--venue", default="SIGIR", help="目标会议/期刊 key，如 SIGIR, RecSys, TOIS；兼容 SIGIR2026 旧写法")
     parser.add_argument("--year", default=DEFAULT_YEAR, help="目标年份，如 2026")
     parser.add_argument("--pdf-dir", default="", help="本地 PDF 论文文件夹路径")
@@ -1174,9 +1285,9 @@ def main():
     parser.add_argument("--no-figure-translation", action="store_true", help="不调用 LLM 翻译图注，改用“图 n/表 n”中文编号兜底")
     parser.add_argument("--max-figures", type=int, default=8, help="每篇论文最多提取图表数（默认 8）")
     parser.add_argument("--figure-dpi", type=int, default=200, help="图表渲染 DPI（默认 200）")
-    parser.add_argument("--max-input-chars", type=int, default=DEFAULT_MAX_INPUT_CHARS, help="送入 LLM 的论文最大字符数（默认 36000；0 表示不限制）")
-    parser.add_argument("--max-output-tokens", type=int, default=DEFAULT_MAX_OUTPUT_TOKENS, help="单次生成最大输出 token（默认 8192；0 表示用 API 默认）")
-    parser.add_argument("--thinking", action="store_true", help="启用模型 thinking/reasoning（默认关闭以节省 token）")
+    parser.add_argument("--max-input-chars", type=int, default=DEFAULT_MAX_INPUT_CHARS, help="送入 LLM 的论文最大字符数（默认 65000；0 表示不限制）")
+    parser.add_argument("--max-output-tokens", type=int, default=DEFAULT_MAX_OUTPUT_TOKENS, help="单次生成最大输出 token（默认 8192）")
+    parser.add_argument("--thinking", action="store_true", help="启用模型 thinking/reasoning")
     parser.add_argument("--api-key", default="", help="大模型 API Key（或设置 LLM_API_KEY / DEEPSEEK_API_KEY）")
     parser.add_argument("--base-url", default="", help="API Base URL（默认 https://api.deepseek.com/v1）")
     parser.add_argument("--model", default="", help="模型名称，默认 deepseek-flash（可用 LLM_MODEL / DEEPSEEK_MODEL 覆盖）")
