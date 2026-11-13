@@ -28,7 +28,7 @@ categories:
 
 ## TL;DR (1分钟核心速览)
 
-现有流行度去偏方法（IPW、正则、重排）普遍只按物品流行度加权，且默认"性能-偏差"存在权衡。本文先做数据侧实证：将用户按活跃度（power/light）× 流行度偏好（mainstream/niche）划四象限，发现"高活跃-小众"用户数量显著超零模型预期，且其交互数据对整体与小众召回最有价值。据此提出 PAIR，在 BPR 损失上同时按用户活跃度 $d_u^{\alpha}$ 与物品流行度 $d_i^{-\beta}$ 连续重加权。在 Gowalla/Yelp2018/Amazon-Book 上以 Full-Ranking 评测，MF 骨干下 Recall@20 平均提升 20.1%、POB 降 7.5%，6 组配置中 5 组帕累托支配 Vanilla。
+现有流行度去偏方法（IPW、正则、重排）普遍只按物品流行度加权，且默认"性能-偏差"存在权衡。本文先做数据侧实证：将用户按活跃度（power/light）× 流行度偏好（mainstream/niche）划四象限，发现"高活跃-小众"用户数量显著超零模型预期，且其交互数据对整体与小众召回最有价值。据此提出 PAIR，在 BPR 损失上同时按用户活跃度 $d_u^{\alpha}$与物品流行度$d_i^{-\beta}$ 连续重加权。在 Gowalla/Yelp2018/Amazon-Book 上以 Full-Ranking 评测，MF 骨干下 Recall@20 平均提升 20.1%、POB 降 7.5%，6 组配置中 5 组帕累托支配 Vanilla。
 
 ## Background & Motivation (背景与核心矛盾)
 
@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-PAIR 不改动骨干网络，仅改造 BPR 损失的采样与加权逻辑。输入为用户-物品二部交互矩阵，先统计每个用户的活跃度 $d_u$ 与每个物品的流行度 $d_i$；训练时对每个用户按 $d_u^{\alpha}$ 决定其每 epoch 采样正样本三元组数量，对每个正样本按 $d_i^{-\beta}$ 放大其损失权重，负样本从全库均匀采样；最终在 MF 或 LightGCN 打分器上优化加权 BPR，推理阶段与标准 CF 完全一致（无额外开销）。
+PAIR 不改动骨干网络，仅改造 BPR 损失的采样与加权逻辑。输入为用户-物品二部交互矩阵，先统计每个用户的活跃度 $d_u$与每个物品的流行度$d_i$；训练时对每个用户按$d_u^{\alpha}$决定其每 epoch 采样正样本三元组数量，对每个正样本按$d_i^{-\beta}$ 放大其损失权重，负样本从全库均匀采样；最终在 MF 或 LightGCN 打分器上优化加权 BPR，推理阶段与标准 CF 完全一致（无额外开销）。
 
 ```mermaid
 flowchart TD
@@ -56,11 +56,11 @@ flowchart TD
 
 1. **双参数连续重加权 BPR（PAIR 核心损失）**：痛点在于原 BPR 对所有 (u,i,j) 三元组等权、且 LightGCN 实现固定每用户采样数隐式上调了轻用户。PAIR 改为对均匀采样取期望并乘活跃度因子：
 $$l_{\text{PAIR}}^{\alpha,\beta} = -\sum_{u=1}^{n} d_u^{\alpha}\, \mathbb{E}_{i\sim U(\mathcal{N}_u),\, j\sim U(\mathcal{I}\setminus\mathcal{N}_u)}\big[d_i^{-\beta}\ln\sigma(\hat{Y}_{ui}-\hat{Y}_{uj})\big]$$
-其中 $\alpha\in[0,1]$ 控制活跃度权重（$\alpha=0$ 退化为 LightGCN 等采样，$\alpha=1$ 贴近原始 BPR），$\beta\in[0,\infty)$ 控制流行度去偏强度（$\beta=0$ 无去偏）。直觉：$d_i^{-\beta}$ 补偿热门物品的曝光优势，$d_u^{\alpha}$ 让高活跃用户贡献更多梯度，二者叠加使 power-niche 用户获得最大净权重。
+其中 $\alpha\in[0,1]$控制活跃度权重（$\alpha=0$退化为 LightGCN 等采样，$\alpha=1$贴近原始 BPR），$\beta\in[0,\infty)$控制流行度去偏强度（$\beta=0$无去偏）。直觉：$d_i^{-\beta}$补偿热门物品的曝光优势，$d_u^{\alpha}$ 让高活跃用户贡献更多梯度，二者叠加使 power-niche 用户获得最大净权重。
 
-2. **采样数按活跃度分配（工程落地关键）**：直接对期望求导不可行，作者将期望转为实际采样：用户 $u$ 每 epoch 采样 $S_u=\text{round}\big(d_u^{\alpha}\sum_{u'}d_{u'}^{\alpha}\cdot\frac{\sum_{u''}d_{u''}}{\sum_{u''}d_{u''}^{\alpha}}\big)$ 个三元组，即活跃度越高采样越多。这样 $\alpha$ 在实现层面对应"每用户正样本预算"，与 $\beta$ 的物品权重解耦，便于网格搜索。
+2. **采样数按活跃度分配（工程落地关键）**：直接对期望求导不可行，作者将期望转为实际采样：用户 $u$每 epoch 采样$S_u=\text{round}\big(d_u^{\alpha}\sum_{u'}d_{u'}^{\alpha}\cdot\frac{\sum_{u''}d_{u''}}{\sum_{u''}d_{u''}^{\alpha}}\big)$个三元组，即活跃度越高采样越多。这样$\alpha$在实现层面对应"每用户正样本预算"，与$\beta$ 的物品权重解耦，便于网格搜索。
 
-3. **训练目标、负采样与推理效率**：总损失即上式加权 BPR + 嵌入 Frobenius 正则；负采样为**全库均匀采样**（非 in-batch、非 hard negative）；$\alpha,\beta$ 在验证集上按 Recall@20 网格搜索。推理与 Vanilla 完全同构，无额外延迟，仅训练期采样量随 $\alpha$ 略增。
+3. **训练目标、负采样与推理效率**：总损失即上式加权 BPR + 嵌入 Frobenius 正则；负采样为**全库均匀采样**（非 in-batch、非 hard negative）；$\alpha,\beta$在验证集上按 Recall@20 网格搜索。推理与 Vanilla 完全同构，无额外延迟，仅训练期采样量随$\alpha$ 略增。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -74,7 +74,7 @@ $$l_{\text{PAIR}}^{\alpha,\beta} = -\sum_{u=1}^{n} d_u^{\alpha}\, \mathbb{E}_{i\
 
 - **数据划分与防穿越**: 沿用 Lee et al. 的标准 train/validation/test 划分（非 Leave-One-Out），测试集固定。
 - **排名评测协议**: **Full-Ranking 全库未交互排序**，$k=20$；指标含 Recall@20、Precision@20、NDCG@20、POB@20（物品流行度与其平均排名的相关性，越低越去偏）、Coverage@20、Niche Recall@20（仅小众用户上的召回）。
-- **对比基线与超参**: 骨干为 MF 与 3 层 LightGCN（$d$ 沿用原文默认）；基线含 Vanilla（$\alpha=0$）、Vanilla-BPR（$\alpha=1$）、IPW（固定 $\alpha=0$ 调 $\beta$）、Pop. Comp.（后处理重排）、Pop. Reg.（流行度正则）。结果取 4 次试验均值与置信区间。
+- **对比基线与超参**: 骨干为 MF 与 3 层 LightGCN（$d$沿用原文默认）；基线含 Vanilla（$\alpha=0$）、Vanilla-BPR（$\alpha=1$）、IPW（固定$\alpha=0$调$\beta$）、Pop. Comp.（后处理重排）、Pop. Reg.（流行度正则）。结果取 4 次试验均值与置信区间。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -111,14 +111,19 @@ $$l_{\text{PAIR}}^{\alpha,\beta} = -\sum_{u=1}^{n} d_u^{\alpha}\, \mathbb{E}_{i\
 
 ### 3. 关键实验发现 (Key Findings)
 
-1. **双维加权是帕累托双赢的关键**：图 6 显示 IPW 在 LGN 上随 $\beta$ 增大先保精度后掉点（典型权衡），而 PAIR 因额外引入 $\alpha$ 在 Yelp/Amazon 上同时降 POB 并升 Recall，说明"仅物品去偏"不足，活跃度维度是打破权衡的杠杆。
+1. **双维加权是帕累托双赢的关键**：图 6 显示 IPW 在 LGN 上随 $\beta$增大先保精度后掉点（典型权衡），而 PAIR 因额外引入$\alpha$ 在 Yelp/Amazon 上同时降 POB 并升 Recall，说明"仅物品去偏"不足，活跃度维度是打破权衡的杠杆。
 2. **重加权方向与动机一致**：图 5 热力图显示 PAIR 优化后 power-niche 象限权重变化最大（如 LGN-Yelp 上 +16.6%），light 用户普遍降权（−11.3%），power-mainstream 仅微增，验证了"把梯度预算倾斜给高价值象限"的设计意图。
 3. **浅层模型受益远大于深层模型**：MF 上 Recall 平均 +20.1%，LGN 仅 +1.2%，且 Gowalla-LGN 是唯一未帕累托支配的配置（Recall 低 0.0008）。说明 LightGCN 的高阶邻域聚合本身已部分吸收活跃度信号，PAIR 的边际增益被稀释，提示该方法更适合浅层/工业双塔召回。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
-- **与代表作对比 (vs. Prior Work)**: 相比 IPW（Schnabel et al.）仅按物品倾向 $p_i^{-\beta}$ 加权，PAIR 多出用户活跃度维度 $d_u^{\alpha}$，且实证证明这是打破权衡的关键；相比 Pop. Reg./Pop. Comp.（Zhu et al.）以大幅掉点换覆盖率，PAIR 在 5/6 配置上不掉点反升点；相比 Abdollahpouri et al. 仅观察到活跃度与流行度偏好的负相关，本文首次量化 power-niche 用户的统计显著性与数据价值。
+- **与代表作对比 (vs. Prior Work)**: 相比 IPW（Schnabel et al.）仅按物品倾向 $p_i^{-\beta}$加权，PAIR 多出用户活跃度维度$d_u^{\alpha}$，且实证证明这是打破权衡的关键；相比 Pop. Reg./Pop. Comp.（Zhu et al.）以大幅掉点换覆盖率，PAIR 在 5/6 配置上不掉点反升点；相比 Abdollahpouri et al. 仅观察到活跃度与流行度偏好的负相关，本文首次量化 power-niche 用户的统计显著性与数据价值。
 - **可迁移亮点**: ① "固定集 + 处理组"的**用户象限数据估值法**可迁移到任何需要评估某类用户数据边际价值的场景（如冷启动用户、跨域用户）；② 将期望重加权转化为"每用户采样预算 $S_u$"的实现技巧，可直接套用到任意 pair-wise 损失框架。
 - **审稿级局限批判**: ① 增益高度依赖骨干：深层 LGN 上提升微弱甚至个别配置掉点，方法普适性存疑；② $\alpha,\beta$ 需验证集网格搜索，且 Amazon-MF 上 PAIR 未超过 Vanilla-BPR，说明超参选择对结果敏感、泛化性有限；③ 仅在三个静态隐式反馈基准上离线评测，缺乏线上 A/B 与动态流行度漂移场景验证。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入为多模态原始特征（视觉/文本/音频）与隐式交互矩阵。先经两层 MLP 投影到统一 $d$ 维空间，并额外用 DCT 提取谱域特征（低频编码全局结构、高频编码局部细节），拼接后 $\ell_2$ 归一化得初始节点表征。预处理阶段构建物品-物品图：语义图（各模态空间 KNN + 低/高频带 KNN + 跨模态混合频带 KNN）与共现图（$\bm{C}=\bm{R}^\top\bm{R}$ 后 top-k + softmax）相加融合，再经 NCER 重加权得最终邻接 $\bm{S}_{\text{NCER}}$ 并缓存到磁盘。训练时该图被三处复用：(1) 内容引导扩展 UI 图 $\bar{\bm{R}}=\gamma\bm{R}+(1-\gamma)\bm{R}\bm{S}_{\text{filtered}}$，在扩展图上做残差加权 LightGCN 传播并经跨模态注意力融合用户表征；(2) 物品-物品传播后经 RIG 门控注入物品表征；(3) INA 用图邻居构造折扣软正样本增强 BPR。推理时内积排序全库物品。
+输入为多模态原始特征（视觉/文本/音频）与隐式交互矩阵。先经两层 MLP 投影到统一 $d$维空间，并额外用 DCT 提取谱域特征（低频编码全局结构、高频编码局部细节），拼接后$\ell_2$归一化得初始节点表征。预处理阶段构建物品-物品图：语义图（各模态空间 KNN + 低/高频带 KNN + 跨模态混合频带 KNN）与共现图（$\boldsymbol{C}=\boldsymbol{R}^\top\boldsymbol{R}$后 top-k + softmax）相加融合，再经 NCER 重加权得最终邻接$\boldsymbol{S}_{\text{NCER}}$并缓存到磁盘。训练时该图被三处复用：(1) 内容引导扩展 UI 图$\bar{\boldsymbol{R}}=\gamma\boldsymbol{R}+(1-\gamma)\boldsymbol{R}\boldsymbol{S}_{\text{filtered}}$，在扩展图上做残差加权 LightGCN 传播并经跨模态注意力融合用户表征；(2) 物品-物品传播后经 RIG 门控注入物品表征；(3) INA 用图邻居构造折扣软正样本增强 BPR。推理时内积排序全库物品。
 
 ```mermaid
 flowchart TD
@@ -64,17 +64,17 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **NCER 邻域一致性边重加权（图去噪）**：痛点是对所有边均匀处理，噪声边与真实边无法区分。将融合图二值化为 $\bm{B}$，用矩阵乘 $\bm{B}\bm{B}^\top$ 高效算共享邻居数，一致性分 $c_{ij}=|\mathcal{N}(i)\cap\mathcal{N}(j)|/k$，再重加权
+1. **NCER 邻域一致性边重加权（图去噪）**：痛点是对所有边均匀处理，噪声边与真实边无法区分。将融合图二值化为 $\boldsymbol{B}$，用矩阵乘$\boldsymbol{B}\boldsymbol{B}^\top$高效算共享邻居数，一致性分$c_{ij}=|\mathcal{N}(i)\cap\mathcal{N}(j)|/k$，再重加权
 $$\hat{s}_{ij}=s^{\text{fused}}_{ij}\cdot(1+\kappa\cdot c_{ij}),\quad \kappa>0$$
-直觉：若 $i,j$ 共享大量邻居，该边被多条独立证据路径支撑（三元闭包），应放大；孤立边更可能是噪声伪影。理论上（Thm 5.2）当真实边平均一致性 $\bar{c}_{S^*}>\bar{c}_N$ 时，噪声-信号谱比严格下降。该步仅在预处理执行一次，训练零开销。
+直觉：若 $i,j$共享大量邻居，该边被多条独立证据路径支撑（三元闭包），应放大；孤立边更可能是噪声伪影。理论上（Thm 5.2）当真实边平均一致性$\bar{c}_{S^*}>\bar{c}_N$ 时，噪声-信号谱比严格下降。该步仅在预处理执行一次，训练零开销。
 
-2. **RIG 残差物品-物品门控（表征增强）**：固定残差 $\bm{e}_i=\bm{e}^{\text{UI}}_i+\bm{h}_i$ 对噪声特征物品有害。改为学习逐物品标量门：
-$$\bm{e}_i=\bm{e}^{\text{UI}}_i+\sigma\big(\bm{W}_2\,\text{ReLU}(\bm{W}_1[\bm{e}^{\text{UI}}_i;\bm{h}_i])\big)\bm{h}_i$$
-门输入同时含协同信号与语义邻域信号，端到端由 BPR 优化。Thm 5.3 证明：当 $\bm{e}_u^\top\bm{h}_i>0$（II 信号有益）梯度推高 $g_i$，反之压低，故不会坍缩到全 0/全 1 的退化区间。与跨模态注意力不同，RIG 是"跨物品、固定传播路径"的粒度。
+2. **RIG 残差物品-物品门控（表征增强）**：固定残差 $\boldsymbol{e}_i=\boldsymbol{e}^{\text{UI}}_i+\boldsymbol{h}_i$ 对噪声特征物品有害。改为学习逐物品标量门：
+$$\boldsymbol{e}_i=\boldsymbol{e}^{\text{UI}}_i+\sigma\big(\boldsymbol{W}_2\,\text{ReLU}(\boldsymbol{W}_1[\boldsymbol{e}^{\text{UI}}_i;\boldsymbol{h}_i])\big)\boldsymbol{h}_i$$
+门输入同时含协同信号与语义邻域信号，端到端由 BPR 优化。Thm 5.3 证明：当 $\boldsymbol{e}_u^\top\boldsymbol{h}_i>0$（II 信号有益）梯度推高$g_i$，反之压低，故不会坍缩到全 0/全 1 的退化区间。与跨模态注意力不同，RIG 是"跨物品、固定传播路径"的粒度。
 
-3. **INA 邻居 BPR 增强（优化增强）与总损失**：正样本 $p$ 的 top-k 图邻居 $j$ 视为**折扣软正样本**（比观测交互置信度低但高于随机负样本）：
-$$\mathcal{L}_{\text{INA}}=-\frac{\delta}{|\mathcal{B}_{\text{valid}}|}\sum_{(u,p,n')\in\mathcal{B}_{\text{valid}}}\log\sigma(\bm{e}_u^\top\bm{e}_j-\bm{e}_u^\top\bm{e}_{n'})$$
-关键区别于跨图对齐（如 BM3/SLMRec 的对比对齐）：INA 与 BPR **同向**推，不会像强制 UI/II 表征对齐那样破坏 CF 信号。总损失 $\mathcal{L}=\mathcal{L}_{\text{BPR}}+\lambda_{\text{INA}}\mathcal{L}_{\text{INA}}+\lambda_{\text{CL}}\mathcal{L}_{\text{CL}}$，其中 $\mathcal{L}_{\text{CL}}$ 为用户级+物品级 InfoNCE 跨模态对齐（$\tau_{cl}=0.2$）。负采样为标准均匀随机负样本；INA 邻居查表预处理缓存，每 batch 仅 $O(B)$ 开销。
+3. **INA 邻居 BPR 增强（优化增强）与总损失**：正样本 $p$的 top-k 图邻居$j$ 视为**折扣软正样本**（比观测交互置信度低但高于随机负样本）：
+$$\mathcal{L}_{\text{INA}}=-\frac{\delta}{|\mathcal{B}_{\text{valid}}|}\sum_{(u,p,n')\in\mathcal{B}_{\text{valid}}}\log\sigma(\boldsymbol{e}_u^\top\boldsymbol{e}_j-\boldsymbol{e}_u^\top\boldsymbol{e}_{n'})$$
+关键区别于跨图对齐（如 BM3/SLMRec 的对比对齐）：INA 与 BPR **同向**推，不会像强制 UI/II 表征对齐那样破坏 CF 信号。总损失 $\mathcal{L}=\mathcal{L}_{\text{BPR}}+\lambda_{\text{INA}}\mathcal{L}_{\text{INA}}+\lambda_{\text{CL}}\mathcal{L}_{\text{CL}}$，其中$\mathcal{L}_{\text{CL}}$为用户级+物品级 InfoNCE 跨模态对齐（$\tau_{cl}=0.2$）。负采样为标准均匀随机负样本；INA 邻居查表预处理缓存，每 batch 仅$O(B)$ 开销。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -89,7 +89,7 @@ $$\mathcal{L}_{\text{INA}}=-\frac{\delta}{|\mathcal{B}_{\text{valid}}|}\sum_{(u,
 
 - **数据划分与防穿越**: 沿用 MMRec/DiffMM 既有划分协议（非本文新设），按验证集 Recall@20 选最优模型后报告测试集结果。
 - **排名评测协议**: 全库排序（Full-Ranking），指标 Recall@{10,20}、NDCG@{10,20}，对全体测试用户取平均。
-- **对比基线与超参**: 通用推荐 4 个（LightGCN、SimGCL、LayerGCN、NLGCL）+ 多模态推荐 13 个（MMGCN、DualGNN、LATTICE、SLMRec、BM3、MMSSL、FREEDOM、LGMRec、DiffMM、SMORE、HPMRec、MENTOR、COHESION）。嵌入维度 $d=64$，batch=2048；$k\in\{5,10,15,20\}$，$\kappa,\gamma,\delta,\lambda_{\text{INA}}\in\{0.2,0.4,0.6,0.8\}$，$\lambda_{\text{CL}}\in\{10^{-5},10^{-4},10^{-3}\}$，$\tau=0.2$；$t$ 检验 $p<0.05$ 显著性。
+- **对比基线与超参**: 通用推荐 4 个（LightGCN、SimGCL、LayerGCN、NLGCL）+ 多模态推荐 13 个（MMGCN、DualGNN、LATTICE、SLMRec、BM3、MMSSL、FREEDOM、LGMRec、DiffMM、SMORE、HPMRec、MENTOR、COHESION）。嵌入维度 $d=64$，batch=2048；$k\in\{5,10,15,20\}$，$\kappa,\gamma,\delta,\lambda_{\text{INA}}\in\{0.2,0.4,0.6,0.8\}$，$\lambda_{\text{CL}}\in\{10^{-5},10^{-4},10^{-3}\}$，$\tau=0.2$；$t$检验$p<0.05$ 显著性。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -131,10 +131,15 @@ Recall@20（图 2 数值）：
 2. **CG-UI 与 RW 存在协同而非叠加**：单独移除二者分别掉 1.7%/1.3%（Clothing），联合移除掉 4.6%，说明内容引导扩展引入的虚拟边必须配合残差加权传播才能防止深层噪声放大——扩展与抑制是一对耦合设计。
 3. **稀疏与冷启动场景增益最大，且效率反超**：最稀疏用户组 (0-5] 上领先幅度最大；冷启动（20% 物品移出训练）Baby R@20 达 0.0663 vs COHESION 0.0631；效率上 Baby 每 epoch 3.18s/1.08GB，远低于 COHESION 的 4.47s/2.89GB 与 HPMRec 的 21.03s/8.58GB，因构图全部预处理缓存。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 LATTICE/SMORE 的"构图即用、固定聚合"，本文把图质量治理（NCER）与图的多阶段复用解耦；相比 BM3/SLMRec 的跨图对比对齐（强制 UI/II 表征一致，可能破坏 CF 信号），INA 以同向软正样本方式增强监督，理论上给出更紧的 PAC-Bayes 泛化界（Thm 5.5）；相比 COHESION 的复合图卷积，本文以单图+轻量门控取得更优精度与更低开销。
-- **可迁移亮点**: (1) 用 $\bm{B}\bm{B}^\top$ 矩阵乘一次性算共享邻居数做边重加权，$O(|I|k^2)$ 预处理成本极低，可直接迁移到任何 KNN 物品图去噪；(2) "软正样本折扣 BPR"与主损失同向，避免对比对齐与排序目标的梯度冲突，适用于任何带辅助图的召回模型。
+- **可迁移亮点**: (1) 用 $\boldsymbol{B}\boldsymbol{B}^\top$矩阵乘一次性算共享邻居数做边重加权，$O(|I|k^2)$ 预处理成本极低，可直接迁移到任何 KNN 物品图去噪；(2) "软正样本折扣 BPR"与主损失同向，避免对比对齐与排序目标的梯度冲突，适用于任何带辅助图的召回模型。
 - **审稿级局限批判**: (1) 理论部分依赖"真实边邻域重叠高于噪声边"的社区结构假设，对特征高度同质（如快消品）的数据集该假设可能不成立，NCER 收益存疑；(2) 内容引导 UI 扩展引入虚拟边，本质是隐式反馈的"伪造"，在需要严格因果无偏评估或曝光日志审计的工业场景中可能引入不可追溯的偏差，论文未做去偏验证；(3) 超参较多（$k,\kappa,\gamma,\delta,\lambda_{\text{INA}},\lambda_{\text{CL}}$ 六组），虽敏感性分析显示较平稳，但跨域迁移仍需重调。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

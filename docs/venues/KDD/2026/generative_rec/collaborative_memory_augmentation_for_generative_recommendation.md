@@ -69,7 +69,7 @@ flowchart TD
 $$s_i=(1-\alpha)\cdot\cos(\boldsymbol{o}_q,\boldsymbol{o}^c_i)+\alpha\cdot\cos(\boldsymbol{o}_q,\boldsymbol{e}^c_i)$$
 其中 𝒆^c_i 为候选目标物品嵌入，α 平衡"历史轨迹相似"与"目标意图相似"。α=0 时全指标下降，验证目标级信号的独立价值。
 
-3. **门控交叉注意力融合与训练目标**：对非主流兴趣用户，检索到的记忆可能噪声大。用 $a_i=\sigma(w\cdot s_i+b)$ 将检索分数转为实例级门控，$\tilde{\boldsymbol{Z}}_i=a_i\cdot\boldsymbol{Z}_i$，低分记忆被压向零；再以 𝑯 为 Q、门控记忆 𝑴 为 K/V 做**去掉 causal mask** 的交叉注意力（使记忆可关注全序列位置），残差 + FFN 输出。总损失即骨干 NLL：$\mathcal{L}_{GR}=-\sum_i \log P(Y_i|X,Y_{<i})$，检索器另用标准交叉熵 $\mathcal{L}_{CE}$ 训练；检索用 HNSW 索引，复杂度 $O(d_1\log M)$，无需负采样于生成阶段。
+3. **门控交叉注意力融合与训练目标**：对非主流兴趣用户，检索到的记忆可能噪声大。用 $a_i=\sigma(w\cdot s_i+b)$将检索分数转为实例级门控，$\tilde{\boldsymbol{Z}}_i=a_i\cdot\boldsymbol{Z}_i$，低分记忆被压向零；再以 𝑯 为 Q、门控记忆 𝑴 为 K/V 做**去掉 causal mask** 的交叉注意力（使记忆可关注全序列位置），残差 + FFN 输出。总损失即骨干 NLL：$\mathcal{L}_{GR}=-\sum_i \log P(Y_i|X,Y_{<i})$，检索器另用标准交叉熵$\mathcal{L}_{CE}$训练；检索用 HNSW 索引，复杂度$O(d_1\log M)$，无需负采样于生成阶段。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -120,10 +120,15 @@ $$s_i=(1-\alpha)\cdot\cos(\boldsymbol{o}_q,\boldsymbol{o}^c_i)+\alpha\cdot\cos(\
 2. **压缩表征优于均值池化**（Instrument N@10 0.0356 vs. 0.0343），证明可学习 query token 在压缩中保留了均值池化丢失的语义；且仅用 1% 记忆库容量即可达到全量性能，说明记忆捕获的是高层泛化行为模式而非细粒度个体信号。
 3. **模型集成实验排除"蒸馏假说"**：TIGER+HSTU 集成（Game N@10 0.0529）仍不及 OMEGA-HSTU（0.0594），而 OMEGA+HSTU 集成进一步升至 0.0623，说明 OMEGA 不是模仿检索器打分，而是真正把外部记忆转化为更完整的用户表征。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 TIGER/Pctx 等纯参数化 GR，OMEGA 首次把"跨用户显式记忆"作为正交维度引入生成式推荐；相比 LMN/MARM 等记忆增强序列推荐（面向超长序列压缩），OMEGA 的记忆语义是"协同邻居的行为模式"而非"自己的历史"，且与语义 ID 生成解码器深度耦合。
 - **可迁移亮点**: ① 用可学习 query token 做"记忆条目压缩"可低成本迁移到任何需要大规模向量库的 RAG 式推荐；② 检索分数 → sigmoid 门控 → 交叉注意力的三步噪声抑制范式，可直接复用到多源特征融合。
 - **审稿级局限批判**: ① 记忆库需离线预计算全量训练样本的压缩表征与检索索引（Instrument 约 436MB），工业级更新频率与冷启动新样本入库策略未讨论；② 检索器与骨干需分别预训练 + 两阶段微调，训练流程偏重，且 α 最优值随数据集漂移，需逐场景调参。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

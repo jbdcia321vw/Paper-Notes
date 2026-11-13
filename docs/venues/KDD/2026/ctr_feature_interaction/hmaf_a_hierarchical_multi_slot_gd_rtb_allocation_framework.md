@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-HMAF 位于 GD 与 RTB 两条并行链路的汇合处，构建统一竞争舞台。**Plan 阶段**将 GD 履约建模为带 Page View 约束的凸优化问题，用分布式投影梯度迭代对偶变量 $\alpha_j,\beta_i,\delta_{ij}$，得到闭式分配概率 $x_{ij}$；**Calibrate 阶段**把对偶信号以 $x_{ij}\cdot \text{PIDError}$ 调制项注入 GD 打分，与 RTB 的 $ctr\cdot CPC+gmv$ 同台粗排，剪枝候选空间；**Execute 阶段**用 Transformer 生成候选-坑位分配矩阵，Evaluator 在生成列表与扰动列表集合中按列表级 eCPM 选出最优 $S^\star$ 作为监督标签，联合交叉熵与 eCPM 回归损失训练。
+HMAF 位于 GD 与 RTB 两条并行链路的汇合处，构建统一竞争舞台。**Plan 阶段**将 GD 履约建模为带 Page View 约束的凸优化问题，用分布式投影梯度迭代对偶变量 $\alpha_j,\beta_i,\delta_{ij}$，得到闭式分配概率$x_{ij}$；**Calibrate 阶段**把对偶信号以$x_{ij}\cdot \text{PIDError}$调制项注入 GD 打分，与 RTB 的$ctr\cdot CPC+gmv$同台粗排，剪枝候选空间；**Execute 阶段**用 Transformer 生成候选-坑位分配矩阵，Evaluator 在生成列表与扰动列表集合中按列表级 eCPM 选出最优$S^\star$ 作为监督标签，联合交叉熵与 eCPM 回归损失训练。
 
 ```mermaid
 flowchart TD
@@ -60,11 +60,11 @@ flowchart TD
 
 1. **PV 约束对偶分配（Plan）**：痛点是对偶约束只到合约/请求级，无法限制同页多坑位的过度曝光。本文新增坑位级约束 $s_i x_{ij}\le pv_i$，由 KKT 条件导出闭式分配
 $$x_{ij}=\max\Big\{0,\ \theta_j\Big(1+\tfrac{w_j+\lambda_j c_{ij}-\alpha_j-\beta_i-\delta_{ij}}{V_j}\Big)\Big\}$$
-其中 $\alpha_j$ 为合约需求影子价、$\beta_i$ 为请求容量价、$\delta_{ij}$ 为坑位曝光价。直觉：三类对偶变量把"全局资源稀缺"编码为逐请求可查的标量，在线侧无需重解优化即可感知约束紧度。
+其中 $\alpha_j$为合约需求影子价、$\beta_i$为请求容量价、$\delta_{ij}$ 为坑位曝光价。直觉：三类对偶变量把"全局资源稀缺"编码为逐请求可查的标量，在线侧无需重解优化即可感知约束紧度。
 
-2. **对偶引导统一预排（Calibrate）**：GD 打分改为 $rs_j = CPM_j\cdot(1+x_{ij}\cdot \text{PIDError})+gmv_j$，其中 $\text{PIDError}$ 由实时交付率 $dr_j(t)=N_j(t)/B_j(t)$ 相对目标 $dr^*$ 的偏差给出，并以 $\mu_0$ 保底防止开关抖动。与全局统一施压的传统 PID 不同，$x_{ij}$ 提供**上下文级置信度**，使调控压力按请求-合约匹配度差异化分配。
+2. **对偶引导统一预排（Calibrate）**：GD 打分改为 $rs_j = CPM_j\cdot(1+x_{ij}\cdot \text{PIDError})+gmv_j$，其中$\text{PIDError}$由实时交付率$dr_j(t)=N_j(t)/B_j(t)$相对目标$dr^*$的偏差给出，并以$\mu_0$保底防止开关抖动。与全局统一施压的传统 PID 不同，$x_{ij}$ 提供**上下文级置信度**，使调控压力按请求-合约匹配度差异化分配。
 
-3. **生成-评估列表重排与训练目标（Execute）**：Generator 用 Transformer 编码候选-坑位交互，输出 $\hat p_{ij}=\text{softmax}(x_j^\top p_i)$ 并采样列表；Evaluator 在 $\{S_g,S_1,\dots,S_l\}$ 中选 $S^\star=\arg\max R(S_k)$ 转为二值标签矩阵 $Y$。总损失
+3. **生成-评估列表重排与训练目标（Execute）**：Generator 用 Transformer 编码候选-坑位交互，输出 $\hat p_{ij}=\text{softmax}(x_j^\top p_i)$并采样列表；Evaluator 在$\{S_g,S_1,\dots,S_l\}$中选$S^\star=\arg\max R(S_k)$转为二值标签矩阵$Y$。总损失
 $$\mathcal{L}=\psi_1\cdot\big(-\textstyle\sum_{i,j}Y_{ij}\log\hat p_{ij}\big)-\psi_2\cdot\sum_{(i,j)\in\mathcal{O}}(\hat e_{ij}-e_{ij})$$
 第二项直接惩罚预测 eCPM 与线上结算值的**带符号偏差**，纠正系统性高/低估。训练无需人工负采样，监督来自 Evaluator 的奖励引导伪标签；在线预排 <5ms/广告、GE 推理 <50ms/页面。
 
@@ -109,10 +109,15 @@ $$\mathcal{L}=\psi_1\cdot\big(-\textstyle\sum_{i,j}Y_{ij}\log\hat p_{ij}\big)-\p
 2. **GE 模块是收益-交付平衡的关键**：w/o GE 时 RE 从 1.0000 降至 0.9252、GQ 降至 0.9382，证明列表级生成-评估对"把 GD 挤到非优质坑位、释放高价库存给 RTB"的帕累托改进不可替代。
 3. **PR 是效率换精度的划算交易**：w/o PR 的 DR/UR 反而略高（0.9647/0.9810），但端到端优化时间从约 2 天压缩到 15 分钟，以边际性能损失换取可规模化部署，是工业落地的必要折衷。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: CONFLUX 做请求级单坑位原始-对偶 + 级联蒸馏，缺跨槽建模；LIBRA 用对抗奖励引导统一分配，但离线约束与在线决策仍是松耦合；HMAF 的本质差异是把**坑位级 PV 约束的对偶解直接作为在线特征**，并用生成-评估把无标签列表排序转为奖励引导监督。
 - **可迁移亮点**: ① "离线对偶影子价 → 在线模型全局状态特征"的注入范式可迁移到任何带预算/配额约束的排序场景（如预算约束推荐、库存约束电商）；② Evaluator 用扰动列表构造伪标签 + 带符号 eCPM 偏差惩罚，可复用于缺乏 ground-truth 排序的列表级重排任务。
-- **审稿级局限批判**: ① 评估完全依赖单一平台日志回放与业务指标，缺少公开数据集与标准全库排序协议，GA 之外的指标难以跨系统复现；② 对偶变量依赖每日重规划与 $[City]\times[Category]$ 冷启动均值初始化，新合约密集期或流量突变下的鲁棒性未量化；③ 超参 $dr^*,\mu_0,\psi_1,\psi_2$ 敏感度分析显示存在明显最优窄区间，调参成本高。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
+- **审稿级局限批判**: ① 评估完全依赖单一平台日志回放与业务指标，缺少公开数据集与标准全库排序协议，GA 之外的指标难以跨系统复现；② 对偶变量依赖每日重规划与 $[City]\times[Category]$冷启动均值初始化，新合约密集期或流量突变下的鲁棒性未量化；③ 超参$dr^*,\mu_0,\psi_1,\psi_2$ 敏感度分析显示存在明显最优窄区间，调参成本高。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

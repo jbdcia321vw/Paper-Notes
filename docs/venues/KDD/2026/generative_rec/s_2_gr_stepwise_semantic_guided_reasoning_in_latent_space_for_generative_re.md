@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-两阶段：先训练 CoBa RQ-VAE 得到高质量层级 SID 码本（协同共现对齐 + 码本内均匀性 + MoE 式负载均衡），再训练 T5 式编解码生成器，在每级 SID 码前插入思考 token $t_l$，由码本聚类中心对比损失、初始 token 的全局物品语义 InfoNCE 与正则项共同监督，最终损失为 $\mathcal{L}=\mathcal{L}_{Rec}+\mathcal{L}_{Think}$。
+两阶段：先训练 CoBa RQ-VAE 得到高质量层级 SID 码本（协同共现对齐 + 码本内均匀性 + MoE 式负载均衡），再训练 T5 式编解码生成器，在每级 SID 码前插入思考 token $t_l$，由码本聚类中心对比损失、初始 token 的全局物品语义 InfoNCE 与正则项共同监督，最终损失为$\mathcal{L}=\mathcal{L}_{Rec}+\mathcal{L}_{Think}$。
 
 ```mermaid
 flowchart TD
@@ -60,9 +60,9 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **CoBa RQ-VAE 码本优化（打好层级语义地基）**：痛点是用纯多模态特征量化导致 SID 与推荐目标错位、码本坍缩。做法：用交互共现图做轻量传播 $H^{(k)}=(1-\alpha)\hat{A}H^{(k-1)}+\alpha X$ 并指数加权融合多跳表示（免预训练 CF，省算力）；加码本内成对距离均匀损失 $\mathcal{L}_{uniform}=\log\big(1+\sum_{(i,j)\in P}\exp(-\mu D_{ij})\big)$ 只惩罚过近码字；再用 MoE 式频率修正 $\hat{d}_k=d_k\odot(1-f_k)$ 动态压低高频码字选择概率。直觉：让码本"用满、用匀、带行为语义"。
-2. **逐步语义引导推理（核心创新）**：痛点见上。做法：每级先出思考 token 再出码，$t_l=\text{Decoder}(\tilde{h}_{l-1},H_{enc})+p_l$，$s_l=\text{Decoder}((\tilde{h}_{l-1},t_l),H_{enc})$，层级位置嵌入 $p_l$ 区分思考位与码位；监督用码本第 $l$ 层 K-means 中心 $c_k$ 做对比损失 $\mathcal{L}_{Align}^{(l)}=-\frac{1}{B}\sum_i\log\frac{\exp(\text{Sim}(t_l^i,c_{s_l^i})/\tau)}{\sum_k\exp(\text{Sim}(t_l^i,c_k)/\tau)}$。直觉：思考 token 被"钉"在真实粗粒度类别上，成为可验证的语义锚点。
-3. **初始思考 token 全局正则与训练/推理**：$t_1$ 是推理链起点，用轻量解码器生成整体兴趣向量 $v_g$，以 in-batch 负采样 InfoNCE 对齐目标物品各级码嵌入均值 $\bar{v}$，再加 $\mathcal{L}_{Reg}=1-\text{Sim}(t_1,\text{sg}(v_g))$ 注入全局语义，抑制早期码漂移。总损失 $\mathcal{L}=\mathcal{L}_{Rec}+\sum_l\mathcal{L}_{Align}^{(l)}+\mathcal{L}_{InfoNCE}+\lambda\mathcal{L}_{Reg}$；推理沿用 SID 前缀树约束解码，开销与 TIGER 同阶（仅多 L 个 token 步）。
+1. **CoBa RQ-VAE 码本优化（打好层级语义地基）**：痛点是用纯多模态特征量化导致 SID 与推荐目标错位、码本坍缩。做法：用交互共现图做轻量传播 $H^{(k)}=(1-\alpha)\hat{A}H^{(k-1)}+\alpha X$并指数加权融合多跳表示（免预训练 CF，省算力）；加码本内成对距离均匀损失$\mathcal{L}_{uniform}=\log\big(1+\sum_{(i,j)\in P}\exp(-\mu D_{ij})\big)$只惩罚过近码字；再用 MoE 式频率修正$\hat{d}_k=d_k\odot(1-f_k)$ 动态压低高频码字选择概率。直觉：让码本"用满、用匀、带行为语义"。
+2. **逐步语义引导推理（核心创新）**：痛点见上。做法：每级先出思考 token 再出码，$t_l=\text{Decoder}(\tilde{h}_{l-1},H_{enc})+p_l$，$s_l=\text{Decoder}((\tilde{h}_{l-1},t_l),H_{enc})$，层级位置嵌入$p_l$区分思考位与码位；监督用码本第$l$层 K-means 中心$c_k$做对比损失$\mathcal{L}_{Align}^{(l)}=-\frac{1}{B}\sum_i\log\frac{\exp(\text{Sim}(t_l^i,c_{s_l^i})/\tau)}{\sum_k\exp(\text{Sim}(t_l^i,c_k)/\tau)}$。直觉：思考 token 被"钉"在真实粗粒度类别上，成为可验证的语义锚点。
+3. **初始思考 token 全局正则与训练/推理**：$t_1$是推理链起点，用轻量解码器生成整体兴趣向量$v_g$，以 in-batch 负采样 InfoNCE 对齐目标物品各级码嵌入均值$\bar{v}$，再加$\mathcal{L}_{Reg}=1-\text{Sim}(t_1,\text{sg}(v_g))$注入全局语义，抑制早期码漂移。总损失$\mathcal{L}=\mathcal{L}_{Rec}+\sum_l\mathcal{L}_{Align}^{(l)}+\mathcal{L}_{InfoNCE}+\lambda\mathcal{L}_{Reg}$；推理沿用 SID 前缀树约束解码，开销与 TIGER 同阶（仅多 L 个 token 步）。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -109,10 +109,15 @@ flowchart TD
 2. **码本优化对大规模物品空间更敏感**：w/o CoBa RQ-VAE 在工业集 NDCG@10 从 0.0111 跌至 0.0081（-27%），远大于 Beauty 的跌幅，印证百万级物品下码本利用率与层级语义是生成质量瓶颈。
 3. **推理收益呈"两端大、中间小"**：工业集上短序列（<20）HR@10 相对提升 +50.0%、长序列（>40）+40.4%，中等长度仅 +19.7%——短序列靠推理补全隐兴趣，长序列靠推理去噪提纯；且模型规模 2x→8x 全程稳定领先 TIGER，收益非参数堆叠所致。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 TIGER 的"直接生成"，本文把推理嵌入每一级码生成，解决多码算力失衡；相比 STREAM-Rec/GPR 的"前置推理链"，本文的思考 token 有码本聚类这一可验证监督锚点，而非无约束隐向量；相比 ReaRec 的序列推荐隐推理，本文与 SID 层级结构严格对齐。
 - **可迁移亮点**: ① 用码本 K-means 聚类中心作为"免费"层级监督信号，可迁移到任何层级量化生成任务；② MoE 式频率修正 $\hat{d}_k=d_k(1-f_k)$ 是极轻量的码本负载均衡技巧，几乎零成本。
 - **审稿级局限批判**: ① 仅 1 个公开数据集（Beauty）+ 1 个私有工业集，泛化性证据偏薄，且工业集不可复现；② 每级多生成一个思考 token，序列长度翻倍，长序列场景推理延迟与显存开销未量化；③ 聚类数 K 呈倒 U 型敏感（过多导致"过度思考"），需逐数据集调参。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

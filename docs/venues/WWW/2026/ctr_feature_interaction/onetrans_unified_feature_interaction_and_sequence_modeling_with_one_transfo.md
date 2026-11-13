@@ -59,7 +59,7 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **混合参数化 (Mixed Parameterization)**：LLM 所有 token 同质共享权重，但推荐中 NS token 语义高度异构（用户 ID、价格、类目统计量尺度差异巨大），全共享会抹平特征区分度、全独立则参数量爆炸。故对 S token 共享一套 $W^{Q/K/V}_S$ 与 FFN，对第 $i$ 个 NS token 分配专属 $W^{\Psi}_{NS,i}$：
+1. **混合参数化 (Mixed Parameterization)**：LLM 所有 token 同质共享权重，但推荐中 NS token 语义高度异构（用户 ID、价格、类目统计量尺度差异巨大），全共享会抹平特征区分度、全独立则参数量爆炸。故对 S token 共享一套 $W^{Q/K/V}_S$与 FFN，对第$i$个 NS token 分配专属$W^{\Psi}_{NS,i}$：
 
 $$W^{\Psi}_{i}=\begin{cases}W^{\Psi}_{S}, & i\le L_S\\ W^{\Psi}_{NS,i}, & i>L_S\end{cases},\quad \Psi\in\{Q,K,V\}$$
 
@@ -69,9 +69,9 @@ $$W^{\Psi}_{i}=\begin{cases}W^{\Psi}_{S}, & i\le L_S\\ W^{\Psi}_{NS,i}, & i>L_S\
 
 $$q_i=W^Q_i x_i,\ i\in\mathcal{Q}=\{L-L'+1,\dots,L\}$$
 
-输出仅保留 $\mathcal{Q}$ 对应位置，token 长度逐层收缩（OneTrans_S 从 1190 降至 12）。收益双重：长行为史被渐进蒸馏进少量 query 与 NS token；注意力开销降为 $O(LL'd)$，同等 FLOPs 下可支撑约 1.75× 更长序列。
+输出仅保留 $\mathcal{Q}$对应位置，token 长度逐层收缩（OneTrans_S 从 1190 降至 12）。收益双重：长行为史被渐进蒸馏进少量 query 与 NS token；注意力开销降为$O(LL'd)$，同等 FLOPs 下可支撑约 1.75× 更长序列。
 
-3. **训练目标、负采样与推理效率**：损失为 CTR/CVR 双任务加权 BCE（沿用生产设定，论文未引入新负采样策略，样本即曝光日志）。效率核心是跨请求 KV 缓存：Stage I 每请求对 S 侧做一次因果前向并缓存 K/V；Stage II 每个候选仅计算 NS token 并对缓存做 cross-attention。由于行为序列 append-only，跨请求复用上一轮缓存，每请求序列计算从 $O(L)$ 降至 $O(\Delta L)$，$C$ 个候选的序列侧复杂度由 $O(C)$ 降为 $O(1)$；再叠加 FlashAttention-2、BF16 混合精度与激活重计算。
+3. **训练目标、负采样与推理效率**：损失为 CTR/CVR 双任务加权 BCE（沿用生产设定，论文未引入新负采样策略，样本即曝光日志）。效率核心是跨请求 KV 缓存：Stage I 每请求对 S 侧做一次因果前向并缓存 K/V；Stage II 每个候选仅计算 NS token 并对缓存做 cross-attention。由于行为序列 append-only，跨请求复用上一轮缓存，每请求序列计算从 $O(L)$降至$O(\Delta L)$，$C$个候选的序列侧复杂度由$O(C)$降为$O(1)$；再叠加 FlashAttention-2、BF16 混合精度与激活重计算。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -83,7 +83,7 @@ $$q_i=W^Q_i x_i,\ i\in\mathcal{Q}=\{L-L'+1,\dots,L\}$$
 
 - **数据划分与防穿越 (Splitting Strategy)**: 全局时间戳切分（chronological split），特征按曝光时刻快照，标签在固定窗口内聚合，杜绝时序泄漏。
 - **排名评测协议 (Ranking Protocol)**: 采用 next-batch 评估——每个 mini-batch 先在 eval 模式记录预测再训练同批数据，按天计算 AUC/UAUC 后跨天宏平均；UAUC 为曝光加权用户级 AUC。非采样排序，指标为全量曝光上的 AUC 体系。
-- **对比基线与超参设置**: 基线分三组——特征交叉侧 DCNv2→Wukong→HiFormer→RankMixer（均配 DIN）；序列侧固定 RankMixer 后换 StackDIN→Transformer→LONGER。OneTrans_S 为 6 层 / $d$=256 / 4 头（≈100M 稠密参数），OneTrans_L 为 8 层 / $d$=384（330M）；稀疏 embedding 用 Adagrad，稠密参数用 RMSProp (lr=0.005)，16×H100 数据并行，per-GPU batch 2048。文中以 +0.1% 为有意义增益、+0.3% 对应线上显著。
+- **对比基线与超参设置**: 基线分三组——特征交叉侧 DCNv2→Wukong→HiFormer→RankMixer（均配 DIN）；序列侧固定 RankMixer 后换 StackDIN→Transformer→LONGER。OneTrans_S 为 6 层 / $d$=256 / 4 头（≈100M 稠密参数），OneTrans_L 为 8 层 /$d$=384（330M）；稀疏 embedding 用 Adagrad，稠密参数用 RMSProp (lr=0.005)，16×H100 数据并行，per-GPU batch 2048。文中以 +0.1% 为有意义增益、+0.3% 对应线上显著。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -121,10 +121,15 @@ $$q_i=W^Q_i x_i,\ i\in\mathcal{Q}=\{L-L'+1,\dots,L\}$$
 3. **混合参数化与 tokenizer 选择均有实质贡献**：全共享参数掉 0.29% CTR UAUC，说明 NS token 异构性必须保留；Auto-Split 优于人工分组（+0.30% UAUC），时间戳感知融合优于意图排序（+0.22% UAUC），即「让模型自己切 token、让时间自己排序列」更优。
 4. **线上收益与延迟双赢**：Feeds 场景 click/u +7.74%、GMV/u +5.68%、p99 延迟 -3.91%；冷启动商品 order/u +13.59%，说明统一骨干对稀疏物品泛化更强。OneTrans_L 虽 TFLOPs 为基线 143×，但靠 KV 缓存与混合精度，p99 13.2ms 反低于 DCNv2+DIN 的 13.6ms，MFU 从 13.4 升至 30.8。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 RankMixer（仅交叉侧 token-mixing + MoE 扩 FFN）与 LONGER（仅序列侧长历史因果 Transformer），OneTrans 把二者合并进同一注意力矩阵，NS token 对 S 全史的 attention 同时充当 target-attention 与高阶交叉；相比 InterFormer 的「双模块 + 双向 cross 桥接」，本文彻底取消模块边界，因而能直接继承 KV 缓存等 LLM 系统优化，这是架构层面的本质差异。
 - **可迁移亮点**: ① 「同质 token 共享 / 异质 token 专属」的混合参数化可直接迁移到多场景、多域特征共存的精排模型；② 跨请求 KV 缓存利用「同请求 S 侧不变、候选侧变化」的工业结构，是任何序列精排模型都可套用的降本手段。
 - **审稿级局限批判**: ① 实验完全基于单一平台私有日志，无公开数据集复现，Auto-Split 与金字塔调度比例（1190→12）等超参的跨场景鲁棒性未知；② 未报告训练侧显存与吞吐的绝对成本，OneTrans_L 训练显存 32GB 已高于基线 20GB，且论文自承「显著超越 L 规模受线上效率约束」，scaling 上限实际被封顶；③ 负采样与损失设计完全沿用生产设定，未讨论统一骨干下样本构造是否需要重新设计。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

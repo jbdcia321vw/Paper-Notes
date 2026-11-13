@@ -41,7 +41,7 @@ LLM 重排中物品侧信息利用不足：真实元数据海量异构、关键�
 
 ### 1. 整体框架 (Overall Architecture)
 
-CAIRO 分四步闭环：① 离线用 LLM 将异构元数据/评论结构化为客观特征字典 $O_i$ 与多面主观特质集 $S_i$；② 训练轻量 profiler（MLP 打分器 + 控制器网络），从协同信号学习特征重要性；③ 在线对每个用户-物品对做矩阵化并行选择，拼装个性化画像并构造重排 prompt；④ 可选离线 Refine 阶段，用代理任务错误诊断修正主观特质。在线阶段无任何 LLM 调用，仅轻量矩阵运算。
+CAIRO 分四步闭环：① 离线用 LLM 将异构元数据/评论结构化为客观特征字典 $O_i$与多面主观特质集$S_i$；② 训练轻量 profiler（MLP 打分器 + 控制器网络），从协同信号学习特征重要性；③ 在线对每个用户-物品对做矩阵化并行选择，拼装个性化画像并构造重排 prompt；④ 可选离线 Refine 阶段，用代理任务错误诊断修正主观特质。在线阶段无任何 LLM 调用，仅轻量矩阵运算。
 
 ```mermaid
 flowchart TD
@@ -59,11 +59,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **领域键探索与结构化抽取（解决 C1 海量异构）**：直接让 LLM 生成键易幻觉且覆盖不全。改为对元数据 BGE-M3 嵌入做 k-means（$k_{items}=20$），每簇采样少量物品让 LLM 提候选键，再统一"重评估+合并"（如 Water-proof 与 Water-resistance 合并），不做频率过滤以保留稀疏但信息量大的键，最终 $|\mathcal{F}|$ 为 30–50。抽取时要求 LLM 先验证元数据中有证据才赋值，否则输出 null，抑制幻觉。主观特质则从评论抽取四方面（购买目的、使用场景、满意度、品类偏好），再以客观特征为锚推理出 3–7 条多面特质，每条附约 2 个支撑特征。
+1. **领域键探索与结构化抽取（解决 C1 海量异构）**：直接让 LLM 生成键易幻觉且覆盖不全。改为对元数据 BGE-M3 嵌入做 k-means（$k_{items}=20$），每簇采样少量物品让 LLM 提候选键，再统一"重评估+合并"（如 Water-proof 与 Water-resistance 合并），不做频率过滤以保留稀疏但信息量大的键，最终$|\mathcal{F}|$ 为 30–50。抽取时要求 LLM 先验证元数据中有证据才赋值，否则输出 null，抑制幻觉。主观特质则从评论抽取四方面（购买目的、使用场景、满意度、品类偏好），再以客观特征为锚推理出 3–7 条多面特质，每条附约 2 个支撑特征。
 
 2. **协同信号驱动的特征选择器（解决 C2/C3）**：语义相似度无法刻画特征间的协同贡献。将用户画像、各特征、用户/物品 ID 嵌入拼接为 $e_{ui}$，控制器网络输出重要性权重并重加权：
 $$\mathbf{w}=\mathrm{softmax}(g_w(e_{ui})),\quad \tilde{e}_{ui}=[w_{f_1}h_{f_1};\dots;w_{P_u}h_{P_u};w_u h_u;w_i h_i]$$
-以 BCE 损失与 2 层 MLP 推荐器联合训练，使高权重自然流向对预测最有贡献的特征；推理时对 $\mathbf{w}$ 做 $k$-max 池化（$k=4$）选出 top 特征。主观特质则用用户画像与特质嵌入的余弦相似度取 argmax，并并入其支撑特征（每画像共约 5 个客观特征）。
+以 BCE 损失与 2 层 MLP 推荐器联合训练，使高权重自然流向对预测最有贡献的特征；推理时对 $\mathbf{w}$做$k$-max 池化（$k=4$）选出 top 特征。主观特质则用用户画像与特质嵌入的余弦相似度取 argmax，并并入其支撑特征（每画像共约 5 个客观特征）。
 
 3. **训练目标、负采样与推理效率**：总损失即上述 BCE $\mathcal{L}=-\sum_{(u,i)}[y\log\hat{y}+(1-y)\log(1-\hat{y})]$，负样本为未观测交互（隐式反馈），无额外难负采样设计。在线仅需一次前向矩阵运算，实测每用户画像构建 0.21–0.32s，而 RAG 式 REAP 需 315–816s。
 
@@ -79,7 +79,7 @@ $$\mathbf{w}=\mathrm{softmax}(g_w(e_{ui})),\quad \tilde{e}_{ui}=[w_{f_1}h_{f_1};
 
 - **数据划分与防穿越 (Splitting Strategy)**: `Leave-One-Out`——最后一条交互测试、倒数第二条验证、其余训练；画像仅由训练集构建。
 - **排名评测协议 (Ranking Protocol)**: `Sampled Ranking`，每用户 20 候选 = 1 真值 + 19 个 BPR-MF 负样本，顺序打乱消除位置偏置；指标 HR@5/10、nDCG@5/10。
-- **对比基线与超参设置**: 传统模型 BPR/SASRec/BERT4Rec；特征模型 xDeepFM/AdaFS/REACTION；LLM 重排 LLMRank/EXP3RT/M-LLM3Rec 及其 `+Feat` 变体；RAG 式 REAP。统一 GPT-4o-mini，重排温度 0.2，$k_{items}=20$、$k=4$、$N_{cand}=2$，显著性 $p<0.05$。
+- **对比基线与超参设置**: 传统模型 BPR/SASRec/BERT4Rec；特征模型 xDeepFM/AdaFS/REACTION；LLM 重排 LLMRank/EXP3RT/M-LLM3Rec 及其 `+Feat` 变体；RAG 式 REAP。统一 GPT-4o-mini，重排温度 0.2，$k_{items}=20$、$k=4$、$N_{cand}=2$，显著性$p<0.05$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -118,10 +118,15 @@ $$\mathbf{w}=\mathrm{softmax}(g_w(e_{ui})),\quad \tilde{e}_{ui}=[w_{f_1}h_{f_1};
 2. **协同信号优于语义相似度**：O-Sim（余弦选特征）在 Electronics 上 nDCG@5 为 0.1778，低于 CAIRO 的 0.1797，说明特征重要性需从交互模式学习，语义相近不等于决策相关。
 3. **效率与效果双赢**：CAIRO 每用户画像耗时 0.21–0.32s，REAP(1-hop) 需 315–347s、REAP(5-hop) 达 737–816s，而 CAIRO 在 Electronics 上 HR@10 达 0.5214 反超 REAP 的 0.4800；且跨 Qwen2.5-3B 至 32B、Llama3.2-3B 至 8B 四模型均稳定领先，3B 小模型亦受益，说明结构化画像可补偿模型容量。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: EXP3RT 从评论抽 liked/disliked 点、M-LLM3Rec 用动机导向关键词，二者均为静态画像且仅用少量公共字段；CAIRO 首次将"物品侧画像"做成用户条件化选择问题，并用协同信号替代启发式摘要。相比 REAP 的 agentic 多轮检索，CAIRO 以离线 profiler 换取两个数量级的延迟下降。
 - **可迁移亮点**: ① 控制器网络 + k-max 池化从协同信号学特征重要性，可直接迁移到任何"海量特征需压缩进 prompt"的 LLM 场景；② 用代理 next-item 任务的预测错误反向诊断并修正文本画像，是低成本 prompt/画像优化的通用范式。
 - **审稿级局限批判**: ① 评测为 20 候选的采样排序，未验证全库 Full-Ranking 或真实工业候选集下的增益，且负样本来自 BPR-MF 可能偏易；② 离线阶段依赖 GPT-4o-mini 做键探索与特质抽取，成本与领域迁移性（新域需重跑聚类与抽取）未充分讨论；③ Refine 阶段在 Sports 上 nDCG@5 提升明显（0.1852→0.1981）但在 Video Games 上增益有限，超参 $k$、$N_{cand}$ 敏感性缺失。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

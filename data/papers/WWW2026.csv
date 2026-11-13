@@ -32,3 +32,36 @@ Quantifying User Coherence: A Unified Framework for Analyzing Recommender System
 Unveiling and Simulating Short-Video Addiction Behaviors via Economic Addiction Theory,2601.15975,https://arxiv.org/abs/2601.15975,,agent_conversational_rec,WWW,2026
 From Reasoning LLMs to BERT: A Two-Stage Distillation Framework for Search Relevance,2510.11056,https://arxiv.org/abs/2510.11056,,llm_rec,WWW,2026
 Efficient Content-based Recommendation Model Training via Noise-aware Coreset Selection,2601.10067,https://arxiv.org/abs/2601.10067,https://github.com/chenxing1999/nacs,self_supervised_denoising,WWW,2026
+Iterative Semantic Reasoning from Individual to Group Interests for Generative Recommendation with LLMs,2603.13934,https://arxiv.org/abs/2603.13934,https://github.com/htired/ISRF,llm_rec,WWW,2026
+"AlphaFree: Recommendation Free from Users, IDs, and GNNs",2603.02653,https://arxiv.org/abs/2603.02653,,llm_rec,WWW,2026
+Trinity: A Scenario-Aware Recommendation Framework for Large-Scale Cold-Start Users,2603.00502,https://arxiv.org/abs/2603.00502,,cold_start_rec,WWW,2026
+FeDecider: An LLM-Based Framework for Federated Cross-Domain Recommendation,2602.16034,https://arxiv.org/abs/2602.16034,,cross_domain_multi_scenario,WWW,2026
+Efficient Learning of Sparse Representations from Interactions,2602.09935,https://arxiv.org/abs/2602.09935,https://github.com/zombak79/compressed_elsa,collaborative_filtering,WWW,2026
+Modeling Endogenous Logic: Causal Neuro-Symbolic Reasoning Model for Explainable Multi-Behavior Recommendation,2601.21335,https://arxiv.org/abs/2601.21335,,debias_fairness_industrial,WWW,2026
+"Delayed Feedback Modeling for Post-Click Gross Merchandise Volume Prediction: Benchmark, Insights and Approaches",2601.20307,https://arxiv.org/abs/2601.20307,https://github.com/alimama-tech/OnlineGMV,ctr_feature_interaction,WWW,2026
+"Modeling Cascaded Delay Feedback for Online Net Conversion Rate Prediction: Benchmark, Insights and Solutions",2601.19965,https://arxiv.org/abs/2601.19965,https://github.com/alimama-tech/NetCVR,ctr_feature_interaction,WWW,2026
+Unleashing the Potential of Sparse Attention on Long-term Behaviors for CTR Prediction,2601.17836,https://arxiv.org/abs/2601.17836,https://github.com/laiweijiang/SparseCTR,ctr_feature_interaction,WWW,2026
+DARA: Few-shot Budget Allocation in Online Advertising via In-Context Decision Making with RL-Finetuned LLMs,2601.14711,https://arxiv.org/abs/2601.14711,,rl_bandit_rec,WWW,2026
+BlossomRec: Block-level Fused Sparse Attention Mechanism for Sequential Recommendations,2512.13368,https://arxiv.org/abs/2512.13368,https://github.com/Applied-Machine-Learning-Lab/WWW2026_BlossomRec,sequential_rec,WWW,2026
+RASTP: Representation-Aware Semantic Token Pruning for Generative Recommendation with Semantic Identifiers,2511.16943,https://arxiv.org/abs/2511.16943,https://github.com/Yuzt-zju/RASTP,generative_rec,WWW,2026
+DualGR: Generative Retrieval with Long and Short-Term Interests Modeling,2511.12518,https://arxiv.org/abs/2511.12518,,generative_rec,WWW,2026
+TaoSR-AGRL: Adaptive Guided Reinforcement Learning Framework for E-commerce Search Relevance,2510.08048,https://arxiv.org/abs/2510.08048,,llm_rec,WWW,2026
+Diversity-Augmented Negative Sampling for Implicit Collaborative Filtering,2508.14468,https://arxiv.org/abs/2508.14468,,collaborative_filtering,WWW,2026
+Beyond Isolated Clients: Integrating Graph-Based Embeddings into Event Sequence Models,2604.09085,https://arxiv.org/abs/2604.09085,,self_supervised_denoising,WWW,2026
+Hyena Operator for Fast Sequential Recommendation,2603.25027,https://arxiv.org/abs/2603.25027,,sequential_rec,WWW,2026
+Modeling Stage-wise Evolution of User Interests for News Recommendation,2603.10471,https://arxiv.org/abs/2603.10471,,sequential_rec,WWW,2026
+Not All Candidates are Created Equal: A Heterogeneity-Aware Approach to Pre-ranking in Recommender Systems,2603.03770,https://arxiv.org/abs/2603.03770,,multi_task_reranking,WWW,2026
+Mixture of Sequence: Theme-Aware Mixture-of-Experts for Long-Sequence Recommendation,2604.20858,https://arxiv.org/abs/2604.20858,https://github.com/xiaolin-cs/MoS,sequential_rec,WWW,2026
+Beyond the Flat Sequence: Hierarchical and Preference-Aware Generative Recommendations,2603.00980,https://arxiv.org/abs/2603.00980,,generative_rec,WWW,2026
+RAIE: Region-Aware Incremental Preference Editing with LoRA for LLM-based Recommendation,2603.00638,https://arxiv.org/abs/2603.00638,https://github.com/fengaogao/RAIE,llm_rec,WWW,2026
+Generative Data Transformation: From Mixed to Unified Data,2602.22743,https://arxiv.org/abs/2602.22743,https://github.com/USTC-StarTeam/Taesar,cross_domain_multi_scenario,WWW,2026
+FairFS: Addressing Deep Feature Selection Biases for Recommender System,2602.20001,https://arxiv.org/abs/2602.20001,,debias_fairness_industrial,WWW,2026
+VK-LSVD: A Large-Scale Industrial Dataset for Short-Video Recommendation,2602.04567,https://arxiv.org/abs/2602.04567,,sequential_rec,WWW,2026
+The Double-Edged Sword of Knowledge Transfer: Diagnosing and Curing Fairness Pathologies in Cross-Domain Recommendation,2601.21805,https://arxiv.org/abs/2601.21805,,cross_domain_multi_scenario,WWW,2026
+PI2I: A Personalized Item-Based Collaborative Filtering Retrieval Framework,2601.16815,https://arxiv.org/abs/2601.16815,,collaborative_filtering,WWW,2026
+PULSE: Socially-Aware User Representation Modeling Toward Parameter-Efficient Graph Collaborative Filtering,2601.14720,https://arxiv.org/abs/2601.14720,,social_group_rec,WWW,2026
+DiffGRM: Diffusion-based Generative Recommendation Model,2510.21805,https://arxiv.org/abs/2510.21805,https://github.com/liuzhao09/DiffGRM,generative_rec,WWW,2026
+Towards Context-aware Reasoning-enhanced Generative Searching in E-commerce,2510.16925,https://arxiv.org/abs/2510.16925,,generative_rec,WWW,2026
+GRank: Towards Target-Aware and Streamlined Industrial Retrieval with a Generate-Rank Framework,2510.15299,https://arxiv.org/abs/2510.15299,,collaborative_filtering,WWW,2026
+AgentDR: Dynamic Recommendation with Implicit Item-Item Relations via LLM-based Agents,2510.05598,https://arxiv.org/abs/2510.05598,,agent_conversational_rec,WWW,2026
+ThinkRec: Thinking-based recommendation via LLM,2505.15091,https://arxiv.org/abs/2505.15091,https://github.com/Yu-Qi-hang/ThinkRec,llm_rec,WWW,2026

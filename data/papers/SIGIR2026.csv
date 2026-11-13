@@ -66,7 +66,6 @@ Universal Item Tokenization for Transferable Generative Recommendation,2504.0440
 Counterfactual Multi-task Learning for Delayed Conversion Modeling in E-commerce Sales Pre-Promotion,2604.21675,https://arxiv.org/abs/2604.21675v2,,ctr_feature_interaction,SIGIR,2026
 GFlowGR: Fine-tuning Generative Recommendation Frameworks with Generative Flow Networks,2506.16114,https://arxiv.org/abs/2506.16114v3,,generative_rec,SIGIR,2026
 Learning to Forget: Satiation-Aware Long-Sequence Transducers for Mitigating Post-Purchase Redundancy,2607.12714,https://arxiv.org/abs/2607.12714v1,,sequential_rec,SIGIR,2026
-Balanced Co-Clustering of Users and Items for Embedding Table Compression in Recommender Systems,2604.18351,https://arxiv.org/abs/2604.18351v1,,collaborative_filtering,SIGIR,2026
 Bridging Behavior and Semantics for Time-aware Cross-Domain Sequential Recommendation,2605.02369,https://arxiv.org/abs/2605.02369v1,,cross_domain_multi_scenario,SIGIR,2026
 CMSL: Constructive Multi-Sequence Learning for Recommendation Systems,2606.28533,https://arxiv.org/abs/2606.28533v2,,sequential_rec,SIGIR,2026
 Divergence Meets Consensus: A Multi-Source Negative Sampling Framework for Sequential Recommendation,2605.19651,https://arxiv.org/abs/2605.19651v1,,sequential_rec,SIGIR,2026
@@ -81,7 +80,6 @@ MLLMRec: A Preference Reasoning Paradigm with Graph Refinement for Multimodal Re
 MVIGER: Multi-View Variational Integration of Complementary Knowledge for Generative Recommender,2408.08686,https://arxiv.org/abs/2408.08686v4,,generative_rec,SIGIR,2026
 QAGCF: Graph Collaborative Filtering for Q&A Recommendation,2406.04828,https://arxiv.org/abs/2406.04828v1,,graph_rec,SIGIR,2026
 RCLRec: Reverse Curriculum Learning for Modeling Sparse Conversions in Generative Recommendation,2603.28124,https://arxiv.org/abs/2603.28124v1,,generative_rec,SIGIR,2026
-RQ-GMM: Residual Quantized Gaussian Mixture Model for Multimodal Semantic Discretization in CTR Prediction,2602.12593,https://arxiv.org/abs/2602.12593v1,,ctr_feature_interaction,SIGIR,2026
 RecPFN: Prior-Fitted Networks for In-Context-Based Recommendations,2608.19735,https://arxiv.org/abs/2608.19735v1,https://github.com/SAP-samples/tabular-ai-recpfn,sequential_rec,SIGIR,2026
 Reinforcing User Interest Evolution in Multi-Scenario Learning for recommender systems,2506.17682,https://arxiv.org/abs/2506.17682v1,,cross_domain_multi_scenario,SIGIR,2026
 Robust Multimodal Recommendation via Graph Retrieval-Enhanced Modality Completion,2605.00670,https://arxiv.org/abs/2605.00670v1,,multimodal_rec,SIGIR,2026
@@ -111,3 +109,9 @@ OCP: Orthogonal Constrained Projection for Sparse Scaling in Industrial Commodit
 Request-Only Optimization for Recommendation Systems,2508.05640,https://arxiv.org/abs/2508.05640v3,,generative_rec,SIGIR,2026
 ZoRRO: A Zero-Weight Personalized Recommender System for Scalable News Recommendation,2607.10910,https://arxiv.org/abs/2607.10910v1,https://github.com/johanneskruse/zorro,collaborative_filtering,SIGIR,2026
 Exploring Test-time Scaling via Prediction Merging on Large-Scale Recommendation,2512.07650,https://arxiv.org/abs/2512.07650v1,,ctr_feature_interaction,SIGIR,2026
+GenFacet: End-to-End Generative Faceted Search via Multi-Task Preference Alignment in E-Commerce,2603.19665,https://arxiv.org/abs/2603.19665,,llm_rec,SIGIR,2026
+CS3: Efficient Online Capability Synergy for Two-Tower Recommendation,2604.22761,https://arxiv.org/abs/2604.22761,,collaborative_filtering,SIGIR,2026
+Agentic Multi-Source Grounding for Enhanced Query Intent Understanding: A DoorDash Case Study,2603.01486,https://arxiv.org/abs/2603.01486,,llm_rec,SIGIR,2026
+Variance Reduction for Heavy-Tailed Monetization Metrics in Ranking Experiments via Post-Stratification,2606.04110,https://arxiv.org/abs/2606.04110,,debias_fairness_industrial,SIGIR,2026
+Following the Eye-Tracking Evidence: Established Web-Search Assumptions Fail in Carousel Interfaces,2604.21019,https://arxiv.org/abs/2604.21019,,debias_fairness_industrial,SIGIR,2026
+RecQuest: Towards Estimating User Domain Knowledge in Conversational Recommender Systems,2512.13173,https://arxiv.org/abs/2512.13173,,agent_conversational_rec,SIGIR,2026

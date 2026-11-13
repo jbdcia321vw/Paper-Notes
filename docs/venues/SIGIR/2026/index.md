@@ -5,31 +5,27 @@ hide:
 
 # 🏛️ SIGIR 2026 推荐系统论文解读
 
-112 篇 SIGIR 2026 论文解读，覆盖 14 个推荐系统细分方向。每篇均包含一句话总结、核心思想、实验设置与审稿级批判，5 分钟读懂一篇论文。
+115 篇 SIGIR 2026 论文解读，覆盖 14 个推荐系统细分方向。每篇均包含一句话总结、核心思想、实验设置与审稿级批判，5 分钟读懂一篇论文。
 
 <div class="conf-index">
 <hr />
-<h2 id="collaborative_filtering">🤝 协同过滤与双塔召回 (7)</h2>
+<h2 id="collaborative_filtering">🤝 协同过滤与双塔召回 (6)</h2>
 <dl>
-<dt><strong><a href="collaborative_filtering/balanced_co_clustering_of_users_and_items_for_embedding_table_compression_i/">Balanced Co-Clustering of Users and Items for Embedding Table Compression in Recommender Systems</a></strong></dt>
-<dd>
-<p>BACO 以平衡共聚类构建用户/物品草图矩阵压缩嵌入表，75% 参数削减下 Recall 仅降 1.85%，比最强基线快 346 倍</p>
-</dd>
 <dt><strong><a href="collaborative_filtering/cs3_efficient_online_capability_synergy_for_two_tower_recommendation/">CS3: Efficient Online Capability Synergy for Two-Tower Recommendation</a></strong></dt>
 <dd>
 <p>以塔内自校正、跨塔EMA同步与级联模型共享三机制增强双塔召回，离线三数据集AUC一致提升，线上广告收入+8.36%且QPS仅降0.59%。</p>
 </dd>
 <dt><strong><a href="collaborative_filtering/diaurec_dual_intent_space_representation_optimization_for_recommendation/">DIAURec: Dual-Intent Space Representation Optimization for Recommendation</a></strong></dt>
 <dd>
-<p>融合原型意图与分布意图重构表征，以对齐-均匀性为主目标联合优化，三数据集全库排序显著超越15个基线。</p>
+<p>以原型意图与分布意图重构表征，用对齐-均匀性+粗细粒度匹配联合优化，Amazon-book R@20 相对提升 10.6%</p>
 </dd>
 <dt><strong><a href="collaborative_filtering/ocp_orthogonal_constrained_projection_for_sparse_scaling_in_industrial_comm/">OCP: Orthogonal Constrained Projection for Sparse Scaling in Industrial Commodity Recommendation</a></strong></dt>
 <dd>
-<p>在 Stiefel 流形上约束 Item-ID 投影矩阵，保持奇异值谱等距以缓解稀疏扩展下的表征坍缩，京东线上 UCXR +12.97%、GMV +8.95%。</p>
+<p>在 Item-ID 投影层上施加 Stiefel 流形正交约束，抑制稀疏缩放下的嵌入坍缩，京东线上 UCXR +12.97%、GMV +8.95%。</p>
 </dd>
 <dt><strong><a href="collaborative_filtering/silvertorch_a_unified_model_based_system_to_democratize_large_scale_recomme/">SilverTorch: A Unified Model-based System to Democratize Large-Scale Recommendation on GPUs</a></strong></dt>
 <dd>
-<p>将 ANN 检索与特征过滤下沉为 PyTorch 模型层，GPU Bloom 索引 + Int8 融合核，吞吐提升 23.7×、成本效率 13.35×。</p>
+<p>将 ANN 检索与特征过滤下沉为 PyTorch 模型层，GPU Bloom Index 与 Int8 融合 ANN 协同设计，吞吐提升 23.7×、成本效率提升 13.35×。</p>
 </dd>
 <dt><strong><a href="collaborative_filtering/unified_supervision_for_walmart_s_sponsored_search_retrieval_via_joint_sema/">Unified Supervision for Walmart&#x27;s Sponsored Search Retrieval via Joint Semantic Relevance and Behavioral Engagement Modeling</a></strong></dt>
 <dd>
@@ -37,7 +33,7 @@ hide:
 </dd>
 <dt><strong><a href="collaborative_filtering/zorro_a_zero_weight_personalized_recommender_system_for_scalable_news_recom/">ZoRRO: A Zero-Weight Personalized Recommender System for Scalable News Recommendation</a></strong></dt>
 <dd>
-<p>零权重免训练新闻推荐框架，用时间衰减×表征相似度打分，离线AUC超越NRMS且推理快600倍，线上CTR接近NRMS</p>
+<p>零权重免训练新闻推荐框架，以时间衰减×表征相似度打分，离线全库排序超越 NRMS，线上 CTR 逼近 SOTA 且推理快 600 倍。</p>
 </dd>
 </dl>
 <hr />
@@ -45,7 +41,7 @@ hide:
 <dl>
 <dt><strong><a href="graph_rec/aspect_aware_content_based_recommendations_for_mathematical_research_papers/">Aspect-Aware Content-Based Recommendations for Mathematical Research Papers</a></strong></dt>
 <dd>
-<p>面向数学论文的 aspect 条件异构图 GNN 推荐，联合文本语义、引用结构与作者谱系，在 GoldRiM/SilverRiM 上全面超越 LLM 嵌入基线。</p>
+<p>面向数学论文的 aspect 条件异构图推荐，构建 GoldRiM/SilverRiM 数据集，AchGNN 在 Full-Ranking 下 MRR 相对 GraphCL 提升 26%</p>
 </dd>
 <dt><strong><a href="graph_rec/dcgl_dual_channel_graph_learning_with_large_language_models_for_knowledge_a/">DCGL: Dual-Channel Graph Learning with Large Language Models for Knowledge-Aware Recommendation</a></strong></dt>
 <dd>
@@ -53,7 +49,7 @@ hide:
 </dd>
 <dt><strong><a href="graph_rec/qagcf_graph_collaborative_filtering_for_q_a_recommendation/">QAGCF: Graph Collaborative Filtering for Q&amp;A Recommendation</a></strong></dt>
 <dd>
-<p>解耦问答对协同/语义双视图并融合全局图，用 Jacobi 多项式图滤波器处理异质性，对比学习增强鲁棒性，全库排序下显著超越基线。</p>
+<p>将问答对解耦为用户-问题/用户-答案双协同图与问题-答案/问题-问题双语义图，融合为全局异质图后用 Jacobi 多项式图滤波器分离高低频信号，配合噪声对比学习，在知乎与商业数据集 Full-Ranking 下 Recall@10 提升 5.16%–5.34%。</p>
 </dd>
 </dl>
 <hr />
@@ -81,11 +77,11 @@ hide:
 </dd>
 <dt><strong><a href="sequential_rec/cmsl_constructive_multi_sequence_learning_for_recommendation_systems/">CMSL: Constructive Multi-Sequence Learning for Recommendation Systems</a></strong></dt>
 <dd>
-<p>提出可学习多序列构造+线性注意力，将用户历史解耦为K条主题潜序列以缓解上下文污染，Meta四场景离线NE与线上A/B均显著提升</p>
+<p>提出可学习多序列构造与线性注意力，缓解单序列上下文污染，Meta 四场景 NE 降 0.3%–0.6%。</p>
 </dd>
 <dt><strong><a href="sequential_rec/divergence_meets_consensus_a_multi_source_negative_sampling_framework_for_s/">Divergence Meets Consensus: A Multi-Source Negative Sampling Framework for Sequential Recommendation</a></strong></dt>
 <dd>
-<p>借鉴最近发展区理论提出 Teacher-Peer-Self 多源负采样框架，以分歧重排提升多样性、共识蒸馏复用打分，六数据集五骨干稳定超越 SOTA。</p>
+<p>借鉴 ZPD 理论构建 Teacher-Peer-Self 多源负采样，用分歧重排提升多样性、共识蒸馏复用打分开销，六数据集全库排序下 Recall@20 最高提升 27.3%。</p>
 </dd>
 <dt><strong><a href="sequential_rec/fedin_frequency_enhanced_deep_interest_network_for_click_through_rate_predi/">FEDIN: Frequency-Enhanced Deep Interest Network for Click-Through Rate Prediction</a></strong></dt>
 <dd>
@@ -97,15 +93,15 @@ hide:
 </dd>
 <dt><strong><a href="sequential_rec/from_time_and_place_to_preference_llm_driven_geo_temporal_context_in_recomm/">From Time and Place to Preference: LLM-Driven Geo-Temporal Context in Recommendations</a></strong></dt>
 <dd>
-<p>用 LLM 从时间戳+粗粒度位置生成地理-时间上下文嵌入，经轻量信息量测试与两种融合策略注入序列推荐，MovieLens 与生产数据均获增益。</p>
+<p>用 LLM 从时间戳+粗粒度位置生成地理-时间上下文嵌入，以特征融合或辅助对齐损失注入 SASRec，并提出轻量信息量诊断测试。</p>
 </dd>
 <dt><strong><a href="sequential_rec/fusion_and_alignment_enhancement_with_large_language_models_for_tail_item_s/">Fusion and Alignment Enhancement with Large Language Models for Tail-item Sequential Recommendation</a></strong></dt>
 <dd>
-<p>用自适应门控融合 ID/LLM 嵌入并以双层对齐+课程学习缓解长尾物品表征不足，在三个数据集多骨干上稳定提升。</p>
+<p>用自适应门控融合 ID/LLM 嵌入并以双层对齐+课程学习消除空间结构冲突，全库排序下尾部长尾 H@10 最高提升 427%。</p>
 </dd>
 <dt><strong><a href="sequential_rec/learning_to_forget_satiation_aware_long_sequence_transducers_for_mitigating/">Learning to Forget: Satiation-Aware Long-Sequence Transducers for Mitigating Post-Purchase Redundancy</a></strong></dt>
 <dd>
-<p>将购买视为意图终止信号，用双路交叉注意力+自适应饱足门控+TTNP自监督学习兴趣生命周期，PPRR降超60%。</p>
+<p>将购买视为意图终止信号，用双路交叉注意力+自适应饱食门控+TTNP自监督学习商品复购周期，PPRR降超60%</p>
 </dd>
 <dt><strong><a href="sequential_rec/pay_attention_to_sequence_split_uncovering_the_impacts_of_sub_sequence_spli/">Pay Attention to Sequence Split: Uncovering the Impacts of Sub-Sequence Splitting on Sequential Recommendation Models</a></strong></dt>
 <dd>
@@ -118,19 +114,19 @@ hide:
 <dl>
 <dt><strong><a href="generative_rec/a_cascaded_generative_approach_for_e_commerce_recommendations/">A Cascaded Generative Approach for e-Commerce Recommendations</a></strong></dt>
 <dd>
-<p>级联 LLM 生成货架主题与 RAG 约束关键词驱动检索，教师-学生蒸馏落地，线上加购 +2.7%</p>
+<p>提出级联生成式货架构建框架：LLM1 生成投放主题、LLM2 经 RAG 约束生成检索关键词，教师-学生蒸馏降本，线上购物车添加 +2.7%。</p>
 </dd>
 <dt><strong><a href="generative_rec/bi_level_optimization_for_generative_recommendation_bridging_tokenization_a/">Bi-Level Optimization for Generative Recommendation: Bridging Tokenization and Generation</a></strong></dt>
 <dd>
-<p>将 tokenizer 与 recommender 重构为双层优化问题，用元学习+梯度手术对齐语义ID与推荐目标，全库排序下稳定超越 SOTA。</p>
+<p>将分词器与推荐器建模为双层优化，用元学习+梯度手术让推荐损失直接监督RQ-VAE码本，Full-Ranking下全面超越TIGER/LETTER/ETEGRec。</p>
 </dd>
 <dt><strong><a href="generative_rec/card_non_uniform_quantization_of_visual_semantic_unit_for_generative_recomm/">CARD: Non-Uniform Quantization of Visual Semantic Unit for Generative Recommendation</a></strong></dt>
 <dd>
-<p>将文本/视觉/协同信号渲染为卡片式视觉语义单元，并用可学习可逆非均匀变换的 NU-RQ-VAE 量化，缓解码本失衡与生成偏置。</p>
+<p>将文本/图像/协同信号渲染为统一视觉语义单元，并用可逆非均匀变换校正偏斜分布，提升码本利用率与生成式推荐精度。</p>
 </dd>
 <dt><strong><a href="generative_rec/differentiable_semantic_id_for_generative_recommendation/">Differentiable Semantic ID for Generative Recommendation</a></strong></dt>
 <dd>
-<p>用 Gumbel 噪声+不确定性衰减实现可微语义ID联合训练，缓解码本坍缩，Full-Ranking 下 NDCG@10 稳定提升</p>
+<p>用 Gumbel 噪声+不确定性衰减实现可微语义ID联合训练，Leave-One-Out 全库排序下 R@10 相对 TIGER 提升约 12%。</p>
 </dd>
 <dt><strong><a href="generative_rec/discrete_preference_learning_for_personalized_multimodal_generation/">Discrete Preference Learning for Personalized Multimodal Generation</a></strong></dt>
 <dd>
@@ -138,7 +134,7 @@ hide:
 </dd>
 <dt><strong><a href="generative_rec/dual_diffusional_generative_fashion_recommendation/">Dual-Diffusional Generative Fashion Recommendation</a></strong></dt>
 <dd>
-<p>双扩散 Transformer 联合生成时尚单品图像与属性级文本，实现可解释个性化穿搭推荐，PFITB/GOR 双任务全面领先。</p>
+<p>双分支扩散 Transformer 联合生成时尚单品图像与属性级文本，以结构化偏好加权采样建模用户，PFITB/GOR 双任务个性化指标显著领先且训练提速约 7 倍。</p>
 </dd>
 <dt><strong><a href="generative_rec/fave_flow_based_average_velocity_establishment_for_sequential_recommendatio/">FAVE: Flow-based Average Velocity Establishment for Sequential Recommendation</a></strong></dt>
 <dd>
@@ -154,16 +150,20 @@ hide:
 </dd>
 <dt><strong><a href="generative_rec/gflowgr_fine_tuning_generative_recommendation_frameworks_with_generative_fl/">GFlowGR: Fine-tuning Generative Recommendation Frameworks with Generative Flow Networks</a></strong></dt>
 <dd>
-<p>将GR重构为多步集合生成任务，用GFlowNets做token级微调对齐物品效用，三数据集双骨干一致提升并落地淘宝搜索广告。</p>
+<p>将生成式推荐重构为集合级序列生成，用 GFlowNets 微调使生成概率正比于行为感知奖励，缓解曝光偏差，淘宝线上年收入相对提升 0.4%。</p>
 </dd>
 </dl>
 <p><a href="generative_rec/">查看全部19篇「生成式推荐与离散语义 ID」论文 →</a></p>
 <hr />
-<h2 id="llm_rec">🧠 大语言模型推荐 (LLM4Rec) (19)</h2>
+<h2 id="llm_rec">🧠 大语言模型推荐 (LLM4Rec) (21)</h2>
 <dl>
 <dt><strong><a href="llm_rec/ace_anisotropy_controllable_embedding_for_llm_enhanced_sequential_recommend/">ACE: Anisotropy-Controllable Embedding for LLM-enhanced Sequential Recommendation</a></strong></dt>
 <dd>
 <p>用线性自编码器的谱收缩算子连续调控 LLM 物品嵌入的各向异性，在保持语义层级的同时缓解几何失衡，Full-Ranking 下 Recall@20 最高提升 12.4%。</p>
+</dd>
+<dt><strong><a href="llm_rec/agentic_multi_source_grounding_for_enhanced_query_intent_understanding_a_do/">Agentic Multi-Source Grounding for Enhanced Query Intent Understanding: A DoorDash Case Study</a></strong></dt>
+<dd>
+<p>用目录实体检索+Agentic 网页搜索双源 grounding 替代 winner-takes-all 分类，输出有序双意图并由可插拔消歧层裁决，长尾意图准确率 +13.0pp。</p>
 </dd>
 <dt><strong><a href="llm_rec/bear_towards_beam_search_aware_optimization_for_recommendation_with_large_l/">BEAR: Towards Beam-Search-Aware Optimization for Recommendation with Large Language Models</a></strong></dt>
 <dd>
@@ -179,11 +179,15 @@ hide:
 </dd>
 <dt><strong><a href="llm_rec/factorized_latent_reasoning_for_llm_based_recommendation/">Factorized Latent Reasoning for LLM-based Recommendation</a></strong></dt>
 <dd>
-<p>将 LLM 隐空间推理分解为 K 个正交偏好因子，配合 GRPO 隐空间强化学习，在 Amazon 四域上以全库排序取得稳定提升。</p>
+<p>将 LLM 隐式推理拆为 K 个解耦偏好因子并配 GRPO 对齐，全库约束解码下 N@5 最高提升 10.26%</p>
 </dd>
 <dt><strong><a href="llm_rec/filling_the_gaps_selective_knowledge_augmentation_for_llm_recommenders/">Filling the Gaps: Selective Knowledge Augmentation for LLM Recommenders</a></strong></dt>
 <dd>
 <p>提出 CKP 比较式知识探测量化 LLM 对物品的协同知识缺口，仅对知识贫乏物品选择性注入属性与参考物品，免训练提升 Recall@1 与长尾覆盖。</p>
+</dd>
+<dt><strong><a href="llm_rec/genfacet_end_to_end_generative_faceted_search_via_multi_task_preference_ali/">GenFacet: End-to-End Generative Faceted Search via Multi-Task Preference Alignment in E-Commerce</a></strong></dt>
+<dd>
+<p>将电商分面搜索重构为分面生成与查询改写两个耦合生成任务，经蒸馏+SFT+GRPO 对齐搜索效用，线上分面 CTR 相对提升 42.0%。</p>
 </dd>
 <dt><strong><a href="llm_rec/itemrag_item_based_retrieval_augmented_generation_for_llm_based_recommendat/">ItemRAG: Item-Based Retrieval-Augmented Generation for LLM-Based Recommendation</a></strong></dt>
 <dd>
@@ -193,22 +197,14 @@ hide:
 <dd>
 <p>以参数级双视图 LoRA-MoE 替代输入/输出级融合，个性化路由对齐行为与语义视图，四数据集 N@10 提升 3.87%–8.02%，线上 CTR +9.24%。</p>
 </dd>
-<dt><strong><a href="llm_rec/lwgr_lagrangian_constrained_personalized_world_knowledge_for_generative_rec/">LWGR: Lagrangian-Constrained Personalized World Knowledge for Generative Recommendation</a></strong></dt>
-<dd>
-<p>用 OPQ 并行码本生成用户个性化软指令提取 LLM 世界知识，并以拉格朗日原始-对偶约束可控融合进生成式推荐，离线最高 +11.23%，线上广告收入 +1.35%</p>
-</dd>
-<dt><strong><a href="llm_rec/modular_representation_compression_adapting_llms_for_efficient_and_effectiv/">Modular Representation Compression: Adapting LLMs for Efficient and Effective Recommendations</a></strong></dt>
-<dd>
-<p>揭示 LLM 中间层表征优势 (MRA) 并用模块化解耦压缩修复，128 维表征在 CTR/重排/召回全面超越基线，线上 eCPM +2.82%</p>
-</dd>
 </dl>
-<p><a href="llm_rec/">查看全部19篇「大语言模型推荐 (LLM4Rec)」论文 →</a></p>
+<p><a href="llm_rec/">查看全部21篇「大语言模型推荐 (LLM4Rec)」论文 →</a></p>
 <hr />
-<h2 id="agent_conversational_rec">🗣️ 对话推荐与智能体仿真 (7)</h2>
+<h2 id="agent_conversational_rec">🗣️ 对话推荐与智能体仿真 (8)</h2>
 <dl>
 <dt><strong><a href="agent_conversational_rec/a_standardized_re_evaluation_of_conversational_recommender_systems_on_the_r/">A Standardized Re-evaluation of Conversational Recommender Systems on the ReDial Dataset</a></strong></dt>
 <dd>
-<p>在 ReDial 上标准化复现 7 个 CRS 方法，揭示 Recall@1 粒度鸿沟、约 50% 准确率来自重复捷径，且增益多源于 LLM 骨干而非架构创新。</p>
+<p>统一复现 7 个 CRS 模型，揭示 Recall@1 复现粒度鸿沟、约 50% 精度来自重复捷径、增益多源于 LLM 骨干而非架构创新。</p>
 </dd>
 <dt><strong><a href="agent_conversational_rec/bridging_passive_and_active_enhancing_conversation_starter_recommendation_v/">Bridging Passive and Active: Enhancing Conversation Starter Recommendation via Active Expression Modeling</a></strong></dt>
 <dd>
@@ -222,13 +218,17 @@ hide:
 <dd>
 <p>从行为轨迹挖掘决策策略作为共享对齐层，锚定 LLM 推理与 GBDT 拟合双过程分支，群体仿真误差降至 8.80%。</p>
 </dd>
+<dt><strong><a href="agent_conversational_rec/recquest_towards_estimating_user_domain_knowledge_in_conversational_recomme/">RecQuest: Towards Estimating User Domain Knowledge in Conversational Recommender Systems</a></strong></dt>
+<dd>
+<p>提出游戏化数据采集协议 RecQuest 与知识估计新任务，用客观问卷替代自评建立 ground truth，并给出 LLM 零/少样本与微调基线。</p>
+</dd>
 <dt><strong><a href="agent_conversational_rec/task_aware_automated_user_profile_generation_for_recommendation_simulation_/">Task-Aware Automated User Profile Generation for Recommendation Simulation Using Large Language Models</a></strong></dt>
 <dd>
 <p>提出免训练三阶段画像生成框架 APG4RecSim，用语义合并+反事实因果映射将交互历史转为任务对齐画像，在判别/排序/评分三任务上取得最佳综合表现。</p>
 </dd>
 <dt><strong><a href="agent_conversational_rec/trace_a_conversational_framework_for_sustainable_tourism_recommendation_wit/">TRACE: A Conversational Framework for Sustainable Tourism Recommendation with Agentic Counterfactual Explanations</a></strong></dt>
 <dd>
-<p>多智能体 LLM 对话推荐框架，用澄清提问+反事实解释对用户进行可持续旅游软性助推，24 人用户研究验证。</p>
+<p>多智能体 LLM 框架以澄清提问+反事实解释实现可持续旅游推荐的非强制绿色引导，24 人用户研究验证。</p>
 </dd>
 <dt><strong><a href="agent_conversational_rec/when_and_how_to_ask_dynamic_preference_elicitation_strategies_for_conversat/">When and How to Ask: Dynamic Preference Elicitation Strategies for Conversational Recommendation</a></strong></dt>
 <dd>
@@ -244,27 +244,27 @@ hide:
 </dd>
 <dt><strong><a href="multimodal_rec/from_raw_features_to_effective_embeddings_a_three_stage_approach_for_multim/">From Raw Features to Effective Embeddings: A Three-Stage Approach for Multimodal Recipe Recommendation</a></strong></dt>
 <dd>
-<p>用 VLM/LLM 摘要 + LightGCN 传播 + 跨视图对比学习三阶段增强多模态特征，全库排序下 Recall@10 提升 7-15%。</p>
+<p>用 VLM/LLM 摘要 + LightGCN 传播 + 跨视图对比学习三阶段精炼食谱多模态特征，Full-Ranking 下 Recall@10 提升 7–15%。</p>
 </dd>
 <dt><strong><a href="multimodal_rec/mllmrec_a_preference_reasoning_paradigm_with_graph_refinement_for_multimoda/">MLLMRec: A Preference Reasoning Paradigm with Graph Refinement for Multimodal Recommendation</a></strong></dt>
 <dd>
-<p>用 MLLM 将图像转语义描述并推理用户偏好画像，配合阈值去噪与拓扑增强精修物品图，三数据集全库排序 SOTA。</p>
+<p>用 MLLM 推理用户偏好画像替代噪声聚合初始化，并以阈值去噪+共现增强精修物品图，三数据集 11/12 指标 SOTA。</p>
 </dd>
 <dt><strong><a href="multimodal_rec/multi_modal_relational_item_representation_learning_for_inferring_substitut/">Multi-modal Relational Item Representation Learning for Inferring Substitutable and Complementary Items</a></strong></dt>
 <dd>
-<p>MMSC 融合冻结多模态基座与元路径行为编码器，用对比去噪与 LLM 辅助监督推断替代/互补关系，五数据集提升 26.1%/39.2%。</p>
+<p>融合多模态基础模型与元路径行为编码，以自监督对比去噪与 LLM 校验弱监督推断可替代/互补关系，M@10 平均提升 26.1%/39.2%。</p>
 </dd>
 <dt><strong><a href="multimodal_rec/robust_multimodal_recommendation_via_graph_retrieval_enhanced_modality_comp/">Robust Multimodal Recommendation via Graph Retrieval-Enhanced Modality Completion</a></strong></dt>
 <dd>
-<p>提出 GRE-MC，用模态感知子图检索+图 Transformer 联合编码+稀疏路由码本补全缺失模态，40% 缺失率下全库排序显著超越 SOTA。</p>
+<p>用模态感知子图检索替代 K 跳邻居聚合，配合图 Transformer 与稀疏路由码本补全缺失模态，40% 缺失率下 Recall@20 相对提升 4.2%–5.1%。</p>
 </dd>
 <dt><strong><a href="multimodal_rec/structural_and_disentangled_adaptation_of_large_vision_language_models_for_/">Structural and Disentangled Adaptation of Large Vision Language Models for Multimodal Recommendation</a></strong></dt>
 <dd>
-<p>提出 SDA 轻量框架，用结构对齐软教师与模态解耦 LoRA 适配 LVLM，在 Amazon 三数据集上 H@10 平均提升 6.15%。</p>
+<p>用模态内结构软教师对齐 LVLM 跨模态表征，并以专家化门控 LoRA 解耦梯度流，即插即用提升多模态与序列推荐，长尾增益最高 18.70%。</p>
 </dd>
 <dt><strong><a href="multimodal_rec/timemm_time_as_operator_spectral_filtering_for_dynamic_multimodal_recommend/">TimeMM: Time-as-Operator Spectral Filtering for Dynamic Multimodal Recommendation</a></strong></dt>
 <dd>
-<p>将交互时间衰减映射为参数化图算子族，构建轻量谱滤波器组，结合自适应谱滤波与模态路由实现动态多模态推荐，全库排序下全面超越 SOTA。</p>
+<p>将交互新近度映射为时间核加权图算子族，隐式实现免特征分解的多尺度谱滤波，配合自适应算子混合与模态路由，全库排序下 R@20 相对提升 3%–10%。</p>
 </dd>
 <dt><strong><a href="multimodal_rec/well_begun_is_half_done_training_free_and_model_agnostic_semantically_guara/">Well Begun is Half Done: Training-Free and Model-Agnostic Semantically Guaranteed User Representation Initialization for Multimodal Recommendation</a></strong></dt>
 <dd>
@@ -276,7 +276,7 @@ hide:
 <dl>
 <dt><strong><a href="cold_start_rec/genrecedit_adapting_model_editing_for_generative_recommendation_with_cold_s/">GenRecEdit: Adapting Model Editing for Generative Recommendation with Cold-Start Items</a></strong></dt>
 <dd>
-<p>将NLP模型编辑范式迁移至生成式推荐，通过位置级迭代编辑与One-One触发机制注入冷启动物品SID模式，仅需9.5%重训时间即显著提升冷启推荐。</p>
+<p>将 NLP 模型编辑迁移至生成式推荐，用逐位置定位-编辑+One-One 触发注入冷启动物品 SID 模式，仅需重训 9.5% 时间即大幅缓解冷启动坍缩。</p>
 </dd>
 <dt><strong><a href="cold_start_rec/sparse_contrastive_learning_for_content_based_cold_item_recommendation/">Sparse Contrastive Learning for Content-Based Cold Item Recommendation</a></strong></dt>
 <dd>
@@ -288,19 +288,19 @@ hide:
 <dl>
 <dt><strong><a href="cross_domain_multi_scenario/bridging_behavior_and_semantics_for_time_aware_cross_domain_sequential_reco/">Bridging Behavior and Semantics for Time-aware Cross-Domain Sequential Recommendation</a></strong></dt>
 <dd>
-<p>用神经ODE建模连续时间行为偏好演化，LLM+反事实扰动提取时间敏感语义，门控自适应控制跨域迁移权重以缓解负迁移。</p>
+<p>用神经 ODE 解耦长短期行为、LLM 离散时间 token 反事实增强语义、门控自适应域迁移，1:999 采样排序下 MRR 最高提升 30.5%。</p>
 </dd>
 <dt><strong><a href="cross_domain_multi_scenario/fedmm_federated_collaborative_signal_quantization_for_multi_market_ctr_pred/">FedMM: Federated Collaborative Signal Quantization for Multi-Market CTR Prediction</a></strong></dt>
 <dd>
 <p>用双层 RQ-VAE 码本作联邦传输介质，对齐跨市场不相交 ID 空间，AUC 全面超越本地/联邦基线且通信量降 20×。</p>
 </dd>
-<dt><strong><a href="cross_domain_multi_scenario/llm_edt_large_language_model_enhanced_cross_domain_sequential_recommendatio/">LLM-EDT: Large Language Models Enhanced Cross-domain Sequential Recommendation with Dual-phase Training</a></strong></dt>
+<dt><strong><a href="cross_domain_multi_scenario/llm_edt_large_language_model_enhanced_cross_domain_sequential_recommendatio/">LLM-EDT: Large Language Model Enhanced Cross-domain Sequential Recommendation with Dual-phase Training</a></strong></dt>
 <dd>
-<p>用 LLM 生成可迁移跨域行为+噪声过滤+两阶段训练+域感知画像，缓解域不平衡与域迁移问题，三数据集全排序 Recall/NDCG 显著提升。</p>
+<p>用可迁移物品增广+双阶段训练+域感知画像，缓解CDSR域不平衡与域迁移难题，全库排序下H@10最高提升26.96%</p>
 </dd>
 <dt><strong><a href="cross_domain_multi_scenario/reinforcing_user_interest_evolution_in_multi_scenario_learning_for_recommen/">Reinforcing User Interest Evolution in Multi-Scenario Learning for recommender systems</a></strong></dt>
 <dd>
-<p>用 Double Q-learning 估计场景置信度作为门控，加权三元组对比损失建模跨场景兴趣演化，KuaiSAR 全库排序 NDCG@20 大幅领先。</p>
+<p>用 Double Q-learning 估计场景级行为置信度作为门控，加权三元组对比损失以抑制多场景负迁移，KuaiSAR 全库排序 N@20 提升约 3.3 倍。</p>
 </dd>
 </dl>
 <hr />
@@ -308,11 +308,11 @@ hide:
 <dl>
 <dt><strong><a href="poi_spatiotemporal_rec/rest_a_plug_and_play_spatially_constrained_representation_enhancement_frame/">ReST: A Plug-and-Play Spatially-Constrained Representation Enhancement Framework for Local-Life Recommendation</a></strong></dt>
 <dd>
-<p>以物品为中心，用元ID预热+空间约束难负采样对比学习增强长尾物品表征，离线AUC提升且线上GMV+2.804%。</p>
+<p>以物品为中心，用属性语义预热+空间约束难负采样对比学习增强长尾物品ID表征，离线AUC最高+5.90%，线上GMV+2.804%。</p>
 </dd>
 </dl>
 <hr />
-<h2 id="ctr_feature_interaction">🎯 CTR/CVR 预估与特征交叉 (10)</h2>
+<h2 id="ctr_feature_interaction">🎯 CTR/CVR 预估与特征交叉 (9)</h2>
 <dl>
 <dt><strong><a href="ctr_feature_interaction/beyond_dense_connectivity_explicit_sparsity_for_scalable_recommendation/">Beyond Dense Connectivity: Explicit Sparsity for Scalable Recommendation</a></strong></dt>
 <dd>
@@ -320,15 +320,15 @@ hide:
 </dd>
 <dt><strong><a href="ctr_feature_interaction/cheaper_is_better_a_discount_aware_network_for_conversion_rate_prediction_i/">Cheaper is Better: A Discount-Aware Network for Conversion Rate Prediction in E-commerce Recommendation System</a></strong></dt>
 <dd>
-<p>用 FFT 时频分解 + 用户/上下文双重去偏 + 折扣率回归辅助任务建模商品折扣率时序，离线 AUC +1.61%、线上 pCVR +3.63%、GMV +2.23%。</p>
+<p>用 FFT 时频分解 + 用户/上下文双重去偏 + 折扣回归辅助任务建模商品折扣率时序，离线 AUC +1.61%、线上 pCVR +3.63%。</p>
 </dd>
 <dt><strong><a href="ctr_feature_interaction/counterfactual_multi_task_learning_for_delayed_conversion_modeling_in_e_com/">Counterfactual Multi-task Learning for Delayed Conversion Modeling in E-commerce Sales Pre-Promotion</a></strong></dt>
 <dd>
-<p>面向大促预热期延迟转化，提出多任务+个性化门控迁移+反事实因果正则的 CM-DCM，离线 AUC 与线上 GMV 双收益。</p>
+<p>面向大促预热期“集中式延迟转化”的因果多任务 CVR 模型，联合直接/延迟转化建模、个性化门控迁移与 ATC 反事实正则，离线 AUC 显著超越延迟反馈基线并落地线上 A/B。</p>
 </dd>
 <dt><strong><a href="ctr_feature_interaction/exploring_test_time_scaling_via_prediction_merging_on_large_scale_recommend/">Exploring Test-time Scaling via Prediction Merging on Large-Scale Recommendation</a></strong></dt>
 <dd>
-<p>提出测试时缩放新维度：通过异构架构组合与同构随机初始化生成多样预测并在 logit 空间融合，在 Criteo/Avazu/KDD12 上稳定超越参数缩放。</p>
+<p>提出预测合并式测试时缩放，用异构架构与同构随机种子生成多样 logit 并平均融合，三数据集八骨干上稳定超越参数缩放。</p>
 </dd>
 <dt><strong><a href="ctr_feature_interaction/follow_the_trace_exploiting_post_click_trajectories_for_online_delayed_conv/">Follow the TRACE: Exploiting Post-Click Trajectories for Online Delayed Conversion Rate Prediction</a></strong></dt>
 <dd>
@@ -340,19 +340,15 @@ hide:
 </dd>
 <dt><strong><a href="ctr_feature_interaction/hyformer_revisiting_the_roles_of_sequence_modeling_and_feature_interaction_/">HyFormer: Revisiting the Roles of Sequence Modeling and Feature Interaction in CTR Prediction</a></strong></dt>
 <dd>
-<p>提出统一混合Transformer架构HyFormer，以Query Decoding与Query Boosting交替迭代融合长序列建模与异构特征交叉，在十亿级工业数据与线上A/B上显著超越LONGER与RankMixer。</p>
+<p>用 Global Tokens 交替执行 Query Decoding 与 Query Boosting，统一长序列建模与特征交叉，AUC 提升 0.17% 且 FLOPs 仅 3.9T。</p>
 </dd>
 <dt><strong><a href="ctr_feature_interaction/r_f_inventory_a_large_scale_dataset_for_monotonic_inventory_estimation_in_r/">R&amp;F-Inventory: A Large-Scale Dataset for Monotonic Inventory Estimation in Reach and Frequency Advertising</a></strong></dt>
 <dd>
 <p>首个公开的 R&amp;F 合约库存预估数据集，以「定向-排期-频控」为上下文提供完整预算-效果曲线，定义单点预测与多维单调曲线重建两大基准任务。</p>
 </dd>
-<dt><strong><a href="ctr_feature_interaction/rq_gmm_residual_quantized_gaussian_mixture_model_for_multimodal_semantic_di/">RQ-GMM: Residual Quantized Gaussian Mixture Model for Multimodal Semantic Discretization in CTR Prediction</a></strong></dt>
-<dd>
-<p>用高斯混合模型替代硬聚类做残差量化，将多模态嵌入离散为语义ID，提升码本利用率与重建精度，线上广告主价值+1.502%</p>
-</dd>
 <dt><strong><a href="ctr_feature_interaction/understanding_dnns_in_feature_interaction_models_a_dimensional_collapse_per/">Understanding DNNs in Feature Interaction Models: A Dimensional Collapse Perspective</a></strong></dt>
 <dd>
-<p>从嵌入维度坍缩视角重新解释DNN在特征交叉模型中的作用，证明并行/堆叠DNN通过展平奇异值谱缓解坍缩，并给出基于梯度的理论分析。</p>
+<p>从嵌入维度坍缩视角重新解释 DNN 在特征交叉模型中的作用：并行/堆叠 DNN 均能平坦化奇异值谱、提升 RankMe，并给出基于梯度的机理分析。</p>
 </dd>
 </dl>
 <hr />
@@ -368,7 +364,7 @@ hide:
 </dd>
 <dt><strong><a href="multi_task_reranking/towards_end_to_end_alignment_of_user_satisfaction_via_questionnaire_in_vide/">Towards End-to-End Alignment of User Satisfaction via Questionnaire in Video Recommendation</a></strong></dt>
 <dd>
-<p>提出 EASQ，用 LoRA 独立参数通路 + MoE 解耦多任务 + 在线 DPO，将极稀疏问卷满意度信号端到端对齐进短视频精排在线学习。</p>
+<p>用 LoRA+MoE 独立参数通路隔离稀疏问卷满意度信号，并以在线 DPO 对齐主排序模型，离线 NDCG@5 提升约 3%，线上 Q-Satisfied 提升 0.5–0.9%。</p>
 </dd>
 <dt><strong><a href="multi_task_reranking/uniboost_global_coordination_with_value_alignment_for_fair_and_efficient_tr/">Uniboost: Global Coordination with Value Alignment for Fair and Efficient Traffic Allocation</a></strong></dt>
 <dd>
@@ -376,7 +372,7 @@ hide:
 </dd>
 </dl>
 <hr />
-<h2 id="debias_fairness_industrial">🛡️ 去偏公平、可信隐私与工业架构 (11)</h2>
+<h2 id="debias_fairness_industrial">🛡️ 去偏公平、可信隐私与工业架构 (13)</h2>
 <dl>
 <dt><strong><a href="debias_fairness_industrial/adaptive_autoguidance_for_item_side_fairness_in_diffusion_recommender_syste/">Adaptive Autoguidance for Item-Side Fairness in Diffusion Recommender Systems</a></strong></dt>
 <dd>
@@ -388,15 +384,19 @@ hide:
 </dd>
 <dt><strong><a href="debias_fairness_industrial/equity_vs_equality_optimizing_ranking_fairness_for_tailored_provider_needs/">Equity vs. Equality: Optimizing Ranking Fairness for Tailored Provider Needs</a></strong></dt>
 <dd>
-<p>提出面向供给方异质需求的权益公平框架与梯度式重排算法 EquityRank，在离线/在线仿真中取得更优效果-公平权衡。</p>
+<p>提出以增益为基的公平框架与 EquityRank 梯度重排算法，按提供者异质偏好分配曝光与销量收益，离线/在线仿真均取得更优效果-公平权衡。</p>
 </dd>
 <dt><strong><a href="debias_fairness_industrial/erase_a_real_world_aligned_benchmark_for_unlearning_in_recommender_systems/">ERASE -- A Real-World Aligned Benchmark for Unlearning in Recommender Systems</a></strong></dt>
 <dd>
-<p>面向推荐系统机器遗忘的真实对齐基准，覆盖CF/SBR/NBR三任务、七种遗忘算法、九数据集九模型，揭示近似遗忘的鲁棒性与效率短板。</p>
+<p>面向真实场景的推荐系统机器遗忘基准，覆盖 CF/SBR/NBR 三任务、七种遗忘算法、九数据集九模型，揭示近似遗忘的鲁棒性与效率短板。</p>
+</dd>
+<dt><strong><a href="debias_fairness_industrial/following_the_eye_tracking_evidence_established_web_search_assumptions_fail/">Following the Eye-Tracking Evidence: Established Web-Search Assumptions Fail in Carousel Interfaces</a></strong></dt>
+<dd>
+<p>用 RecGaze 眼动数据系统证伪 F 型注意力、层级点击与标题导航等四条 Web 搜索假设，提出轮播界面特有的 L 型注视模式。</p>
 </dd>
 <dt><strong><a href="debias_fairness_industrial/from_top_1_to_top_k_a_reproducibility_study_and_benchmarking_of_counterfact/">From Top-1 to Top-K: A Reproducibility Study and Benchmarking of Counterfactual Explanations for Recommender Systems</a></strong></dt>
 <dd>
-<p>统一复现11种反事实解释方法，提出item/list双层与隐式/显式双格式评测协议，揭示效果-稀疏性权衡与图解释器可扩展性瓶颈</p>
+<p>统一复现11种反事实解释器，首次提出列表级Top-K评估协议与PN-R位置敏感指标，揭示显式格式下有效性-稀疏性权衡与图解释器可扩展性瓶颈。</p>
 </dd>
 <dt><strong><a href="debias_fairness_industrial/kuailive_a_real_time_interactive_dataset_for_live_streaming_recommendation/">KuaiLive: A Real-time Interactive Dataset for Live Streaming Recommendation</a></strong></dt>
 <dd>
@@ -404,7 +404,7 @@ hide:
 </dd>
 <dt><strong><a href="debias_fairness_industrial/post_hoc_provider_fairness_adaptation_via_hierarchical_exposure_alignment/">Post-hoc Provider Fairness Adaptation via Hierarchical Exposure Alignment</a></strong></dt>
 <dd>
-<p>冻结基座推荐器，用轻量公平适配器做加性分数修正，并以分层曝光对齐损失+可微NDCG实现组间/组内曝光公平的端到端后处理适配。</p>
+<p>冻结基座+轻量公平适配器，用分层曝光对齐(HEFA)与可微NDCG联合优化，实现即插即用的提供方曝光公平。</p>
 </dd>
 <dt><strong><a href="debias_fairness_industrial/recnexteval_a_reference_implementation_for_temporal_next_batch_recommendati/">RecNextEval: A Reference Implementation for Temporal Next-Batch Recommendation Evaluation</a></strong></dt>
 <dd>
@@ -414,10 +414,6 @@ hide:
 <dd>
 <p>借鉴投机解码思想，异步预计算基础模型用户-物品隐表征并分层补全覆盖，实现推理时知识蒸馏，Meta 广告线上收入 +0.67%。</p>
 </dd>
-<dt><strong><a href="debias_fairness_industrial/splitlight_an_exploratory_toolkit_for_recommender_systems_datasets_and_spli/">SplitLight: An Exploratory Toolkit for Recommender Systems Datasets and Splits</a></strong></dt>
-<dd>
-<p>开源数据审计工具，量化过滤/重复/冷启动/切分策略对离线评估的影响，诊断时间泄露与分布漂移。</p>
-</dd>
 </dl>
-<p><a href="debias_fairness_industrial/">查看全部11篇「去偏公平、可信隐私与工业架构」论文 →</a></p>
+<p><a href="debias_fairness_industrial/">查看全部13篇「去偏公平、可信隐私与工业架构」论文 →</a></p>
 </div>

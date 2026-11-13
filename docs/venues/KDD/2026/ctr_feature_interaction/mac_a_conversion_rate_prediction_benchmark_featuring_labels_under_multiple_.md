@@ -79,7 +79,7 @@ flowchart TD
 
 - **数据划分与防穿越 (Splitting Strategy)**: **全局时间戳切分**——最后一天数据作测试集，此前数据训练；验证集取训练期倒数第二天（用第 T-1 天模型测第 T 天）。
 - **排名评测协议 (Ranking Protocol)**: 采用 **Full-Ranking 全库排序**（非采样排序），报告主任务的 AUC 与 GAUC（按用户分组加权 AUC，更贴近线上表现）。
-- **对比基线与超参设置**: 基线分三类——单归因 BASE；MTL 类 Shared-Bottom/MMoE/PLE/HoME；MAL 专用 SOTA NATAL。Adam 优化器训练 1 epoch，batch size 4096，学习率在 $\{0.1x, x, 10x \mid x \in \{0.003, 0.0035, 0.004\}\}$ 中搜索，$\lambda$ 在 $\{0.1,0.2,0.3,0.4\}$ 中搜索。
+- **对比基线与超参设置**: 基线分三类——单归因 BASE；MTL 类 Shared-Bottom/MMoE/PLE/HoME；MAL 专用 SOTA NATAL。Adam 优化器训练 1 epoch，batch size 4096，学习率在 $\{0.1x, x, 10x \mid x \in \{0.003, 0.0035, 0.004\}\}$中搜索，$\lambda$在$\{0.1,0.2,0.3,0.4\}$ 中搜索。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -121,10 +121,15 @@ flowchart TD
 2. **增益随转化路径复杂度单调放大**：按"Linear 正样本数 / Last-Click 正样本数"划分用户路径复杂度，Last-Click/DDA/Linear 三种设置下 ΔAUC 均随路径变长而上升（Last-Click 下 ≥7 触点组 ΔAUC 约为 1 触点组的数倍），说明多触点用户才是 MAL 的核心受益群体。
 3. **辅助目标选择是任务相关的，First-Click 设置下"加任务反而掉点"**：First-Click 为目标时，仅 Last-Click 辅助有效（GAUC 0.6971→0.7003），而 DDA（0.6932）、Linear（0.6886）及三辅助组合（0.6898）均低于无辅助基线——因 First-Click 标签本身噪声大（与转化时间间隔长、混淆因素多），需选择时间上最接近转化、信号差异最大的 Last-Click 作为互补视角。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 NATAL 的本质区别在于——NATAL 用非对称迁移换取主任务优先但丢弃 MoE，辅助任务 GAUC 落后 PLE/HoME；MoAE 首次将 MoE 主干与非对称迁移**串联**，同时拿下主任务与辅助任务双料最优（Last-Click 下辅助 GAUC 0.6877/0.7637/0.7668 全面领先）。与 MMoE/PLE 的区别在于知识利用方向被显式约束为主任务单向汇聚。
 - **可迁移亮点**: ① "辅助损失置零"这一解耦实验设计，可低成本验证任何多任务增益究竟来自信息还是参数；② 按转化路径复杂度分桶分析增益来源，可直接迁移到多触点归因与长决策链路场景的模型诊断。
 - **审稿级局限批判**: ① 数据仅来自淘宝单一平台、21 天窗口，跨平台/跨品类的泛化性未验证，且 DDA 标签依赖 CausalMTA 模型，存在标签生成器偏差；② MoAE 相对 NATAL 的增益幅度较小（0.13–0.39pt），且 GCS/PCGrad 等 ATL 技巧在强模型上反而掉点（MoAE+GCS GAUC -0.32pt），说明架构红利可能已接近该数据上的天花板，方法新颖度偏"组合式创新"。
-- **四维评分**: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

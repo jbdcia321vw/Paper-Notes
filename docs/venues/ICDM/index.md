@@ -97,5 +97,5 @@ hide:
 ## 按年份浏览
 
 <div class="recsys-grid">
-  <a class="recsys-card" href="2026/">    <div class="recsys-card-head">      <span class="recsys-card-title">🗓️ 2026 年</span>      <span class="recsys-badge">0 篇</span>    </div>    <div class="recsys-card-desc">ICDM 2026 年收录的推荐系统论文解读</div>  </a>
+  <a class="recsys-card" href="2026/">    <div class="recsys-card-head">      <span class="recsys-card-title">🗓️ 2026 年</span>      <span class="recsys-badge">10 篇</span>    </div>    <div class="recsys-card-desc">ICDM 2026 年收录的推荐系统论文解读</div>  </a>
 </div>

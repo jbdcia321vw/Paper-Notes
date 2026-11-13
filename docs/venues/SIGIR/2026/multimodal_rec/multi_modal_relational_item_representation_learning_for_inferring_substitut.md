@@ -1,14 +1,14 @@
 ---
 title: "[Paper Note] Multi-modal Relational Item Representation Learning for Inferring Substitutable and Complementary Items"
-description: "[SIGIR 2026][多模态推荐] MMSC 融合冻结多模态基座与元路径行为编码器，用对比去噪与 LLM 辅助监督推断替代/互补关系，五数据集提升 26.1%/39.2%。"
+description: "[SIGIR 2026][多模态推荐] 融合多模态基础模型与元路径行为编码，以自监督对比去噪与 LLM 校验弱监督推断可替代/互补关系，M@10 平均提升 26.1%/39.2%。"
 tags:
   - SIGIR 2026
   - 多模态推荐
   - 召回
   - 物品关系推断
-  - 对比去噪
+  - 自监督去噪
   - 元路径编码
-date: 2026-11-12
+date: 2026-11-13
 venue: SIGIR
 year: 2026
 paper_url: "https://arxiv.org/abs/2507.22268v3"
@@ -18,156 +18,122 @@ categories:
   - self_supervised_denoising
 ---
 
-# Multi-modal Relational Item Representation Learning for Inferring Substitutable and Complementary Items (多模态关系感知物品表征学习：替代品与互补品推断)
+# Multi-modal Relational Item Representation Learning for Inferring Substitutable and Complementary Items (多模态关系型物品表征学习：可替代与互补物品推断)
 
 - **会议/期刊**: SIGIR 2026
-- **推荐链路定位**: 召回 (Retrieval) — 物品-物品关系召回（替代品/互补品候选生成），非用户-物品个性化推荐
+- **作者与机构**: Junting Wang, Hari Sundaram (UIUC)；Chenghuan Guo, Yang Jiao, Yanhui Guo, Yan Gao (Amazon)
+- **推荐链路定位**: 召回（物品-物品关系召回 / 替代品与捆绑推荐）
 - **研究方向**: 多模态推荐 / 自监督对比学习与交互去噪
 - **论文原文**: [https://arxiv.org/abs/2507.22268v3](https://arxiv.org/abs/2507.22268v3)
 - **开源代码**: [https://github.com/Junting98/MMSC_code](https://github.com/Junting98/MMSC_code)
 
-## TL;DR (核心速览)
+## TL;DR (1分钟核心速览)
 
-本文针对电商场景中"替代品/互补品"物品-物品关系推断任务，指出行为派生边（co-view/co-purchase）是**噪声弱监督**且**长尾稀疏**。提出 MMSC：冻结多模态基座（CLIP/BLIP-2）+ 轻量关系适配层编码物品元数据，元路径编码器 + 边丢弃对比去噪学习关系感知表征，再用 LLM 辅助过滤噪声正例，分层门控融合内容与行为信号。在五个真实数据集上，替代品推断相对提升 26.1%、互补品提升 39.2%，且对冷启动物品仍有效。
+本文研究电商物品-物品关系推断（可替代 vs. 互补），指出行为派生边（co-view/co-purchase）是**噪声弱监督**且呈**长尾稀疏**，而纯内容方法又丢失关系结构。MMSC 用冻结多模态基础模型（BLIP-2）加轻量关系适配层编码元数据，用元路径 GAT 编码行为图，并以边丢弃对比学习去噪、LLM 校验清洗正样本、双层门控聚合两路表征。在 5 个 Amazon 数据集、LLM 精炼测试集 + 1000 负采样排序协议下，M@10 平均提升 **26.1%（可替代）/ 39.2%（互补）**，冷启动场景亦领先。
 
-## Background & Motivation (背景与动机)
+## Background & Motivation (背景与核心矛盾)
 
-- **领域背景与主流范式**: 替代品（substitutable）与互补品（complementary）关系是电商"缺货替代推荐""搭配购买/后续购买建议"的核心原语。主流方法分两支：(1) **行为图方法**（DecGCN、DHGAN、HetaSAGE、TransGAT、EMRIGCN）——从 co-view/co-purchase 构建物品-物品图，用 GNN 学表征；(2) **内容方法**（Sceptre、LVA、A2CF、P-companion）——用评论文本/图像等元数据，天然适配冷启动。
-- **现有方法局限 (Limitations of Prior Work)**:
-  1. **噪声弱监督**：co-view/co-purchase 并不必然对应真实替代/互补关系（图 1 给出 ✓/× 示例），行为图方法把观测边当作可靠标签，引入标签噪声并污染评估。
-  2. **长尾稀疏**：行为分布重尾（图 2 显示 Electronics/Office 两域物品度数按十分位分组后，头部组平均度数远高于尾部组），大量尾部/冷启动物品行为链接稀疏甚至缺失。
-  3. **解耦图丢失高阶连通模式**：GCN/GAT 类方法把异构图拆成同构子图独立建模，丢弃了"经由何种关系类型相连"的高阶类型化路径信息（如 $v_1 \xrightarrow{s} v_2 \xrightarrow{c} v_3$ 的传递关系）。
-- **核心挑战 (Key Challenge)**: 单纯堆叠 GNN 深度或直接拼接多模态特征都无法解决——行为信号本身有噪声且稀疏，而元数据虽稳健却无法单独恢复关系结构；二者必须**去噪地融合**。
-- **核心洞察与切入点 (Key Insight)**: 行为数据提供有价值的隐式关联但噪声稀疏；元数据（标题、描述、图像）为尾部/冷启动物品提供稳健描述但缺乏关系结构。因此需要"**对行为派生链接去噪 + 整合多模态元数据**"，得到既关系感知又抗稀疏的表征。
+- **主流范式**: 行为图方法（DecGCN、DHGAN、HetaSAGE）在 co-view/co-purchase 构成的物品图上跑 GNN；内容方法（Sceptre、LVA、P-companion）仅用评论文本/图像编码。
+- **前人局限**: ① 行为边并非真实关系（图 1 显示 co-purchase 常混入无关甚至可替代物品），作者实测 co-view 标签仅 78.0% 准确、co-purchase 仅 24.5%；② 行为度呈重尾分布（图 2），尾部物品几乎无连接，GNN 无法泛化；③ 现有方法把两类关系图**解耦**建模，丢失跨类型高阶连通模式（如 $v_1 \xrightarrow{s} v_2 \xrightarrow{c} v_3$ 的传递线索）。
+- **核心洞察 (Key Insight)**: 元数据对所有物品（含冷启动）稳定可得，但单独不足以恢复关系结构；行为边含关系信号但需去噪。二者互补，且需在**类型化异质图**上保留高阶路径。
+- **本文切入点**: 以「多模态内容 + 去噪行为图」双路表征 + 层级门控融合，并用 LLM 离线校验弱标签，兼顾噪声鲁棒与长尾覆盖。
 
-## Problem Formulation & Method (问题定义与方法架构)
+## Method (核心方法设计)
 
-### 1. 符号定义与输入表征 (Notations & Input Representations)
+### 1. 整体框架 (Overall Architecture)
 
-- 物品集 $\mathcal{V}=\{v_1,\dots,v_N\}$，$N$ 为物品数；每个物品 $v_i$ 关联多模态元数据 $x_i$（文本 + 图像），集合记为 $\mathcal{X}=\{X_i\}_{i=1}^N$。
-- 两类关系边：替代边 $\mathcal{E}_s$、互补边 $\mathcal{E}_c$，构成**类型化物品-物品图** $\mathcal{G}=(\mathcal{V},\mathcal{E}_s,\mathcal{E}_c)$（本文按无向处理）。
-- 目标：学习打分函数 $F_s(v_j|v_i)$、$F_c(v_j|v_i)$，使真实替代/互补物品排在无关物品之前；等价于预测类型化边是否存在：$y^s_{ij}=\mathbb{I}\{(v_i,v_j)\in\mathcal{E}_s\}$，$y^c_{ij}=\mathbb{I}\{(v_i,v_j)\in\mathcal{E}_c\}$。
-- **任务性质**：这是**物品-物品链接预测**，而非用户-物品个性化推荐。
-- 多模态基座 $\mathcal{M}$（CLIP 或 BLIP-2）参数**冻结**，token 级输出 $\boldsymbol{H}_i=\mathcal{M}(X_i)\in\mathbb{R}^{m\times d}$，$m$ 为 token 长度，$d$ 为隐维度。
-
-### 2. 整体流水线 (Overall Architecture)
-
-数据流：物品图像+描述 → 冻结多模态基座 → 关系适配层（多头注意力 + 池化，按替代/互补解耦）→ 语义级门控聚合；同时行为图 → 元路径编码器（节点级 + 路径级注意力，边丢弃扰动生成对比视图）→ 语义级门控聚合 → 任务级门控跨任务融合 → 关系打分。训练侧叠加 LLM 辅助监督过滤正例与多任务损失。
+输入为物品多模态元数据（标题/描述 + 商品图）与类型化物品图 $\mathcal{G}=(\mathcal{V},\mathcal{E}_s,\mathcal{E}_c)$。左路：冻结 BLIP-2 输出 token 序列$\boldsymbol{H}_i$，经关系适配 MHAttn + 均值池化得$\boldsymbol{q}_i^s,\boldsymbol{q}_i^c$；右路：在元路径邻域上做节点级/路径级注意力得$\boldsymbol{p}_i^s,\boldsymbol{p}_i^c$，并对边丢弃扰动视图施加 InfoNCE 去噪。两路先做语义级门控融合，再做任务级门控跨关系共享，最终以 LLM 校验正样本的三元组损失 + 自监督损失多任务联合训练；推理时仅用物品表征做余弦打分，LLM 不参与在线服务。
 
 ```mermaid
 flowchart TD
-    A["输入层: 物品图像+描述 / 行为图(co-view, co-purchase)"] --> B1["冻结多模态基座 CLIP/BLIP-2 + 关系适配层(替代/互补解耦)"]
-    A --> B2["元路径编码器(节点级+路径级注意力) + 边丢弃对比去噪"]
-    B1 --> C1["语义级门控聚合 Gating_sem"]
-    B2 --> C1
-    C1 --> D["任务级门控聚合 Gating_task (替代↔互补跨任务共享)"]
-    D --> E["关系打分 F_s / F_c + LLM辅助监督 + 多任务损失"]
+    A["物品元数据(文本+图像)"] --> B["冻结BLIP-2 + 关系适配MHAttn"]
+    A2["类型化物品图(co-view/co-purchase)"] --> C["元路径GAT编码 + 边丢弃对比去噪"]
+    B --> D["语义级门控融合"]
+    C --> D
+    D --> E["任务级门控(替代↔互补共享)"]
+    E --> F["三元组排序打分 / 物品对检索"]
+    G["LLM校验正样本"] --> F
 ```
 
-### 3. 核心模块设计与数学原理 (Key Designs & Formulations)
+### 2. 关键设计拆解 (Key Designs)
 
-**(1) 多模态关系适配（§4.1）**：冻结基座输出 $\boldsymbol{H}_i$ 仅含通用语义，未针对类型化关系优化。故加轻量多头注意力 + 均值池化：
+1. **元路径行为编码（保留跨类型高阶连通）**：痛点在于解耦同质图会切断 $s$-$c$交替路径。本文在异质图上定义关系专属元路径集$\Phi_s,\Phi_c$（最长 3 跳），先做节点级多头注意力$\alpha_{ij}^{\phi}=\mathrm{softmax}\big(\mathrm{LeakyReLU}(\boldsymbol{W}_\phi^\top[\boldsymbol{h}_i\|\boldsymbol{h}_j])\big)$，再做路径级注意力$\beta_i^\phi=\mathrm{softmax}\big(\boldsymbol{s}^\top\tanh(\boldsymbol{W}_b\boldsymbol{z}_i^\phi+\boldsymbol{b})\big)$加权得$\boldsymbol{p}_i^r=\sum_{\phi\in\Phi_r}\beta_i^\phi\boldsymbol{z}_i^\phi$。直觉：3 跳路径把尾部物品接入关系证据链（表 8 显示 3 跳将尾部覆盖率从 1.7% 提至 8.8%），代价是正例率下降，故必须配去噪。
 
-$$\tilde{\boldsymbol{H}}_i=\text{MHAttn}(\boldsymbol{H}_i),\quad \boldsymbol{q}_i=\text{Pool}(\tilde{\boldsymbol{H}}_i)\in\mathbb{R}^d$$
+2. **自监督结构去噪**：行为边噪声使表征对虚假边敏感。对图做边丢弃得扰动视图 $\mathcal{G}'$，同一物品两视图为正对、批内其他物品为负对，最小化$\mathcal{L}_{\text{self}}=-\frac{1}{|\mathcal{V}|}\sum_{v_i}\log\frac{\exp(s(\boldsymbol{p}_i^r,\boldsymbol{p}_i^{r\prime})/\tau)}{\sum_{j\neq i}\exp(s(\boldsymbol{p}_i^r,\boldsymbol{p}_j^r)/\tau)}$（$r\in\{s,c\}$）。直觉：强制表征对「随机删边」不变，等价于把虚假边视为可丢弃扰动，从而学到关系本质而非边本身。
 
-其中 $\text{MHAttn}$ 为 $L$ 头、每头维度 $d_h=d/L$ 的标准缩放点积注意力。为不让单一嵌入同时解释两种关系（语义相似 vs. 功能兼容），用**独立适配层解耦**：$\boldsymbol{q}^s_i=\text{Pool}(\text{MHAttn}_s(\boldsymbol{H}_i))$，$\boldsymbol{q}^c_i=\text{Pool}(\text{MHAttn}_c(\boldsymbol{H}_i))$。
-
-**(2) 元路径行为编码 + 自监督去噪（§4.2）**：将行为信号建模为类型化图，沿元路径（如 $v_1\xrightarrow{s}v_2\xrightarrow{c}v_3\xrightarrow{s}v_4$）捕获超越直接边的高阶模式。为替代/互补分别定义元路径集 $\Phi_s,\Phi_c$（各 $K_r$ 条）。
-- **节点级注意力**：$\alpha^\phi_{ij}=\frac{\exp(\text{LeakyReLU}(\boldsymbol{W}_\phi^\top[\boldsymbol{h}_i\|\boldsymbol{h}_j]))}{\sum_{v_t\in\mathcal{N}^\phi_i}\exp(\text{LeakyReLU}(\boldsymbol{W}_\phi^\top[\boldsymbol{h}_i\|\boldsymbol{h}_t]))}$，其中节点初始特征 $\boldsymbol{h}_i=\text{MeanPool}(\boldsymbol{H}_i)$ **注入多模态语义**；多头顶拼接得 $\boldsymbol{z}^\phi_i$。
-- **路径级注意力**：$w^\phi_i=\boldsymbol{s}^\top\tanh(\boldsymbol{W}_b\boldsymbol{z}^\phi_i+\boldsymbol{b})$，$\beta^\phi_i=\text{softmax}$，$\boldsymbol{p}^r_i=\sum_{\phi\in\Phi_r}\beta^\phi_i\boldsymbol{z}^\phi_i$。
-- **对比去噪**：对行为边做 edge dropout 得扰动图 $\mathcal{G}'$，同编码器得 $\boldsymbol{p}'_i$；同物品两视图为正对、批内其他物品为负，用 InfoNCE 强制结构扰动下的表征一致性，从而对虚假边鲁棒。
-
-**(3) 分层聚合（§4.3）**：语义级门控按维度自适应平衡内容与行为：$\boldsymbol{a}^s_i=\boldsymbol{g}\odot\boldsymbol{p}^s_i+(1-\boldsymbol{g})\odot\boldsymbol{q}^s_i$，$\boldsymbol{g}=\sigma(\boldsymbol{W}_{g1}\boldsymbol{p}^s_i+\boldsymbol{W}_{g2}\boldsymbol{q}^s_i+\boldsymbol{b}_g)$；任务级门控再做跨任务受控共享：$\boldsymbol{e}^s_i=\gamma^s_i\odot\boldsymbol{a}^s_i+(1-\gamma^s_i)\odot\boldsymbol{a}^c_i$。
-
-**(4) LLM 辅助监督（§4.4.1）**：用 LLM 对行为派生正例做 yes/no 校验（表 1 给出替代/互补两套 prompt，替换 `{asin_x}`/`{asin_y}` 为物品元数据），过滤虚假正例，缓解行为监督噪声。
-
-### 4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling & Complexity)
-
-- **损失函数**：多任务联合训练，总损失由关系预测损失（替代 + 互补，基于 LLM 精炼后的监督标签）与自监督对比损失组成：
-
-$$\mathcal{L}_{\text{self}}=-\frac{1}{|\mathcal{V}|}\sum_{v_i\in\mathcal{V}}\log\frac{\exp(s(\boldsymbol{p}^s_i,\boldsymbol{p}^{s'}_i)/\tau)}{\sum_{j\neq i}\exp(s(\boldsymbol{p}^s_i,\boldsymbol{p}^s_j)/\tau)}+\text{(互补项)}$$
-
-其中 $s$ 为余弦相似度，$\tau$ 为温度系数（原文正文未给出具体取值，**原文未报告**）。
-- **训练负采样策略**：对比学习采用 **in-batch 负采样**（同批其他物品为负）；关系预测为链接预测式监督，正例来自 LLM 精炼后的行为边。
-- **时间与空间复杂度**：多模态基座**冻结**，仅训练轻量适配层与元路径编码器，训练开销可控。表 3 报告了不同 batch size $B$ 下各数据集的**每 epoch 训练时间（秒）**，batch 越大训练时间越长；具体数值需参见原文表 3。在线推理为物品表征 + 相似度打分，可支持 ANN 检索；具体 ms/request 延迟**原文未报告**。
+3. **LLM 校验监督 + 层级门控 + 训练目标**：用 Flan-T5-XXL 以模板（表 1）判定采样物品对是否为真替代/互补，构成 $\mathcal{E}_{\text{LLM}}$（每数据集固定 500K），仅作训练监督。语义级门控$\boldsymbol{a}_i^s=\boldsymbol{g}\odot\boldsymbol{p}_i^s+(1-\boldsymbol{g})\odot\boldsymbol{q}_i^s$，$\boldsymbol{g}=\sigma(\boldsymbol{W}_{g1}\boldsymbol{p}_i^s+\boldsymbol{W}_{g2}\boldsymbol{q}_i^s+\boldsymbol{b}_g)$；任务级门控$\boldsymbol{e}_i^s=\gamma_i^s\odot\boldsymbol{a}_i^s+(1-\gamma_i^s)\odot\boldsymbol{a}_i^c$实现受控跨关系共享。总损失$\mathcal{L}=\mathcal{L}_{\text{triplet}}+\lambda\mathcal{L}_{\text{self}}$，三元组损失以$\mathcal{E}_{\text{LLM}}$为正、行为邻接但未通过校验的物品为负（每正样本采 5 负），margin 排序；$\lambda$ 最优 0.005。推理零 LLM 开销，每 epoch 训练 0.19–0.20s（B=128），远快于 DecGCN 的 2.48s。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
-- **数据集统计与预处理**: 原文使用**五个真实世界数据集**（表 2 给出统计量），涉及 Electronics、Office 等亚马逊品类；具体 #Users/#Items/#Interactions 数值需参见原文表 2（正文抽取文本未完整给出，**以原文表 2 为准**）。
+- **数据集与预处理**: Amazon Review 五类目，过滤缺失文本或图像的物品；co-view ∪ buy-after-view 作可替代弱信号，co-purchase 作互补弱信号。
 
-| 数据集 (Dataset) | 用户数 (#Users) | 物品数 (#Items) | 交互数 (#Interactions) | 稀疏度/密度 (Sparsity) | 模态/辅助特征说明 |
-| :--- | :---: | :---: | :---: | :---: | :--- |
-| 五个真实数据集（见表 2） | 原文表 2 | 原文表 2 | 原文表 2 | 原文表 2 | 图像 + 文本（标题/描述） |
+| 数据集 | #Items | #co-view∪buy-after-view | #co-purchase | 场景说明 |
+| :--- | :---: | :---: | :---: | :--- |
+| Office | 85,648 | 2,002,109 | 1,200,487 | 办公用品 |
+| Tools | 192,408 | 3,413,564 | 2,058,000 | 工具/家装 |
+| Toys | 227,227 | 8,718,700 | 6,784,468 | 玩具游戏 |
+| Home | 250,244 | 7,297,466 | 2,070,856 | 家居厨房 |
+| Electronics | 326,002 | 6,120,988 | 3,816,044 | 电子产品（最大异质） |
 
-- **数据划分方式 (Splitting Strategy)**: 原文抽取文本未明确说明划分细节（**原文未在可见正文中报告**），需以原文实验章节为准；任务为物品-物品链接预测，需关注是否存在行为边泄漏到测试集的风险。
-- **排名评测协议 (Ranking Protocol)**: 任务为类型化链接预测/关系排序，评测真实替代/互补物品是否排在无关物品之前；具体是 Full-Ranking 还是 Sampled Ranking、正负例比例，**原文可见正文未明确报告**。
-- **评价指标与显著性检验**: 原文以替代品/互补品推断的相对提升（26.1% / 39.2%）作为主结论；具体指标（如 Recall@K / NDCG@K / MRR / AUC）与是否做配对显著性检验，**原文可见正文未完整报告**。Embedding 维度 $d$ 与基座（CLIP/BLIP-2）原始维度对齐情况需参见原文。
+- **数据划分与防穿越 (Splitting Strategy)**: 对每个在某关系下有邻居的物品，随机抽 1 条关联边作测试候选，其余入训练图，测试边从训练图移除防泄漏；测试候选再经 LLM 校验得高精度集 $Y_{\text{sub}},Y_{\text{com}}$。
+- **排名评测协议 (Ranking Protocol)**: **Sampled Ranking**——每条测试边均匀采 1000 个同关系下不与源物品相连的负样本，报告 H@10 / MRR@10 / NDCG@10；训练每正样本采 5 负。
+- **对比基线与超参设置**: 三类基线——GNN（GATNE-I、GAT、HAN）、关系模型（DecGCN、DHGAN）、适配多模态基础模型（CLIP、BLIP-2 + 关系 MLP）；BLIP-2 冻结，仅训适配层；Adam，lr $\in\{10^{-4},10^{-3},10^{-2}\}$，dropout 0.2，$\lambda\in\{10^{-3},5\times10^{-3},10^{-2}\}$。
 
-## Key Experimental Results (核心实验结果)
+## Key Experimental Results (实验关键数据)
 
 ### 1. 主实验对比 (Main Results)
 
-原文主结论：在五个真实数据集上，MMSC 相对现有基线**替代品推断提升 26.1%、互补品推断提升 39.2%**。逐数据集、逐指标的精确数值需参见原文主实验表（抽取正文未给出完整表格，**以原文为准**）。
+可替代推断（M@10 / N@10，节选；完整见原文表 4）：
 
-| 数据集 | 指标 | 传统/协同过滤基线 | 序列/图/多模态最强基线 | 本文方法 (Ours) | 相对提升 (Improv.) |
-| :--- | :--- | :---: | :---: | :---: | :---: |
-| 五个真实数据集（平均） | 替代品推断 | 原文表 | 原文表 | **MMSC** | +26.1% |
-| 五个真实数据集（平均） | 互补品推断 | 原文表 | 原文表 | **MMSC** | +39.2% |
+| 数据集 | DHGAN | CLIP | BLIP-2 | MMSC | Improv.(M@10) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Office | 0.573 | 0.580* | 0.519 | **0.782** | +36.5% |
+| Tools | 0.652 | 0.644 | 0.658* | **0.841** | +29.0% |
+| Toys | 0.658* | 0.527 | 0.587 | **0.827** | +25.7% |
+| Home | 0.727* | 0.685 | 0.692 | **0.830** | +14.2% |
+| Electronics | 0.652* | 0.483 | 0.547 | **0.816** | +25.2% |
 
-### 2. 消融实验与控制变量分析 (Ablation Study)
+互补推断（M@10）：
 
-原文通过消融验证各组件有效性（多模态表征模块、元路径行为编码、对比去噪、LLM 辅助监督、分层门控聚合）。具体各模块移除后的下降幅度需参见原文消融表（**抽取正文未给出数值**）。从方法设计看，**对比去噪 + LLM 辅助监督**针对核心噪声问题，预期贡献最大；消融是否严格控制参数量/图度数匹配，原文可见正文未明确说明。
+| 数据集 | GAT | DHGAN | CLIP | BLIP-2 | MMSC | Improv.(M@10) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| Office | 0.567* | 0.540 | 0.553 | 0.482 | **0.789** | +39.2% |
+| Tools | 0.669* | 0.585 | 0.618 | 0.621 | **0.885** | +32.3% |
+| Toys | 0.609* | 0.529 | 0.493 | 0.482 | **0.863** | +62.8% |
+| Home | 0.713* | 0.681 | 0.644 | 0.628 | **0.872** | +22.3% |
+| Electronics | 0.589* | 0.546 | 0.405 | 0.428 | **0.821** | +39.4% |
 
-### 3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets & Hyperparameters)
+冷启动（20% 物品删边，M@10）：Office 可替代 0.702 vs. BLIP-2-SA 0.532（+32.0%），互补 0.505 vs. 0.435（+16.1%）；Electronics 可替代 +41.0%、互补 +37.7%。
 
-- **冷启动物品表现**: 原文明确声称 MMSC **对冷启动物品仍有效**（元数据分支为冷启动物品提供稳健表征），并做了实证验证；具体冷启动分桶数值需参见原文。
-- **长尾/度数分桶**: 图 2 展示物品度数按十分位分组的重尾分布，为长尾稀疏挑战提供实证依据。
-- **关键超参数敏感度**: 温度系数 $\tau$、边丢弃比例、元路径数量 $K_r$、门控维度等的影响，**原文可见正文未完整报告**。
-- **线上 A/B 测试结果**: **原文仅包含离线实验**，未报告线上 A/B 结果。
+### 2. 消融实验 (Ablation Study)
 
-## Highlights, Limitations & Critiques (亮点、局限与审稿级批判)
+| 变体 | Office Sub. M@10 | Office Comp. M@10 | Elec. Sub. M@10 | Elec. Comp. M@10 |
+| :--- | :---: | :---: | :---: | :---: |
+| MMSC 完整 | **0.782** | **0.789** | **0.816** | **0.821** |
+| w/o SSL | 0.749 | 0.757 | 0.797 | 0.774 |
+| w/o TA（任务级门控） | 0.776 | 0.775 | 0.798 | 0.787 |
+| w/o SSL & TA | 0.757 | 0.649 | 0.789 | 0.749 |
+| w/o MM（多模态） | 0.603 | 0.594 | 0.772 | 0.787 |
+| w/o BM（行为编码） | 0.560 | 0.482 | 0.622 | 0.487 |
+| w/o $\mathcal{E}_{\text{LLM}}$ | 0.727 | 0.718 | 0.812* | 0.789 |
+| w/o 3rd-hop | 0.750 | 0.730 | 0.785 | 0.785 |
 
-- **核心亮点与可迁移性**:
-  1. **"冻结基座 + 轻量关系适配"** 范式成本低、可迁移到其他物品关系任务（如捆绑推荐、跨品类关联）。
-  2. **元路径编码保留高阶类型化连通模式**，优于解耦同构子图的 GNN 基线，思路可迁移至异构图推荐。
-  3. **LLM 辅助监督过滤噪声正例** 为弱监督推荐提供了一种低成本标签精炼手段。
-  4. **分层门控（语义级 + 任务级）** 兼顾内容稳健性与行为关系性，对冷启动/长尾友好。
-- **局限性与审稿视角批判 (Critical Limitations)**:
-  1. **评估协议披露不足**：抽取正文未明确数据划分、Full-Ranking vs. Sampled Ranking、具体指标与显著性检验，削弱结论可复现性与可比性。
-  2. **LLM 辅助监督的成本与偏差**：依赖 LLM 对正例做 yes/no 校验，引入额外推理开销与 LLM 自身偏差，且 prompt 设计（表 1）对结果敏感。
-  3. **任务定位非个性化推荐**：本文是物品-物品关系推断，与用户-物品推荐链路存在 gap，工业落地需额外对接召回/排序系统。
-  4. **超参与效率细节缺失**：$\tau$、边丢弃比例、在线延迟等关键工程指标未充分报告。
+### 3. 关键实验发现 (Key Findings)
+
+1. **行为编码是主引擎，多模态是长尾补丁**：去掉 BM 使 Office 互补 M@10 从 0.789 崩至 0.482（−38.9%），去掉 MM 降至 0.594；但冷启动下 MMSC 仍大幅领先纯内容 BLIP-2-SA（+32.0%/+16.1%），说明内容路在无行为时接管、行为路在有行为时主导。
+2. **去噪与 LLM 校验互补而非冗余**：单独去 SSL 使互补 M@10 掉 0.032（Office），单独去 $\mathcal{E}_{\text{LLM}}$ 掉 0.071；二者同去（w/o SSL & TA 的互补 0.649）跌幅远超单项之和，且注入 100% 随机噪声时 MMSC 的 MRR 曲线最平（图 6/7），验证双重去噪对虚假边的叠加鲁棒性。
+3. **度分桶呈非对称收益**：可替代推断在低度组（Group 1–3）增益最大（内容补足稀疏行为），互补推断在高度组（Group 8–10）增益最大（去噪压制 co-purchase 异质性噪声），与表 8 的「深路径提覆盖、降精度」权衡一致。
+
+## Highlights & Limitations (亮点、对比与审稿批判)
+
+- **与代表作对比 (vs. Prior Work)**: 相比 DHGAN 仅用双曲空间行为图、DecGCN 解耦关系图后 co-attention 融合，MMSC 首次在**类型化异质图**上以元路径保留 $s/c$ 交替高阶连通，并显式把行为边当噪声源处理；相比 CLIP/BLIP-2 直接相似度，本文证明基础模型须加关系适配层与行为结构才能胜任 typed 关系推断（CLIP 在 Electronics 互补仅 0.405）。
+- **可迁移亮点**: ① 「LLM 离线校验弱标签 + 在线轻量表征」范式可迁移到任意行为弱监督召回任务；② 边丢弃对比 + 元路径深度分层的 precision-coverage 权衡分析，为图召回的特征工程提供可复用诊断方法。
+- **审稿级局限批判**: ① 关系假设静态，未建模季节性/演化互补（如节日捆绑），且打分仅靠共享物品表征、忽略边级上下文（query 意图、用户分群）；② 评测依赖 LLM 构造的测试集，LLM 自身对互补关系准确率仅 57.9%，测试集精度天花板可能压低绝对指标并影响跨方法可比性；③ $\mathcal{E}_{\text{LLM}}$ 固定 500K，在 Electronics 这类大目录上增益明显弱于 Office（0.812 vs. 0.727 的差距反转），规模自适应策略缺失。
 
 ## Rating (四维评分)
 
-- **方法创新性 (Novelty)**: ⭐⭐⭐⭐
-- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐
-- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐
-- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐
-
-## 论文图表
-
-<figure class="paper-figure" markdown="span">
-  ![图 1](../../../../assets/papers/2507.22268v3/figure_1.png)<figcaption>图 1</figcaption>
-</figure>
-
-<figure class="paper-figure" markdown="span">
-  ![图 2](../../../../assets/papers/2507.22268v3/figure_2.png)<figcaption>图 2</figcaption>
-</figure>
-
-<figure class="paper-figure" markdown="span">
-  ![图 3](../../../../assets/papers/2507.22268v3/figure_3.png)<figcaption>图 3</figcaption>
-</figure>
-
-<figure class="paper-figure" markdown="span">
-  ![表 1](../../../../assets/papers/2507.22268v3/table_1.png)<figcaption>表 1</figcaption>
-</figure>
-
-<figure class="paper-figure" markdown="span">
-  ![表 2](../../../../assets/papers/2507.22268v3/table_2.png)<figcaption>表 2</figcaption>
-</figure>
-
-<figure class="paper-figure" markdown="span">
-  ![表 3](../../../../assets/papers/2507.22268v3/table_3.png)<figcaption>表 3</figcaption>
-</figure>
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （元路径保留跨类型高阶连通 + 双路门控融合 + 双重去噪的组合较新颖，但各组件均为已有技术的针对性拼装，缺理论分析）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （五数据集、三类基线、冷启动/度分桶/噪声注入/超参敏感性齐全，但 1000 负采样排序偏乐观，测试集经 LLM 过滤引入评估偏差）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与符号定义清晰、元路径与门控推导完整，训练时间与 LLM 预处理成本均有量化，但部分符号如 $\boldsymbol{z}_i^{\phi\prime}$与$\boldsymbol{z}_i^\phi$ 关系表述略含糊）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、推理零 LLM 开销、每 epoch 0.2s 远快于 DHGAN，LLM 预处理为一次性离线成本；但依赖 BLIP-2 与 Flan-T5-XXL 的部署门槛与静态关系假设限制实时演化场景）
 

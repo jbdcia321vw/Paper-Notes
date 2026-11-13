@@ -1,160 +1,135 @@
 ---
 title: "[Paper Note] Towards End-to-End Alignment of User Satisfaction via Questionnaire in Video Recommendation"
-description: "[SIGIR 2026][多任务学习与列表级重排] 提出 EASQ，用 LoRA 独立参数通路 + MoE 解耦多任务 + 在线 DPO，将极稀疏问卷满意度信号端到端对齐进短视频精排在线学习。"
+description: "[SIGIR 2026][多任务学习与列表级重排] 用 LoRA+MoE 独立参数通路隔离稀疏问卷满意度信号，并以在线 DPO 对齐主排序模型，离线 NDCG@5 提升约 3%，线上 Q-Satisfied 提升 0.5–0.9%。"
 tags:
   - SIGIR 2026
   - 多任务学习与列表级重排
   - 精排
+  - 稀疏监督对齐
   - 在线学习
-  - 问卷满意度对齐
-  - DPO
-date: 2026-11-12
+date: 2026-11-13
 venue: SIGIR
 year: 2026
 paper_url: "https://arxiv.org/abs/2601.20215v1"
 code_url: ""
 categories:
   - multi_task_reranking
-  - rl_bandit_rec
+  - llm_rec
 ---
 
 # Towards End-to-End Alignment of User Satisfaction via Questionnaire in Video Recommendation (基于问卷的短视频推荐用户满意度端到端对齐)
 
-- **会议/期刊**: SIGIR 2026（arXiv 预印本 2601.20215v1）
-- **推荐链路定位**: 精排 (Multi-Task Ranking) + 在线学习 (Online Learning)
-- **研究方向**: 多任务学习与列表级重排 / 强化学习与动态探索推荐
+- **会议/期刊**: SIGIR 2026
+- **作者与机构**: Na Li, Jiaqi Yu, Minzhi Xie, Tiantian He, Xiaoxiao Xu 等（快手科技；Kun Gai 无隶属）
+- **推荐链路定位**: 精排（Ranking Stage，在线学习）
+- **研究方向**: 多任务学习与列表级重排 / 大语言模型推荐（DPO 对齐思想迁移）
 - **论文原文**: [https://arxiv.org/abs/2601.20215v1](https://arxiv.org/abs/2601.20215v1)
 - **开源代码**: 暂未开源
 
-## TL;DR (核心速览)
+## TL;DR (1分钟核心速览)
 
-短视频精排依赖点击/观看时长等稠密行为信号，但这些只是满意度的噪声代理；问卷显式满意度信号质量高却极稀疏（曝光约 0.5%、点击率 <2%），常规训练下会被行为信号淹没。EASQ 通过底层轻量 LoRA 独立参数通路 + 上层 MoE 解耦多任务 + 面向在线学习的 DPO 目标，把稀疏问卷信号端到端注入在线精排。离线实验与大规模线上 A/B 均显示满意度指标稳定提升，并已在快手生产系统全量部署。
+短视频精排长期依赖点击、观看时长等稠密行为代理信号，噪声与偏差大；而问卷采集的显式满意度信号虽直接却极度稀疏（曝光约 0.5%、点击率 <2%），在常规训练中被行为梯度淹没。EASQ 通过「底层 LoRA 预注入 + 上层 MoE 双通路解耦 + 在线 DPO 对齐」构建独立参数通路，把稀疏满意度信号端到端注入在线精排。离线在问卷正负样本对排序协议下，两场景 NDCG@5 分别提升约 4.2%/6.2%，线上 7 天 A/B 中 Q-Satisfied 提升 0.93%/0.53%、Q-Dissatisfied 下降 0.65%/1.13%。
 
-## Background & Motivation (背景与动机)
+## Background & Motivation (背景与核心矛盾)
 
-- **领域背景与主流范式**: 短视频推荐精排模型主流以稠密隐式行为（click、watch time、like、skip）为监督，采用多任务学习（MMoE/PLE 类）联合优化多个行为目标，并在在线学习框架下持续更新参数。
-- **现有方法局限 (Limitations of Prior Work)**:
-  1. **代理信号有偏**: 点击与观看时长只是满意度的间接代理，用户表达满意的方式各异，导致监督噪声与偏差（如"标题党"高点击低满意）。
-  2. **显式信号两阶段割裂**: SAQRec、Imputation Network、reward shaping（Q2SP）等依赖离线训练的辅助满意度模型或预定义奖励函数，再插入在线/RL 框架，属于两阶段范式，无法在线持续吸收新问卷反馈。
-  3. **稀疏性极端**: 作者在真实环境统计，问卷仅覆盖约 0.5% 的视频曝光，问卷点击率不足 2%，有效满意度标签极少，常规联合训练中梯度权重被行为数据彻底压制。
-- **核心挑战 (Key Challenge)**: 在参数同步更新的在线学习设定下，如何让极稀疏但高价值的满意度信号获得独立且稳定的梯度通路，同时不破坏主干行为模型的稳定性？简单加一个满意度辅助任务头会因梯度淹没与参数耦合而失效。
-- **核心洞察与切入点 (Key Insight)**: 借鉴 LLM 偏好对齐（RLHF/DPO）思想——把问卷反馈视为"人类偏好对"（Satisfied ≻ Dissatisfied），用参数隔离（LoRA + 独立 Expert）构造满意度专属通路，并将 DPO 中的 reference model 替换为在线同步更新的"问卷专家网络"，从而把 DPO 改造成适配在线学习的对齐目标。图 3 的收敛效度验证（不满意用户后续 Like/Comment/Forward/Follow 相对下降 25%–85%，满意用户相对提升 46%–80%）为问卷信号作为可靠监督提供了实证支撑。
+- **主流范式**: 精排模型以点击、观看时长、点赞等稠密隐式行为构造 BPR 类 pairwise 损失，行为信号是满意度的间接代理。
+- **前人局限**: ① 代理信号存在噪声与偏差，用户"看完但不满"无法被刻画；② 问卷信号虽直接，但 SAQRec、Imputation Network 等采用"离线训练辅助满意度模型 + 在线/RL 插件"的两阶段范式，无法随新问卷反馈实时自适应，且稀疏信号在联合训练中被稠密行为梯度压制。
+- **核心洞察 (Key Insight)**: 问卷满意度与后验行为高度一致（不满用户后续点赞/评论/转发相对下降 25%–85%，满意用户相对提升 46%–80%），具备收敛效度，可作为高置信直接监督；但必须给它在参数空间中"划一块独立地盘"。
+- **本文切入点**: 借鉴 LLM 偏好对齐（DPO），把满意度对齐从"两阶段插件"改造为"在线端到端单阶段"，用参数隔离保证主干稳定。
 
-## Problem Formulation & Method (问题定义与方法架构)
+## Method (核心方法设计)
 
-### 1. 符号定义与输入表征 (Notations & Input Representations)
+### 1. 整体框架 (Overall Architecture)
 
-- 用户集 $\mathcal{U}=\{u_1,u_2,\dots\}$，物品（视频）集 $\mathcal{X}=\{x_1,x_2,\dots\}$。
-- 行为集合 $\mathcal{B}_u$：用户 $u$ 的隐式交互（click、watch、like、skip 等），稠密。
-- 问卷反馈集合 $\mathcal{S}_u$：通过问卷收集的显式满意度信号（Satisfied / Dissatisfied / Uncertain），稀疏但高质量。
-- 目标：学习排序函数 $f(u,x)$，在利用稠密行为信号的同时与稀疏问卷反馈显式对齐。
-- 输入特征：用户侧与候选物品侧数百维特征 embedding 拼接为 $x$；主干含用户-视频序列 Transformer 编码。主干线性投影 $W_0\in\mathbb{R}^{d\times k}$，LoRA 低秩矩阵 $A\in\mathbb{R}^{r\times k}$、$B\in\mathbb{R}^{d\times r}$，秩 $r\ll\min(d,k)$（原文未给出具体 $d,k,r$ 数值）。
-
-### 2. 整体流水线 (Overall Architecture)
-
-数据流：数百维特征 embedding 拼接 $x$ → 主干 Transformer（底层插入 LoRA 分支）→ 上层 MoE-Align 解耦多任务（主任务 Expert + 满意度对齐 Expert，ReLU Gate 路由）→ 主任务输出 $\hat{y}$ 走行为损失 $\mathcal{L}_{main}$，满意度输出 $\hat{s}$ 走对齐损失 $\mathcal{L}_{Align}$（DPO 形式），联合优化。图 1 对比了常规在线学习框架（a）与 EASQ（b）的结构差异。
+输入为用户/候选视频的数百维特征 embedding，经 Transformer 主干得到表示 $h=W_0x$；底层并联轻量 LoRA 分支产生满意度增量表示$h_{LoRA}=BAx$。上层分叉为两条通路：主任务通路输入$h_{main}=h+\mathrm{stop\_grad}(h_{LoRA})$，经 ReLU 路由 MoE 输出$\hat{y}$；满意度对齐通路输入$h_{satis}=\mathrm{stop\_grad}(h)+h_{LoRA}$，经独立 MoE 输出$\hat{s}$。训练时$\hat{s}$作为在线"参考模型"代理，通过 DPO 损失把$\hat{y}$拉向问卷偏好；推理仅用$\hat{y}$，对齐通路不增加线上开销。
 
 ```mermaid
 flowchart TD
-    A["输入层: 用户/视频序列/交互等数百维特征 embedding 拼接 x"] --> B["主干 Transformer 底层 + 轻量 LoRA 分支 (B·A·x)"]
-    B --> C["上层 MoE-Align: 主任务 Expert 与满意度对齐 Expert, ReLU Gate 路由"]
-    C --> D1["主任务输出 y_hat → 行为损失 L_main"]
-    C --> D2["满意度输出 s_hat → DPO 对齐损失 L_Align"]
-    D1 --> E["在线联合更新 (参数隔离通路)"]
-    D2 --> E
+    A["用户/视频特征 Embedding x"] --> B["Transformer 主干 h=W0x"]
+    B --> C["LoRA 分支 h_LoRA=BAx"]
+    B --> D["主任务通路 h_main=h+sg(h_LoRA)"]
+    C --> D
+    B --> E["对齐通路 h_satis=sg(h)+h_LoRA"]
+    C --> E
+    D --> F["ReLU-Router MoE 主任务 → ŷ"]
+    E --> G["ReLU-Router MoE 对齐任务 → ŝ"]
+    F --> H["L_main (BPR)"]
+    G --> I["L_satis (pairwise)"]
+    F --> J["L_DPO (π_θ=ŷ, π_ref=sg(ŝ))"]
+    G --> J
 ```
 
 <figure class="paper-figure" markdown="span">
-  ![图 1](../../../../assets/papers/2601.20215v1/figure_1.png)<figcaption>图 1</figcaption>
+  ![图1：从传统排序优化到基于用户满意度的在线学习。(a) 传统在线学习框架。(b) 所提出的EASQ框架，将推荐与稀疏满意度反馈对齐。](../../../../assets/papers/2601.20215v1/figure_1.png)<figcaption>图1：从传统排序优化到基于用户满意度的在线学习。(a) 传统在线学习框架。(b) 所提出的EASQ框架，将推荐与稀疏满意度反馈对齐。</figcaption>
 </figure>
 
-### 3. 核心模块设计与数学原理 (Key Designs & Formulations)
+### 2. 关键设计拆解 (Key Designs)
 
-**(1) 问卷信号设计与触发机制（图 2）**：问卷直接询问"Are you satisfied with this video?"，提供 Satisfied / Dissatisfied / Uncertain 三选项（Uncertain 降低强制选择噪声），嵌入播放界面底部单击作答、不打断播放。触发条件为观看 ≥7 秒或播放进度 ≥50%，保证反馈基于有意义的观看体验。理论依据为 experienced utility 理论——直接 elicitation 主观体验是评估真实感受的有效方式。
+1. **LoRA 底层预注入（参数隔离的稀疏信号入口）**：痛点在于稀疏问卷梯度量级远小于行为梯度，深层网络根本"听不见"。本文在主干线性层注入低秩更新 $\Delta W=BA$（$r\ll\min(d,k)$），使满意度语义在 embedding 阶段即被编码；同时主任务侧用$\mathrm{stop\_grad}$ 阻断回传，保证主干参数不被稀疏信号扰动。直觉上这是"先给稀疏信号一个专属放大器，再让它单向影响主干"。
 
-<figure class="paper-figure" markdown="span">
-  ![图 2](../../../../assets/papers/2601.20215v1/figure_2.png)<figcaption>图 2</figcaption>
-</figure>
+2. **MoE-Align 双通路解耦 + ReLU 路由**：单一共享塔下稀疏满意度与稠密行为目标冲突。本文在主任务与对齐任务各设 $K_1$、$K_2$个 FFN 专家，路由改为全可微的 ReLU 门控$R(h)=\mathrm{ReLU}(W_{gate}h)$，替代 Top-K Softmax 的硬截断不可导步骤，允许每个样本激活可变数量专家，提升异构满意度模式的表达灵活性。对齐通路损失为问卷标签上的 pairwise logistic：$\mathcal{L}_{satis}=-\sum_{(i,j)\in D^+}\log\sigma(\hat{s}_i-\hat{s}_j)$。
 
-**(2) 底层 LoRA 独立参数通路**：主干输出 $h=W_0 x$，LoRA 增量表征为
-$$h_{LoRA}=\Delta W x = BAx,\quad \Delta W=BA$$
-在主干低层以参数高效方式预注入稀疏满意度语义偏好，使后续多任务模块能更有效建模满意度信号；同时主干参数保持相对稳定，避免在线同步更新时稀疏信号扰动主模型。
-
-**(3) 上层 MoE-Align 解耦多任务**：在 LoRA 增强主干之上，为主任务与满意度对齐任务设置独立 Expert 网络，采用 ReLU Gate 路由（图 4 对比了 Top-K Softmax 与 ReLU Expert Routing 两种路由方式）。多任务设计将稀疏满意度监督与稠密行为信号在参数层面分离，防止前者被后者淹没；底层 LoRA 与上层 Expert 协同构成稀疏问卷信号的完整独立参数通路。
-
-<figure class="paper-figure" markdown="span">
-  ![图 4](../../../../assets/papers/2601.20215v1/figure_4.png)<figcaption>图 4</figcaption>
-</figure>
-
-**(4) 面向在线学习的 DPO 目标**：标准 DPO 损失为
-$$\mathcal{L}_{DPO}=-\log\sigma\left(\beta\left[\log\frac{\pi_\theta(x^+)}{\pi_{ref}(x^+)}-\log\frac{\pi_\theta(x^-)}{\pi_{ref}(x^-)}\right]\right)$$
-其中 $x^+$ 为偏好物品（Satisfied），$x^-$ 为次偏好物品（Dissatisfied），$\beta$ 为温度系数，$\pi_{ref}$ 为参考模型。标准 DPO 依赖固定 reference model，不适配端到端在线学习；EASQ 将**问卷专家网络视为 reference model 的在线代理（online surrogate）**，随在线学习同步更新，从而在保持主干稳定的同时实时对齐稀疏满意度信号。原文正文在此处截断（"we adopt a multi-task archi..."），MoE-Align 的完整门控公式与 $\mathcal{L}_{Align}$ 的具体展开形式未在提供的文本中给出。
-
-### 4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling & Complexity)
-
-- **损失函数**: 总损失由主任务行为损失 $\mathcal{L}_{main}$ 与满意度对齐损失 $\mathcal{L}_{Align}$（DPO 形式，含温度系数 $\beta$）联合构成，具体加权系数原文截断部分未报告。
-- **训练负采样策略**: 偏好对构造基于问卷三分类——Satisfied 作为 $x^+$、Dissatisfied 作为 $x^-$；Uncertain 的处理方式原文未在可见文本中说明。行为侧负采样策略原文未报告。
-- **时间与空间复杂度**: LoRA 仅引入 $r(d+k)$ 量级额外参数，计算开销可忽略；MoE-Align 增加少量 Expert 参数。原文未报告具体训练单 Epoch 耗时、在线推理延迟 (ms/request) 与峰值显存数值。在线部署层面，EASQ 已集成进生产短视频推荐系统并稳定运行。
+3. **在线 DPO 对齐（把问卷专家当动态参考模型）**：标准 DPO 依赖冻结参考模型与静态偏好集，在线场景下迅速过时。本文令 $\pi_\theta=\hat{y}$、$\pi_{ref}=\mathrm{stop\_grad}(\hat{s})$，即用实时更新的问卷专家网络充当参考锚点：
+$$\mathcal{L}_{DPO}=-\log\sigma\Big(\beta\big[\log\tfrac{\pi_\theta(x^+)}{\pi_{ref}(x^+)}-\log\tfrac{\pi_\theta(x^-)}{\pi_{ref}(x^-)}\big]\Big),\ \beta=0.1$$
+梯度只回传至主模型，参考侧由 $\mathcal{L}_{satis}$单独更新，从而把稀疏问卷反馈稳定地"蒸馏"进排序空间。总损失$\mathcal{L}_{total}=\mathcal{L}_{main}+\lambda_1\mathcal{L}_{satis}+\lambda_2\mathcal{L}_{DPO}$，$\mathcal{L}_{main}$ 为行为标签上的 BPR 损失；训练负采样沿用行为序列内构造的正负对，推理零额外开销。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
-- **数据集统计与预处理**: 原文使用快手大规模工业数据，覆盖两个业务场景（Scenario#1、Scenario#2）。提供的文本中**未给出**用户数、物品数、交互数、稀疏度等数据集统计表格，故不列表臆造。
-- **数据划分方式 (Splitting Strategy)**: 采用在线学习设定（online learning），模型随线上流式数据持续更新；离线实验的具体划分策略原文可见文本未报告。
-- **排名评测协议 (Ranking Protocol)**: 原文可见文本未明确说明是 Full-Ranking 还是 Sampled Ranking；线上部分采用大规模 A/B 测试。
-- **评价指标与显著性检验**: 线上 A/B 关注用户满意度指标及业务收益（CTR/CVR/GMV/留存等具体口径原文可见文本未列出）；离线指标与显著性检验细节原文截断部分未报告。
+- **数据集与预处理**: 来自真实短视频平台两个业务场景的线上日志，未公开规模统计（工业内部数据，无 5-core 等公开过滤描述）：
 
-## Key Experimental Results (核心实验结果)
+| 数据集 | #Users | #Items | #Interactions | 稀疏度/密度 | 特征/场景说明 |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| Scenario#1 | 未披露 | 未披露 | 未披露 | 未披露 | 短视频推荐场景一 |
+| Scenario#2 | 未披露 | 未披露 | 未披露 | 未披露 | 短视频推荐场景二 |
+
+- **数据划分与防穿越 (Splitting Strategy)**: 未明确说明，按在线学习流式日志处理；离线评估基于问卷反馈构造的正负样本对。
+- **排名评测协议 (Ranking Protocol)**: 在问卷正负样本对构成的候选列表上做排序评估（pairwise 候选排序，非全库 Full-Ranking），指标为 HR@{1,5,10}、NDCG@{5,10,20}、MRR，按用户平均。
+- **对比基线与超参设置**: 基线含 EMER（Transformer 端到端集成排序）、EMERS（EMER + 问卷监督）、Imputation Network、SAQRec，均在 EMER 框架上重实现以支持问卷信号；embedding 维度 64/32/8，多头注意力主干，Softplus 激活 + L2 归一化，Adam，学习率 $1\times10^{-3}$，$\beta=0.1$；表中 `*` 标注显著性。
+
+## Key Experimental Results (实验关键数据)
 
 ### 1. 主实验对比 (Main Results)
 
-表 1 给出 EASQ 与各基线在两个场景下的性能对比（最优加粗、次优下划线）。由于提供的文本在方法章节处截断，**具体基线名称与数值未包含在可见文本中**，此处不臆造数据，仅保留表格占位。
+| 场景 | 模型 | NDCG@5 | NDCG@10 | HR@1 | HR@5 | HR@10 | MRR |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| #1 | EMERS | 0.3347 | 0.3529 | 0.4375 | 0.7813 | 0.9063 | 0.6021 |
+| #1 | Imputation Network | 0.3479 | 0.3653 | 0.4459 | 0.8046 | **0.9082*** | 0.6022 |
+| #1 | SAQRec | 0.3577 | 0.3704 | 0.4688 | 0.8125 | 0.9063 | 0.6041 |
+| #1 | **EASQ** | **0.3729*** | **0.3887*** | **0.4773*** | **0.8286*** | 0.9081 | **0.6294*** |
+| #2 | EMERS | 0.3474 | 0.3558 | 0.4699 | 0.8551 | 0.9384 | 0.6279 |
+| #2 | Imputation Network | 0.3553 | 0.3641 | 0.4487 | 0.8550 | 0.9453 | 0.6166 |
+| #2 | SAQRec | 0.3563 | 0.3687 | 0.4807 | 0.8578 | 0.9434 | 0.6499 |
+| #2 | **EASQ** | **0.3784*** | **0.3812*** | **0.5111*** | **0.8668*** | **0.9503*** | **0.6683*** |
 
-<figure class="paper-figure" markdown="span">
-  ![表 1](../../../../assets/papers/2601.20215v1/table_1.png)<figcaption>表 1</figcaption>
-</figure>
+相对最强基线平均提升约 **2.9%（场景#1）/ 3.4%（场景#2）**；对同为问卷建模的 SAQRec 平均领先约 **3.2%**。线上 7 天 A/B（5.1% 流量）：Q-Satisfied +0.929%/+0.531%，Q-Dissatisfied −0.652%/−1.129%，Forward +2.177%/+2.052%，AppStayTime +0.401%/+0.344%，LT7 +0.042%/+0.043%。
 
-| 数据集 | 指标 | 最强基线 | 本文方法 (Ours) | 相对提升 (Improv.) |
-| :--- | :--- | :---: | :---: | :---: |
-| Scenario#1 | 原文截断未报告 | - | **-** | 原文截断未报告 |
-| Scenario#2 | 原文截断未报告 | - | **-** | 原文截断未报告 |
+### 2. 消融实验 (Ablation Study)
 
-### 2. 消融实验与控制变量分析 (Ablation Study)
+场景#2 结果（图 5）：
 
-图 5 展示 Scenario#2 上的消融结果。摘要与正文明确结论：**LoRA 模块持续带来性能提升**，验证其对利用稀疏问卷反馈的必要性；底层 LoRA 与上层 Expert 协同构成独立参数通路。各模块移除后的具体下降幅度、以及消融是否严格控制参数量对齐，原文可见文本未给出数值细节。
+| 变体 | NDCG@5 | NDCG@10 | HR@5 | HR@10 |
+| :--- | :---: | :---: | :---: | :---: |
+| EASQ (full) | **0.3784** | **0.3812** | **0.8668** | **0.9503** |
+| w/o LoRA | 0.3627 | 0.3682 | 0.8481 | 0.9339 |
+| w/o MoE | 0.3688 | 0.3701 | 0.8533 | 0.9369 |
+| w/o DPO | 0.3613 | 0.3610 | 0.8460 | 0.9390 |
 
-<figure class="paper-figure" markdown="span">
-  ![图 5](../../../../assets/papers/2601.20215v1/figure_5.png)<figcaption>图 5</figcaption>
-</figure>
+### 3. 关键实验发现 (Key Findings)
 
-### 3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets & Hyperparameters)
+1. **LoRA 是稀疏信号的生命线**：移除后 NDCG@5 从 0.3784 跌至 0.3627（−4.1%），跌幅居三者之首，说明没有底层参数高效适配，稀疏问卷信号在主干中几乎无法形成有效梯度。
+2. **DPO 对齐贡献被低估**：w/o DPO 的 NDCG@10 仅 0.3610，甚至低于 w/o LoRA 的 0.3682，证明仅靠 LoRA 间接注入不足以把满意度迁移到最终排序，显式对齐损失不可替代。
+3. **专家数存在稀疏性约束的最优点**：$K_1$增大先升后平/降（过参数化过拟合），而$K_2$的最优值明显小于$K_1$——问卷监督太稀疏，对齐侧专家过多会导致每个专家监督不足；$\lambda_2$ 过大则压制行为主任务、排序质量回落。
 
-- **稀疏度分桶**: 原文可见文本未报告按用户/物品交互频次分桶的细粒度分析。
-- **关键超参数敏感度**: DPO 温度系数 $\beta$、LoRA 秩 $r$、损失权重等的敏感度分析原文截断部分未报告。
-- **线上 A/B 测试结果**: 论文声明在快手生产短视频推荐系统完成大规模线上 A/B，EASQ 在多个场景下持续提升用户满意度指标并带来显著且稳定的业务收益，且已成功部署。具体实验周期、流量占比与 CTR/GMV/留存等数值原文可见文本未列出。
+## Highlights & Limitations (亮点、对比与审稿批判)
 
-## Highlights, Limitations & Critiques (亮点、局限与审稿级批判)
-
-- **核心亮点与可迁移性**:
-  1. **参数隔离思路普适**: "底层 LoRA + 上层独立 Expert"构造稀疏信号专属通路的范式，可迁移到任何"稠密主信号 + 稀疏高价值辅助信号"的推荐场景（如投诉反馈、举报信号、客服工单、冷启动少量强反馈）。
-  2. **DPO 在线化改造**: 用同步更新的问卷专家网络替代固定 reference model，解决了 DPO 与在线学习不兼容的核心矛盾，这一"在线代理 reference"思想可推广到其他在线偏好对齐任务。
-  3. **工业验证扎实**: 从信号设计（触发阈值、三选项、收敛效度验证）到全量部署形成闭环，工程参考价值高。
-- **局限性与审稿视角批判 (Critical Limitations)**:
-  1. **评估协议透明度不足**: 可见文本未披露离线数据划分、候选集打分协议（Full vs. Sampled Ranking）、离线评价指标定义与显著性检验，削弱了离线结论的可复现性。
-  2. **信号稀疏与选择偏差**: 问卷曝光仅 0.5%、点击率 <2%，且触发条件（≥7s 或 ≥50% 进度）本身引入选择偏差——被问卷覆盖的样本并非全体曝光的无偏代表；Uncertain 样本的处理策略未说明，可能进一步损失信息。
-  3. **DPO 理论适配性存疑**: 将在线同步更新的专家网络作为 reference model，破坏了 DPO 推导中 reference 固定所依赖的 KL 正则语义，理论上的最优性保证在在线设定下不再严格成立，论文对此缺乏理论分析。
-  4. **超参与开销缺失**: $\beta$、LoRA 秩、损失权重敏感度以及在线推理延迟、显存开销均未报告，工业落地成本难以评估。
-  5. **基线对比不完整**: 与 SAQRec、EMER、Q2SP 等满意度建模方法的离线定量对比在可见文本中缺失，难以判断相对增益来源。
+- **与代表作对比 (vs. Prior Work)**: 相比 SAQRec / Imputation Network 的"离线满意度模型 + 在线插件"两阶段范式，EASQ 首次把稀疏问卷信号纳入在线端到端训练；相比 EMER 仅用后验行为定义相对满意度，EASQ 引入显式问卷作为直接监督；相比标准 DPO 的冻结参考模型，EASQ 用实时更新的问卷专家网络充当动态参考，适配在线分布漂移。
+- **可迁移亮点**: ① "stop_grad 双向隔离 + LoRA 单向注入"是处理任意极稀疏高价值监督（如人工标注、专家反馈）的通用模板；② 用辅助任务网络充当 DPO 动态参考模型，可迁移到任何在线偏好对齐场景。
+- **审稿级局限批判**: ① 离线评估仅在问卷正负样本对上排序，未做全库 Full-Ranking，且数据集统计完全未披露，复现与横向对比困难；② 双 MoE + LoRA 引入 $K_1+K_2$个专家与额外超参$\lambda_1,\lambda_2,K_1,K_2$，且$\lambda_1$ 最优值随场景漂移，工业调参成本与在线稳定性风险未被量化讨论。
 
 ## Rating (四维评分)
 
-- **方法创新性 (Novelty)**: ⭐⭐⭐⭐
-- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐
-- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐
-- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐
-
-## 论文图表
-
-<figure class="paper-figure" markdown="span">
-  ![图 3](../../../../assets/papers/2601.20215v1/figure_3.png)<figcaption>图 3</figcaption>
-</figure>
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （首次将 DPO 在线化改造并落地稀疏满意度对齐，参数隔离通路设计有清晰工程直觉，但各组件均为已有技术的组合创新）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （线上 7 天大规模 A/B 与多场景验证很有说服力，但离线仅 pairwise 候选排序、数据统计缺失、无全库排序与方差报告）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式推导从 RLHF 到 DPO 链条完整、符号统一，但部分模块动机论述偏工程叙述，缺复杂度分析）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （已上线生产系统并带来稳定业务增益，推理零额外开销；扣分在于未开源、数据不可得）
 

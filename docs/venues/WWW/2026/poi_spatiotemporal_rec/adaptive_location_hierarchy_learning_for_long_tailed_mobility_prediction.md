@@ -42,7 +42,7 @@ Next-POI 预测受位置访问频次长尾分布困扰，现有 RNN/GNN/Transfor
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入用户轨迹 $x_{1:t}$，任意骨干输出 location 级 logits $z$；ALOHA 先用 Gumbel-Softmax 把 $z$ 扰动为叶子节点概率 $p_0(y^H)$，再沿预构建的转移矩阵自底向上递归得到 Need/Activity/Category 各级概率，最后对四级条件概率加权求和构成 Adaptive Hierarchical Loss 反传。层级本身由 LLM+CoT 离线一次性生成并可跨城市复用，推理阶段仅需一次矩阵乘，不引入任何新网络参数。
+输入用户轨迹 $x_{1:t}$，任意骨干输出 location 级 logits$z$；ALOHA 先用 Gumbel-Softmax 把$z$扰动为叶子节点概率$p_0(y^H)$，再沿预构建的转移矩阵自底向上递归得到 Need/Activity/Category 各级概率，最后对四级条件概率加权求和构成 Adaptive Hierarchical Loss 反传。层级本身由 LLM+CoT 离线一次性生成并可跨城市复用，推理阶段仅需一次矩阵乘，不引入任何新网络参数。
 
 ```mermaid
 flowchart TD
@@ -64,11 +64,11 @@ flowchart TD
 
 2. **Gumbel 扰动 + 概率树递归（探索语义近邻）**：痛点在于 argmax 式优化让模型只盯高概率头节点。做法是对 logits 注入 Gumbel 噪声后 softmax：
 $$p_0(y^H_{t+1})=\frac{\exp((z_i+g_i)/\tau)}{\sum_j \exp((z_j+g_j)/\tau)},\quad g_i=-\log(-\log a_i)$$
-再由 $p_0(y^{h-1})=T^{h\to h-1}p_0(y^h)$ 与链式法则 $p(y^H)=\prod_{h=1}^{H}p(y^h|y^{h-1})$ 得到各级条件概率。Gumbel 是稳定分布族，加噪不改变原分布形状，因此"探索"不会牺牲收敛性——这是它优于 Focal/CB 等硬重加权插件的关键。
+再由 $p_0(y^{h-1})=T^{h\to h-1}p_0(y^h)$与链式法则$p(y^H)=\prod_{h=1}^{H}p(y^h|y^{h-1})$ 得到各级条件概率。Gumbel 是稳定分布族，加噪不改变原分布形状，因此"探索"不会牺牲收敛性——这是它优于 Focal/CB 等硬重加权插件的关键。
 
-3. **节点自适应权重与 AHL 损失（抑制粒度竞争）**：痛点在于粗粒度层类别少、易主导梯度（granularity competition）。做法是给每级每样本一个可学习权重 $w^h_i$（Softplus 保正，初始化 $\{1,0.75,0.5,0.25\}$ 由细到粗递减）：
+3. **节点自适应权重与 AHL 损失（抑制粒度竞争）**：痛点在于粗粒度层类别少、易主导梯度（granularity competition）。做法是给每级每样本一个可学习权重 $w^h_i$（Softplus 保正，初始化$\{1,0.75,0.5,0.25\}$ 由细到粗递减）：
 $$\mathcal{L}_{hier}=-\frac{1}{N\cdot H}\sum_{i=1}^{N}\sum_{h=1}^{H} w^h_i \log p(y^h_i|y^{h-1}_i)$$
-梯度分析显示 $\partial \ell_{hier}/\partial z_j = p_0(y^H_i)\cdot A - w^H_i$，其中 $A$ 含级间权重差 $(w^{h+1}_i-w^h_i)/S^h_i$——**级间权重必须不均等**才能维持表征多样性，等权会退化为普通 CE。训练无需负采样（全库 softmax），推理仅多一次 $O(N)$ 的矩阵乘。
+梯度分析显示 $\partial \ell_{hier}/\partial z_j = p_0(y^H_i)\cdot A - w^H_i$，其中$A$含级间权重差$(w^{h+1}_i-w^h_i)/S^h_i$——**级间权重必须不均等**才能维持表征多样性，等权会退化为普通 CE。训练无需负采样（全库 softmax），推理仅多一次$O(N)$ 的矩阵乘。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -82,7 +82,7 @@ $$\mathcal{L}_{hier}=-\frac{1}{N\cdot H}\sum_{i=1}^{N}\sum_{h=1}^{H} w^h_i \log 
 | MAO / MOW / SPB | 1,036 / 3,234 / 992 | 3,180 / 8,963 / 3,077 | 123,861 / 316,576 / 99,832 | 3.76% / 1.09% / 3.27% | 241 / 330 / 253 类 |
 
 - **数据划分与防穿越 (Splitting Strategy)**: 按用户时间序 **8:1:1 比例划分**；训练集未出现、仅在验证/测试出现的位置与用户在评测时剔除（严格防穿越）。
-- **排名评测协议 (Ranking Protocol)**: **Full-Ranking 全库排序**（对全部 $|\mathcal{P}|$ 个位置打分），指标 MRR@k 与 NDCG@k，$k\in\{1,5,10\}$；头/尾按 Pareto 原则以访问频次前 20% 切分。
+- **排名评测协议 (Ranking Protocol)**: **Full-Ranking 全库排序**（对全部 $|\mathcal{P}|$个位置打分），指标 MRR@k 与 NDCG@k，$k\in\{1,5,10\}$；头/尾按 Pareto 原则以访问频次前 20% 切分。
 - **对比基线与超参设置**: 4 类骨干（Graph-Flashback / STHGCN / MCLP / Diff-POI）× 6 个插件（Focal、CB、IB、LA、BLV 五个 CV 长尾插件 + 本文），外加框架级基线 MELT、LoTNext；层级构建用 GPT-4o-mini 与 GLM-4.5 双模型交叉验证。
 
 ## Key Experimental Results (实验关键数据)
@@ -131,10 +131,15 @@ STHGCN 骨干，JKT / KLP 的 M@1：
 2. **尾部提升不以头部为代价**：JKT 上头/尾分组对比显示尾部组提升显著、头部组 M@k 基本持平且 N@k 略优；层级距离在 Need/Activity/Category 三级分别缩短 3.3%/2.5%/3.4%，证明收益来自粗粒度语义理解而非简单重加权。案例中真实标签为仅 27 次访问的尾部位置，ALOHA 排第 1，STHGCN 未进前 3；CW（本文对/基线错）95 次 vs WC 24 次。
 3. **层级构建廉价且鲁棒**：Category→Activity 映射人工修正率 <2.60%（GPT-4o-mini 与 GLM-4.5 双模型一致），单城构建耗时 3~6 分钟、成本 <$1；随机破坏 10% 映射后 JKT M@1 仍为 0.2003~0.2118（干净版 0.2097），自适应权重有效吸收噪声；每轨迹额外耗时约 0.1ms（0.628→0.735ms），远低于 BLV 的 4.978ms。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 LoTNext（图耦合、不可迁移），ALOHA 完全解耦骨干，四类架构通吃且无需图采样；相比 Focal/CB/LA/BLV 等 CV 长尾插件（静态类别重加权、忽略时空依赖、常负迁移），ALOHA 用语义层级 + 稳定分布扰动实现"软重平衡"；相比 MELT（RecSys 迁移），其未建模空间语义，KLP 上 M@1 落后 LoTNext 达 24.32%。
 - **可迁移亮点**: ① "LLM 离线建层级 + 在线仅矩阵乘"的模式可低成本移植到电商品类树、内容标签体系等任意具备天然分类学的长尾推荐场景；② 用 Gumbel 稳定分布做"不破坏收敛性的探索"这一思路，可直接替换对比学习中的硬负采样增广。
 - **审稿级局限批判**: ① 层级质量仍依赖 LLM 对本地 POI 类别的语义判断，Need 层仅 3 类且 Activity→Need 修正率高达 10~20%，粗粒度先验偏粗；② 实验全部为离线 Full-Ranking，缺少线上 A/B 与延迟敏感场景验证，且未与 LLM4Rec 类生成式 POI 预测方法对比。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

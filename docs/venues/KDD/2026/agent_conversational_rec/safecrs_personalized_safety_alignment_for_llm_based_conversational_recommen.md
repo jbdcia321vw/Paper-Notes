@@ -67,7 +67,7 @@ $$\text{final\_risk}(m,t)=\max\Big(\frac{\mathbf{w}(t)^\top \mathbf{s}(m)}{3\sum
 $$\mathbf{A}^{(j)}=\frac{\mathbf{r}^{(j)}-\mu(\mathbf{r}^{(j)})}{\sigma(\mathbf{r}^{(j)})+\epsilon},\qquad \mathbf{A}=\sum_{j\in\{\text{rel},\text{safe},\text{cnt}\}} w_j \mathbf{A}^{(j)}$$
 其中安全奖励带对数排名折扣 $r_k^{(\text{safe})}=-\lambda_{\text{safe}}v_k/\log_2(k+1)$，越靠前的违规惩罚越重。直觉：归一化消除了量纲差异，使稀疏相关性梯度不被淹没，从而避免 GRPO 式的 advantage 坍缩与 reward hacking。
 
-3. **训练目标、负采样与推理效率**：总目标为 Safe-SFT 的交叉熵 + Safe-GDPO 的策略梯度（KL 惩罚 $\beta=10^{-3}$，每 prompt 采样 8 条 completion，权重 $(w_{\text{rel}},w_{\text{safe}},w_{\text{cnt}})=(30,0.1,0.1)$）。无需负采样；推理时安全推理块被隐藏，仅输出列表，额外开销仅为一次前向。Oracle 覆盖分析显示 Coverage@10 达 91.7%–95.2%，元数据缺失项被保守判为不安全以防刷分。
+3. **训练目标、负采样与推理效率**：总目标为 Safe-SFT 的交叉熵 + Safe-GDPO 的策略梯度（KL 惩罚 $\beta=10^{-3}$，每 prompt 采样 8 条 completion，权重$(w_{\text{rel}},w_{\text{safe}},w_{\text{cnt}})=(30,0.1,0.1)$）。无需负采样；推理时安全推理块被隐藏，仅输出列表，额外开销仅为一次前向。Oracle 覆盖分析显示 Coverage@10 达 91.7%–95.2%，元数据缺失项被保守判为不安全以防刷分。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -80,7 +80,7 @@ $$\mathbf{A}^{(j)}=\frac{\mathbf{r}^{(j)}-\mu(\mathbf{r}^{(j)})}{\sigma(\mathbf{
 
 - **数据划分与防穿越 (Splitting Strategy)**: 按对话样本比例划分为 train/val/test，安全标签由确定性 Oracle 离线生成，不存在标签穿越。
 - **排名评测协议 (Ranking Protocol)**: 生成式列表级评测，对 top-K 输出计算 Recall@K / NDCG@K（相关性）与 SVR@K / S-DCG@K（安全违规率与位置加权违规，越低越好），阈值 $\tau=0.66$ 对应"至少一个 Severe 或多个 Moderate"。
-- **对比基线与超参设置**: 四类基线——传统 CRS（KBRD、NBCRS）、CRAG（GPT-4o/Haiku4.5/Gemini2.0）、闭源零样本（GPT-4、GPT-5.2）、开源零样本（Gemma3-27B、Llama3-SDSC-70B）；SafeCRS 在 Qwen2.5-0.5B / Qwen3-8B / Llama-3.2-3B / Llama-3.1-8B 四个骨干上实例化，SFT 学习率 $5\times10^{-5}$、GDPO 学习率 $10^{-6}$。
+- **对比基线与超参设置**: 四类基线——传统 CRS（KBRD、NBCRS）、CRAG（GPT-4o/Haiku4.5/Gemini2.0）、闭源零样本（GPT-4、GPT-5.2）、开源零样本（Gemma3-27B、Llama3-SDSC-70B）；SafeCRS 在 Qwen2.5-0.5B / Qwen3-8B / Llama-3.2-3B / Llama-3.1-8B 四个骨干上实例化，SFT 学习率 $5\times10^{-5}$、GDPO 学习率$10^{-6}$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -118,10 +118,15 @@ SafeMovie 分阶段消融（SVR@5↓ / R@5）：
 2. **两阶段互补而非互斥**：Safe-SFT 贡献最大绝对增益（Llama-3.1-8B 的 R@5 从 .0505 升至 .0744，+47.3%；SVR@5 降 89.7%），Safe-GDPO 在其上继续收紧帕累托前沿（Qwen2.5-0.5B 的 SVR@5 再降 93.8% 同时 R@5 升 56.7%），说明奖励正确解耦后安全与相关性可同时提升。
 3. **小模型可越级**：仅 0.5B 的 Qwen2.5-0.5B 在 SafeCRS 下 SVR@5 = .0011，且 R@5 = .0732 已超过 GPT-4（.0705），表明个性化安全对齐是训练范式问题而非模型容量问题；人工审计（n=150）显示人类判定违规率 < 0.5%，与 Oracle 指标高度一致。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 RLHF/DPO 等群体级对齐，本文首次将安全下沉到用户级约束；相比 GRPO，GDPO 的"先归一化再求和"避免了多奖励量纲失衡导致的 advantage 坍缩；相比 LLM-as-a-Judge 评估，确定性 Oracle 消除了跨轮次方差与幻觉。
 - **可迁移亮点**: (1) "软严重度 + 硬触发取 max"的风险打分范式可迁移到电商/内容平台的合规过滤；(2) 逐奖励归一化聚合对任何稀疏-稠密混合奖励的多目标生成式推荐（如相关性 + 多样性 + 新颖性）都适用。
 - **审稿级局限批判**: 其一，隐式特质通过模板化注入构造，难以覆盖跨多轮对话分布式表达的细微安全诉求，真实场景泛化性存疑；其二，强依赖 DDD/IPG/ESRB 等结构化元数据，冷门或冷启动物品元数据稀疏，且 Oracle 阈值 $\tau$ 与安全权重需按域调参，跨域迁移仍需重建 Oracle。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

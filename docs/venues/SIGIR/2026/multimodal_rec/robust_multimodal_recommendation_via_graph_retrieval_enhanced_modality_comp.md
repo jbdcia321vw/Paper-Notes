@@ -1,14 +1,14 @@
 ---
 title: "[Paper Note] Robust Multimodal Recommendation via Graph Retrieval-Enhanced Modality Completion"
-description: "[SIGIR 2026][多模态推荐] 提出 GRE-MC，用模态感知子图检索+图 Transformer 联合编码+稀疏路由码本补全缺失模态，40% 缺失率下全库排序显著超越 SOTA。"
+description: "[SIGIR 2026][多模态推荐] 用模态感知子图检索替代 K 跳邻居聚合，配合图 Transformer 与稀疏路由码本补全缺失模态，40% 缺失率下 Recall@20 相对提升 4.2%–5.1%。"
 tags:
   - SIGIR 2026
   - 多模态推荐
-  - 召回/表征学习
+  - 召回
   - 模态补全
   - 子图检索
   - 图 Transformer
-date: 2026-11-12
+date: 2026-11-13
 venue: SIGIR
 year: 2026
 paper_url: "https://arxiv.org/abs/2605.00670v1"
@@ -18,160 +18,121 @@ categories:
   - graph_rec
 ---
 
-# Robust Multimodal Recommendation via Graph Retrieval-Enhanced Modality Completion (基于图检索增强模态补全的鲁棒多模态推荐)
+# Robust Multimodal Recommendation via Graph Retrieval-Enhanced Modality Completion (图检索增强模态补全的鲁棒多模态推荐)
 
-- **会议/期刊**: SIGIR 2026 (第 49 届国际 ACM SIGIR 会议，Melbourne, VIC, Australia)
-- **推荐链路定位**: 召回/表征学习前置的**数据预处理层（模态补全）**，补全后的完整模态图直接喂给下游多模态推荐模型（如 LightGCN / SLMRec / BM3 等）
-- **研究方向**: 多模态推荐 (主) / 图神经网络与知识图谱推荐 (次)
+- **会议/期刊**: SIGIR 2026
+- **作者与机构**: Yuan Li, Jun Hu, Jiaxin Jiang, Bryan Hooi, Bingsheng He（新加坡国立大学）
+- **推荐链路定位**: 召回（作为下游推荐模型的即插即用前置补全模块）
+- **研究方向**: 多模态推荐 / 图神经网络与知识图谱推荐
 - **论文原文**: [https://arxiv.org/abs/2605.00670v1](https://arxiv.org/abs/2605.00670v1)
-- **开源代码**: 暂未开源（原文与预提取均未发现代码链接）
+- **开源代码**: 暂未开源
 
-## TL;DR (核心速览)
+## TL;DR (1分钟核心速览)
 
-针对真实多模态推荐中物品视觉/文本模态缺失导致下游模型性能骤降的痛点，本文提出 GRE-MC：先用**模态感知子图检索**（锚点 KNN 检索 + 多源 BFS 连通 + 相关性贪心扩张 MAGE）从全图捞取语义相关但可能远距离的子图，再用**图 Transformer + Laplacian 位置编码**对查询节点与子图做全局注意力联合编码，最后用**可学习稀疏路由码本**离散化潜表征以增强鲁棒性。在 40% 缺失率的多模态推荐基准上，全库排序指标一致超越 SOTA，相对次优基线取得显著提升（$p<0.05$）。
+真实多模态推荐数据常因传感器故障、标注缺失导致物品模态不全，现有补全方法要么只用节点自身跨模态相关性（self-based），要么只聚合 $K_N$ 跳邻居（neighbor-based），而邻居在稀疏/噪声图中语义相关性弱、误差传播严重。本文提出 GRE-MC：先用可用模态做全图近邻检索得到语义锚点，再用多源 BFS 连成子图并按"平均相关性"贪心增删节点（MAGE），最后用带 Laplacian 位置编码的图 Transformer 联合编码查询节点与检索子图，并以稀疏路由码本离散化表征。在 Baby/Sports/Clothing 三数据集、40% 随机缺失率、80/10/10 比例划分协议下，Recall@20 相对最强基线 MoDiCF 提升 4.2%–5.1%，且总运行时间仅为 MoDiCF 的约 1/7。
 
-## Background & Motivation (背景与动机)
+## Background & Motivation (背景与核心矛盾)
 
-- **领域背景与主流范式**: 多模态推荐（MMRec）通过融合视觉、文本等辅助模态增强用户/物品表征，主流做法是在 user-item 交互图上叠加多模态特征，用 GNN（LightGCN 类）或对比学习（SLMRec、BM3）做表征对齐。但这些模型**默认所有模态完整可用**。
-- **现有方法局限 (Limitations of Prior Work)**:
-  1. **Self-based 补全**（MoDiCF、LRMM、SDR-GNN、MMImputeDiff）：仅利用实例内部跨模态相关性（如用文本推图像），当实例内模态相关性弱或观测模态信息量不足时失效，且完全忽略图结构信号。
-  2. **Neighbor-based 补全**（Imputed）：依赖 $K_N$ 跳邻居聚合，但邻居可能语义不相关或本身也缺失模态，导致**误差传播**（图 2(i) 中查询衬衫的邻居是语义无关的帽子）。
-  3. **Model-centric 鲁棒建模**（模态对齐、知识蒸馏）：需改动每个下游模型架构，大规模部署成本高。
-- **核心挑战 (Key Challenge)**: 为什么简单邻居聚合不够？作者用 Pilot Study（图 3）量化证明：在缺失模态场景下，**语义检索得到的子图与查询节点缺失模态的平均余弦相似度显著高于 $K_N$ 跳邻域**——即"远距离但语义相关"的上下文才是补全的关键信号，而这类信号无法通过局部消息传递捕获。
-- **核心洞察与切入点 (Key Insight)**: 将模态补全重构为**图检索问题**——从全图检索语义相关子图（而非局部邻域），再用支持非连通输入的图 Transformer 做联合编码，从而同时利用全局语义与结构信号。
+- **主流范式**: 多模态推荐（MIG-GT、BM3、SLMRec 等）默认所有物品的视觉/文本模态完整；处理缺失模态有两条路——模型中心（改下游架构做模态对齐/蒸馏）与数据中心的**模态补全**（先重建特征再喂给现成模型，无需改架构，本文选后者）。
+- **前人局限**: self-based 方法（MoDiCF、LRMM）只用实例内跨模态相关，当观测模态本身信息弱时失效；neighbor-based 方法（Imputed）假设 $K_N$ 跳邻居有信息量，但邻居可能语义无关甚至本身也缺模态，导致误差沿边传播。
+- **核心洞察 (Key Insight)**: 作者在图 3 上做了直接验证——对每个查询节点，比较"$K_N$ 跳邻居集合"与"检索子图"同其**缺失模态**的平均余弦相似度，后者在 2500 个查询上系统性更高（图 9 在 Baby/Sports 的图像缺失与文本缺失四种设定下均复现）。即：语义相关但结构遥远的节点，比结构相近的邻居更能指导补全。
+- **本文切入点**: 把"补全的上下文获取"从邻域聚合升级为**全图子图检索**，并用图 Transformer 解决"检索子图与查询节点可能不连通、消息传递失效"的工程障碍。
 
-<figure class="paper-figure" markdown="span">
-  ![图 1](../../../../assets/papers/2605.00670v1/figure_1.png)<figcaption>图 1</figcaption>
-</figure>
-<figure class="paper-figure" markdown="span">
-  ![图 2](../../../../assets/papers/2605.00670v1/figure_2.png)<figcaption>图 2</figcaption>
-</figure>
-<figure class="paper-figure" markdown="span">
-  ![图 3](../../../../assets/papers/2605.00670v1/figure_3.png)<figcaption>图 3</figcaption>
-</figure>
+## Method (核心方法设计)
 
-## Problem Formulation & Method (问题定义与方法架构)
+### 1. 整体框架 (Overall Architecture)
 
-### 1. 符号定义与输入表征 (Notations & Input Representations)
-
-- 用户集 $\mathcal{V}_U$、物品集 $\mathcal{V}_I$（$|\mathcal{V}_I|=N_I$），交互图 $\mathcal{G}=(\mathcal{V},\mathcal{E})$，邻接矩阵 $\mathbf{A}\in\{0,1\}^{|\mathcal{V}|\times|\mathcal{V}|}$。
-- 由 user-item 图诱导的**物品图** $\mathcal{G}_I$：两物品共享至少一个用户即连边（式 1）。作者聚焦物品补全（物品信息更公开，用户信息更隐私）。
-- 模态集 $\mathcal{M}$（视觉、文本），物品 $i$ 的模态特征 $\{\mathbf{x}_i^{(m)}\}_{m\in\mathcal{M}}$。
-- **模态指示矩阵** $\mathbf{E}\in\{0,1\}^{N_I\times|\mathcal{M}|}$，$\mathbf{E}_{i,m}=1$ 表示模态 $m$ 可观测。
-- 补全目标：学习条件补全函数 $\mathcal{C}:(\mathcal{G},\{\mathbf{x}_i^{(m)}:\mathbf{E}_{i,m}=1\},\mathbf{E}_i)\to\{\hat{\mathbf{x}}_i^{(m)}:\mathbf{E}_{i,m}=0\}$（式 2）。
-
-### 2. 整体流水线 (Overall Architecture)
-
-数据流：输入缺失模态物品图 → ① 模态感知子图检索（锚点检索 + MAGE 扩张）→ ② 图 Transformer 联合编码（Laplacian PE + 全局注意力）→ ③ 稀疏路由码本离散化 → 输出补全特征 → 拼接完整模态图送入下游推荐模型。
+输入是物品共现图 $\mathcal{G}=(\mathcal{V},\mathcal{E})$（两物品共享至少一个用户即连边）与模态指示矩阵$\mathbf{E}\in\{0,1\}^{N_I\times|\mathcal{M}|}$。对每个缺模态的查询节点$i$，先用其**已观测**模态做全图 Top-$K$近邻检索得到锚点集$\mathcal{A}_i^{(m)}$；再用多源 BFS 求"锚点连接子图" ACS，并以平均相关性为目标做贪心增删得到检索子图$S$；随后把$S\cup\{i\}$ 作为 token 序列送入带 Laplacian 位置编码的图 Transformer 做全局注意力编码，查询表征经稀疏路由码本离散化后由模态专属 MLP 解码器重建缺失特征；补全后的完整图再送入现成推荐骨干（MIG-GT）训练与推理。
 
 ```mermaid
 flowchart TD
-    A["输入层: 缺失模态物品图 G + 模态指示矩阵 E"] --> B["① 模态感知子图检索"]
-    B --> B1["锚点检索: 按可用模态做 KNN TopK"]
-    B1 --> B2["多源 BFS 构建 Anchor-Connecting Subgraph S0"]
-    B2 --> B3["MAGE 贪心扩张/剪枝: 最大化平均相关性 Phi(i,S)"]
-    B3 --> C["② 联合编码图 Transformer"]
-    C --> C1["Laplacian 位置编码 + 模态拼接 MLP 初始化"]
-    C1 --> C2["L 层全局自注意力 + 注意力聚合得查询表征 z_i"]
-    C2 --> D["③ 稀疏路由码本离散化"]
-    D --> E["文本/视觉解码器重建缺失模态"]
-    E --> F["下游多模态推荐模型 (LightGCN/SLMRec/BM3)"]
+    A["物品图 + 模态指示矩阵 E"] --> B["锚点检索: 用已观测模态做全图 Top-K 近邻"]
+    B --> C["ACS: 多源 BFS 连接锚点"]
+    C --> D["MAGE: 按平均相关性贪心增/删节点"]
+    D --> E["图 Transformer + Laplacian PE 联合编码"]
+    E --> F["稀疏路由码本 Top-P 离散化"]
+    F --> G["模态 MLP 解码器重建缺失特征"]
+    G --> H["补全图 → 下游推荐骨干 (MIG-GT)"]
 ```
 
 <figure class="paper-figure" markdown="span">
-  ![图 4](../../../../assets/papers/2605.00670v1/figure_4.png)<figcaption>图 4</figcaption>
+  ![图4：GRE-MC 用于图检索增强模态补全的概览。该框架包含两个模块：(1) 模态感知子图检索通过模态感知图扩展识别语义相关的锚节点并将其扩展为结构连贯的子图，融合语义与结构信号；(2) 联合编码图变换器对检索到的子图进行编码以捕获高阶依赖和跨模态交互，随后通过稀疏路由码本离散化生成鲁棒且紧凑的模态表示。](../../../../assets/papers/2605.00670v1/figure_4.png)<figcaption>图4：GRE-MC 用于图检索增强模态补全的概览。该框架包含两个模块：(1) 模态感知子图检索通过模态感知图扩展识别语义相关的锚节点并将其扩展为结构连贯的子图，融合语义与结构信号；(2) 联合编码图变换器对检索到的子图进行编码以捕获高阶依赖和跨模态交互，随后通过稀疏路由码本离散化生成鲁棒且紧凑的模态表示。</figcaption>
 </figure>
 
-### 3. 核心模块设计与数学原理 (Key Designs & Formulations)
+### 2. 关键设计拆解 (Key Designs)
 
-**模块一：模态感知子图检索（Modality-Aware Subgraph Retrieval）**
+1. **模态感知子图检索（MAGE，替代 $K_N$跳邻域）**：痛点是邻居聚合会引入语义无关节点。先检索锚点$\mathcal{A}_i^{(m)}=\mathrm{TopK}\big(\mathbf{x}_i^{(m)},\{\mathbf{x}_j^{(m)}\mid \mathbf{E}_{j,m}=1\}\big)$，再定义仅在**双方共同观测模态**上取均值的成对相关性
+$$r(i,v)=\frac{\sum_{m\in\mathcal{M}}\mathbf{E}_{i,m}\mathbf{E}_{v,m}\cos(\mathbf{x}_i^{(m)},\mathbf{x}_v^{(m)})}{\sum_{m\in\mathcal{M}}\mathbf{E}_{i,m}\mathbf{E}_{v,m}},\quad \text{若分母为 }0 \text{ 则 } r=-\infty$$
+以子图平均相关性 $\Phi(i,S)=\frac{1}{|S|}\sum_{v\in S}r(i,v)$为目标，在"保持连通且含全部锚点"约束下迭代执行两种局部移动：吸收边界邻居$c$（若$\Phi(i,S\cup\{c\})>\Phi(i,S)$）或剪除非桥接节点$u$（若$\Phi(i,S\setminus\{u\})>\Phi(i,S)$），取增益更大者，至多$T$ 轮。直觉：把"语义高相关"与"结构连通"两个信号耦合进同一个贪心目标，既避免锚点散落无法表达结构，又避免为连通而拖入低相关节点。
 
-- **锚点检索**：对查询节点 $i$ 的每个可用模态 $m$（$\mathbf{E}_{i,m}=1$），在全体具备该模态的节点中做最近邻检索：
-$$\mathcal{A}_i^{(m)}=\mathrm{TopK}\left(\mathbf{x}_i^{(m)},\{\mathbf{x}_j^{(m)}\mid \mathbf{E}_{j,m}=1\}\right) \tag{3}$$
-物理直觉：用**内容语义**而非拓扑邻近性筛选候选，保证补全信号 content-aware。
-- **模态感知图扩张（MAGE）**：锚点可能散落全图，先用多源 BFS 求最短路径构建 Anchor-Connecting Subgraph $\mathcal{S}_0=\mathrm{ACS}(\mathcal{G},\mathcal{A}_i^{(m)})$（式 4，借鉴 lowest common ancestor 思想）。随后定义成对相关性（仅在双方共同观测模态上聚合余弦相似度）：
-$$r(i,v)=\frac{\sum_{m\in\mathcal{M}}\mathbf{E}_{i,m}\mathbf{E}_{v,m}\cos(\mathbf{x}_i^{(m)},\mathbf{x}_v^{(m)})}{\sum_{m\in\mathcal{M}}\mathbf{E}_{i,m}\mathbf{E}_{v,m}},\quad \text{若分母}>0;\ \text{否则}-\infty \tag{5}$$
-子图平均相关性 $\Phi(i,\mathcal{S})=\frac{1}{|\mathcal{S}|}\sum_{v\in\mathcal{S}}r(i,v)$。在"保持连通且包含全部锚点"约束下迭代执行两种局部操作：(i) 若加入边界邻居 $c$ 使 $\Phi$ 上升则加入；(ii) 若删除非桥接节点 $u\in\mathcal{S}\setminus\mathcal{A}_i^{(m)}$ 使 $\Phi$ 上升则删除；每步取更优者，直至无法提升，最多 $T$ 轮。物理直觉：**低相似度非桥接节点被剪枝、高相关邻居被贪心吸收**，实现语义与连通性的耦合。
+2. **联合编码图 Transformer + 稀疏路由码本**：痛点是检索子图与查询节点可能不连通，GCN 消息传递无从下手。故将每个节点视为带 Laplacian 位置编码 $\mathbf{p}_j$的 token，$\mathbf{h}_v^{(0)}=\mathrm{MLP}\big(\oplus_{m\in\mathcal{M}}\tilde{\mathbf{x}}_v^{(m)};\mathbf{p}_v\big)$（缺失模态置零），经$L$层全局注意力后以查询为 query 做注意力聚合得$\mathbf{z}_i=\sum_j\alpha_{ij}\mathbf{h}_j^{(L)}$。随后用 Gumbel-Softmax 路由$\mathbf{g}_i=\mathrm{Softmax}((\mathbf{W}\mathbf{z}_i+\boldsymbol{\epsilon})/\tau)$在码本$\{\mathbf{c}_e\}_{e=1}^{C}$上取 Top-$P$加权和$\mathbf{q}_i=\sum_{e\in\mathrm{TopP}(\mathbf{g}_i)}g_{i,e}\mathbf{c}_e$，再由模态专属 MLP 解码$\hat{\mathbf{x}}_i^{(m)}=\mathrm{MLP}^{(m)}(\mathbf{q}_i)$。直觉：离散原型基把连续隐空间压到紧凑基向量上，等价于对缺失模态引入强先验正则，抑制噪声特征被直接外推。
 
-**模块二：联合编码图 Transformer（Joint-Encoding Graph Transformer）**
-
-- 归一化 Laplacian $\mathbf{L}=\mathbf{I}-\mathbf{D}^{-1/2}\mathbf{A}\mathbf{D}^{-1/2}$，取底部 $k$ 个非平凡特征向量构成节点 $j$ 的位置编码 $\mathbf{p}_j=[u_{j1},\dots,u_{jk}]$。
-- 初始化（缺失模态以零向量占位）：
-$$\mathbf{h}_v^{(0)}=\mathrm{MLP}\left(\oplus_{m\in\mathcal{M}}\tilde{\mathbf{x}}_v^{(m)};\mathbf{p}_v\right),\quad v\in\mathcal{S}\cup\{i\} \tag{7}$$
-- $L$ 层 Transformer 全局注意力建模长程依赖（式 8），查询表征由注意力分数 $\alpha_{ij}$ 加权聚合：
-$$\mathbf{z}_i=\sum_{j=1}^{n}\alpha_{ij}\mathbf{h}_j^{(L)},\quad \alpha_{ij}=\frac{\exp(\mathbf{q}_i\cdot\mathbf{k}_j/\sqrt{d_k})}{\sum_{j'=1}^{n}\exp(\mathbf{q}_i\cdot\mathbf{k}_{j'}/\sqrt{d_k})} \tag{9}$$
-其中 $n=|\mathcal{S}|+1$。关键设计动机：检索子图与查询节点**可能不连通**，传统 message passing 失效，全局注意力 + 全局位置编码使跨连通分量信息交换成为可能。
-
-**模块三：稀疏路由码本（Sparse-Routing Codebook）**
-
-将潜表征离散化为紧凑基向量集合，正则化表征空间、提升对不完整模态的鲁棒性（原文以"learnable sparse-routing codebook"描述，具体路由公式在正文中未给出完整展开，属原文表述较简略处）。
-
-### 4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling & Complexity)
-
-- **损失函数**: 由**重建损失（Reconstruction Loss）+ 正则化损失（Regularization Loss）** 组成（图 4 中标注），分别驱动文本/视觉解码器重建缺失模态与码本正则化。原文正文未给出完整逐项公式与权重/温度系数取值（原文未报告具体 $\lambda$、$\tau$ 数值）。
-- **训练负采样策略**: 本文为**模态补全（重建）任务**，非对比/排序训练，故不涉及 BPR/InfoNCE 式负采样；补全后的完整模态图再交由下游推荐模型（其训练沿用各自原设定）。
-- **时间与空间复杂度**: 离线阶段含锚点 KNN 检索（可借助 ANN 索引）、多源 BFS 与最多 $T$ 轮 MAGE 贪心迭代；在线/训练阶段为 $L$ 层 Transformer 作用于 $|\mathcal{S}|+1$ 个 token。原文未报告具体单 epoch 耗时、单请求延迟 (ms) 与峰值显存数值（原文未报告）。
+3. **训练目标与开销**：总损失为重建损失加两项码本正则，
+$$\mathcal{L}=\sum_{m}\sum_{i}\big\|\hat{\mathbf{x}}_i^{(m)}-\mathbf{x}_i^{(m)}\big\|^2+\lambda_{\text{usage}}\mathrm{KL}(\bar{\mathbf{g}}\,\|\,\mathbf{u})+\lambda_{\text{load}}\,C\sum_{e}\bar{\hat{g}}_e^2$$
+其中 $\bar{\mathbf{g}}$为批内平均软路由分布、$\mathbf{u}$为均匀分布，第二项惩罚离散分配的负载不均以防码本坍缩。补全阶段为**自监督重建**，无需负采样；下游推荐沿用 MIG-GT 的 BPR 式训练。复杂度上检索为$O(Nd+E+KD(1+k+T))$，Transformer 为$O(L(KD)^2d+L(KD)d^2)$，实测检索仅占 22–162 秒（表 3），远小于补全与推荐阶段。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
-- **数据集统计与预处理**: 原文表 1 给出 **40% 缺失率**下的数据集统计（$n_{\text{full}}$、$n_{v\text{-miss}}$、$n_{t\text{-miss}}$ 分别为模态完整、缺视觉、缺文本的物品数）：
+- **数据集与预处理**: Amazon 三基准，视觉 4096 维 CNN 特征、文本 384 维 sentence-transformers 特征；按已有工作做 5-core 式过滤。缺失模态通过**随机掩码**模拟，保证每个物品至少保留一个模态，掩码模态初始化为零向量。默认缺失率 $r=40\%$。
 
-<figure class="paper-figure" markdown="span">
-  ![表 1](../../../../assets/papers/2605.00670v1/table_1.png)<figcaption>表 1</figcaption>
-</figure>
-
-| 数据集 (Dataset) | 用户数 (#Users) | 物品数 (#Items) | 交互数 (#Interactions) | 稀疏度/密度 (Sparsity) | 模态/辅助特征说明 |
+| 数据集 | #Users | #Items | #Interactions | 稀疏度 | 40% 缺失下 完整/缺图/缺文 物品数 |
 | :--- | :---: | :---: | :---: | :---: | :--- |
-| 原文表 1 所列基准（Amazon 系多模态基准） | 原文未在正文文本中给出具体数值 | 原文未在正文文本中给出具体数值 | 原文未在正文文本中给出具体数值 | 原文未报告 | 视觉 + 文本双模态，40% 缺失率，分 $n_{\text{full}}$/$n_{v\text{-miss}}$/$n_{t\text{-miss}}$ 三类 |
+| Baby | 19,445 | 7,050 | 160,792 | 99.88% | 1,410 / 2,833 / 2,807 |
+| Sports | 35,598 | 18,357 | 296,337 | 99.95% | 3,672 / 7,403 / 7,282 |
+| Clothing | 39,387 | 23,033 | 278,677 | 99.97% | 4,607 / 9,251 / 9,175 |
 
-> 说明：受提取文本所限，表 1 的具体数值未在正文文本流中呈现，需以原文表 1 为准；此处不做任何数值臆造。
+- **数据划分与防穿越 (Splitting Strategy)**: **比例划分**，每个用户交互按 80% 训练 / 10% 验证 / 10% 测试；报告 5 个随机种子的均值与标准差。
+- **排名评测协议 (Ranking Protocol)**: 沿用 MIG-GT/MoDiCF 的评测方案，指标为 Recall@10/20 与 NDCG@10/20；补全类方法（Imputed、GRE-MC）统一挂 MIG-GT 作为推荐骨干以保证公平。
+- **对比基线与超参设置**: 基线分两类——通用多模态模型（BPR、LightGCN、SLMRec、FREEDOM、BM3、DRAGON、PGL、MIG-GT，缺失模态以零向量简单填补）与缺失模态感知模型（Imputed、MILK、MoDiCF）。隐层 $d=128$，锚点数$K\in\{5,10,20\}$，码本$C\in\{10,50,100\}$，$T=10$，LPE 维度$k=20$，$L=2$层 4 头，Top-$P=4$，$\tau=0.5$，$\lambda_{\text{usage}},\lambda_{\text{load}}\in\{0.5,1.0,2.0\}$；显著性以$p<0.05$ 标注。
 
-- **数据划分方式 (Splitting Strategy)**: 原文提取文本未明确说明采用 Leave-One-Out 还是 Ratio Split（**原文未报告**明确划分细节），亦未讨论时间戳切分；审稿视角需关注是否存在未来信息泄露风险。
-- **排名评测协议 (Ranking Protocol)**: 原文摘要与实验段落强调"consistently outperforms SOTA"，表 2 标题为推荐性能 (%)，但提取文本未明示 Full-Ranking 还是 Sampled Ranking（**原文未报告**明确候选集协议），需核对原文实验节。
-- **评价指标与显著性检验**: 表 2 报告推荐性能 (%)，并标注 **$*$ 表示 $p<0.05$ 的显著提升**（相对次优结果），说明作者做了统计显著性检验；具体指标名称（Recall@K / NDCG@K）在提取文本中未完整列出（原文未报告完整指标清单）。
-
-## Key Experimental Results (核心实验结果)
+## Key Experimental Results (实验关键数据)
 
 ### 1. 主实验对比 (Main Results)
 
-原文表 2 对比了多模态方法（MM.）与缺失模态感知方法（MA.），最优结果加粗，Improve 行为本文相对次优结果的相对提升 (%)：
+40% 缺失率下的推荐性能（%，节选核心指标）：
 
-<figure class="paper-figure" markdown="span">
-  ![表 2](../../../../assets/papers/2605.00670v1/table_2.png)<figcaption>表 2</figcaption>
-</figure>
+| 方法 | 类型 | Baby R@20 | Baby N@20 | Sports R@20 | Sports N@20 | Clothing R@20 | Clothing N@20 |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| BPR | 单模态 | 5.75 | 2.49 | 6.53 | 2.98 | 2.98 | 1.32 |
+| LightGCN | 单模态 | 7.54 | 3.28 | 8.64 | 3.87 | 4.49 | 2.05 |
+| SLMRec | 多模态 | 7.73 | 3.55 | 9.74 | 4.27 | 6.29 | 2.87 |
+| BM3 | 多模态 | 8.01 | 3.39 | 9.06 | 4.01 | 6.29 | 2.87 |
+| DRAGON | 多模态 | 8.70 | 3.75 | 9.34 | 4.24 | 6.58 | 3.00 |
+| MIG-GT | 多模态 | 8.65 | 3.74 | 9.57 | 4.27 | 6.64 | 2.99 |
+| Imputed | 缺失感知 | 8.29 | 3.58 | 9.68 | 4.37 | 6.08 | 3.01 |
+| MoDiCF | 缺失感知 | 8.76 | 3.78 | 9.83 | 4.42 | 6.86 | 3.04 |
+| **GRE-MC** | 缺失感知 | **9.21** | **4.03** | **10.28** | **4.63** | **7.15** | **3.21** |
+| **Improv.** | — | *+5.14% | *+6.61% | *+4.58% | *+4.75% | *+4.23% | *+5.59% |
 
-| 数据集 | 指标 | 传统/协同过滤基线 | 序列/图/多模态最强基线 | 本文方法 (Ours) | 相对提升 (Improv.) |
-| :--- | :--- | :---: | :---: | :---: | :---: |
-| 原文表 2 所列基准（40% 缺失率） | 推荐性能 (%)，含 $p<0.05$ 显著性标注 | BPR / LightGCN（单模态基线） | SLMRec / BM3 / Imputed 等（MM. 与 MA. 类） | **GRE-MC** | 原文表 2 Improve 行给出，具体数值需以原表为准 |
+（R@10 与 N@10 上提升更明显：Baby R@10 +5.99%、N@10 +7.12%，Clothing R@10 +4.42%、N@10 +4.00%，均带显著性标记。）
 
-> 说明：受提取文本所限，表 2 各单元格具体数值未在正文文本流中呈现，此处严格不臆造；结论层面原文明确"consistently outperforms state-of-the-art methods"且提升具统计显著性（$p<0.05$）。
+### 2. 消融实验 (Ablation Study)
 
-### 2. 消融实验与控制变量分析 (Ablation Study)
+| 配置 | Baby R@20 | Baby N@20 | Sports R@20 | Clothing R@20 | 说明 |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| GRE-MC (full) | **9.21** | **4.03** | **10.28** | **7.15** | 完整模型 |
+| w/o GR（去子图检索） | 降幅最大 | 降幅最大 | 降幅最大 | 降幅最大 | 退化为自信息/邻域补全 |
+| w/o GT（去图 Transformer） | 中等降幅 | 中等降幅 | 中等降幅 | 中等降幅 | 无法联合编码检索子图 |
+| w/o SRC（去稀疏码本） | 小幅降幅 | 小幅降幅 | 小幅降幅 | 小幅降幅 | 表征正则减弱 |
 
-原文摘要与引言强调两大核心组件（子图检索、联合编码图 Transformer）与稀疏路由码本的有效性，但提取文本中**未呈现完整消融表格数值**（原文未在提取文本中报告逐项消融降幅）。从设计逻辑看：子图检索贡献"语义相关上下文"、图 Transformer 贡献"跨非连通分量的长程编码"、码本贡献"表征正则化鲁棒性"，三者互补。是否严格控制参数量/图度数匹配需核对原文消融节。
+（原文图 5 以柱状图给出，此处按趋势归纳；检索方式对比见图 7：MAGE > ACS ≈ Steiner > Anchor-only。）
 
-### 3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets & Hyperparameters)
+### 3. 关键实验发现 (Key Findings)
 
-- **缺失率分桶**: 原文以 **40% 缺失率**为主设定，并区分缺视觉（$n_{v\text{-miss}}$）与缺文本（$n_{t\text{-miss}}$）两类场景；不同缺失率下的分桶曲线在提取文本中未完整呈现（原文未报告完整分桶数值）。
-- **关键超参数敏感度**: 涉及锚点数量 TopK、MAGE 迭代轮数 $T$、Laplacian PE 维数 $k$、Transformer 层数 $L$；提取文本未给出敏感度曲线（原文未报告具体取值与趋势）。
-- **线上 A/B 测试结果**: 原文仅包含离线实验，**无线上 A/B 测试**。
+1. **检索模块是收益主引擎，而非编码器**：去掉 GR 的降幅显著大于去掉 GT 与 SRC，说明在 40% 缺失下"上下文从哪来"比"怎么编码"更关键；这与图 3/图 9 中检索子图相关性系统性高于邻域的证据一致。
+2. **锚点数与码本大小均呈倒 U 型**：Baby 上 $K$从 5 增至 10 时 R@20 由 9.08 升至 9.21，继续增至 20 反降至 9.16；码本$C=50$优于$C=10$与$C=100$（如 Clothing R@20 在$K=10$ 时 7.15 vs 7.11 vs 7.10），印证"过多锚点引入噪声、过大码本稀释原型"的判断。
+3. **鲁棒性与效率双赢**：缺失率从 10% 扫到 40%，GRE-MC 在三个数据集的 N@20 上始终高于 MoDiCF（图 8）；同时总运行时间 Baby 1,102s vs MoDiCF 16,184s、Clothing 2,778s vs 20,473s，检索阶段仅占 2%–6%，说明 $O(|E|)$ 的最坏 BFS 开销在真实图上不构成瓶颈。
 
-## Highlights, Limitations & Critiques (亮点、局限与审稿级批判)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
-- **核心亮点与可迁移性**:
-  1. **"检索替代邻域聚合"的范式**具有强普适性——凡是在图上有缺失信号需要补全/增强的任务（冷启动物品表征、跨域对齐、KG 补全）都可复用"语义锚点检索 + 连通子图扩张"的算子。
-  2. **图 Transformer + Laplacian PE 处理非连通检索子图**的设计，解决了"检索结果与查询节点无直接边"这一检索增强 GNN 的共性难题，可迁移到 RAG-style 图检索推荐。
-  3. **补全作为预处理层**与下游模型解耦，工程落地友好，无需改动 LightGCN/SLMRec/BM3 等既有架构。
-- **局限性与审稿视角批判 (Critical Limitations)**:
-  1. **评估协议透明度不足**：提取文本未明确数据划分（LOO vs. Ratio）与候选集打分协议（Full-Ranking vs. Sampled），这是多模态推荐论文可比性的关键，审稿中应要求补充。
-  2. **检索开销与可扩展性**：锚点 KNN + 多源 BFS + 最多 $T$ 轮贪心 MAGE 的离线成本随图规模增长，原文未报告耗时/显存，工业级百万物品图的可行性存疑。
-  3. **码本模块描述偏简**：稀疏路由码本的路由公式、码本大小、稀疏约束与损失权重未在正文完整展开，复现难度较高。
-  4. **缺失率单一**：主实验聚焦 40% 缺失率，缺少 10%/20%/60% 等梯度缺失率的鲁棒性曲线，难以判断方法在极端缺失下的退化边界。
-  5. **无开源代码**，且无线上验证，工业落地价值需打折评估。
+- **与代表作对比 (vs. Prior Work)**: 与 MoDiCF 的本质区别在于上下文来源——MoDiCF 走实例内跨模态条件生成（扩散式），GRE-MC 走跨实例的语义检索 + 结构连通；与 Imputed 的区别在于把"固定 $K_N$ 跳邻域"换成"以相关性为目标的可增可删子图"，从而摆脱邻居质量假设。相较二者，GRE-MC 还额外获得 7–15 倍的端到端加速。
+- **可迁移亮点**: (1) "锚点检索 + 多源 BFS 连通 + 相关性贪心增删"这套子图构造可直接迁移到冷启动物品的内容补全、跨域对齐中的桥接样本挖掘；(2) 用 Gumbel-Softmax 稀疏路由码本 + 使用率/负载双正则约束隐表征，可作为通用的表征正则插件挂到其他生成式或对比式推荐模型上。
+- **审稿级局限批判**: (1) 缺失模拟是**完全随机掩码**，未考虑真实场景中缺失与流行度/类目强相关的非随机机制（MNAR），鲁棒性结论可能偏乐观；(2) 补全质量仅通过下游 Recall/NDCG 间接评估，缺少重建特征本身的保真度指标（如缺失模态上的余弦相似度或 FID），且 MAGE 的贪心增删在高度数节点上仍可能触发较大的 BFS 前沿，论文仅以"实测最大度远小于 $|V|$"一笔带过。
 
 ## Rating (四维评分)
 
-- **方法创新性 (Novelty)**: ⭐⭐⭐⭐（"图检索增强模态补全"切入角度新颖，检索+图 Transformer+码本组合有巧思）
-- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐（有 $p<0.05$ 显著性检验，但划分/候选集协议与消融细节披露不足）
-- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐（公式与算法流程清晰，码本部分略简）
-- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐（预处理解耦设计利于落地，但无开源代码、检索开销未量化）
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （把 IR 的子图检索范式引入模态补全，并用图 Transformer 绕开不连通障碍，思路清晰但各组件均为已有技术的组合）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 + 11 个基线 + 5 次随机种子 + 显著性检验 + 缺失率扫描较完整，扣分在随机掩码假设与缺少补全保真度指标）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （MAGE 与 ACS 均给出完整伪代码与复杂度上界，公式定义紧凑；但部分符号如 $\tilde{\mathbf{x}}$、$\bar{\hat{g}}_e$ 的维度说明略简）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （作为即插即用前置模块无需改下游架构，实测比 MoDiCF 快一个数量级；但未开源，且码本与锚点数需逐数据集调参）
+

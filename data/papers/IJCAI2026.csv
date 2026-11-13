@@ -1,0 +1,5 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+DaV-Gen: End-to-End Generative Retrieval via Draft-and-Verify,2607.08365,https://arxiv.org/abs/2607.08365,,generative_rec,IJCAI,2026
+Rethinking Convolutional Networks for Attribute-Aware Sequential Recommendation,2605.04723,https://arxiv.org/abs/2605.04723,https://github.com/ismll-research/ConvRec,sequential_rec,IJCAI,2026
+PACE: A Personalized Adaptive Curriculum Engine for 9-1-1 Call-taker Training,2603.05361,https://arxiv.org/abs/2603.05361,,rl_bandit_rec,IJCAI,2026
+A Survey of Personalized Federated Foundation Models for Privacy-Preserving Recommendation,2506.11563,https://arxiv.org/abs/2506.11563,,debias_fairness_industrial,IJCAI,2026

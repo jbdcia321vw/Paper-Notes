@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-离线阶段：对每个物品，将元数据（名称/品牌/日期/特性/价格/评分/描述）填入固定 prompt，调用 LLM 生成原型文本 $A_i$；在同一次自回归前向中，prefill 阶段隐状态 $\mathbf{H}^{\text{prefill}}_i$ 与 decoding 阶段隐状态 $\mathbf{H}^{\text{decoding}}_i$ 分别沿 token 维均值池化，各经 PCA 保留 95% 方差后拼接为 $\mathbf{E}_i$，冻结后由可训练 MLP 投影器 $p_\theta$ 映射到推荐隐空间得 $e_i$。在线阶段：$e_i$ 直接替换骨干的 ID 嵌入表，序列建模与点积打分完全不变，LLM 调用全部离线缓存。
+离线阶段：对每个物品，将元数据（名称/品牌/日期/特性/价格/评分/描述）填入固定 prompt，调用 LLM 生成原型文本 $A_i$；在同一次自回归前向中，prefill 阶段隐状态$\mathbf{H}^{\text{prefill}}_i$与 decoding 阶段隐状态$\mathbf{H}^{\text{decoding}}_i$分别沿 token 维均值池化，各经 PCA 保留 95% 方差后拼接为$\mathbf{E}_i$，冻结后由可训练 MLP 投影器$p_\theta$映射到推荐隐空间得$e_i$。在线阶段：$e_i$ 直接替换骨干的 ID 嵌入表，序列建模与点积打分完全不变，LLM 调用全部离线缓存。
 
 ```mermaid
 flowchart TD
@@ -61,15 +61,15 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **双视角原型嵌入（Prefill + Decoding 拼接）**：痛点是把 LLM 当静态编码器只取一次池化，丢失"人群推断"这一生成侧信息。做法是在**同一次前向**里分别池化 prefill 与 decoding 隐状态：$\mathbf{E}^{\text{prefill}}_i=\frac{1}{n_p}\sum_j \mathbf{H}^{\text{prefill}}_{i,[j,:]}$，$\mathbf{E}^{\text{decoding}}_i=\frac{1}{n_d}\sum_j \mathbf{H}^{\text{decoding}}_{i,[j,:]}$，再 $\mathbf{E}_i=\text{Concat}(\hat{\mathbf{E}}^{\text{prefill}}_i,\hat{\mathbf{E}}^{\text{decoding}}_i)$。直觉：前者编码"物品是什么"，后者编码"谁会买"，t-SNE 显示二者天然分离、互补（图 2），且单次前向即得两份嵌入，无额外 LLM 调用。
+1. **双视角原型嵌入（Prefill + Decoding 拼接）**：痛点是把 LLM 当静态编码器只取一次池化，丢失"人群推断"这一生成侧信息。做法是在**同一次前向**里分别池化 prefill 与 decoding 隐状态：$\mathbf{E}^{\text{prefill}}_i=\frac{1}{n_p}\sum_j \mathbf{H}^{\text{prefill}}_{i,[j,:]}$，$\mathbf{E}^{\text{decoding}}_i=\frac{1}{n_d}\sum_j \mathbf{H}^{\text{decoding}}_{i,[j,:]}$，再$\mathbf{E}_i=\text{Concat}(\hat{\mathbf{E}}^{\text{prefill}}_i,\hat{\mathbf{E}}^{\text{decoding}}_i)$。直觉：前者编码"物品是什么"，后者编码"谁会买"，t-SNE 显示二者天然分离、互补（图 2），且单次前向即得两份嵌入，无额外 LLM 调用。
 
-2. **关联分数调制的行为校准（Behavioral Calibration）**：痛点是标准 uniformity 目标假设所有物品应被等力推开，与真实偏好结构冲突。本文先由共现计数定义对数归一化关联分数 $S(i,j)=\log(1+C(i,j))/\log(1+C(i,j)_{\max})$，再构造指数衰减调节子 $w(i,j)=\exp(-\gamma S(i,j))$，将其乘入高斯核：
+2. **关联分数调制的行为校准（Behavioral Calibration）**：痛点是标准 uniformity 目标假设所有物品应被等力推开，与真实偏好结构冲突。本文先由共现计数定义对数归一化关联分数 $S(i,j)=\log(1+C(i,j))/\log(1+C(i,j)_{\max})$，再构造指数衰减调节子$w(i,j)=\exp(-\gamma S(i,j))$，将其乘入高斯核：
 
 $$K_t(i,j)=w(i,j)\exp(-t\|e_i-e_j\|_2^2)=\exp\big(-\gamma S(i,j)+\beta e_i^\top e_j\big),\quad \beta=2t$$
 
-损失为 $\mathcal{L}_{\text{cal}}=\mathbb{E}_{(e_i,e_j)\sim p_{\text{data}}}[K_t(i,j)]$。梯度 $\frac{\partial \mathcal{L}_{\text{cal}}}{\partial e_i}=\frac{\beta}{|\mathcal{B}|}\sum_j w(i,j)\exp(\beta e_i^\top e_j)e_j$ 表明：共现越强的物品对排斥力被压得越小，共现弱的对被推得更远——用"差异化排斥"隐式实现行为校准，且改写后直接对齐推荐系统惯用的内积相似度。
+损失为 $\mathcal{L}_{\text{cal}}=\mathbb{E}_{(e_i,e_j)\sim p_{\text{data}}}[K_t(i,j)]$。梯度$\frac{\partial \mathcal{L}_{\text{cal}}}{\partial e_i}=\frac{\beta}{|\mathcal{B}|}\sum_j w(i,j)\exp(\beta e_i^\top e_j)e_j$ 表明：共现越强的物品对排斥力被压得越小，共现弱的对被推得更远——用"差异化排斥"隐式实现行为校准，且改写后直接对齐推荐系统惯用的内积相似度。
 
-3. **训练目标、负采样与推理效率**：总损失 $\mathcal{L}=\mathcal{L}_{\text{rank}}+\alpha\mathcal{L}_{\text{cal}}$，其中 $\mathcal{L}_{\text{rank}}$ 为逐位置 BPR 式 pairwise 损失（正样本为下一真实交互，负样本为**采样负例**，非全库）。物品嵌入离线预计算并缓存，推理阶段无 LLM 调用；可训练参数 5.95M（SASRec 为 5.72M），推理 GFLOPs 0.22，与 SASRec 持平。
+3. **训练目标、负采样与推理效率**：总损失 $\mathcal{L}=\mathcal{L}_{\text{rank}}+\alpha\mathcal{L}_{\text{cal}}$，其中$\mathcal{L}_{\text{rank}}$ 为逐位置 BPR 式 pairwise 损失（正样本为下一真实交互，负样本为**采样负例**，非全库）。物品嵌入离线预计算并缓存，推理阶段无 LLM 调用；可训练参数 5.95M（SASRec 为 5.72M），推理 GFLOPs 0.22，与 SASRec 持平。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -122,10 +122,15 @@ Fashion 数据集，逐组件移除：
 2. **语义与行为缺一不可，且二者非冗余**：单独去掉 prefill 或 decoding 嵌入在全部 6 个配置下均掉点，证明"物品是什么"与"谁会买"提供正交信息；这与图 2 中两类嵌入在 t-SNE 上天然分离的观察一致。
 3. **长尾表征塌缩被显著缓解，但热门组存在跷跷板效应**：图 5 显示 SASRec 的 bottom-20% 物品嵌入高度聚集，GenAIR 明显分散；矩阵熵度量下 GenAIR 在多数分组信息量更高，但在 top-20% 热门组其熵低于 SASRec——与 CITIES 的 see-saw 现象同源，说明语义增强对热门物品的边际价值有限。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 LLMEmb（微调 LLM 做推荐友好化，26.99M 可训练参数），GenAIR 冻结 LLM 仅训 5.95M 投影器，参数少 4.5 倍且推理 GFLOPs 从 3.34（LLM-ESR）降到 0.22；相比 RLMRec（把语义嵌入当辅助对齐目标、常弱于骨干基线），GenAIR 直接把语义嵌入**替换** ID 嵌入表，语义成为主表征而非旁路监督；相比 AlphaFuse（在语义零空间内优化 ID 嵌入），GenAIR 反向——以语义为主、行为校准为辅。
 - **可迁移亮点**: ① "同一次前向取 prefill+decoding 双隐状态"是零成本获取"事实+推断"双视角表征的通用技巧，可迁移到任何 LLM 特征抽取场景；② 用共现统计构造 $w(i,j)=\exp(-\gamma S(i,j))$ 调制对比学习排斥力，可无缝替换 SGL/SimGCL 中的均匀温度核，用于图对比推荐。
 - **审稿级局限批判**: ① 原型生成质量完全依赖 LLM 对元数据的常识推理，元数据字段缺失（如 Fashion 之外的品类）时鲁棒性未验证，且 prompt 模板单一、未做敏感性分析；② 行为校准的共现统计 $C(i,j)$ 在全局日志上计算，对时序漂移与曝光偏差无任何校正，热门物品对被系统性压低排斥力，可能放大流行度偏置（与 top-20% 组熵下降互为印证）；③ 主实验仅报告 HR@10/NDCG@10，缺少更低截断（@5）与冷启动分桶的细粒度验证。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

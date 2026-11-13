@@ -60,11 +60,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **全实体画像生成（Entity Profile Generation）**：痛点在于用户信息隐私缺失、LLM 无用户侧信号。做法是自底向上流水线：物品画像 $p_v=\mathrm{LLM}(I_v, D_v, R_v)$ 融合 1-hop/2-hop 模板化事实与采样评论；辅助实体画像 $p_e=\mathrm{LLM}(I_e, P_e)$ 以关联物品画像为输入；用户画像 $p_u=\mathrm{LLM}(I_u, P_u, R_u)$ 用其交互物品画像+本人评论补全。直觉：先构建物品/实体语义上下文，才能反推用户偏好，且画像重点在「谁偏好它、为什么」而非复述事实。
+1. **全实体画像生成（Entity Profile Generation）**：痛点在于用户信息隐私缺失、LLM 无用户侧信号。做法是自底向上流水线：物品画像 $p_v=\mathrm{LLM}(I_v, D_v, R_v)$融合 1-hop/2-hop 模板化事实与采样评论；辅助实体画像$p_e=\mathrm{LLM}(I_e, P_e)$以关联物品画像为输入；用户画像$p_u=\mathrm{LLM}(I_u, P_u, R_u)$ 用其交互物品画像+本人评论补全。直觉：先构建物品/实体语义上下文，才能反推用户偏好，且画像重点在「谁偏好它、为什么」而非复述事实。
 
-2. **可逆加性注入的画像感知聚合（Profile-Aware KG Aggregation）**：痛点是如何在不破坏原图结构的前提下注入语义。先构造 $\mathbf{x}_e=\mathbf{x}_e+\lambda_p\cdot M(\mathbf{p}_e)$，邻居打分 $\phi(h,r,t)=\mathrm{Softmax}_{\mathcal{N}_h}\!\left[\frac{\mathbf{x}_h W_1\cdot(\mathbf{x}_t W_2\odot\mathbf{x}_r)^\top}{\sqrt{d}}\right]$，聚合后最终表征 $\mathbf{z}_e=\sum_{l=0}^{L}\mathbf{x}_e^{(l)}-\lambda_p\cdot M(\mathbf{p}_e)$。直觉：类似 ResNet 的「同号注入、反号减回」让聚合过程"触碰"语义画像却不改变 KG 空间几何；表 4 显示只有加性+逆操作（Add w/ inv）稳定有效，乘性逆操作因近零除法数值不稳而崩溃（R@10 仅 0.0397）。
+2. **可逆加性注入的画像感知聚合（Profile-Aware KG Aggregation）**：痛点是如何在不破坏原图结构的前提下注入语义。先构造 $\mathbf{x}_e=\mathbf{x}_e+\lambda_p\cdot M(\mathbf{p}_e)$，邻居打分$\phi(h,r,t)=\mathrm{Softmax}_{\mathcal{N}_h}\!\left[\frac{\mathbf{x}_h W_1\cdot(\mathbf{x}_t W_2\odot\mathbf{x}_r)^\top}{\sqrt{d}}\right]$，聚合后最终表征$\mathbf{z}_e=\sum_{l=0}^{L}\mathbf{x}_e^{(l)}-\lambda_p\cdot M(\mathbf{p}_e)$。直觉：类似 ResNet 的「同号注入、反号减回」让聚合过程"触碰"语义画像却不改变 KG 空间几何；表 4 显示只有加性+逆操作（Add w/ inv）稳定有效，乘性逆操作因近零除法数值不稳而崩溃（R@10 仅 0.0397）。
 
-3. **成对画像偏好匹配与训练目标**：痛点在于文本空间与图空间相似度结构不对齐。损失 $\mathcal{L}_{pair}=\frac{1}{R\cdot K^2}\sum_{r=1}^{R}\left\|\tilde{Z}_{kg}^{(r)}\tilde{Z}_{kg}^{(r)\top}-\tilde{Z}_{text}^{(r)}\tilde{Z}_{text}^{(r)\top}\right\|_F^2$，每轮按采样率 $q$ 无放回抽 $K=\lceil Nq\rceil$ 个实体以规避 $O(N^2)$ 开销。总损失 $\mathcal{L}=\mathcal{L}_{rec}+\lambda_{pair}\mathcal{L}_{pair}$，$\mathcal{L}_{rec}$ 为标准 BPR（均匀随机负采样）。推理零 LLM 开销，训练复杂度随实体数线性增长。
+3. **成对画像偏好匹配与训练目标**：痛点在于文本空间与图空间相似度结构不对齐。损失 $\mathcal{L}_{pair}=\frac{1}{R\cdot K^2}\sum_{r=1}^{R}\left\|\tilde{Z}_{kg}^{(r)}\tilde{Z}_{kg}^{(r)\top}-\tilde{Z}_{text}^{(r)}\tilde{Z}_{text}^{(r)\top}\right\|_F^2$，每轮按采样率$q$无放回抽$K=\lceil Nq\rceil$个实体以规避$O(N^2)$开销。总损失$\mathcal{L}=\mathcal{L}_{rec}+\lambda_{pair}\mathcal{L}_{pair}$，$\mathcal{L}_{rec}$ 为标准 BPR（均匀随机负采样）。推理零 LLM 开销，训练复杂度随实体数线性增长。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -78,7 +78,7 @@ flowchart TD
 
 - **数据划分与防穿越 (Splitting Strategy)**: 遵循 SSLRec 统一评测库与 [6,28,51] 的设置（正文未展开细节，详见附录 A）。
 - **排名评测协议 (Ranking Protocol)**: 采用 `Full-Ranking` 全库未交互物品排序，指标为 Recall@K 与 NDCG@K，$K\in\{10,20,40\}$。
-- **对比基线与超参设置**: 8 个 SOTA 基线，分两类——非画像类（BPR-MF、LightGCN、SGL、LightGCL）与画像类（KGRec、DiffKG、RLMRec、CoLaKG）。超参：$\lambda_p\in[0.25,0.5]$、KG 层数 $L=2$（更深则过平滑）、采样率 $q=0.1$（成本随 $q$ 二次增长）。
+- **对比基线与超参设置**: 8 个 SOTA 基线，分两类——非画像类（BPR-MF、LightGCN、SGL、LightGCL）与画像类（KGRec、DiffKG、RLMRec、CoLaKG）。超参：$\lambda_p\in[0.25,0.5]$、KG 层数$L=2$（更深则过平滑）、采样率$q=0.1$（成本随$q$ 二次增长）。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -115,10 +115,15 @@ flowchart TD
 2. **辅助实体画像是被低估的增益源**：SPiKE-e 在 Books 上 N@20 掉 6.2%（0.1335→0.1252），降幅大于去物品画像（SPiKE-i 几乎无损，因物品信息已在元数据中），印证「属性级偏好」主要靠辅助实体承载，物品画像更多是构建用户/实体画像的中间件。
 3. **稀疏场景优势放大**：图密度实验中交互比例 10% 时 SPiKE 相对 KGRec 的 Recall@40 领先约 +39%、NDCG@40 约 +37%，随交互比例升至 90% 仍保持领先，说明语义画像在结构信号稀缺时提供了关键的补充引导；案例研究亦显示 SPiKE 能召回 4-hop 外、KGRec 结构上不可达的物品（相似度 0.3105 vs 0.1877）。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 KGRec（纯结构传播、偏好隐式、受图不完整限制），SPiKE 注入显式语义画像；相比 RLMRec（LLM 画像仅停留在自身、无传播），SPiKE 借 KG 把画像影响扩展到全局；相比 CoLaKG（画像局限局部 user-item 子图、图越大越退化），SPiKE 将画像推广到全实体并全局传播，是三者中唯一在三个数据集上一致领先的方法。
 - **可迁移亮点**: ①「加性注入—聚合后减回」的可逆融合范式可迁移到任何需要向 GNN 注入外部语义而不污染原表征空间的场景；② 用采样后的 Gram 矩阵 Frobenius 距离做跨空间结构对齐，比逐对对比学习更省算力且免负采样。
 - **审稿级局限批判**: ① 画像质量强依赖 LLM 与评论/元数据可得性，冷启动新物品若无评论则画像退化，且 GPT-4o 与 Qwen3-4B 间已有可见差距（R@10 0.1518 vs 0.1508），成本-效果权衡未充分讨论；② Yelp 上 NDCG@20 反被 CoLaKG 反超（0.0633 vs 0.0640），说明弱结构 KG 下画像传播收益有限，方法对 KG 质量敏感；③ 画像生成是一次性离线预计算，实体/评论更新后需重跑，动态场景维护成本未评估。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-给定用户历史，模型在约束束搜索（rollout 束宽 $G=16$）下生成候选集 $\mathcal{G}$；同一候选集同时服务三条通路：用累积 logit 强度构造不确定性加权奖励并经 GRPO 组内归一化得优势 $\hat{A}_{i,t}$；用真值在候选中的排名构造实例难度权重 $\lambda_{\text{diff}}$ 调制主损失；用 SID 前缀层级构造"部分正确/完全错误"负样本对，对置信度 token 做成对排序对齐。两损失直接相加联合反传，共享参数同步更新生成能力与风险感知。
+给定用户历史，模型在约束束搜索（rollout 束宽 $G=16$）下生成候选集$\mathcal{G}$；同一候选集同时服务三条通路：用累积 logit 强度构造不确定性加权奖励并经 GRPO 组内归一化得优势$\hat{A}_{i,t}$；用真值在候选中的排名构造实例难度权重$\lambda_{\text{diff}}$ 调制主损失；用 SID 前缀层级构造"部分正确/完全错误"负样本对，对置信度 token 做成对排序对齐。两损失直接相加联合反传，共享参数同步更新生成能力与风险感知。
 
 ```mermaid
 flowchart TD
@@ -62,13 +62,13 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **不确定性加权奖励 (UW-Reward)**：痛点是从"位置感知"到"分布感知"的跨越——排名奖励对所有同排名错误同罚，抹平概率景观。UGR 以序列累积 logit 强度 $s(y)=\sum_t \log P(y_t|y_{<t},x)$ 构造连续奖励，对错误集 $\mathcal{N}$ 做 softmax 归一化惩罚：
+1. **不确定性加权奖励 (UW-Reward)**：痛点是从"位置感知"到"分布感知"的跨越——排名奖励对所有同排名错误同罚，抹平概率景观。UGR 以序列累积 logit 强度 $s(y)=\sum_t \log P(y_t|y_{<t},x)$构造连续奖励，对错误集$\mathcal{N}$ 做 softmax 归一化惩罚：
 $$r(y_i)=\begin{cases}1.0, & y_i=y^*\\ -\dfrac{\exp(s(y_i))}{\sum_{y_j\in\mathcal{N}}\exp(s(y_j))}, & y_i\in\mathcal{N}\end{cases}$$
 直觉：模型越"确信地错"，负奖励幅度越大，从而把梯度预算从自信幻觉上撤走，保留对试探性错误的宽容度。
 
-2. **难度感知优化动态 (Difficulty-aware)**：痛点是样本间难度失衡导致候选坍缩。以真值在束内排名（未命中则取 $G-1$）作轻量难度代理，构造 $\lambda_{\text{diff}}(x)=\alpha+(1-\alpha)\cdot\frac{\text{rank}(y^*)}{G-1}$，并令 $\mathcal{L}_{\text{Main}}=\lambda_{\text{diff}}\cdot\mathcal{L}_{\text{GRPO}}$。$\alpha=0$ 时简单样本梯度被压至近零，迫使模型持续在困难样本上探索，抑制"过度自信陷阱"。
+2. **难度感知优化动态 (Difficulty-aware)**：痛点是样本间难度失衡导致候选坍缩。以真值在束内排名（未命中则取 $G-1$）作轻量难度代理，构造$\lambda_{\text{diff}}(x)=\alpha+(1-\alpha)\cdot\frac{\text{rank}(y^*)}{G-1}$，并令$\mathcal{L}_{\text{Main}}=\lambda_{\text{diff}}\cdot\mathcal{L}_{\text{GRPO}}$。$\alpha=0$ 时简单样本梯度被压至近零，迫使模型持续在困难样本上探索，抑制"过度自信陷阱"。
 
-3. **显式置信度对齐与总损失**：扩展词表加入 `[C_HIGH]/[C_LOW]`，用 Append-and-Query 前向得 $c(y)=\frac{P(\text{HIGH})}{P(\text{HIGH})+P(\text{LOW})}$；按 SID 前缀将负样本分为部分正确 $\mathcal{N}_{\text{partial}}$ 与完全错误 $\mathcal{N}_{\text{wrong}}$，以 logistic margin 排序损失对齐，且 $\gamma_2>\gamma_1$ 强制 $c(y^*)>c(y_{\text{partial}})>c(y_{\text{wrong}})$。总目标 $\mathcal{L}_{\text{Total}}=\frac{1}{|\mathcal{B}|}\sum_x(\mathcal{L}_{\text{Main}}+\mathcal{L}_{\text{Aux}})$，无需额外全局超参。训练负样本来自束搜索候选（非均匀采样），推理用 beam=10，开销与标准 GRPO 同阶。
+3. **显式置信度对齐与总损失**：扩展词表加入 `[C_HIGH]/[C_LOW]`，用 Append-and-Query 前向得 $c(y)=\frac{P(\text{HIGH})}{P(\text{HIGH})+P(\text{LOW})}$；按 SID 前缀将负样本分为部分正确$\mathcal{N}_{\text{partial}}$与完全错误$\mathcal{N}_{\text{wrong}}$，以 logistic margin 排序损失对齐，且$\gamma_2>\gamma_1$强制$c(y^*)>c(y_{\text{partial}})>c(y_{\text{wrong}})$。总目标$\mathcal{L}_{\text{Total}}=\frac{1}{|\mathcal{B}|}\sum_x(\mathcal{L}_{\text{Main}}+\mathcal{L}_{\text{Aux}})$，无需额外全局超参。训练负样本来自束搜索候选（非均匀采样），推理用 beam=10，开销与标准 GRPO 同阶。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -116,13 +116,18 @@ $$r(y_i)=\begin{cases}1.0, & y_i=y^*\\ -\dfrac{\exp(s(y_i))}{\sum_{y_j\in\mathca
 ### 3. 关键实验发现 (Key Findings)
 
 1. **标准偏好优化反而劣于 SFT**：Office 上 (b1) 0/1 奖励 HR@10 仅 0.1485、(b2) 排名奖励 0.1468，均低于 SFT 的 0.1563——证实"不确定性盲"下粗粒度奖励引入噪声信号；仅引入 UW-Reward (b3) 即回升至 0.1522，说明区分错误严重性是有效优化的前提。
-2. **难度感知是超越 SFT 的关键**：在 (b3) 基础上加难度权重 (c) 使 Office HR@10 升至 0.1579、Yelp 从 0.0424 跃至 0.0454；训练动态图（图 3/4）显示 $\alpha=1.0$ 均匀加权出现"先升后崩"且每次 rollout 有效候选数从 16 持续侵蚀至 13 左右，而 $\alpha=0$ 维持近饱和搜索空间，将多样性转化为 top-1 精度。
+2. **难度感知是超越 SFT 的关键**：在 (b3) 基础上加难度权重 (c) 使 Office HR@10 升至 0.1579、Yelp 从 0.0424 跃至 0.0454；训练动态图（图 3/4）显示 $\alpha=1.0$均匀加权出现"先升后崩"且每次 rollout 有效候选数从 16 持续侵蚀至 13 左右，而$\alpha=0$ 维持近饱和搜索空间，将多样性转化为 top-1 精度。
 3. **置信度对齐兼具正则与风控价值**：完整 UGR 在 Industrial 上 HR@10 达 0.1393（较 (c) +3.3%）；置信度重排使 Office NDCG@1 从 0.0904 升至 0.0933；用户级拒答在 50% 过滤率下 NDCG@10 单调上升，物品级截断同步提升 Precision，验证置信度是可靠的风险信号而非仅校准副产品。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相较 MiniOneRec/ReRe 的 GRPO 二元或排名奖励，UGR 将奖励从"位置感知"升级为"分布感知"；相较 FLAME 的逐步奖励塑形，UGR 不依赖过程标注而用 logit 强度自监督；相较通用 LLM 置信度校准工作（追求绝对校准），UGR 针对推荐稀疏性改用相对排序置信度，更契合任务本质。
 - **可迁移亮点**: ① "真值束内排名作难度代理"是零额外标注的通用样本重加权技巧，可迁移至任意 beam-rollout 的 RLHF 推荐；② 用 SID 前缀层级自动构造分级负样本对，可复用于任何树状语义 ID 的对比/对齐损失设计。
 - **审稿级局限批判**: ① 实验仅在中等规模三数据集、单一 Qwen3-8B 骨干上验证，8×A100 + 束搜索 rollout 的在线推理与训练成本未量化，工业落地存疑；② 置信度仅二值 token（HIGH/LOW），粒度较粗，且 $\gamma_1,\gamma_2$ 虽不敏感但仍需调参，缺少与 DPO 等其他对齐范式的对比验证。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

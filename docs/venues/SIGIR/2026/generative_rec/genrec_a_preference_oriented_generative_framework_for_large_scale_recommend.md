@@ -33,7 +33,7 @@ categories:
 ## Background & Motivation (背景与核心矛盾)
 
 - **主流范式**: 以 TIGER、LC-Rec、OneRec 为代表的生成式检索将召回重构为"用户历史 → 语义 ID 序列"的自回归 next-token prediction，用 RQ-VAE / RQ K-means 把物品量化成层级 SID。
-- **前人局限一（标签歧义）**: 工业系统采用分页请求，同一历史 $H$ 在一次请求内可能对应 $K$ 个正反馈物品，vanilla point-wise NTP 被迫在相同前缀上最大化 $\sum_k \log P_\theta(v^{(k)}|H)$，等价于拟合一个均匀混合分布，抬高梯度方差、稀释单项概率质量，直接损伤 top-$K$ 精度。
+- **前人局限一（标签歧义）**: 工业系统采用分页请求，同一历史 $H$在一次请求内可能对应$K$个正反馈物品，vanilla point-wise NTP 被迫在相同前缀上最大化$\sum_k \log P_\theta(v^{(k)}|H)$，等价于拟合一个均匀混合分布，抬高梯度方差、稀释单项概率质量，直接损伤 top-$K$ 精度。
 - **前人局限二（预填充开销）**: 三 token SID 使 prompt 中物品部分长度变为 3 倍，长行为序列在严格推理预算下不可承受。
 - **前人局限三（对齐脆弱）**: 直接用稀疏点击信号做 RL 对齐，策略易生成"语法合法但语义无关"的 SID 组合骗取奖励模型高分（reward hacking）。
 - **核心洞察**: 训练与推理的监督粒度本可以解耦——训练用整页列表提供稠密梯度，推理仍走 point-wise beam search 以兼容线上管线；同时 SID 三元组源自同一物品，其嵌入可无损线性压缩。
@@ -43,7 +43,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-物品先经 Qwen2.5-VL 多模态编码 + 协同对微调，再用 RQ K-means 离散为三元组 SID $\{s^1_i,s^2_i,s^3_i\}$。用户历史拼成复合 prompt $S_u=[\mathrm{SID}(v):v\in H]\succ$，预填充阶段每个物品的三个 SID 嵌入经线性 Token Merger 压成单一隐向量 $h_{v_i}$，特殊符 `<sep>` 不压缩；解码阶段仍按原始 SID token 逐位生成，保证细粒度检索。SFT 阶段以整页交互列表 $Y_{\text{page}}=[\mathrm{SID}(v):v\in O\cup C\cup E]\succ$ 为监督目标；随后进入 GRPO-SR 强化学习阶段，按 point-wise beam search 协议 rollout 单条候选，用混合奖励与 NLL 正则对齐用户满意度。
+物品先经 Qwen2.5-VL 多模态编码 + 协同对微调，再用 RQ K-means 离散为三元组 SID $\{s^1_i,s^2_i,s^3_i\}$。用户历史拼成复合 prompt$S_u=[\mathrm{SID}(v):v\in H]\succ$，预填充阶段每个物品的三个 SID 嵌入经线性 Token Merger 压成单一隐向量$h_{v_i}$，特殊符 `<sep>` 不压缩；解码阶段仍按原始 SID token 逐位生成，保证细粒度检索。SFT 阶段以整页交互列表$Y_{\text{page}}=[\mathrm{SID}(v):v\in O\cup C\cup E]\succ$ 为监督目标；随后进入 GRPO-SR 强化学习阶段，按 point-wise beam search 协议 rollout 单条候选，用混合奖励与 NLL 正则对齐用户满意度。
 
 ```mermaid
 flowchart TD
@@ -70,7 +70,7 @@ $$\mathcal{L}_{\text{SFT}}=-\sum_{t=1}^{|Y_{\text{page}}|}\log P_\theta(y_t\mid 
 $$h_{v_i}=\mathrm{Linear}\big(\mathrm{Concat}(e(s^1_i),e(s^2_i),e(s^3_i))\big)$$
 仅作用于预填充侧，解码侧保持未合并的原始 SID 序列，从而在不牺牲生成分辨率的前提下把输入长度压到约一半。
 
-3. **GRPO-SR 与混合奖励（稳定偏好对齐）**：以 SIM 模型给出稠密偏好分 $r^{\text{pref}}_i\in[0,1]$，用相关性门控 $G_i=\mathbb{I}(s_i>\tau)$ 过滤语义无关的合法 SID 组合，得 $r_i=G_i\cdot r^{\text{pref}}_i$；再在 rollout 组内把真实正反馈物品 $D^+=O\cup C$ 的奖励锚定到组内最大值 $r_{\max}$ 以校正奖励模型低估。总目标为
+3. **GRPO-SR 与混合奖励（稳定偏好对齐）**：以 SIM 模型给出稠密偏好分 $r^{\text{pref}}_i\in[0,1]$，用相关性门控$G_i=\mathbb{I}(s_i>\tau)$过滤语义无关的合法 SID 组合，得$r_i=G_i\cdot r^{\text{pref}}_i$；再在 rollout 组内把真实正反馈物品$D^+=O\cup C$的奖励锚定到组内最大值$r_{\max}$ 以校正奖励模型低估。总目标为
 $$\mathcal{L}_{\text{GRPO-SR}}=-\mathbb{E}\Big[\tfrac{1}{G}\sum_i\tfrac{1}{|o_i|}\sum_t\tfrac{\pi_\theta}{\mathrm{sg}(\pi_\theta)}\hat{A}_{i,t}\Big]-\alpha\,\mathbb{E}_{v\sim D^+}\Big[\sum_t\log\pi_\theta(v_t\mid S_u,v_{<t})\Big]$$
 第二项 NLL 正则替代标准 KL 惩罚，把策略显式锚定在真实用户行为上，抑制过度优化。训练无需额外负采样，rollout 组内相对优势即隐式负信号。
 
@@ -118,10 +118,15 @@ $$\mathcal{L}_{\text{GRPO-SR}}=-\mathbb{E}\Big[\tfrac{1}{G}\sum_i\tfrac{1}{|o_i|
 4. **规模收益在 3B 处饱和**：1.5B→3B 提升明显（HR@10 0.4103→0.4456），3B→7B 仅 0.4456→0.4483，作者归因于 3B 更深（36 层/2048 维）比 7B 更宽（28 层/3584 维）更适合建模复杂用户-物品交互，呼应"容量密度"假说。
 5. **线上与长尾双赢**：一个月 A/B 中 SFT 版点击 +8.5%、成交 +7.3%，叠加 GRPO-SR 后达 +9.5% / +8.7%（$p<0.05$）；长尾物品曝光率 +10%、点击 +16%、成交 +13%，说明生成式范式对长尾扶持显著优于原多级管线。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比**: 相较 TIGER（RQ-VAE + point-wise NTP）与 LC-Rec（同骨干 vanilla NTP），本文本质差异在于把监督粒度从"单物品"提升到"整页列表"并显式处理分页机制带来的标签歧义；相较 OneRec 的迭代 RQ K-means 工程化路线，本文额外引入 RL 偏好对齐与预填充压缩，是"训练-推理非对称"的系统性设计。
 - **可迁移亮点**: ①"训练列表化 / 推理点式化"的解耦思路可迁移到任何受分页或批量曝光机制影响的生成式召回；②用 NLL 正则替代 KL 惩罚做策略锚定，在稀疏反馈场景下比 KL 更贴合真实行为分布。
 - **审稿级局限批判**: ①评估披露不足——未说明是 Full-Ranking 还是采样排序、负例比与物品库规模，跨论文可比性存疑；②RL 阶段依赖 SIM 奖励模型与门控阈值 $\tau$，对奖励模型偏差与超参敏感，且 7B 相对 3B 几乎无增益，规模律结论仅基于单一数据域，泛化性待验证。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

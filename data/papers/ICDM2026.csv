@@ -1,0 +1,11 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+AutoResearch at Production Scale: Failure Modes and a Multi-Agent Framework,2609.30541,https://arxiv.org/abs/2609.30541,,llm_rec,ICDM,2026
+Memory Has Geometry: Non-Uniform Geometric Memory for Long-Horizon Personalized AI,2609.17969,https://arxiv.org/abs/2609.17969,,llm_rec,ICDM,2026
+An Efficient and Effective Agentic Group Shilling Attack on Recommender Systems,2609.09551,https://arxiv.org/abs/2609.09551,https://github.com/phkhanhtrinh23/AGAS,debias_fairness_industrial,ICDM,2026
+HypRQ-VAE: Hyperbolic Item Indexing for Long-Tail-Aware Generative Recommender Systems,2609.03369,https://arxiv.org/abs/2609.03369,https://github.com/wulongfeng/HypRQ-VAE,generative_rec,ICDM,2026
+User Representation via Cross Multi-source Behavior Pre-training for Mobile Games,2609.01057,https://arxiv.org/abs/2609.01057,,sequential_rec,ICDM,2026
+"Explain, Then Forget: Recommendation Unlearning under Asymmetric Access Constraint",2610.40658,https://arxiv.org/abs/2610.40658,https://github.com/zhang-haichao/Explain-and-Forget,debias_fairness_industrial,ICDM,2026
+Controllable Generative Recommendation via Guided Token Refinement,2610.28642,https://arxiv.org/abs/2610.28642,https://github.com/zhang-haichao/ReGen,generative_rec,ICDM,2026
+Hierarchical Exponential-Gaussian Mixtures for Watch-Time Distribution Prediction,2608.23356,https://arxiv.org/abs/2608.23356,https://github.com/rw404/HEGM,sequential_rec,ICDM,2026
+Revisiting Self-Attentive Sequential Recommendation Beyond the LLM Paradigm,2504.09596,https://arxiv.org/abs/2504.09596,,sequential_rec,ICDM,2026
+Empowering Compact LLMs with Fusion of Layer-wise Exits for Recommendation,2608.17316,https://arxiv.org/abs/2608.17316,https://github.com/xurong-liang/FLEXRec,llm_rec,ICDM,2026

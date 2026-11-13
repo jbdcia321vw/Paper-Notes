@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入商品 $(v_i, x_i)$：冻结 CLIP 视觉/文本编码器分别得到视觉 token $H_{img}\in\mathbb{R}^{L_v\times d_v}$ 与元数据 token $H_{txt}$。混合查询连接器（HQC）产出两路 LLM 对齐的视觉 embedding——元数据锚定流 $E_v^{txt}$ 与探索性流 $E_v^{rnd}$；双门控向量调制（DGM）依据图文一致性与视觉可靠性对两流做通道级重标定；校准后的序列拼接后替换 prompt 中的 `<IMG>` 占位符注入 LLM（Qwen3-Embedding-0.6B，LoRA 微调），取 summary 位置隐状态经线性投影得 256 维 L2 归一化商品向量，以 InfoNCE 对比损失 + 冗余削减正则联合训练，线上以余弦相似度做全库 ANN 召回。
+输入商品 $(v_i, x_i)$：冻结 CLIP 视觉/文本编码器分别得到视觉 token$H_{img}\in\mathbb{R}^{L_v\times d_v}$与元数据 token$H_{txt}$。混合查询连接器（HQC）产出两路 LLM 对齐的视觉 embedding——元数据锚定流$E_v^{txt}$与探索性流$E_v^{rnd}$；双门控向量调制（DGM）依据图文一致性与视觉可靠性对两流做通道级重标定；校准后的序列拼接后替换 prompt 中的 `<IMG>` 占位符注入 LLM（Qwen3-Embedding-0.6B，LoRA 微调），取 summary 位置隐状态经线性投影得 256 维 L2 归一化商品向量，以 InfoNCE 对比损失 + 冗余削减正则联合训练，线上以余弦相似度做全库 ANN 召回。
 
 ```mermaid
 flowchart TD
@@ -55,11 +55,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **元数据锚定语义查询初始化（Hybrid-Query Connector）**：痛点是无先验可学习 query 在噪声图上注意力漂移。做法是用 1D 卷积对元数据 token 序列做确定性下采样压缩为 $T_g$ 个槽位，再线性投影成查询：$\tilde{H}_{txt}=\mathrm{Conv1D}(H_{txt};k{=}5,s{=}5),\ Q_{txt}=\tilde{H}_{txt}W_Q\in\mathbb{R}^{T_g\times d_q}$，与 $T_r{=}3$ 个随机初始化探索查询拼接 $Q_{in}=[Q_{txt};Q_{rnd}]$ 送入 Q-Former 式自注意力 + 对视觉 token 的交叉注意力。直觉：标题/类目是商家必须维护的稳定语义，把它「翻译」成 query 相当于给注意力一张商品身份的地图，贴片文字与装饰版式天然不落在该语义子空间内。
+1. **元数据锚定语义查询初始化（Hybrid-Query Connector）**：痛点是无先验可学习 query 在噪声图上注意力漂移。做法是用 1D 卷积对元数据 token 序列做确定性下采样压缩为 $T_g$个槽位，再线性投影成查询：$\tilde{H}_{txt}=\mathrm{Conv1D}(H_{txt};k{=}5,s{=}5),\ Q_{txt}=\tilde{H}_{txt}W_Q\in\mathbb{R}^{T_g\times d_q}$，与$T_r{=}3$个随机初始化探索查询拼接$Q_{in}=[Q_{txt};Q_{rnd}]$ 送入 Q-Former 式自注意力 + 对视觉 token 的交叉注意力。直觉：标题/类目是商家必须维护的稳定语义，把它「翻译」成 query 相当于给注意力一张商品身份的地图，贴片文字与装饰版式天然不落在该语义子空间内。
 
-2. **双门控向量调制（Dual-Gated Vector Modulation）**：痛点是不同商品的图文一致度与图像可靠度差异极大，标量门控无法「部分信任」。做法是以中心化 sigmoid 参数化通道级门 $\bm{\beta}=\mathrm{cSigmoid}(G(u))=2\sigma(G(u))-1\in(-1,1)^{d_{llm}}$，做残差重标定 $\tilde{E}=E\odot(1+\bm{\beta})$。语义流门输入为 $u_{txt}=[f_{img}^{global};f_{title}^{global};S_{title};\bar{e}_{txt};\bar{e}_{rnd}]$，其中 $S_{title}=\cos(f_{img}^{global},f_{title}^{global})$ 为图文一致性；探索流门输入为 $u_{rnd}=[f_{img}^{global};\bar{e}_{rnd}]$。直觉：图文一致时放大语义流、不一致时衰减；探索流仅凭图像自身信号判断可信度，避免在重贴片图上放大伪影通道，同时保留其余通道的细粒度外观信息。
+2. **双门控向量调制（Dual-Gated Vector Modulation）**：痛点是不同商品的图文一致度与图像可靠度差异极大，标量门控无法「部分信任」。做法是以中心化 sigmoid 参数化通道级门 $\boldsymbol{\beta}=\mathrm{cSigmoid}(G(u))=2\sigma(G(u))-1\in(-1,1)^{d_{llm}}$，做残差重标定$\tilde{E}=E\odot(1+\boldsymbol{\beta})$。语义流门输入为$u_{txt}=[f_{img}^{global};f_{title}^{global};S_{title};\bar{e}_{txt};\bar{e}_{rnd}]$，其中$S_{title}=\cos(f_{img}^{global},f_{title}^{global})$为图文一致性；探索流门输入为$u_{rnd}=[f_{img}^{global};\bar{e}_{rnd}]$。直觉：图文一致时放大语义流、不一致时衰减；探索流仅凭图像自身信号判断可信度，避免在重贴片图上放大伪影通道，同时保留其余通道的细粒度外观信息。
 
-3. **冗余削减正则与训练目标**：痛点是两流若编码同一子空间则解耦失效。做法是在 batch 内对两流池化向量逐维标准化后计算交叉相关矩阵 $C=\frac{1}{B}\hat{S}_{txt}^\top\hat{S}_{rnd}$，仅惩罚对角项 $\mathcal{L}_{rr}=\frac{1}{d_{llm}}\|diag(C)\|_2^2$，允许跨维交互。总损失 $\mathcal{L}=\mathcal{L}_{rec}+\lambda_{rr}\mathcal{L}_{rr}$，$\mathcal{L}_{rec}$ 为 InfoNCE（$\tau{=}0.07$，in-batch 负采样，无额外 hard negative 挖掘），$\lambda_{rr}{=}1$。推理侧仅需一次前向 + 向量检索，无自回归解码开销。
+3. **冗余削减正则与训练目标**：痛点是两流若编码同一子空间则解耦失效。做法是在 batch 内对两流池化向量逐维标准化后计算交叉相关矩阵 $C=\frac{1}{B}\hat{S}_{txt}^\top\hat{S}_{rnd}$，仅惩罚对角项$\mathcal{L}_{rr}=\frac{1}{d_{llm}}\|diag(C)\|_2^2$，允许跨维交互。总损失$\mathcal{L}=\mathcal{L}_{rec}+\lambda_{rr}\mathcal{L}_{rr}$，$\mathcal{L}_{rec}$为 InfoNCE（$\tau{=}0.07$，in-batch 负采样，无额外 hard negative 挖掘），$\lambda_{rr}{=}1$。推理侧仅需一次前向 + 向量检索，无自回归解码开销。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -108,10 +108,15 @@ flowchart TD
 2. **门控与正则增益递减但稳定，且在高噪声下价值放大**：双门控 +0.79、冗余削减 +0.23（H@100），在干净工业数据上幅度不大；但在 Amazon 渐进加噪实验中，Heavy 噪声下本文 H@50 为 68.33 而 NoteLLM-2 降至 67.55，且从 Clean 到 Heavy 本文仅掉 1.13 点、基线掉 1.86 点，说明可靠性校准的收益随噪声强度单调放大——这正是设计意图的定量印证。
 3. **embedding 专用小模型胜过更大生成式 LLM**：Qwen3-Embedding-0.6B（1024 隐维）在多数指标上超过 Qwen3-1.7B 与 Baichuan2-7B-Chat，提示 I2I 召回的表征质量更取决于 backbone 是否以相似度检索为目标训练，而非参数量；这对工业选型（延迟/成本约束下）具有直接指导意义。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 NoteLLM-2（BLIP-2 Q-Former + 检索定制），本文的核心差异是把 query 从「纯可学习」变为「元数据派生 + 随机探索」的双流结构，并引入样本级可靠性门控；相比 EM3/UniECS 的固定融合或门控融合，本文的门控是通道级、且分别以图文一致性和图像自信号为条件，实现「部分信任」而非整体加权；相比端到端 MLLM，本文以 1/8–1/20 算力取得更优召回。
 - **可迁移亮点**: (1) 用 1D 卷积把变长元数据确定性地压缩成固定数量 query 槽位的做法，可低成本迁移到任何「结构化 side info + query-based connector」场景；(2) 以 batch 内交叉相关矩阵对角项做流间去冗余的正则，是解耦多表征学习中极轻量的即插即用技巧。
 - **审稿级局限批判**: 其一，主实验完全依赖不可复现的工业私有数据，公开 Amazon 实验仅在附录且图像干净、增益微弱（Clean 下 H@50 仅 +0.05），外部有效性存疑；其二，门控依赖 CLIP 图文余弦一致性作为可靠性代理，当标题本身为堆砌关键词的 SEO 文本时该信号可能失真，论文未做该失效模式的压力测试；此外 $T_r{=}3$、$\lambda_{rr}{=}1$ 等超参的敏感性分析缺失。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

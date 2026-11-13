@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-run_pipeline.py (v3.5 支持 --all-venues 全量 22 会刊一键巡检 + 稀疏会刊自动补齐版)
+r"""
+run_pipeline.py (v3.6 全量 22 会刊异常隔离 + 坏笔记/旧笔记自动识别重刷版)
 一键串联论文笔记流水线：候选名单 -> LLM 分类 -> 生成笔记 -> 导航索引 -> 站点构建/链接检查。
 
-示例：
-  # 1. 一键巡检并补齐全部 22 个顶会与顶刊（已生成的笔记会自动秒跳过，仅抓取并生成新增论文！）
-  python scripts/run_pipeline.py --all-venues --year 2026 --build-list --use-dblp --profile quality --workers 4
+核心修复：
+  1. [P0-7 修复] 22 会刊主循环支持异常隔离（单个会刊子进程报错不会中断其余会刊与最终站点索引构建，并在末尾汇总失败会刊）。
+  2. [P2 修复] 启动时严格校验 `--venue` / `--venues` 参数合法性，统一全套脚本版本号为 v3.6，消除全部 Python 3.14 转义警告。
 
-  # 2. 针对此前为 0 篇或个位数的会刊专项补齐
-  python scripts/run_pipeline.py --venues RecSys,WSDM,ACM_MM,ECIR,SIGIR-AP,ICDE,ICDM,DASFAA,AAAI,IJCAI,ACL_EMNLP,ICLR_NeurIPS_ICML,TOIS,TKDE,TORS,TMM,TKDD,TWEB --year 2026 --build-list --use-dblp --profile quality --workers 4
+示例：
+  # 1. 零成本秒级修复现有 304 篇笔记的 \bm 红字、行内 $$ 与四维评分分行
+  python scripts/generate_recsys_notes.py --repair-existing
+
+  # 2. 自动重刷 SIGIR/RecSys 旧版/截断/缺章节笔记，并补齐 2026 年全部 22 个会刊
+  python scripts/run_pipeline.py --all-venues --year 2026 --build-list --use-dblp --repair-existing --only-legacy --profile quality --workers 4
+
+  # 3. 统一收集并生成 2025 年全部 22 个会刊
+  python scripts/run_pipeline.py --all-venues --year 2025 --build-list --use-dblp --profile quality --workers 4
 """
 
 import argparse
@@ -111,12 +118,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--venues", default="", help="批量巡检多个会刊（逗号分隔，如 SIGIR,RecSys,KDD,WWW,TOIS）")
     parser.add_argument("--all-venues", action="store_true", help="一键巡检全部 22 个推荐系统相关顶会与顶刊")
     parser.add_argument("--year", default="2026", help="目标年份（默认 2026）")
-    parser.add_argument("--min-venue-papers", type=int, default=18, help="开启 --supplement-prev-year 时，单会刊少于该篇数自动补充上一年份")
-    parser.add_argument("--supplement-prev-year", action="store_true", help="当目标年份论文不足时自动补充上一年份（默认关闭，严格只收 --year 当年）")
-    parser.add_argument("--strict-year", action="store_true", help="兼容参数：严格只收录 --year 当年论文（默认即开启）")
     parser.add_argument("--csv", default="", help="策展 CSV；默认 data/papers/<VENUE><YEAR>.csv")
     parser.add_argument("--profile", choices=sorted(PROFILES), default="balanced", help="成本/质量预设（默认 balanced，65k 输入 / 16k 输出）")
-    parser.add_argument("--limit", type=int, default=0, help="最多处理前 N 篇（0 表示全部）")
+    parser.add_argument("--limit", type=int, default=0, help="最多处理前 N 篇待生成论文（0 表示全部）")
     parser.add_argument("--workers", type=int, default=0, help="并发数；0 表示使用 profile 默认值")
     parser.add_argument("--retries", type=int, default=2, help="失败重试次数（默认 2）")
     parser.add_argument("--model", default="", help="覆盖模型名（默认 deepseek-flash）")
@@ -131,8 +135,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--skip-site", action="store_true", help="跳过 mkdocs build（CI 部署前使用）")
     parser.add_argument("--no-check-links", action="store_true", help="跳过站点本地链接检查")
     parser.add_argument("--overwrite", action="store_true", help="强制覆盖所有已存在的笔记")
-    parser.add_argument("--only-legacy", action="store_true", help="自动检测并仅重刷早期旧脚本生成的低质量/图片堆砌笔记，保留新版高质量笔记")
+    parser.add_argument("--only-legacy", action="store_true", help="自动检测并重刷早期旧脚本生成的低质量/图表堆砌/截断/缺章节笔记")
     parser.add_argument("--repair-existing", action="store_true", help="零 API 成本秒级修复全库现有笔记的 \\bm 公式报错、行内 $$ 与四维评分分行")
+    parser.add_argument("--fail-fast", action="store_true", help="单个会刊报错时立即终止整条流水线（默认隔离错误并继续执行其余会刊）")
     parser.add_argument("--no-figures", action="store_true", help="不提取图表")
     parser.add_argument("--translate-figures", action="store_true", help="强制用 LLM 翻译图注")
     parser.add_argument("--max-input-chars", type=int, default=None, help="覆盖送入 LLM 的最大字符数（0 表示不限制）")
@@ -148,7 +153,6 @@ def main() -> int:
     args = parser.parse_args()
     profile = PROFILES[args.profile]
     pipeline_start = time.monotonic()
-    log = None if args.dry_run else RunLog("pipeline")
 
     if args.all_venues:
         venue_list = list(VENUES.keys())
@@ -157,6 +161,12 @@ def main() -> int:
     else:
         venue_list = [args.venue]
 
+    # P2 修复：启动时预校验会刊名称合法性
+    invalid_venues = [v for v in venue_list if v not in VENUES]
+    if invalid_venues:
+        parser.error(f"未知会刊标识: {', '.join(invalid_venues)}。支持的 22 个会刊为: {', '.join(sorted(VENUES.keys()))}")
+
+    log = None if args.dry_run else RunLog("pipeline")
     if log:
         log.write(
             f"START profile={args.profile} venues={','.join(venue_list)} year={args.year} "
@@ -187,112 +197,123 @@ def main() -> int:
         print("[Warn] 未检测到 LLM_API_KEY / DEEPSEEK_API_KEY；需要 LLM 的步骤可能失败。")
 
     python = sys.executable
+    failed_steps = []
 
-    for v_key in venue_list:
-        csv_path = Path(args.csv) if (args.csv and len(venue_list) == 1) else REPO_ROOT / "data" / "papers" / f"{v_key}{args.year}.csv"
-        if not csv_path.is_absolute():
-            csv_path = (REPO_ROOT / csv_path).resolve()
-
-        if args.build_list:
-            cmd = [
-                python,
-                str(SCRIPT_DIR / "build_curated_list.py"),
-                "--venue",
-                v_key,
-                "--year",
-                args.year,
-                "--min-venue-papers",
-                str(args.min_venue_papers),
-                "--max-results",
-                str(args.build_list_max_results),
-                "--llm-workers",
-                str(workers),
-                "--llm-retries",
-                str(args.retries),
-                "--out",
-                str(csv_path),
-            ]
-            if args.supplement_prev_year and not args.strict_year:
-                cmd.append("--supplement-prev-year")
-            if args.use_dblp:
-                cmd.append("--use-dblp")
-            if args.build_list_no_llm:
-                cmd.append("--no-llm")
-            if args.model:
-                cmd += ["--llm-model", args.model]
-            run_command(cmd, args.dry_run, log=log, label=f"[{v_key}] 构建候选名单")
-
-        if args.classify:
-            if not csv_path.exists() and not args.dry_run:
-                print(f"[Warn] 策展 CSV 不存在，跳过分类: {csv_path}")
-                continue
-            cmd = [
-                python,
-                str(SCRIPT_DIR / "classify_curated_csv.py"),
-                "--csv",
-                str(csv_path),
-                "--workers",
-                str(workers),
-                "--retries",
-                str(args.retries),
-            ]
-            if args.limit:
-                cmd += ["--limit", str(args.limit)]
-            if not args.allow_classify_remove:
-                cmd.append("--no-remove")
-            if args.model:
-                cmd += ["--model", args.model]
-            run_command(cmd, args.dry_run, log=log, label=f"[{v_key}] LLM 分类复核")
-
-        if args.repair_existing and args.skip_generate:
+    if args.repair_existing and args.skip_generate:
+        try:
             run_command(
                 [python, str(SCRIPT_DIR / "generate_recsys_notes.py"), "--repair-existing"],
                 args.dry_run,
                 log=log,
                 label="秒级修复现有笔记公式与评分排版",
             )
-            args.repair_existing = False
-        if not args.skip_generate:
-            if not csv_path.exists() and not args.dry_run:
-                print(f"[Warn] 策展 CSV 不存在，跳过生成: {csv_path}")
-                continue
-            cmd = [
-                python,
-                str(SCRIPT_DIR / "generate_recsys_notes.py"),
-                "--papers-csv",
-                str(csv_path),
-                "--venue",
-                v_key,
-                "--year",
-                args.year,
-                "--workers",
-                str(workers),
-                "--retries",
-                str(args.retries),
-                "--max-input-chars",
-                str(max_input_chars),
-                "--max-output-tokens",
-                str(max_output_tokens),
-                "--max-figures",
-                str(max_figures),
-            ]
-            if args.limit:
-                cmd += ["--limit", str(args.limit)]
-            if args.overwrite:
-                cmd.append("--overwrite")
-            if args.only_legacy:
-                cmd.append("--only-legacy")
-            if args.repair_existing:
-                cmd.append("--repair-existing")
-            if args.no_figures:
-                cmd.append("--no-figures")
-            if not translate_figures:
-                cmd.append("--no-figure-translation")
-            if args.model:
-                cmd += ["--model", args.model]
-            if args.thinking:
-                cmd.append("--thinking")
-            run_command(cmd, args.dry_run, log=log, label=f"[{v_key}] 生成笔记")
+        except Exception as e:
+            failed_steps.append(("repair-existing", str(e)))
+            if args.fail_fast:
+                raise
+        args.repair_existing = False
+
+    for v_key in venue_list:
+        csv_path = Path(args.csv) if (args.csv and len(venue_list) == 1) else REPO_ROOT / "data" / "papers" / f"{v_key}{args.year}.csv"
+        if not csv_path.is_absolute():
+            csv_path = (REPO_ROOT / csv_path).resolve()
+
+        try:
+            if args.build_list:
+                cmd = [
+                    python,
+                    str(SCRIPT_DIR / "build_curated_list.py"),
+                    "--venue",
+                    v_key,
+                    "--year",
+                    args.year,
+                    "--max-results",
+                    str(args.build_list_max_results),
+                    "--llm-workers",
+                    str(workers),
+                    "--llm-retries",
+                    str(args.retries),
+                    "--out",
+                    str(csv_path),
+                ]
+                if args.use_dblp:
+                    cmd.append("--use-dblp")
+                if args.build_list_no_llm:
+                    cmd.append("--no-llm")
+                if args.model:
+                    cmd += ["--llm-model", args.model]
+                run_command(cmd, args.dry_run, log=log, label=f"[{v_key}] 构建候选名单")
+
+            if args.classify:
+                if not csv_path.exists() and not args.dry_run:
+                    print(f"[Warn] 策展 CSV 不存在，跳过分类: {csv_path}")
+                    continue
+                cmd = [
+                    python,
+                    str(SCRIPT_DIR / "classify_curated_csv.py"),
+                    "--csv",
+                    str(csv_path),
+                    "--workers",
+                    str(workers),
+                    "--retries",
+                    str(args.retries),
+                ]
+                if args.limit:
+                    cmd += ["--limit", str(args.limit)]
+                if not args.allow_classify_remove:
+                    cmd.append("--no-remove")
+                if args.model:
+                    cmd += ["--model", args.model]
+                run_command(cmd, args.dry_run, log=log, label=f"[{v_key}] LLM 分类复核")
+
+            if not args.skip_generate:
+                if not csv_path.exists() and not args.dry_run:
+                    print(f"[Warn] 策展 CSV 不存在，跳过生成: {csv_path}")
+                    continue
+                cmd = [
+                    python,
+                    str(SCRIPT_DIR / "generate_recsys_notes.py"),
+                    "--papers-csv",
+                    str(csv_path),
+                    "--venue",
+                    v_key,
+                    "--year",
+                    args.year,
+                    "--workers",
+                    str(workers),
+                    "--retries",
+                    str(args.retries),
+                    "--max-input-chars",
+                    str(max_input_chars),
+                    "--max-output-tokens",
+                    str(max_output_tokens),
+                    "--max-figures",
+                    str(max_figures),
+                ]
+                if args.limit:
+                    cmd += ["--limit", str(args.limit)]
+                if args.overwrite:
+                    cmd.append("--overwrite")
+                if args.only_legacy:
+                    cmd.append("--only-legacy")
+                if args.repair_existing:
+                    cmd.append("--repair-existing")
+                    # 仅在第一个会刊触发全库扫描修复一次即可
+                    args.repair_existing = False
+                if args.no_figures:
+                    cmd.append("--no-figures")
+                if not translate_figures:
+                    cmd.append("--no-figure-translation")
+                if args.model:
+                    cmd += ["--model", args.model]
+                if args.thinking:
+                    cmd.append("--thinking")
+                run_command(cmd, args.dry_run, log=log, label=f"[{v_key}] 生成笔记")
+        except Exception as e:
+            failed_steps.append((v_key, str(e)))
+            print(f"\n[Error] 会刊 [{v_key}] 执行出错，已隔离错误并继续后续会刊: {e}", flush=True)
+            if args.fail_fast:
+                raise
 
     run_command(
         [python, str(SCRIPT_DIR / "build_nav_and_index.py")],
@@ -318,12 +339,14 @@ def main() -> int:
 
     total_elapsed = time.monotonic() - pipeline_start
     print(f"\n[Time] 流水线总耗时 {format_duration(total_elapsed)}")
+    if failed_steps:
+        print(f"[Warn] 本次流水线共有 {len(failed_steps)} 个会刊/步骤出现异常：{', '.join(k for k, _ in failed_steps)}")
     if log:
         print(f"[Log] 流水线日志: {log.path}")
-        log.write(f"TOTAL elapsed={format_duration(total_elapsed)}")
+        log.write(f"TOTAL elapsed={format_duration(total_elapsed)} failed={len(failed_steps)}")
         log.close()
     print("\n[Done] 流水线执行完成。")
-    return 0
+    return 1 if failed_steps else 0
 
 
 if __name__ == "__main__":

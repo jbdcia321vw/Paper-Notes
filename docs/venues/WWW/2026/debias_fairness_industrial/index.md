@@ -1,17 +1,21 @@
 # 🛡️ 去偏公平、可信隐私与工业架构
 
-**WWW (TheWebConf) 2026** · **8** 篇论文解读
+**WWW (TheWebConf) 2026** · **10** 篇论文解读
 
 > **方向说明**：曝光/流行度/位置因果去偏 (Causal Rec)、双边公平性、联邦防投毒推荐、工业级全链路架构与评测基准
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (2)](../../../CIKM/2026/debias_fairness_industrial/) · [KDD 2026 (5)](../../../KDD/2026/debias_fairness_industrial/) · [RecSys 2026 (8)](../../../RecSys/2026/debias_fairness_industrial/) · [SIGIR 2026 (11)](../../../SIGIR/2026/debias_fairness_industrial/) · [ACM TOIS 2026 (1)](../../../TOIS/2026/debias_fairness_industrial/) · [ACM TORS 2026 (4)](../../../TORS/2026/debias_fairness_industrial/)
+📌 **同领域跨会议浏览：** [AAAI (RecSys Track) 2026 (7)](../../../AAAI/2026/debias_fairness_industrial/) · [ACM MM 2026 (1)](../../../ACM_MM/2026/debias_fairness_industrial/) · [CIKM 2026 (4)](../../../CIKM/2026/debias_fairness_industrial/) · [ECIR 2026 (2)](../../../ECIR/2026/debias_fairness_industrial/) · [ICDM 2026 (2)](../../../ICDM/2026/debias_fairness_industrial/) · [IJCAI (RecSys Track) 2026 (1)](../../../IJCAI/2026/debias_fairness_industrial/) · [KDD 2026 (7)](../../../KDD/2026/debias_fairness_industrial/) · [RecSys 2026 (14)](../../../RecSys/2026/debias_fairness_industrial/) · [SIGIR 2026 (13)](../../../SIGIR/2026/debias_fairness_industrial/) · [ACM TOIS 2026 (1)](../../../TOIS/2026/debias_fairness_industrial/) · [ACM TORS 2026 (2)](../../../TORS/2026/debias_fairness_industrial/)
 
-🔥 **高频主题：** WWW 2026 ×8 · 去偏公平与工业架构 ×4 · 召回 ×3 · 端到端生成式 ×2
+🔥 **高频主题：** WWW 2026 ×10 · 去偏公平与工业架构 ×6 · 召回 ×3 · 端到端生成式 ×2
 
 <dl>
 <dt><strong><a href="bridging_semantic_understanding_and_popularity_bias_with_llms/">Bridging Semantic Understanding and Popularity Bias with LLMs</a></strong></dt>
 <dd>
 <p>将流行度偏差拆解为物品侧与用户侧语义，用结构化指令提示引导 RecLLM 双侧去偏，在 LtC/MRMC 与 MRR/F1 上同时超越多样性提示基线。</p>
+</dd>
+<dt><strong><a href="fairfs_addressing_deep_feature_selection_biases_for_recommender_system/">FairFS: Addressing Deep Feature Selection Biases for Recommender System</a></strong></dt>
+<dd>
+<p>识别深度特征选择的三类偏差（层偏差/基线偏差/近似偏差），以平滑基线与聚合近似实现无偏特征重要性估计，AUC 提升最高 0.35%。</p>
 </dd>
 <dt><strong><a href="identifying_and_upweighting_power_niche_users_to_mitigate_popularity_bias_i/">Identifying and Upweighting Power-Niche Users to Mitigate Popularity Bias in Recommendations</a></strong></dt>
 <dd>
@@ -24,6 +28,10 @@
 <dt><strong><a href="mclmr_a_model_agnostic_causal_learning_framework_for_multi_behavior_recomme/">MCLMR: A Model-Agnostic Causal Learning Framework for Multi-Behavior Recommendation</a></strong></dt>
 <dd>
 <p>用后门干预+MoE自适应聚合+偏差感知对比学习，作为即插即用框架增强多行为推荐，三数据集全库排序显著提升。</p>
+</dd>
+<dt><strong><a href="modeling_endogenous_logic_causal_neuro_symbolic_reasoning_model_for_explain/">Modeling Endogenous Logic: Causal Neuro-Symbolic Reasoning Model for Explainable Multi-Behavior Recommendation</a></strong></dt>
+<dd>
+<p>用前门调整把多行为链内源逻辑做成可解释因果中介，三路神经逻辑推理在三个数据集 Full-Ranking 上 HR@10 提升 20%+。</p>
 </dd>
 <dt><strong><a href="prototype_aligned_federated_soft_prompts_for_continual_web_personalization/">Prototype-Aligned Federated Soft-Prompts for Continual Web Personalization</a></strong></dt>
 <dd>

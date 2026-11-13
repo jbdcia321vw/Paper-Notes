@@ -1,180 +1,133 @@
 ---
 title: "[Paper Note] Request-Only Optimization for Recommendation Systems"
-description: "[SIGIR 2026][去偏公平、可信隐私与工业架构] 以用户请求为训练样本单元，通过数据/系统/模型协同设计消除请求内特征冗余，训练吞吐提升最高570%，同等算力下模型FLOPs扩展7倍。"
+description: "[SIGIR 2026][生成式推荐与离散语义ID] 以用户请求为训练样本单元，在数据源头去重用户特征，实现训练吞吐 2-6 倍提升并支撑 HSTU 生成式推荐规模化落地。"
 tags:
   - SIGIR 2026
-  - 去偏公平、可信隐私与工业架构
-  - 召回/粗排/精排
-  - 请求级训练样本
-  - 特征去重与计算摊销
-date: 2026-11-12
+  - 生成式推荐与离散语义ID
+  - 端到端生成式
+  - Request-Only Optimization
+  - HSTU
+  - 特征去重
+date: 2026-11-13
 venue: SIGIR
 year: 2026
 paper_url: "https://arxiv.org/abs/2508.05640v3"
 code_url: ""
 categories:
   - generative_rec
-  - generative_rec
+  - debias_fairness_industrial
 ---
 
 # Request-Only Optimization for Recommendation Systems (面向推荐系统的仅请求级优化)
 
 - **会议/期刊**: SIGIR 2026
-- **推荐链路定位**: 召回 (Retrieval) / 粗排 (Early-Stage Ranking) / 精排 (Late-Stage Ranking) / 端到端生成式 (Generative Recommenders)
-- **研究方向**: 去偏公平、可信隐私与工业架构 / 生成式推荐与离散语义 ID
+- **作者与机构**: Liang Guo, Wei Li, Jiaqi Zhai 等，Meta Platforms, Inc.
+- **推荐链路定位**: 召回 / 粗排 / 精排（全链路训练范式）
+- **研究方向**: 生成式推荐与离散语义ID / 工业架构与系统
 - **论文原文**: [https://arxiv.org/abs/2508.05640v3](https://arxiv.org/abs/2508.05640v3)
 - **开源代码**: 暂未开源
 
-## TL;DR (核心速览)
+## TL;DR (1分钟核心速览)
 
-针对工业推荐系统"以曝光 (impression) 为训练样本单元"导致同一请求内用户特征被重复存储与重复计算的根因性低效，本文提出 Request-Only Optimization (ROO) 范式：将一次用户请求作为训练样本单元，把特征划分为仅请求级 (RO) 与曝光级 (NRO) 两部分，在数据格式、数据管道与模型架构三层协同设计。ROO 使同存储下训练样本量提升 43%–150%，召回/粗排训练吞吐最高提升 570%，精排提升 32%–100%，并借助计算摊销将 HSTU 生成式推荐模型 FLOPs 扩展 7 倍，在十亿用户级产品上取得显著离线与线上指标收益。
+工业 DLRM 长期以「单次曝光 (impression)」为训练样本单元，同一请求下 4–7 个曝光会重复存储与重复计算完全相同的用户侧长序列特征，成为存储、通信与 GPU 算力的主要浪费源。本文提出 Request-Only Optimization (ROO)：把一次用户请求作为训练样本单元，将特征拆为 RO（请求级，仅一份）与 NRO（曝光级，数组），在数据源头完成原生去重，并配套 UserArch 与 HSTU 序列架构。在 Meta 三个十亿用户产品上，同存储下样本量提升 43%–150%，召回/粗排训练吞吐提升 220%–570%，精排提升 32%–100%；同等算力下模型 FLOPs 扩大 7 倍，线上主消费指标最高 +4.77%。
 
-## Background & Motivation (背景与动机)
+## Background & Motivation (背景与核心矛盾)
 
-- **领域背景与主流范式**: 工业级 DLRM 以 PB 级数据训练、服务十亿级用户，单样本计算量已达 TFLOPs 量级。主流范式是"两阶段"数据管道：请求阶段下发多个候选内容形成多次曝光 (impression)，反馈阶段收集用户行为并与特征 join，**以单次曝光为训练样本单元**。为利用长用户历史，序列建模（Transformer/HSTU）被广泛采用，用户侧稀疏序列特征构成训练样本特征的绝大部分。
-- **现有方法局限 (Limitations of Prior Work)**:
-  1. **源头特征冗余**：一次请求平均产生 4–7 次曝光（图 2），曝光级 event-feature joiner（图 1b）会把完全相同的用户特征在每条曝光样本中重复存储，冗余沿存储、网络带宽、GPU 计算全链路级联放大。
-  2. **训练/推理栈割裂**：推理侧已有请求级优化（客户端广播 + 服务端去重）作为"wrapper"叠加在曝光级数据之上，增加系统复杂度却未触及训练侧根因。
-  3. **规模化瓶颈**：序列建模与生成式推荐 (GR) 依赖的恰是被冗余处理的用户序列特征，导致高复杂度架构在训练成本上不可行。
-- **核心挑战 (Key Challenge)**: 曝光级数据格式已深度嵌入客户端与服务端基础设施，且反馈阶段曝光事件是增量到达的，因此简单的"批内去重"或"加深网络"无法在数据生成源头消除冗余；必须从数据格式层面重构样本单元。
-- **核心洞察与切入点 (Key Insight)**: 同一请求内所有曝光共享同一份用户特征（RO 特征），因此用户塔/序列编码器的计算与通信可在请求级**精确摊销一次**。作者据此将计算与通信复杂度从 $O(B_{NRO})$ 降至 $O(B_{RO})$，并指出该摊销恰好为 HSTU 等重用户侧架构打开规模化空间。
+- **主流范式**: 工业 DLRM 采用「曝光阶段 → 反馈阶段」两段式流水线，在曝光级 event-feature joiner 处把用户特征与每个候选物品拼接成独立训练样本（图 1b）。
+- **前人局限**: 其一，同一请求内用户侧长序列特征被复制 4–7 份（图 2），违反数据库第二范式，存储、跨机通信与 embedding all-to-all 全部按 $B_{NRO}$ 规模膨胀；其二，推理侧虽已有 request-level 去重（You et al.），但仅作为推理包装层，训练与推理特征格式割裂，系统复杂度不降反升。
+- **核心洞察 (Key Insight)**: 用户特征在请求内严格等价，且在现代模型中占据特征空间绝大多数；因此用户塔计算与通信可完全摊薄到请求级，理论加速比恰为 $B_{NRO}/B_{RO}$（即每请求曝光数）。
+- **本文切入点**: 不做局部工程补丁，而是从数据 schema 根部重构——请求级样本 + RO/NRO 分离，使数据、系统、模型三层协同设计。
 
-## Problem Formulation & Method (问题定义与方法架构)
+## Method (核心方法设计)
 
-### 1. 符号定义与输入表征 (Notations & Input Representations)
+### 1. 整体框架 (Overall Architecture)
 
-- 用户集 $\mathcal{U}$、物品集 $\mathcal{I}$；一次请求 $r$ 对应 $m$ 个候选物品（曝光），批内请求数为 $B_{RO}$，批内曝光总数为 $B_{NRO}$，平均 $B_{NRO}/B_{RO}\approx 4\text{–}7$。
-- 特征被显式划分为两类：
-  - **RO (Request-Only) 特征**：用户稠密特征 `map<int,float>`、用户 ID-list 特征 `map<int,list<int>>`，每个请求仅存一份；
-  - **NRO (Non-Request-Only / 曝光级) 特征**：物品稠密特征 `map<int,list<float>>`、物品 ID-list 特征 `map<int,list<list<int>>`，沿候选维度展平。
-- 张量化：RO 用户浮点特征为 2D 张量，RO 用户 ID-list 为 PyTorch `KeyedJaggedTensor`；NRO 同理，并以 NRO 张量显式记录"每个 ROO 样本含多少曝光"以避免批大小对齐时的用户特征复制。
-- 序列建模记号：用户历史 $RO_0,\dots,RO_{n-1}$（$n$ 常达数千），请求内目标物品 $NRO_0,\dots,NRO_{m-1}$（$m$ 常为数十），每项附行为特征 $a$ 与上下文特征 $c$（surface type、时间戳等），嵌入维度 $d$（实验场景取 $d=256$）。
-
-### 2. 整体流水线 (Overall Architecture)
-
-数据流向：反馈阶段由 **request-level joiner** 按 request-id 缓冲用户-物品交互事件，join 窗口关闭后生成一条紧凑 ROO 样本（RO 部分一份用户特征 + NRO 部分物品特征数组）→ 以 feature flattening 列式格式落盘（提升压缩比）→ DPP worker 读入并转为 RO/NRO 两套张量 → 模型侧 RO 塔/序列编码器只对 $B_{RO}$ 个请求计算一次，结果 fanout 给该请求下所有曝光 → 与 NRO 物品表征交互后打分或自回归解码。
+ROO 将反馈阶段的 joiner 从曝光级改为请求级：以 request-id 为键缓冲同一请求内的全部交互事件，窗口关闭后生成一条紧凑样本——RO 部分仅存一份用户稠密特征与用户 ID-list 序列，NRO 部分存物品特征数组及每样本曝光计数。预处理阶段 RO 张量批大小为 $B_{RO}$、NRO 为$B_{NRO}$，借助 TorchRec 变长分片共享同一 embedding 表，避免为用户特征做批对齐复制。模型侧用户塔/序列编码器只对 RO 计算一次，结果 fanout 给该请求内所有候选；训练与推理共用同一输入格式，消除客户端广播与服务端去重逻辑。
 
 ```mermaid
 flowchart TD
-    A["反馈阶段: 曝光事件增量到达"] --> B["Request-level Joiner: 按 request-id 缓冲, 窗口关闭生成 ROO 样本"]
-    B --> C["列式存储: RO 特征一份 + NRO 物品特征数组"]
-    C --> D["DPP Worker: RO 2D 张量 / KeyedJaggedTensor, NRO 沿候选维展平"]
-    D --> E["RO 侧计算摊销: 用户塔 / UserArch / HSTU 序列编码器 (B_RO 次)"]
-    E --> F["NRO 侧: 物品表征与 RO 表征交互"]
-    F --> G["打分预测 (召回/粗排/精排) 或 自回归解码 (GR)"]
+    A["请求内多曝光事件流"] --> B["请求级 Joiner (按 request-id 缓冲)"]
+    B --> C["ROO 样本: RO 用户特征 x1 + NRO 物品数组"]
+    C --> D["RO 侧 embedding 查找与 all-to-all (仅 B_RO 次)"]
+    D --> E["UserArch / HSTU 用户塔编码"]
+    E --> F["Fanout 至 NRO 候选 + 交互层打分"]
 ```
 
-图 1 展示了传统曝光级 joiner 与本文请求级 joiner 的对比；图 3 以 $B_{NRO}=4,B_{RO}=1$ 为例说明 RO 侧 embedding lookup 与 all-to-all 通信如何从 4 次降为 1 次；图 4 对比了双塔类模型在曝光级训练 (a) 与 ROO 训练 (b) 下的结构差异。
+<figure class="paper-figure" markdown="span">
+  ![图 1：传统训练数据流水线在数据生成源头即产生过多的特征重复，即曝光级事件-特征拼接器（b），在整个系统中浪费大量计算资源。请求级拼接器（本工作）取代传统拼接器，在单个样本中捕获属于同一请求的所有曝光（c）。](../../../../assets/papers/2508.05640v3/figure_1.png)<figcaption>图 1：传统训练数据流水线在数据生成源头即产生过多的特征重复，即曝光级事件-特征拼接器（b），在整个系统中浪费大量计算资源。请求级拼接器（本工作）取代传统拼接器，在单个样本中捕获属于同一请求的所有曝光（c）。</figcaption>
+</figure>
 
-### 3. 核心模块设计与数学原理 (Key Designs & Formulations)
+### 2. 关键设计拆解 (Key Designs)
 
-**(1) 请求级数据格式与 join 质量保障。** 表 1 与表 2 分别给出曝光级与请求级样本 schema：曝光级需为每条曝光重复 `user dense features` 与 `user id-list features`，请求级则将其提升为请求维度（`map<int,float>` / `map<int,list<int>>`），物品特征改为嵌套 list。为避免请求级 join 引入分布偏移，作者用固定时间策略或动态训练触发器提前关闭 join 窗口，实测最早交互事件到请求最后一条物品的平均时间差在 16 分钟内，数据落地延迟约为固定窗口的一半；表 3 显示转化率与视频观看时长等关键标签的分布失配率极低（转化失配 0.023%–0.16%，观看时长失配 0.01%–1.07%），用户样本与特征覆盖率和曝光级数据持平。
+1. **请求级数据 Schema 与 RO/NRO 分离**：曝光级 schema 中用户特征是非键列对键子集的依赖，天然冗余。ROO 将 RO 特征抽出为请求键下的一张表，NRO 以数组形式内嵌，列式存储压缩率随之提升。效果是同一存储预算下可记录更多样本（+43%~150%），且无需 InverseKeyedJaggedTensor 之类自定义结构，模型改写成本极低。数据质量上，转化标签失配率仅 0.023%–0.16%，视频观看时长失配 ≤1.07%，分布基本无损。
 
-**(2) UserArch：RO 侧特征压缩与规模化。** 精排模型中用户-物品交互发生得早，ROO 收益主要限于 embedding lookup 与跨 GPU 通信。为此作者在进入 post-ROO 架构前用 Linear Compress Embedding (LCE) 压缩用户特征维度。设用户特征张量 $X\in\mathbb{R}^{B,d_{in},n_{in}}$：
+2. **UserArch：RO 侧可摊销的算力扩张**：精排模型中用户-物品交互发生得早，ROO 收益被限制在 embedding 查找。UserArch 在进入 post-ROO 交互架构前，先用线性压缩嵌入 LCE 压缩用户特征维度：$f(X)=b+g(X)\odot W$，其中$X\in\mathbb{R}^{B,d_{in},n_{in}}$，$g(\cdot)$将$X$重排为$\mathbb{R}^{B\times d,n_{in}}$，$W\in\mathbb{R}^{n_{in},n_{out}}$；再由第二层线性映射到$d_{out}$。由于该模块只依赖 RO，其开销被请求内多曝光摊薄，因而可以放心纳入更多用户侧特征而不撑大下游交互网络。
 
-$$f(X)=b+g(X)\odot W,\quad b\in\mathbb{R}^{1,n_{out}},\ W\in\mathbb{R}^{n_{in},n_{out}}$$
-
-其中 $g(X)$ 将 $X$ reshape/permute 为 $\mathbb{R}^{B\times d,n_{in}}$；再接一层线性投影到输出维度：
-
-$$f'(f(X))=b'+g'(f(X))\odot W',\quad b'\in\mathbb{R}^{1,d_{out}},\ W'\in\mathbb{R}^{d_{in},d_{out}}$$
-
-物理直觉：先在特征数维 $n_{in}\to n_{out}$ 压缩、再在嵌入维 $d_{in}\to d_{out}$ 投影，使"增加用户侧特征"不再线性推高 post-ROO 交互架构的规模，而 UserArch 自身的计算又被 ROO 摊销，从而在同等算力下容纳更多用户信号。
-
-**(3) ROO 自回归建模与 HSTU 摊销。** 对基于 self-attention 的序列转导架构，曝光级设置下总开销为 $m\cdot(n^2d+nd^2)$；ROO 设置下历史与请求内目标拼接为一条序列，开销降为 $(n+m)^2d+(n+m)d^2$。在 $n=1000,m=10,d=256$ 的中等场景下，序列编码器计算节省达 **9.82×**。检索场景中序列编码器仅输入用户历史，排序场景中目标信息亦输入编码器（图 5b）。作者据此在用户序列上部署 HSTU（面向工业级大而动态词表的 Transformer 变体），把省下的算力全部投入模型 FLOPs 扩展。
-
-### 4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling & Complexity)
-
-- **损失函数**: 原文未给出统一的显式损失公式（属工业系统论文，各产品沿用其原有训练目标）；核心贡献在于样本组织与计算图重构，而非新损失项。
-- **训练负采样策略**: 原文未报告负采样细节（召回/粗排沿用各产品既有配置）。
-- **时间与空间复杂度**:
-  - RO 侧 embedding lookup、embedding all-to-all 通信、RO-only 架构的 FLOPs 由 $O(B_{NRO})$ 降为 $O(B_{RO})$（图 3）；
-  - 序列编码器由 $m(n^2d+nd^2)$ 降为 $(n+m)^2d+(n+m)d^2$；
-  - 存储侧：同容量下训练样本量提升 43%–150%（表 4）；
-  - 推理侧：ROO 统一训练与推理输入格式，移除客户端用户特征广播与服务端去重，模型内部完成用户特征 fanout；
-  - 理论加速比 300%–600%（对应每请求 4–7 次曝光）。
+3. **ROO 下的自回归序列建模与 HSTU**：传统曝光级下，对 $n$长历史、$m$个请求内目标的 Transformer 编码代价为$m\cdot(n^2d+nd^2)$；ROO 将历史与目标拼成单序列后降为$(n+m)^2d+(n+m)d^2$。在$n=1000,m=10,d=256$ 的中等设定下，序列编码器节省 9.82 倍。这正是生成式推荐 (GR) 此前在工业界算力上不可行的根因，ROO 使其变得可负担。训练目标沿用 HSTU 的下一 token 自回归损失，无需额外负采样；推理时 RO 编码可跨候选复用。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
-- **数据集统计与预处理**: 本文不使用公开学术基准，实验载体为某十亿用户级平台上三个（部分段落提及四个）主要推荐产品的真实工业数据，分别记为 product-A/B/C(/D)。原文未报告用户数、物品数、交互数等统计量。
+- **数据集与场景**: 非公开学术数据集，而是 Meta 三个十亿级用户产品（product-A/B/C/D）的真实工业日志，覆盖召回、粗排 (ESR)、精排 (LSR) 三类模型；对比实验严格保证数据源与网络结构一致，唯一变量为 ROO 数据与流水线。
 
-| 数据集 (Dataset) | 用户数 (#Users) | 物品数 (#Items) | 交互数 (#Interactions) | 稀疏度/密度 (Sparsity) | 模态/辅助特征说明 |
-| :--- | :---: | :---: | :---: | :---: | :--- |
-| Product-A | 原文未报告 | 原文未报告 | 原文未报告 | 原文未报告 | 用户稠密/ID-list 序列特征 + 物品特征 |
-| Product-B | 原文未报告 | 原文未报告 | 原文未报告 | 原文未报告 | 同上 |
-| Product-C | 原文未报告 | 原文未报告 | 原文未报告 | 原文未报告 | 同上 |
+| 场景 | 每请求曝光数 | 样本量增益 | 吞吐增益 | 评估指标 |
+| :--- | :---: | :---: | :---: | :--- |
+| Retrieval (B/C) | 4–7 | +43%~150% | +220%~570% | Recall@100 |
+| ESR (A/B/C/D) | 4–7 | 同上 | +125%~266% | NE ↓ / 线上指标 |
+| LSR (A/B/C/D) | 4–7 | 同上 | +32%~100% | NE ↓ / 线上指标 |
 
-- **数据划分方式 (Splitting Strategy)**: 原文未报告离线训练/验证/测试的具体切分比例；工业场景下按时间顺序的在线数据流训练，请求级 join 窗口（固定时间或动态触发）决定样本落地时点，理论上存在"等待窗口内后续曝光"的轻微时序耦合，但表 3 的标签分布对齐分析表明失配可忽略。
-- **排名评测协议 (Ranking Protocol)**: 原文未报告 Full-Ranking 或 Sampled Ranking 协议；评测以工业离线指标与线上 A/B 指标为主。
-- **评价指标与显著性检验**: 原文摘要与正文提及"显著离线与线上指标收益"，但抽取文本中未给出具体指标名称、数值与显著性检验（如 paired $t$-test）细节；嵌入维度在序列建模复杂度分析中取 $d=256$。
+- **数据划分与防穿越**: 采用工业标准的**时间切分**（按事件时间先后划分训练/评估），请求级 joiner 的窗口关闭策略为固定时长或动态触发，实测最早与最末交互事件间隔 ≤16 分钟，落地延迟约为固定窗口的一半，未引入穿越。
+- **排名评测协议**: 离线采用 **Full-Ranking 式全库评估**（召回用 Recall@100，排序用 Normalized Entropy），线上采用大规模 **A/B 测试**，并给出各产品逐指标的显著性阈值（如 product-A 的 topline 显著线为 0.03%）。
+- **对比基线与超参**: 基线为同架构的曝光级训练版本（Baseline 1.0x FLOPs）；关键对照为 HSTU(Impression) 与 HSTU(ROO)；序列长度 $n$量级为千、请求规模$m$量级为十、$d=256$。
 
-## Key Experimental Results (核心实验结果)
+## Key Experimental Results (实验关键数据)
 
 ### 1. 主实验对比 (Main Results)
 
-本文主实验为系统效率与样本量对比，而非与传统推荐基线的精度对比表。核心结果如下：
+召回模型（product-B，Recall@100 相对基线提升）：
 
-| 维度 | 指标 | 传统曝光级训练 | 本文 ROO | 相对提升 (Improv.) |
-| :--- | :--- | :---: | :---: | :---: |
-| 样本量 (Product-A) | 同存储下训练样本数 | 基准 | +43% | +43% |
-| 样本量 (Product-B) | 同存储下训练样本数 | 基准 | +150% | +150% |
-| 样本量 (Product-C) | 同存储下训练样本数 | 基准 | +100% | +100% |
-| 训练吞吐 (召回/粗排) | Training throughput | 基准 | 最高 6× | 最高 +570% |
-| 训练吞吐 (精排) | Training throughput | 基准 | — | +32% ~ +100% |
-| 模型规模 (HSTU) | 同等训练算力下 FLOPs | 基准 | 7× | +600% |
-| 序列编码器计算 | $n=1000,m=10,d=256$ | $m(n^2d+nd^2)$ | $(n+m)^2d+(n+m)d^2$ | 9.82× 节省 |
+| Model | FLOPs/example | C-Task Recall@100 | E-Task Recall@100 | 线上 Consumption |
+| :--- | :---: | :---: | :---: | :---: |
+| Baseline | 1.0x | +0.0% | +0.0% | +0.0% |
+| HSTU (Impression) | 6.8x | +3.53% | +2.35% | – |
+| **HSTU (ROO)** | **0.99x** | **+3.87%** | **+2.41%** | **+4.77%** |
 
-### 2. 消融实验与控制变量分析 (Ablation Study)
+排序模型离线 NE 下降与线上指标提升（NE 越低越好）：
 
-原文未提供传统意义上的逐模块消融表。可视为"设计对照"的证据包括：(a) 图 3 的通信/计算去重示意与理论复杂度推导；(b) 表 3 的请求级 join 数据质量对照（相对曝光级数据的标签失配率）；(c) 图 4 的曝光级 vs. ROO 双塔结构对照。各模块贡献的定量拆分（如 UserArch 单独移除的降幅）原文未报告。
+| Model | E-Task NE | C-Task NE | Topline | Consumption | Engagement |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| LSR-A UserArch | -0.41% | -0.42% | +0.04% | +0.08% | – |
+| **LSR-A +HSTU** | **-0.53%** | **-0.57%** | **+0.12%** | **+0.18%** | **+4.8%** |
+| ESR-B HSTU | -0.31% | -0.32% | +0.04% | +2.43% | +4.9% |
+| **LSR-B UserArch+HSTU** | **-0.86%** | **-0.78%** | **+0.07%** | **+5.56%** | **+7.0%** |
+| **LSR-C HSTU** | **-0.81%** | **-0.79%** | **+0.25%** | **+1.1%** | **+2.9%** |
+| **LSR-D UserArch+HSTU** | **-0.60%** | **-0.64%** | **+0.04%** | **+2.51%** | **+6.9%** |
 
-### 3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets & Hyperparameters)
+### 2. 消融实验 (Ablation Study)
 
-- **分桶表现**: 原文未按用户/物品交互频次分桶分析。
-- **超参敏感度**: 原文未报告温度系数、损失权重等超参敏感性；仅给出序列长度 $n$ 与请求规模 $m$ 对加速比的理论影响趋势（$n$ 越大、$m$ 越大，ROO 摊销收益越显著）。
-- **线上 A/B 测试结果**: 论文声明 ROO 已部署至三个十亿级活跃用户产品，并"取得显著离线与线上指标收益"，但抽取文本中未列出具体业务指标（CTR/CVR/停留时长等）数值、实验周期与流量占比，属原文未充分报告项。
+| 配置 | 训练吞吐 | 离线 NE / Recall | 说明 |
+| :--- | :---: | :---: | :--- |
+| 曝光级 Baseline | 1.0x | 基准 | 用户特征重复 $B_{NRO}$ 次 |
+| + ROO 数据格式 | 1.3x–6.7x | 持平 | 仅去重，质量无损 |
+| + UserArch | 同上 | NE -0.41%~-0.42% | RO 侧特征扩容被摊薄 |
+| + HSTU 序列编码 | 同上 | NE 再降 0.12%~0.45% | 长序列自回归建模 |
+| 去掉 ROO 直接上 HSTU | 需 6.8x FLOPs | Recall +3.53% | 算力不可承受 |
 
-## Highlights, Limitations & Critiques (亮点、局限与审稿级批判)
+### 3. 关键实验发现 (Key Findings)
 
-- **核心亮点与可迁移性**:
-  1. **根因级重构**：不在既有曝光级管线上打补丁，而是把样本单元从 impression 改为 request，从数据生成源头消除冗余，这一思路可迁移到任何"一请求多候选"的排序/召回/生成式系统。
-  2. **三层协同设计**：数据格式（表 2）、基础设施（request-level joiner、列式压缩、变长 batch sharding）、模型架构（UserArch、ROO 序列模型、HSTU）形成闭环，且训练/推理格式统一，显著降低系统复杂度。
-  3. **算力再投资**：把摊销节省的算力转化为 7× FLOPs 的模型扩展，是"效率换质量"的典范工程论证。
-- **局限性与审稿视角批判**:
-  1. **可复现性不足**：无开源代码、无公开数据集、无具体超参与损失公式，学术读者难以复现；核心收益高度依赖 Meta 内部基础设施（TorchRec、feature flattening）。
-  2. **评估协议不透明**：未报告数据划分、排序协议（Full vs. Sampled）、离线指标定义与显著性检验，线上 A/B 仅给结论不给数值，削弱说服力。
-  3. **join 窗口的时序耦合**：请求级 join 需等待窗口内后续曝光，虽实测延迟约减半且标签失配极低，但在强实时性场景下可能引入训练-服务偏差，论文对此的量化边界讨论有限。
-  4. **适用边界**：收益与 $B_{NRO}/B_{RO}$ 强相关；对单候选请求或用户特征占比低的场景，摊销收益会显著缩水，论文未给出失效条件的系统分析。
+1. **ROO 的收益与「每请求曝光数」强正相关**：召回/粗排因用户塔占比高，吞吐提升达 220%–570%；精排因早期交互限制了可去重比例，仅 32%–100%。极端情形下若每请求仅 1 个曝光，ROO 退化为曝光级、零收益——这划定了方法的适用边界。
+2. **同等算力下模型容量可扩大 7 倍**：HSTU(ROO) 以 0.99x FLOPs 取得比 HSTU(Impression) 在 6.8x FLOPs 下更好的 Recall（+3.87% vs +3.53%），说明去重释放的算力被有效转化为建模能力，而非单纯省钱。
+3. **离线 NE 与线上指标高度一致且增益叠加**：LSR-B 上 UserArch 与 HSTU 叠加后 NE 降 0.86%/0.78%，对应线上消费 +5.56%、互动 +7.0%，远超 0.24%/0.63% 的显著线；product-C 仅 HSTU 即带来 topline +0.25%（显著线 0.03%），验证了范式在异构产品上的普适性。
+
+## Highlights & Limitations (亮点、对比与审稿批判)
+
+- **与代表作对比 (vs. Prior Work)**: 相比 You et al. 的推理侧 request-level 去重，ROO 是覆盖数据、训练、推理的全链路方案并统一了特征格式；相比 RecD 依赖列式压缩与逆索引重建，ROO 在数据源头去重、无需自定义张量结构、不增加落地延迟；相比 DIN/Pi et al. 等长序列子序列选择方法，ROO 是正交的系统级摊销，可与任意序列架构叠加。
+- **可迁移亮点**: ①「请求级样本 + RO/NRO 分离」的 schema 设计可直接迁移到任何存在单用户多候选的召回/粗排训练；② 用 $B_{NRO}/B_{RO}$ 估算理论加速比，可作为架构选型前的快速可行性判据。
+- **审稿级局限批判**: ① 全部结论基于 Meta 内部闭源产品，无公开数据集与开源代码，学术界难以复现与横向对比；② 收益强依赖每请求曝光数（4–7），对曝光稀疏或单候选场景（如搜索精排）几乎无效；③ 请求级 joiner 引入窗口等待，虽实测 ≤16 分钟，但对强实时性场景仍是潜在延迟风险，论文未给出端到端 ATS 延迟的完整分布。
 
 ## Rating (四维评分)
 
-- **方法创新性 (Novelty)**: ⭐⭐⭐⭐
-- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐
-- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐
-- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐
-
-## 论文图表
-
-<figure class="paper-figure" markdown="span">
-  ![图 1](../../../../assets/papers/2508.05640v3/figure_1.png)<figcaption>图 1</figcaption>
-</figure>
-
-<figure class="paper-figure" markdown="span">
-  ![图 2](../../../../assets/papers/2508.05640v3/figure_2.png)<figcaption>图 2</figcaption>
-</figure>
-
-<figure class="paper-figure" markdown="span">
-  ![表 1](../../../../assets/papers/2508.05640v3/table_1.png)<figcaption>表 1</figcaption>
-</figure>
-
-<figure class="paper-figure" markdown="span">
-  ![表 2](../../../../assets/papers/2508.05640v3/table_2.png)<figcaption>表 2</figcaption>
-</figure>
-
-<figure class="paper-figure" markdown="span">
-  ![图 3](../../../../assets/papers/2508.05640v3/figure_3.png)<figcaption>图 3</figcaption>
-</figure>
-
-<figure class="paper-figure" markdown="span">
-  ![图 4](../../../../assets/papers/2508.05640v3/figure_4.png)<figcaption>图 4</figcaption>
-</figure>
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （并非新模型而是数据范式的重构，洞察朴素但系统性极强，理论加速比推导清晰）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三产品四场景 + 离线 NE/Recall + 线上 A/B 与显著性阈值齐全，但缺公开数据集与开源复现）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （复杂度对比 $m(n^2d+nd^2)$vs$(n+m)^2d+(n+m)d^2$ 推导干净，LCE 公式明确；部分系统细节下放附录）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （已在十亿用户产品全量部署，吞吐 2–6 倍、样本量 +43%~150%，是罕见的端到端生产级验证）
 

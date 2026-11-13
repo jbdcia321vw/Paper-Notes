@@ -45,7 +45,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-Spattack 运行在 FCF+NCF 基座上，每轮恶意客户端执行两阶段：(1) **近似阶段**——用攻击者感兴趣物品集 $\mathcal{V}_{in}$（如药品、拐杖）构造目标群训练集，随机采样等长物品集构造非目标群训练集，仅训练两组合成用户嵌入 $\tilde{u}^t_i,\tilde{u}^n_i$，并叠加对比排斥与聚类扩充的相关物品集 $\mathcal{V}_{re}$；(2) **提升阶段**——固定合成嵌入，把目标物品 $\tilde{\mathcal{V}}$ 作为目标群正样本、非目标群负样本训练物品嵌入，同时用目标-相关物品对齐与自适应系数调节优化方向，最后将 $\tilde{\mathcal{V}}$ 与 $\Theta$ 的梯度上传服务器聚合。攻击全程 model-agnostic，仅依赖公开参数与恶意客户端本地梯度。
+Spattack 运行在 FCF+NCF 基座上，每轮恶意客户端执行两阶段：(1) **近似阶段**——用攻击者感兴趣物品集 $\mathcal{V}_{in}$（如药品、拐杖）构造目标群训练集，随机采样等长物品集构造非目标群训练集，仅训练两组合成用户嵌入$\tilde{u}^t_i,\tilde{u}^n_i$，并叠加对比排斥与聚类扩充的相关物品集$\mathcal{V}_{re}$；(2) **提升阶段**——固定合成嵌入，把目标物品$\tilde{\mathcal{V}}$作为目标群正样本、非目标群负样本训练物品嵌入，同时用目标-相关物品对齐与自适应系数调节优化方向，最后将$\tilde{\mathcal{V}}$与$\Theta$ 的梯度上传服务器聚合。攻击全程 model-agnostic，仅依赖公开参数与恶意客户端本地梯度。
 
 ```mermaid
 flowchart TD
@@ -61,13 +61,13 @@ flowchart TD
 $$\mathcal{L}_{dis}=\tfrac{1}{2}\big[\max(0,\ \delta-\|\tilde{u}^t_i-\tilde{u}^n_i\|_2)\big]^2$$
 $\delta$ 过小分离不足、过大则扭曲语义结构（实验显示先升后降），本质是用度量学习为后续"分群操纵"腾出表示空间。
 
-2. **聚类式相关物品构造 + 目标-相关物品对齐**：攻击者无法获知真实群成员，且随机采样的非目标物品可能恰好与 $\mathcal{V}_{in}$ 相似，导致两群近似趋同。本文先算 $\mathcal{V}_{in}$ 的平均嵌入，按余弦相似度取 top-$k$ 构成 $\mathcal{V}_{re}$（复杂度从 $O(|\mathcal{V}|^2)$ 降至 $O(|\mathcal{V}|)$），再让目标物品与 $\mathcal{V}_{re}$ 对齐：
+2. **聚类式相关物品构造 + 目标-相关物品对齐**：攻击者无法获知真实群成员，且随机采样的非目标物品可能恰好与 $\mathcal{V}_{in}$相似，导致两群近似趋同。本文先算$\mathcal{V}_{in}$的平均嵌入，按余弦相似度取 top-$k$构成$\mathcal{V}_{re}$（复杂度从$O(|\mathcal{V}|^2)$降至$O(|\mathcal{V}|)$），再让目标物品与$\mathcal{V}_{re}$ 对齐：
 $$\mathcal{L}_{sim}=\frac{1}{|\mathcal{V}_{re}||\tilde{\mathcal{V}}|}\sum_{v_i\in\mathcal{V}_{re}}\sum_{v_j\in\tilde{\mathcal{V}}}\big[1-\cos(v_i,v_j)\big]$$
 直觉上这是把"流行度操纵"从"模仿热门"迁移为"模仿目标群语义邻居"，既缓解两群优化冲突，又强化目标群曝光。
 
-3. **自适应系数调节与训练目标**：固定权重在联邦训练中无法验证、且不同频次物品更新速度不一。本文按目标物品在各群的归一化平均排名 $R^t_e,R^n_e$ 动态分配权重，并乘 $(1+\gamma_e(e/T)^2)$ 在训练早期降权不可靠排名：
+3. **自适应系数调节与训练目标**：固定权重在联邦训练中无法验证、且不同频次物品更新速度不一。本文按目标物品在各群的归一化平均排名 $R^t_e,R^n_e$动态分配权重，并乘$(1+\gamma_e(e/T)^2)$ 在训练早期降权不可靠排名：
 $$\mathcal{L}_{pro}=\big(1+\gamma^t_e(e/T)^2\big)\mathcal{L}_{pro\_t}+\big(1-\gamma^n_e(e/T)^2\big)\mathcal{L}_{pro\_n}+\alpha\mathcal{L}_{sim}$$
-总目标为 $\mathcal{L}_{app}=\mathcal{L}_{app\_t}+\mathcal{L}_{app\_n}+\mathcal{L}_{dis}$ 与上式交替优化。**负采样**：目标物品对目标群作正样本、对非目标群作负样本（硬负样本模拟），非目标近似集显式排除 $\mathcal{V}_{re}$ 与 $\tilde{\mathcal{V}}$；**推理开销**：每轮仅增加约 0.1–0.6s（表 3），远低于 FedRecAttack 的 2.9–10.3s。
+总目标为 $\mathcal{L}_{app}=\mathcal{L}_{app\_t}+\mathcal{L}_{app\_n}+\mathcal{L}_{dis}$与上式交替优化。**负采样**：目标物品对目标群作正样本、对非目标群作负样本（硬负样本模拟），非目标近似集显式排除$\mathcal{V}_{re}$与$\tilde{\mathcal{V}}$；**推理开销**：每轮仅增加约 0.1–0.6s（表 3），远低于 FedRecAttack 的 2.9–10.3s。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -80,7 +80,7 @@ $$\mathcal{L}_{pro}=\big(1+\gamma^t_e(e/T)^2\big)\mathcal{L}_{pro\_t}+\big(1-\ga
 | Steam | 3,753 | 5,134 | 114,713 | 31 | 游戏交互（稀疏） |
 
 - **数据划分与防穿越**: 沿用 FedRecAttack 的联邦划分，各客户端本地数据独立训练，无跨客户端泄漏；恶意比例 $\rho$：ML-1M 取 0.1%，ML-100K/Steam 取 0.2%（避免小数据集无恶意用户）。
-- **排名评测协议**: 采用 **Full-Ranking** 式 ER@K（Exposure Ratio，统计目标物品进入 top-K 且用户未交互过的比例），并提出综合指标 $\gamma\text{-GER@}K=\gamma\text{ER@}K(\mathcal{U}_t)+(1-\gamma)(1-\text{ER@}K(\mathcal{U}_n))$，实验取 $\gamma=0.5$；推荐性能用 HR@10/NDCG@10。
+- **排名评测协议**: 采用 **Full-Ranking** 式 ER@K（Exposure Ratio，统计目标物品进入 top-K 且用户未交互过的比例），并提出综合指标 $\gamma\text{-GER@}K=\gamma\text{ER@}K(\mathcal{U}_t)+(1-\gamma)(1-\text{ER@}K(\mathcal{U}_n))$，实验取$\gamma=0.5$；推荐性能用 HR@10/NDCG@10。
 - **对比基线与超参**: 攻击基线 7 个（PipAttack、FedRecAttack、A-hum、PSMU、PoisonFRS、PIECK-UEA、PIECK-IPE），防御基线 7 个（Norm、Median、TrimmedMean、Krum、MultiKrum、Bulyan、PIECK）；基座 NCF+FCF，30 轮训练取均值。
 
 ## Key Experimental Results (实验关键数据)
@@ -130,10 +130,15 @@ ML-1M / Steam 上 ER@5（Target / Non-target）与 HR@10：
 2. **子群攻击天然优于全群攻击的隐蔽性**：ML-1M 上 A-hum/PipAttack 虽目标群 100%，但非目标群同样 100%（等于全群攻击），0.5-GER 仅 50%；Spattack 非目标群仅 3.82%，0.5-GER 达 98.09%，且 HR@10 反超无攻击基线（7.848 vs 7.831），推荐性能无损是隐蔽性的直接证据。
 3. **对主流防御具韧性，但 Median 是有效反制**：面对 Krum/MultiKrum/Bulyan，ML-1M 目标群 ER@5 仍达 76.92%–100%；而 Median 在稠密数据上把目标群压至 0%（ML-100K/ML-1M），因其过滤掉多数更新——但 Median 同时使 HR@10 降至 6.85/6.89，实用性差；Bulyan 甚至因归一化削弱稀疏良性梯度而**放大**攻击效果。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 FedRecAttack/PSMU 的"单群近似"，Spattack 首次同时近似两群并显式解耦，把攻击从"全群无差别"升级为"子群定向"；相比 PipAttack/PIECK 的"模仿热门物品"，本文改为"对齐目标群语义邻居"，避免热门物品被推给所有人的副作用。
-- **可迁移亮点**: ① 用"平均嵌入 + 余弦 top-k"把物品集扩充的复杂度从 $O(|\mathcal{V}|^2)$ 降到 $O(|\mathcal{V}|)$，可迁移至冷启动物品语义扩展；② 基于排名反馈的自适应损失加权，可迁移至多目标/多群组推荐的损失平衡。
+- **可迁移亮点**: ① 用"平均嵌入 + 余弦 top-k"把物品集扩充的复杂度从 $O(|\mathcal{V}|^2)$降到$O(|\mathcal{V}|)$，可迁移至冷启动物品语义扩展；② 基于排名反馈的自适应损失加权，可迁移至多目标/多群组推荐的损失平衡。
 - **审稿级局限批判**: ① 目标群定义依赖"用户交互过全部 $\mathcal{V}_{in}$"这一强假设，真实场景中攻击者难以精确圈定子群，定义松弛后攻击效果未评估；② 防御评估仅覆盖聚合规则类方法，未考虑基于梯度聚类/异常检测的联邦防御，且 Median 已显示可完全压制攻击，实际部署风险被低估。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

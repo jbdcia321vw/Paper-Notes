@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-模型先在纯 ID 嵌入上跑 LightGCN 式传播并叠加全局超图增强（权重 $\alpha$）得到协同锚点 $\mathbf{e}_{CF}$，全程隔离模态干扰；随后对每个物品的视觉/文本嵌入做正交分解，以冲突分数驱动的门控截断正交分量并恢复原始 L2 模长；净化后的模态经以 $\mathbf{e}_{CF}$ 为路由条件的解耦 Sigmoid MoE 独立定标注入锚点；最后以 BPR 主损失 + 冲突加权 safe-SSL 联合端到端优化，推理时以内积打分全库排序。
+模型先在纯 ID 嵌入上跑 LightGCN 式传播并叠加全局超图增强（权重 $\alpha$）得到协同锚点$\mathbf{e}_{CF}$，全程隔离模态干扰；随后对每个物品的视觉/文本嵌入做正交分解，以冲突分数驱动的门控截断正交分量并恢复原始 L2 模长；净化后的模态经以$\mathbf{e}_{CF}$ 为路由条件的解耦 Sigmoid MoE 独立定标注入锚点；最后以 BPR 主损失 + 冲突加权 safe-SSL 联合端到端优化，推理时以内积打分全库排序。
 
 ```mermaid
 flowchart TD
@@ -57,11 +57,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **协同引导正交净化 CGOP（方向矫正而非能量削减）**：痛点是以掩码/丢边去噪会直接造成模长衰减与表征能力损失。做法是将模态嵌入投影到锚点方向得平行分量 $\mathbf{e}^{\parallel}_m=\frac{\mathbf{e}_m\cdot\mathbf{e}_{CF}}{\|\mathbf{e}_{CF}\|_2^2}\mathbf{e}_{CF}$，残差即正交分量 $\mathbf{e}^{\perp}_m=\mathbf{e}_m-\mathbf{e}^{\parallel}_m$；以余弦冲突分数 $c_m=\cos(\mathbf{e}_m,\mathbf{e}_{CF})$ 减去批均值后经共享两层 MLP + Sigmoid 得门控 $\gamma(c_m)$，截断后按 $\tilde{\mathbf{e}}_m=\frac{\tilde{\mathbf{e}}^{tmp}_m}{\|\tilde{\mathbf{e}}^{tmp}_m\|_2}\|\mathbf{e}_m\|_2$ 恢复模长。直觉：正交子空间数学上与协同图无关，既藏长尾探索语义也藏点击诱饵噪声，只压缩其幅度即可"转向"而不"缩水"。
+1. **协同引导正交净化 CGOP（方向矫正而非能量削减）**：痛点是以掩码/丢边去噪会直接造成模长衰减与表征能力损失。做法是将模态嵌入投影到锚点方向得平行分量 $\mathbf{e}^{\parallel}_m=\frac{\mathbf{e}_m\cdot\mathbf{e}_{CF}}{\|\mathbf{e}_{CF}\|_2^2}\mathbf{e}_{CF}$，残差即正交分量$\mathbf{e}^{\perp}_m=\mathbf{e}_m-\mathbf{e}^{\parallel}_m$；以余弦冲突分数$c_m=\cos(\mathbf{e}_m,\mathbf{e}_{CF})$减去批均值后经共享两层 MLP + Sigmoid 得门控$\gamma(c_m)$，截断后按$\tilde{\mathbf{e}}_m=\frac{\tilde{\mathbf{e}}^{tmp}_m}{\|\tilde{\mathbf{e}}^{tmp}_m\|_2}\|\mathbf{e}_m\|_2$ 恢复模长。直觉：正交子空间数学上与协同图无关，既藏长尾探索语义也藏点击诱饵噪声，只压缩其幅度即可"转向"而不"缩水"。
 
-2. **拓扑感知路由 MoE（TAR-MoE，打破零和）**：痛点是 softmax 使 $g_T+g_V=1$，压制毒性模态只能靠抬高另一模态。改为以纯锚点为路由输入、逐模态独立 Sigmoid：$g_m=\sigma(\mathrm{MLP}_{route\_m}(\mathbf{e}_{CF})/\tau_r)$，最终表示 $\mathbf{e}_{final}=\mathbf{e}_{CF}+\gamma(g_T\tilde{\mathbf{e}}_T+g_V\tilde{\mathbf{e}}_V)$。由于路由条件不含噪声模态本身，注入尺度由拓扑共识而非原始特征决定，可同时压低多个噪声模态。
+2. **拓扑感知路由 MoE（TAR-MoE，打破零和）**：痛点是 softmax 使 $g_T+g_V=1$，压制毒性模态只能靠抬高另一模态。改为以纯锚点为路由输入、逐模态独立 Sigmoid：$g_m=\sigma(\mathrm{MLP}_{route\_m}(\mathbf{e}_{CF})/\tau_r)$，最终表示$\mathbf{e}_{final}=\mathbf{e}_{CF}+\gamma(g_T\tilde{\mathbf{e}}_T+g_V\tilde{\mathbf{e}}_V)$。由于路由条件不含噪声模态本身，注入尺度由拓扑共识而非原始特征决定，可同时压低多个噪声模态。
 
-3. **冲突感知 safe-SSL 与训练目标**：痛点是标准 InfoNCE 对内在矛盾模态对强制对齐造成潜空间畸变。直接复用 CGOP 的中心化冲突分数构造逐物品惩罚权重 $\lambda^{(i)}_{safe}=\sigma\big((\hat{c}^{(i)}_T+\hat{c}^{(i)}_V)/\tau_{safe}\big)\in(0,1)$，加权 InfoNCE。总损失 $\mathcal{L}_{total}=\mathcal{L}_{BPR}+\lambda_{cl}\mathcal{L}_{Safe\text{-}SSL}+\lambda_{reg}\|\Theta\|_2^2$，BPR 中额外引入负间隔 $m$ 拉大正负分离；负样本为均匀采样未交互物品，无额外难负采样与 ANN 检索开销。
+3. **冲突感知 safe-SSL 与训练目标**：痛点是标准 InfoNCE 对内在矛盾模态对强制对齐造成潜空间畸变。直接复用 CGOP 的中心化冲突分数构造逐物品惩罚权重 $\lambda^{(i)}_{safe}=\sigma\big((\hat{c}^{(i)}_T+\hat{c}^{(i)}_V)/\tau_{safe}\big)\in(0,1)$，加权 InfoNCE。总损失$\mathcal{L}_{total}=\mathcal{L}_{BPR}+\lambda_{cl}\mathcal{L}_{Safe\text{-}SSL}+\lambda_{reg}\|\Theta\|_2^2$，BPR 中额外引入负间隔$m$ 拉大正负分离；负样本为均匀采样未交互物品，无额外难负采样与 ANN 检索开销。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -108,10 +108,15 @@ flowchart TD
 2. **解耦路由是最大贡献项，截断是"下界"**：消融中替换 softmax 路由在所有数据集上损伤最大（Clothing 尤甚），且重调注入尺度 $\gamma$ 也无法挽回，证明瓶颈来自互斥约束而非幅度；反之关闭截断在干净基准特征上影响温和，说明 CGOP 的收益在噪声注入与冷启场景才被放大。
 3. **鲁棒性与稀疏性收益集中而非均摊**：在 30% 视觉特征随机打乱下，LGMRec 相对下降 11.6% 而 OrthoRec 仅 10.6%，且各噪声比例下始终领先；按训练频次分桶后，OrthoRec 在 Cold（≤5）物品上 R@20 相对 LGMRec 高约 41%，而在 Popular 物品上差距收窄至 4% 以内——净化价值恰在协同证据稀缺处最大。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 FREEDOM 的冻结去噪物品-物品图与 LGMRec 的全局超图，二者是"结构性对冲"噪声，OrthoRec 直接对特征做几何方向矫正；相比 BM3/SLMRec 的无差别跨模态对齐，safe-SSL 用同一冲突分数做逐物品软惩罚，避免假阳性对齐。
 - **可迁移亮点**: ①"以可信信号为参考轴做正交分解 + L2 保能"可迁移到跨域迁移中的域噪声抑制与序列推荐中的兴趣漂移矫正；②冲突分数在截断门控与对比损失间复用，零额外参数实现"一处检测、两处使用"。
-- **审稿级局限批判**: ①鲁棒性实验仅用随机打乱视觉特征的合成噪声，未验证真实点击诱饵/语义错配分布，且未报告训练与推理时延、MoE 参数量开销；②超参 $\alpha$ 在 Clothing 上需 $\ge 0.3$、$\lambda_{cl}$ 超过 $5\times10^{-4}$ 即显著退化，跨数据集迁移需重调；③仅三个 Amazon 域、单一 8:1:1 划分，缺少时间切分与冷启动严格划分下的验证。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+- **审稿级局限批判**: ①鲁棒性实验仅用随机打乱视觉特征的合成噪声，未验证真实点击诱饵/语义错配分布，且未报告训练与推理时延、MoE 参数量开销；②超参 $\alpha$在 Clothing 上需$\ge 0.3$、$\lambda_{cl}$超过$5\times10^{-4}$ 即显著退化，跨数据集迁移需重调；③仅三个 Amazon 域、单一 8:1:1 划分，缺少时间切分与冷启动严格划分下的验证。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

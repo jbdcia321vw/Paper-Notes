@@ -45,3 +45,39 @@ Binge Watch: Reproducible Multimodal Benchmarks Datasets for Large-Scale Movie R
 Self-Evolving Recommendation System: End-To-End Autonomous Model Optimization With LLM Agents,2602.10226,https://arxiv.org/abs/2602.10226v3,,llm_rec,RecSys,2026
 CoFiRec: Coarse-to-Fine Tokenization for Generative Recommendation,2511.22707,https://arxiv.org/abs/2511.22707v2,https://github.com/YennNing/CoFiRec,generative_rec,RecSys,2026
 Membership Inference Attacks on In-Context Examples in LLM-based Recommender Systems,2508.18665,https://arxiv.org/abs/2508.18665v6,,debias_fairness_industrial,RecSys,2026
+Bootstrapping Conversational Recommendation Agents At Spotify: Synthetic Data Generation and Self-Improvement Loops,2609.30297,https://arxiv.org/abs/2609.30297,,agent_conversational_rec,RecSys,2026
+SPEAR: Selection-aware Personalized End-to-end Adaptive Rewriting and Retrieval for Community Search,2608.01738,https://arxiv.org/abs/2608.01738,https://github.com/mallocagi1-cell/spear,llm_rec,RecSys,2026
+Heterogeneous Ranking in Industrial-Scale Recommender Systems: A Case Study,2607.27577,https://arxiv.org/abs/2607.27577,,multi_task_reranking,RecSys,2026
+LO-FAR: A Cost-Aware Local Filter for Sparse Feature Ranking in Industrial Ad Recommendation,2607.20873,https://arxiv.org/abs/2607.20873,,ctr_feature_interaction,RecSys,2026
+Multilingual Semantic Retrieval for Apple Music Search,2607.10239,https://arxiv.org/abs/2607.10239,,collaborative_filtering,RecSys,2026
+Not All Branches Are Equal: Adaptive Semantic ID Construction for Generative Recommendation,2611.11549,https://arxiv.org/abs/2611.11549,,generative_rec,RecSys,2026
+Mend the Measurement Gap: Latent User Preference Modeling for Short-Form Video Recommendation,2609.32839,https://arxiv.org/abs/2609.32839,,multimodal_rec,RecSys,2026
+DP-Rec: Towards Dynamic Patching for Efficient Long-Sequence Recommendation,2609.32215,https://arxiv.org/abs/2609.32215,,sequential_rec,RecSys,2026
+SequenceO1: End-to-End Ultra-Long (100K) Sequence Modeling in Recommendation with Low-Rank Caching,2609.08443,https://arxiv.org/abs/2609.08443,,sequential_rec,RecSys,2026
+From Click Modeling to Offline and Off-Policy Evaluation in Carousel Recommendation,2608.22022,https://arxiv.org/abs/2608.22022,,debias_fairness_industrial,RecSys,2026
+Impression Share Prediction: An Offline Evaluation Task for Ranking Systems,2608.16872,https://arxiv.org/abs/2608.16872,,debias_fairness_industrial,RecSys,2026
+Unbiased Recommender Systems with Implicit Feedback,2608.16704,https://arxiv.org/abs/2608.16704,,debias_fairness_industrial,RecSys,2026
+PriCoRec: A Privacy-Aware Cloud-Device Collaborative Framework for Ad Recommendation under Feature Constraints,2608.14429,https://arxiv.org/abs/2608.14429,,debias_fairness_industrial,RecSys,2026
+Residual Dominance as a Structural Account of Last-Item Reliance in Causal Self-Attention Recommenders,2608.14021,https://arxiv.org/abs/2608.14021,,sequential_rec,RecSys,2026
+Soft Curriculum Learning for Optimizing Fresh and Generalized Recommendations,2609.35783,https://arxiv.org/abs/2609.35783,,cold_start_rec,RecSys,2026
+Inverse Theory of Mind Modeling for Content Recommendation: From Web Browsing to Dynamic Intelligent Interfaces,2608.11354,https://arxiv.org/abs/2608.11354,,agent_conversational_rec,RecSys,2026
+Give the Long-tail More SPACE: Promoting Provider Fairness in Next POI Recommendation,2608.07998,https://arxiv.org/abs/2608.07998,https://github.com/Anniran1/SPACE-main,poi_spatiotemporal_rec,RecSys,2026
+Progressive Alignment of Recommender Foundation Model through Multi-Phase Post-Training,2608.06792,https://arxiv.org/abs/2608.06792,https://github.com/webtoon/rec-fm-progressive-alignment,llm_rec,RecSys,2026
+Attacking and Defending Multi-Agent Collaborative Filtering Systems Through Connectivity,2608.03272,https://arxiv.org/abs/2608.03272,https://github.com/anjunhu/ConnACF,debias_fairness_industrial,RecSys,2026
+Building a User Foundation Model for the Open Web,2607.28019,https://arxiv.org/abs/2607.28019,,ctr_feature_interaction,RecSys,2026
+Hypothesis-Driven Shelf Generation for Personalised Recommendation,2607.25823,https://arxiv.org/abs/2607.25823,,generative_rec,RecSys,2026
+Mosaic: A Fleet of User Embedding Specialists for Recommendation at Meta,2607.24015,https://arxiv.org/abs/2607.24015,,collaborative_filtering,RecSys,2026
+Melo: A Production LLM-Powered Music Recommendation Agent,2607.23718,https://arxiv.org/abs/2607.23718,,agent_conversational_rec,RecSys,2026
+SMART: LLM-Augmented Hybrid Retrieval for Dynamic Product Ads,2607.23121,https://arxiv.org/abs/2607.23121,,collaborative_filtering,RecSys,2026
+Personalized Recommendation Tool Learning via Autonomous Language Agents,2607.19739,https://arxiv.org/abs/2607.19739,,llm_rec,RecSys,2026
+RecEvolve: A Knowledge-Driven Autonomous Agent System for Recommender Systems,2609.01622,https://arxiv.org/abs/2609.01622,,collaborative_filtering,RecSys,2026
+Normative Alignment of Recommender Systems via Internal Label Shift,2607.10915,https://arxiv.org/abs/2607.10915,https://github.com/johanneskruse/nails,debias_fairness_industrial,RecSys,2026
+LLM-Based User Personas for Recommendations at Scale,2606.12198,https://arxiv.org/abs/2606.12198,,llm_rec,RecSys,2026
+UniPinRec: Unifying Generative Retrieval and Ranking at Pinterest Scale,2606.00422,https://arxiv.org/abs/2606.00422,,collaborative_filtering,RecSys,2026
+Generative Spatiotemporal Intent Sequence Recommendation via Implicit Reasoning in Amap,2605.28888,https://arxiv.org/abs/2605.28888,https://github.com/alibaba/GPlan,poi_spatiotemporal_rec,RecSys,2026
+Towards Generalizable and Efficient Large-Scale Generative Recommenders,2605.23312,https://arxiv.org/abs/2605.23312,,generative_rec,RecSys,2026
+Distribution-Level Contrastive Supervision for Generative Recommendation,2603.00700,https://arxiv.org/abs/2603.00700,https://github.com/freyasa/SODA,generative_rec,RecSys,2026
+Multi-Probe Zero Collision Hash (MPZCH): Mitigating Embedding Collisions and Enhancing Model Freshness in Large-Scale Recommenders,2602.17050,https://arxiv.org/abs/2602.17050,,collaborative_filtering,RecSys,2026
+Towards Full Candidate Interaction: A Comprehensive Comparison Network for Better Route Recommendation,2508.08745,https://arxiv.org/abs/2508.08745,,multi_task_reranking,RecSys,2026
+Parameter-Efficient Single Collaborative Branch for Recommendation,2508.03518,https://arxiv.org/abs/2508.03518,,collaborative_filtering,RecSys,2026
+LONGER: Scaling Up Long Sequence Modeling in Industrial Recommenders,2505.04421,https://arxiv.org/abs/2505.04421,,sequential_rec,RecSys,2026

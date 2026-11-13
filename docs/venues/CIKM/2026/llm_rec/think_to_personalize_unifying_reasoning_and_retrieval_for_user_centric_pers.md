@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入构造为 `[INST] ⊕ I_task ⊕ H_u ⊕ q ⊕ [/INST]`，模型先输出 `<think> r </think>` 的意图增强查询 $r$，再输出 `<embed>` 特殊 token，取其最后一层隐状态作为查询向量 $e_q$；物品侧序列化元数据后追加同一 `<embed>` token，用**共享编码器**得 $e_i$，打分 $s(q,i)=e_q^\top e_i$。训练分两阶段：Stage 1 用 NTP + InfoNCE 联合损失做冷启动 SFT；Stage 2 用 GRPO 配合检索感知奖励与动态正样本选择，把生成推理对齐到召回效用。线上则以 T+1 个性化缓存 + 305M 蒸馏双塔承接实时流量。
+输入构造为 `[INST] ⊕ I_task ⊕ H_u ⊕ q ⊕ [/INST]`，模型先输出 `<think> r </think>` 的意图增强查询 $r$，再输出 `<embed>` 特殊 token，取其最后一层隐状态作为查询向量$e_q$；物品侧序列化元数据后追加同一 `<embed>` token，用**共享编码器**得$e_i$，打分$s(q,i)=e_q^\top e_i$。训练分两阶段：Stage 1 用 NTP + InfoNCE 联合损失做冷启动 SFT；Stage 2 用 GRPO 配合检索感知奖励与动态正样本选择，把生成推理对齐到召回效用。线上则以 T+1 个性化缓存 + 305M 蒸馏双塔承接实时流量。
 
 ```mermaid
 flowchart TD
@@ -61,13 +61,13 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **意图增强查询的统一编码（Intent-Enhanced Query）**：痛点是 query-centric 编码丢失历史语境、解耦重写器与检索器目标错位 $\to$ 让推理文本与查询共享同一 `<embed>` 表征，检索梯度可直接回传到生成侧 $\to$ 物理直觉是"推理即查询扩展，但扩展结果落在检索空间里"，避免重写语义漂移。
+1. **意图增强查询的统一编码（Intent-Enhanced Query）**：痛点是 query-centric 编码丢失历史语境、解耦重写器与检索器目标错位 $\to$让推理文本与查询共享同一 `<embed>` 表征，检索梯度可直接回传到生成侧$\to$ 物理直觉是"推理即查询扩展，但扩展结果落在检索空间里"，避免重写语义漂移。
 
 2. **检索感知的复合奖励 + 动态正样本选择**：GRPO rollout 常产出噪声重写，随机选正样本会污染对比学习 $\to$ 奖励设计为
 $$R=\lambda_{fmt}R_{format}+\lambda_{len}R_{length}+\lambda_{ret}\big[\alpha\Delta S_{pos}+\beta\Delta S_{margin}\big]$$
-其中 $\Delta S_{pos}=s(q',i^+)-s(q,i^+)$，$\Delta S_{margin}$ 为相对负样本均值的 margin 增益，并裁剪到 $[-1,1]$；对比学习正样本取组内 $y^*=\arg\max_{y_i}R_{retrieval}(y_i)$，若 $R_{retrieval}(y^*)\le 0$ 则回退原查询 $q$。关键在于**奖励模型冻结为 SFT 模型**，作为稳定语义锚点防止 reward hacking。
+其中 $\Delta S_{pos}=s(q',i^+)-s(q,i^+)$，$\Delta S_{margin}$为相对负样本均值的 margin 增益，并裁剪到$[-1,1]$；对比学习正样本取组内$y^*=\arg\max_{y_i}R_{retrieval}(y_i)$，若$R_{retrieval}(y^*)\le 0$则回退原查询$q$。关键在于**奖励模型冻结为 SFT 模型**，作为稳定语义锚点防止 reward hacking。
 
-3. **训练目标、负采样与推理效率**：Stage 1 为 $\mathcal{L}_{Stage1}=\lambda_{gen}\mathcal{L}_{gen}+\mathcal{L}_{cl}$（$\lambda_{gen}=0.5$，$\tau=0.02$）；Stage 2 为 $\mathcal{L}_{Stage2}=\mathcal{L}_{GRPO}+\lambda_{cl}\mathcal{L}_{cl}$（$\lambda_{cl}=0.1$）。全部对比目标使用 **in-batch negatives**，无额外难负采样。骨干 Qwen2.5-3B-Instruct + LoRA(r=16)，embedding 维 2048，GRPO group size 8。推理侧靠 T+1 缓存（覆盖 10.59% QV）与 305M 蒸馏双塔（联合优化 $\langle q,p^+\rangle$、$\langle q_r,p^+\rangle$、$\langle q,q_r\rangle$ 三目标）压延迟。
+3. **训练目标、负采样与推理效率**：Stage 1 为 $\mathcal{L}_{Stage1}=\lambda_{gen}\mathcal{L}_{gen}+\mathcal{L}_{cl}$（$\lambda_{gen}=0.5$，$\tau=0.02$）；Stage 2 为$\mathcal{L}_{Stage2}=\mathcal{L}_{GRPO}+\lambda_{cl}\mathcal{L}_{cl}$（$\lambda_{cl}=0.1$）。全部对比目标使用 **in-batch negatives**，无额外难负采样。骨干 Qwen2.5-3B-Instruct + LoRA(r=16)，embedding 维 2048，GRPO group size 8。推理侧靠 T+1 缓存（覆盖 10.59% QV）与 305M 蒸馏双塔（联合优化$\langle q,p^+\rangle$、$\langle q_r,p^+\rangle$、$\langle q,q_r\rangle$ 三目标）压延迟。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -122,12 +122,17 @@ $$R=\lambda_{fmt}R_{format}+\lambda_{len}R_{length}+\lambda_{ret}\big[\alpha\Del
 
 1. **RL 对齐是增益主引擎，且对歧义查询放大最明显**：SFT→RL 使 Broad 集 Intent-Q 带来的额外增益从 +1.98pt 扩到 +3.81pt，LongTail 从 +0.88pt 扩到 +2.40pt，说明 GRPO 不只是提升生成质量，而是把推理真正"拧"向召回效用。
 2. **动态正样本选择是稳定性的命门**：随机选正样本使 Avg. R@20 跌至 37.71%（低于 SFT 的 42.25%），而让策略模型自评奖励（unfrozen reward）更崩到 29.53%，证实自指偏差导致 reward hacking，冻结 SFT 锚点是必要设计。
-3. **历史长度存在甜点、重写行为克制**：$N=10$ 时 Avg. R@20 达 44.97 峰值，$N=20$ 回落至 44.57；人工标注 200 例宽泛查询中 34.0% 保持原查询，重写案例里 Intent Disambiguation 占 52.3%、Preference Extraction 占 40.9%，过度个性化仅 2.3%，说明模型学会了"何时不改"。
+3. **历史长度存在甜点、重写行为克制**：$N=10$时 Avg. R@20 达 44.97 峰值，$N=20$ 回落至 44.57；人工标注 200 例宽泛查询中 34.0% 保持原查询，重写案例里 Intent Disambiguation 占 52.3%、Preference Extraction 占 40.9%，过度个性化仅 2.3%，说明模型学会了"何时不改"。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 Search-R3/LREM 的 query-centric 推理，TTP 把推理对象换成 (user, query) 对；相比 MAPs 的隐式序列交互，它用显式自然语言推理消歧；相比 Decoupled-Stage 的重写-检索分离流水线，共享编码器让检索梯度直达生成侧，General R@100 领先 +2.99pt。
 - **可迁移亮点**: ① "冻结 SFT 模型作奖励锚点 + 组内按奖励选正样本"可复用到任何 LLM 生成式召回/查询扩展的 RL 对齐；② 三目标蒸馏（$\langle q,p^+\rangle$/$\langle q_r,p^+\rangle$/$\langle q,q_r\rangle$）是把 3B 推理能力压进 305M 实时双塔的实用配方。
 - **审稿级局限批判**: ① 训练依赖 Qwen3-32B 教师生成 1M 数据 + GRPO rollout，离线成本高，且增益 top-30% 的筛选阈值缺乏敏感性分析；② 线上主路径实为蒸馏 305M 模型（Avg. R@20 43.10 vs 教师 44.97），真实收益部分来自缓存命中，A/B 的 +0.46% 订单量提升幅度较小、未报告置信区间与长期留存影响。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

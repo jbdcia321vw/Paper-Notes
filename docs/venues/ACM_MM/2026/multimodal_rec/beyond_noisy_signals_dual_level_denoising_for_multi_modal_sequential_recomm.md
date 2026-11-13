@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-对每个模态 $m\in\{v,t\}$，先用冻结编码器抽原始特征 $\mathbf{F}^m$，构建 top-$K$ 稀疏物品语义图并做 $L_g$ 层自适应图卷积得到去噪特征 $\tilde{\mathbf{F}}^m$；再经 MoE 适配器投影到统一 $d$ 维空间得 $\mathbf{E}^v,\mathbf{E}^t$。按用户序列索引查表并融合（逐元素相加）+ 位置嵌入得序列表示 $\mathbf{H}$，先过 $L_f$ 层频域去噪层（FFT→可学习复数滤波→IFFT→门控融合），再送入 $L_t$ 层 Transformer 编码器，取末位隐状态与 $\mathbf{E}^t+\mathbf{E}^v$ 点积全库打分。训练时联合优化交叉熵推荐损失与跨模态 InfoNCE 对比损失。
+对每个模态 $m\in\{v,t\}$，先用冻结编码器抽原始特征$\mathbf{F}^m$，构建 top-$K$稀疏物品语义图并做$L_g$层自适应图卷积得到去噪特征$\tilde{\mathbf{F}}^m$；再经 MoE 适配器投影到统一$d$维空间得$\mathbf{E}^v,\mathbf{E}^t$。按用户序列索引查表并融合（逐元素相加）+ 位置嵌入得序列表示$\mathbf{H}$，先过$L_f$层频域去噪层（FFT→可学习复数滤波→IFFT→门控融合），再送入$L_t$层 Transformer 编码器，取末位隐状态与$\mathbf{E}^t+\mathbf{E}^v$ 点积全库打分。训练时联合优化交叉熵推荐损失与跨模态 InfoNCE 对比损失。
 
 ```mermaid
 flowchart TD
@@ -60,13 +60,13 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **图结构低通特征去噪（GFD）**：痛点是用简单线性映射无法剔除预训练冗余。本文对每模态按余弦相似度建 top-$K$ 稀疏图并对称归一化 $\hat{\mathbf{A}}^m=(\mathbf{D}^m)^{-1/2}\mathbf{A}^m(\mathbf{D}^m)^{-1/2}$，逐层做**自适应加权**聚合：
+1. **图结构低通特征去噪（GFD）**：痛点是用简单线性映射无法剔除预训练冗余。本文对每模态按余弦相似度建 top-$K$稀疏图并对称归一化$\hat{\mathbf{A}}^m=(\mathbf{D}^m)^{-1/2}\mathbf{A}^m(\mathbf{D}^m)^{-1/2}$，逐层做**自适应加权**聚合：
 $$\mathbf{h}^{(l)}=w^{(l)}\mathbf{h}^{(l-1)}+(1-w^{(l)})\hat{\mathbf{A}}^m\mathbf{h}^{(l-1)},\quad w^{(l)}=\sigma(\alpha^{(l)})$$
 直觉：邻居聚合即图流形上的拉普拉斯平滑，等价于结构低通滤波，压制与语义邻域不一致的高频偏差；可学习 $w^{(l)}$ 让高质量特征保留自身信息、长尾稀疏物品更多吸收邻居信号，天然完成**隐式特征补全**，最后残差 + LayerNorm 防过平滑。
 
-2. **频域序列去噪（FSD）**：痛点是时域上误点击与真实兴趣不可分。将序列 $\mathbf{H}$ 变换到频域 $\mathbf{H}_f=\mathrm{FFT}(\mathbf{H})$，用可学习复数滤波器逐元素调制 $\tilde{\mathbf{H}}_f=\mathbf{W}\odot\mathbf{H}_f$，再 $\tilde{\mathbf{H}}=\mathrm{IFFT}(\tilde{\mathbf{H}}_f)$。关键区别于固定低通：$\mathbf{W}$ 是数据驱动的，既能压高频尖峰（误点击）也能压低频漂移（瞬时兴趣），保留高预测价值分量；并用门控 $\alpha=\sigma(\mathrm{MLP}([\mathbf{H}\|\tilde{\mathbf{H}}]))$ 做逐位置自适应融合 $\bar{\mathbf{H}}=\mathrm{LN}(\alpha\odot\tilde{\mathbf{H}}+(1-\alpha)\odot\mathbf{H})$，替代固定残差以调节去噪强度。
+2. **频域序列去噪（FSD）**：痛点是时域上误点击与真实兴趣不可分。将序列 $\mathbf{H}$变换到频域$\mathbf{H}_f=\mathrm{FFT}(\mathbf{H})$，用可学习复数滤波器逐元素调制$\tilde{\mathbf{H}}_f=\mathbf{W}\odot\mathbf{H}_f$，再$\tilde{\mathbf{H}}=\mathrm{IFFT}(\tilde{\mathbf{H}}_f)$。关键区别于固定低通：$\mathbf{W}$是数据驱动的，既能压高频尖峰（误点击）也能压低频漂移（瞬时兴趣），保留高预测价值分量；并用门控$\alpha=\sigma(\mathrm{MLP}([\mathbf{H}\|\tilde{\mathbf{H}}]))$做逐位置自适应融合$\bar{\mathbf{H}}=\mathrm{LN}(\alpha\odot\tilde{\mathbf{H}}+(1-\alpha)\odot\mathbf{H})$，替代固定残差以调节去噪强度。
 
-3. **训练目标、负采样与推理效率**：总损失 $\mathcal{L}=\mathcal{L}_{rec}+\lambda\mathcal{L}_{cl}$，其中 $\mathcal{L}_{rec}$ 为带温度 $\tau_{rec}$ 的全库 softmax 交叉熵（**免负采样**，分母遍历全物品集），$\mathcal{L}_{cl}$ 为图文正对、in-batch 负样本的对称 InfoNCE（$\tau_{cl}$，$\lambda=0.1$）。推理时仅需一次前向 + 全库点积，无扩散式迭代采样，开销与 SASRec 同量级。
+3. **训练目标、负采样与推理效率**：总损失 $\mathcal{L}=\mathcal{L}_{rec}+\lambda\mathcal{L}_{cl}$，其中$\mathcal{L}_{rec}$为带温度$\tau_{rec}$的全库 softmax 交叉熵（**免负采样**，分母遍历全物品集），$\mathcal{L}_{cl}$为图文正对、in-batch 负样本的对称 InfoNCE（$\tau_{cl}$，$\lambda=0.1$）。推理时仅需一次前向 + 全库点积，无扩散式迭代采样，开销与 SASRec 同量级。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -81,7 +81,7 @@ $$\mathbf{h}^{(l)}=w^{(l)}\mathbf{h}^{(l-1)}+(1-w^{(l)})\hat{\mathbf{A}}^m\mathb
 
 - **数据划分与防穿越**: `Leave-One-Out`（每序列最后一位测试、倒数第二位验证），文本用 RoBERTa、视觉用 CLIP ViT-B/32 冻结抽取。
 - **排名评测协议**: 无偏 `Full-Ranking`（全库未交互物品排序），指标 Recall@{10,20}、NDCG@{10,20}。
-- **对比基线与超参设置**: ID 基线 SASRec/BERT4Rec/FEARec/BSARec；多模态基线 UniSRec/MISSRec/MP4SR/TedRec/HM4SR/DMMD4SR（UniSRec、MISSRec、MP4SR 均从零训练，不用外部预训练）。Adam，lr=0.001，$L_g=2$，$K\in\{5,10,15,20\}$，$L_f\in\{1,2,3\}$，$\lambda=0.1$，5 次随机种子均值，配对 t 检验 $p<0.01$。
+- **对比基线与超参设置**: ID 基线 SASRec/BERT4Rec/FEARec/BSARec；多模态基线 UniSRec/MISSRec/MP4SR/TedRec/HM4SR/DMMD4SR（UniSRec、MISSRec、MP4SR 均从零训练，不用外部预训练）。Adam，lr=0.001，$L_g=2$，$K\in\{5,10,15,20\}$，$L_f\in\{1,2,3\}$，$\lambda=0.1$，5 次随机种子均值，配对 t 检验$p<0.01$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -117,10 +117,15 @@ $$\mathbf{h}^{(l)}=w^{(l)}\mathbf{h}^{(l-1)}+(1-w^{(l)})\hat{\mathbf{A}}^m\mathb
 2. **抗噪鲁棒性显著优于扩散式去噪**：在 50% 交互被随机替换的极端噪声下，DDMSR 的 R@20 仅下降 32.6%（MicroLens）/34.2%（Beauty），而 UniSRec 掉 45.0%、DMMD4SR 掉 45.8%——证明频域滤波器是主动衰减异常信号，而非普通恒等变换。
 3. **扩散去噪在推荐任务上"翻车"**：DMMD4SR 在四个数据集上全面低于其他多模态基线（如 Beauty R@20 仅 0.1171，低于 UniSRec 的 0.1262），说明前向-反向扩散的去噪目标与推荐目标不对齐、优化困难；本文的图低通 + 频域滤波以极低开销取得更优效果。此外长尾分桶实验（图 8）显示 DDMSR 在低流行度物品组上相对提升最高达约 30%，验证语义传播对长尾的补全作用。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 TedRec（仅在频域做文本-ID 融合，未处理特征冗余），本文把频域思想同时用于特征图与交互序列；相比 DMMD4SR（扩散迭代去特征噪声，忽略序列随机性且优化困难），本文用一次图平滑 + 一次 FFT/IFFT 完成双层净化，效率与效果双赢；相比 FMLP-Rec/BSARec（固定低通滤序列），本文滤波器可学习、可同时压高频与低频异常。
 - **可迁移亮点**: ①"图拉普拉斯平滑 = 结构低通滤波"的视角可直接迁移到任何用预训练 embedding 做召回的冷启动/长尾场景做轻量特征净化；②可学习复数频域滤波器 + 门控 IFFT 是即插即用模块，可前置于任意序列编码器（GRU4Rec/SASRec/Mamba）。
-- **审稿级局限批判**: ①频域滤波器的可解释性仅停留在"高频=噪声"的定性直觉，未给出频谱能量分布的定量证据；②$K$ 与 $L_f$ 的最优值随数据集漂移（Beauty/Toys 偏好 $K=5$，MicroLens 偏好 $K=20$），需逐数据集调参，且图构建需 $O(|\mathcal{I}|^2)$ 余弦相似度计算，物品规模上百万时需 ANN 近似；③仅在 4 个公开集离线 Full-Ranking 验证，缺少线上 A/B 与推理延迟实测。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+- **审稿级局限批判**: ①频域滤波器的可解释性仅停留在"高频=噪声"的定性直觉，未给出频谱能量分布的定量证据；②$K$与$L_f$的最优值随数据集漂移（Beauty/Toys 偏好$K=5$，MicroLens 偏好$K=20$），需逐数据集调参，且图构建需$O(|\mathcal{I}|^2)$ 余弦相似度计算，物品规模上百万时需 ANN 近似；③仅在 4 个公开集离线 Full-Ranking 验证，缺少线上 A/B 与推理延迟实测。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

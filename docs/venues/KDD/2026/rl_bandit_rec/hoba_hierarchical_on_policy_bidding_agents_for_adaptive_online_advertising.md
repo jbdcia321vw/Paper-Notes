@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-三层异步运行、共享式 (1) 的全局约束目标：高层 LLM 智能体以 1 小时为周期，将 campaign 状态（预算、CPA、市场、版位、历史统计）模板化为自然语言，经 Think-Act-Observe-Reflect 循环与历史经验检索生成超参 $\boldsymbol{\theta}_t$（出价上下界、响应模式、pacing 目标、探索系数），并硬裁剪至安全域；中层 SARSA 智能体每 2 分钟基于上下文 $x_\tau$ 在专家池中选一个专家，Q 值叠加因果效应与 UCB 探索项；底层专家池逐次拍卖执行出价，经双重裁剪保证满足高层约束。在线参数更新仅限中层 Q 网络，专家权重全程冻结。
+三层异步运行、共享式 (1) 的全局约束目标：高层 LLM 智能体以 1 小时为周期，将 campaign 状态（预算、CPA、市场、版位、历史统计）模板化为自然语言，经 Think-Act-Observe-Reflect 循环与历史经验检索生成超参 $\boldsymbol{\theta}_t$（出价上下界、响应模式、pacing 目标、探索系数），并硬裁剪至安全域；中层 SARSA 智能体每 2 分钟基于上下文$x_\tau$ 在专家池中选一个专家，Q 值叠加因果效应与 UCB 探索项；底层专家池逐次拍卖执行出价，经双重裁剪保证满足高层约束。在线参数更新仅限中层 Q 网络，专家权重全程冻结。
 
 ```mermaid
 flowchart TD
@@ -62,13 +62,13 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **LLM 超参推理 + 经验记忆（把「调参」变成可解释的上下文推理）**：痛点在于超参需逐 campaign 人工调且不可解释。LLM 从记忆库 $\mathcal{D}_{mem}$ 按余弦相似度检索 top-$k$ 经验 $M_t$，先产出根因分析 $a^{think}_t$，再生成 $\boldsymbol{\theta}_t$，执行一小时后计算预测偏差 $\boldsymbol{\delta}_t$ 并自评质量分 $s_{quality}=w_1 s_{obj}+w_2 s_{acc}+w_3 s_{risk}+w_4 s_{eff}$，将 $(s^H_i,\boldsymbol{\theta}_i,o_i,r^{reflect}_i,z_i)$ 写回记忆库。有效性直觉：小时级周期天然限制了错误超参的暴露窗口，且 JSON schema + 域约束 + 回退重试三重校验把 LLM 随机性挡在出价执行之外。
+1. **LLM 超参推理 + 经验记忆（把「调参」变成可解释的上下文推理）**：痛点在于超参需逐 campaign 人工调且不可解释。LLM 从记忆库 $\mathcal{D}_{mem}$按余弦相似度检索 top-$k$经验$M_t$，先产出根因分析$a^{think}_t$，再生成$\boldsymbol{\theta}_t$，执行一小时后计算预测偏差$\boldsymbol{\delta}_t$并自评质量分$s_{quality}=w_1 s_{obj}+w_2 s_{acc}+w_3 s_{risk}+w_4 s_{eff}$，将$(s^H_i,\boldsymbol{\theta}_i,o_i,r^{reflect}_i,z_i)$ 写回记忆库。有效性直觉：小时级周期天然限制了错误超参的暴露窗口，且 JSON schema + 域约束 + 回退重试三重校验把 LLM 随机性挡在出价执行之外。
 
-2. **因果去偏的 SARSA 专家选择（核心增量）**：历史日志中专家总在「有利上下文」被选中，朴素 Q-learning 会把选择偏差误当专家能力。作者用双稳健估计器估计 $\hat{\mu}(a)=\frac{1}{N}\sum_i[\hat{m}(x_i,a)+\frac{\mathbb{I}(a_i=a)}{\hat{\pi}(a|x_i)}(r_i-\hat{m}(x_i,a))]$（XGBoost 结果模型 + 逻辑回归倾向模型，倾向裁剪 $\geq 0.05$），选择动作为
+2. **因果去偏的 SARSA 专家选择（核心增量）**：历史日志中专家总在「有利上下文」被选中，朴素 Q-learning 会把选择偏差误当专家能力。作者用双稳健估计器估计 $\hat{\mu}(a)=\frac{1}{N}\sum_i[\hat{m}(x_i,a)+\frac{\mathbb{I}(a_i=a)}{\hat{\pi}(a|x_i)}(r_i-\hat{m}(x_i,a))]$（XGBoost 结果模型 + 逻辑回归倾向模型，倾向裁剪$\geq 0.05$），选择动作为
 $$a_\tau=\arg\max_{a}\Big[Q(x_\tau,a)+\hat{\mu}(a)+\theta^{explore}_t\cdot\beta\sqrt{\tfrac{\log\tau}{N_\tau(a)+1}}\Big]$$
 随后按 SARSA 做同策略更新 $\phi_{a_\tau}\leftarrow\phi_{a_\tau}-\alpha\nabla(Q(x_\tau,a_\tau)-[r_\tau+\gamma Q(x_{\tau+1},a_{\tau+1})])^2$。为何用 SARSA 而非 DQN：非平稳市场中 max 算子导致 Q 过估与频繁切换，同策略更新更稳（消融中切换频率 3.4/hr vs. 5.8/hr）。
 
-3. **奖励塑形、双重裁剪与推理开销**：$r_\tau=value_\tau-\lambda\cdot cost_\tau-\mu\cdot\mathbb{I}[a_\tau\neq a_{\tau-1}]-\eta\cdot|spend\_rate_\tau-target\_rate_\tau|$（$\mu=0.1,\eta=0.05$），切换惩罚抑制抖动、pacing 惩罚守住 CPA。最终出价 $b_\tau=\text{Clip}(\text{Clip}(\tilde{b}_\tau, q_{lower}\cdot CPA, q_{upper}\cdot CPA), b_{\tau-1}\pm\Delta_t)$，第一层守高层战略界、第二层限波动（约 ±20%），保证任何专家输出都不越界。无负采样概念（非检索任务）；在线 P99 延迟 38ms（LLM 摊销 15ms + SARSA 2ms + 专家 21ms），满足 <100ms 约束。
+3. **奖励塑形、双重裁剪与推理开销**：$r_\tau=value_\tau-\lambda\cdot cost_\tau-\mu\cdot\mathbb{I}[a_\tau\neq a_{\tau-1}]-\eta\cdot|spend\_rate_\tau-target\_rate_\tau|$（$\mu=0.1,\eta=0.05$），切换惩罚抑制抖动、pacing 惩罚守住 CPA。最终出价$b_\tau=\text{Clip}(\text{Clip}(\tilde{b}_\tau, q_{lower}\cdot CPA, q_{upper}\cdot CPA), b_{\tau-1}\pm\Delta_t)$，第一层守高层战略界、第二层限波动（约 ±20%），保证任何专家输出都不越界。无负采样概念（非检索任务）；在线 P99 延迟 38ms（LLM 摊销 15ms + SARSA 2ms + 专家 21ms），满足 <100ms 约束。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -81,7 +81,7 @@ $$a_\tau=\arg\max_{a}\Big[Q(x_\tau,a)+\hat{\mu}(a)+\theta^{explore}_t\cdot\beta\
 
 - **数据划分与防穿越 (Splitting Strategy)**: 采用**智能体替换协议**——将 48 个时间步的智能体依次替换为候选策略，每个替换配置独立执行 30 次试验取 top-5 均值，规避训练/测试轨迹泄漏。
 - **排名评测协议 (Ranking Protocol)**: 非检索式排序，采用 AuctionNet 官方 score $=\sum_i (o_i v_i)\cdot\min\{(C/CPA)^\beta,1\}$，$\beta=2$，联合优化转化价值与 CPA 达标度；预算档位 50%/75%/100%/125%/150% 五档全测。
-- **对比基线与超参设置**: 规则类 PID、MPC；离线 RL 类 BCQ、CQL、IQL、DT；进阶类 HRL-Bid、BO+SARSA。HOBA 中层状态 64 维，$\alpha=0.01,\gamma=0.95,\beta=2.0$，高层 GPT-4o（temp 0.7，top-$k=3$ 检索，阈值 0.7），显著性 $p<0.05$。
+- **对比基线与超参设置**: 规则类 PID、MPC；离线 RL 类 BCQ、CQL、IQL、DT；进阶类 HRL-Bid、BO+SARSA。HOBA 中层状态 64 维，$\alpha=0.01,\gamma=0.95,\beta=2.0$，高层 GPT-4o（temp 0.7，top-$k=3$检索，阈值 0.7），显著性$p<0.05$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -120,10 +120,15 @@ $$a_\tau=\arg\max_{a}\Big[Q(x_\tau,a)+\hat{\mu}(a)+\theta^{explore}_t\cdot\beta\
 2. **稀疏场景收益翻倍，因果去偏不可省**：Sparse 下提升 +9.7%~+12.1% 远高于 Standard 的 +3.0%~+4.7%；去掉双稳健估计掉 4.9%，说明转化信号稀缺时，历史选择偏差对 Q 值的污染被放大，去偏是稀疏场景增益的主要来源。
 3. **同策略优于异策略，LLM 优于规则/MLP**：SARSA→DQN 掉 6.4% 且切换频率从 3.4/hr 升至 5.8/hr，印证 max 算子在非平稳市场的过估问题；LLM→规则掉 6.8%、→MLP 掉 4.8%，说明收益来自上下文推理而非单纯参数映射。线上 Phase 2（4,982 campaigns）目标成本达成率 90.0%→93.2%（+3.6%），转化价值 $18.50M→$20.00M（+8.1%），冷启动 623 个 campaign 的 ROI 提升 +4.9%（高于 warm-start 均值 48%）。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 HRL-Bid 的固定 manager-worker 架构，HOBA 的 manager 由 LLM 承担并具备经验记忆与反思闭环，且三层各自有独立观测空间与决策周期；相比 BO+SARSA，用 LLM 上下文推理替代 50 次离线策略评估，把调参成本降 96%；相比 CQL/IQL/DT 等纯离线 RL，不改动专家本身，只在其上做安全的选择层，规避了动作坍缩。
 - **可迁移亮点**: ①「在线学习只学离散选择、连续动作交给冻结专家」这一安全范式可直接迁移到推荐系统的混排策略切换、多目标融合权重选择；②双稳健估计 + UCB 的组合可作为离线日志上做策略选择的通用去偏模板。
 - **审稿级局限批判**: ① 高层依赖 GPT-4o 外部 API，成本与可用性受第三方制约，且 LLM 决策的方差虽被 Clip 兜底但未被理论刻画；② 因果模型（XGBoost + 逻辑回归）每日重训于近 7 天数据，在极稀疏 campaign（<3 转化/天，占 2.8%）上估计失效，只能回退保守策略，冷启动泛化仍靠经验而非原理保证；③ 消融显示动态专家仅贡献 2.5%，其「保险」价值缺乏针对性压力测试支撑。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

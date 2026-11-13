@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-基准构建分两条流水线。**画像构建侧**：从 Amazon Review 采样评论数 ≥100 的用户，统计其最常购子类作为 target product type，仅保留该类购买史，交由 GPT-5-mini 结合商品元数据与评论文本生成叙事式购物上下文 $X$；再从历史中随机抽 seed item，按意图生成查询 $q$（TF 三种粒度 / AS 宽泛类目 / OE 无查询），并生成六维个性化清单 $C$。**评估侧**：智能体 $\mathcal{A}$ 在开放网络 $\mathcal{W}$ 上产出商品列表 $L=\mathcal{A}(q,X;\mathcal{W})$；对每个商品用 Playwright 全页渲染截图 + URL 送入带搜索能力的抽取器得到结构化信息 $I(r_i)$，再由 LLM-as-a-judge 逐条二值判定清单项，聚合为策展得分。
+基准构建分两条流水线。**画像构建侧**：从 Amazon Review 采样评论数 ≥100 的用户，统计其最常购子类作为 target product type，仅保留该类购买史，交由 GPT-5-mini 结合商品元数据与评论文本生成叙事式购物上下文 $X$；再从历史中随机抽 seed item，按意图生成查询$q$（TF 三种粒度 / AS 宽泛类目 / OE 无查询），并生成六维个性化清单$C$。**评估侧**：智能体$\mathcal{A}$在开放网络$\mathcal{W}$上产出商品列表$L=\mathcal{A}(q,X;\mathcal{W})$；对每个商品用 Playwright 全页渲染截图 + URL 送入带搜索能力的抽取器得到结构化信息$I(r_i)$，再由 LLM-as-a-judge 逐条二值判定清单项，聚合为策展得分。
 
 ```mermaid
 flowchart TD
@@ -66,7 +66,7 @@ flowchart TD
 
 3. **多模态抽取 + 清单驱动的可验证评分**：纯 URL 判定会因动态加载与广告噪声失真。本文用 Playwright 渲染全页截图集 $S_i$ 与 URL 联合输入抽取器：
 $$I(r_i)=\mathcal{M}_{\text{extract}}\big(\mathrm{URL}(r_i), S_i\big),\quad \text{Score}=\frac{1}{|\mathcal{U}|MK}\sum_{u}\sum_{m}\sum_{k} J\big(I(r_m),C_k\big)$$
-其中 $J\in\{0,1\}$ 为 judge 判定。与人类标注的 Cohen's $\kappa=0.732$、Spearman $\rho=0.743$（接近人际一致性 0.774），而去掉抽取信息后骤降至 0.44/0.38——说明"证据落地"是可靠评估的前提。该框架无需训练、无负采样，成本集中在网页渲染与 judge 调用。
+其中 $J\in\{0,1\}$为 judge 判定。与人类标注的 Cohen's$\kappa=0.732$、Spearman$\rho=0.743$（接近人际一致性 0.774），而去掉抽取信息后骤降至 0.44/0.38——说明"证据落地"是可靠评估的前提。该框架无需训练、无负采样，成本集中在网页渲染与 judge 调用。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -107,7 +107,7 @@ $$I(r_i)=\mathcal{M}_{\text{extract}}\big(\mathrm{URL}(r_i), S_i\big),\quad \tex
 
 评估框架自身的消融（对齐人类判断，250/50 样本）：
 
-| 配置 | 清单偏好对齐 Acc | Cohen's $\kappa$ | Spearman $\rho$ |
+| 配置 | 清单偏好对齐 Acc | Cohen's $\kappa$| Spearman$\rho$ |
 | :--- | :---: | :---: | :---: |
 | Query 表征 | 0.54 | — | — |
 | 购买史表征 | 0.70 | — | — |
@@ -123,10 +123,15 @@ $$I(r_i)=\mathcal{M}_{\text{extract}}\big(\mathrm{URL}(r_i), S_i\big),\quad \tex
 2. **查询具体度几乎无增益**：TF 三档查询得分差异普遍在 1–3 个百分点内（ChatGPT 37.81→34.79），因开放网络缺乏商业平台的结构化类目，查询改写难以带来互补检索结果。
 3. **失败集中在评论与价格两维**：约 70% 价格失败源于超预算推荐（动态价格 + 运费/税/折扣难以聚合）；评论失败主因是策展到"无评论页面"（No Review Page 比例 0.16–0.53），即找不到评论丰富的商品而非读不懂评论；此外 ChatGPT Search 仍有约 20% 商品链接为幻觉/无效页，Gemini 失败率高达 51.14%。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相较 WebShop（单平台、平均奖励、无个性化）与 DeepShop（仅加查询复杂度、无个性化），AgenticShop 首次同时覆盖 TF/AS/OE 三类意图 + 开放网络 + 清单级个性化；相较 PersonalWAB 仅在任务侧引入个性化，本文将个性化真正落到评估环节。
 - **可迁移亮点**: ① "真实行为史 → 叙事上下文 → 原子清单"的三级偏好蒸馏管线，可直接迁移到对话推荐/可解释推荐的用户建模；② 截图+URL 多模态抽取后再判定的"证据落地"范式，可复用于任何开放网页的 LLM 评估。
 - **审稿级局限批判**: ① 画像、查询、清单、judge 全部依赖 GPT-5-mini，存在自偏好与生成偏差，且 judge 与人类 $\kappa$ 仅 0.73，仍有约 1/4 判定分歧；② 评估成本高（Playwright 全页渲染 + 多次 LLM 调用），且网页动态变化导致基准不可完全复现；③ 仅 8 个系统、单一 judge 模型，缺少跨 judge 鲁棒性与多语言/多地区电商覆盖。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

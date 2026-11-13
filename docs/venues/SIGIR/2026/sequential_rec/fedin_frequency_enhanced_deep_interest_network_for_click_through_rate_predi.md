@@ -46,7 +46,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入为用户行为序列 $\mathbf{X}\in\mathbb{R}^{L\times D}$ 与目标物品 $\mathbf{X}_{tar}\in\mathbb{R}^{D}$。先经 RevIN 缓解行为分布漂移与非平稳性；随后双分支并行：时域分支做"目标注意力粗滤 + Patching Transformer 细粒度演化建模"，频域分支做"目标条件化频谱生成 + 复数 MLP 滤波 + 自适应共振缩放"；两分支逐元素相加得 $\mathbf{X}_{mix}$，最后由 Top-$k$ 目标注意力聚合为用户兴趣 $\mathbf{U}$，接 MLP 输出 CTR。双分支完全解耦、可并行执行，频域分支复杂度 $O(L\log L)$，优于自注意力的 $O(L^2)$。
+输入为用户行为序列 $\mathbf{X}\in\mathbb{R}^{L\times D}$与目标物品$\mathbf{X}_{tar}\in\mathbb{R}^{D}$。先经 RevIN 缓解行为分布漂移与非平稳性；随后双分支并行：时域分支做"目标注意力粗滤 + Patching Transformer 细粒度演化建模"，频域分支做"目标条件化频谱生成 + 复数 MLP 滤波 + 自适应共振缩放"；两分支逐元素相加得$\mathbf{X}_{mix}$，最后由 Top-$k$目标注意力聚合为用户兴趣$\mathbf{U}$，接 MLP 输出 CTR。双分支完全解耦、可并行执行，频域分支复杂度$O(L\log L)$，优于自注意力的$O(L^2)$。
 
 ```mermaid
 flowchart TD
@@ -65,7 +65,7 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **目标条件化频谱生成（Target-Aware Spectrum）**：痛点在于 DIFF 等对原始序列做 FFT，频谱与候选物品无关。本文先算原始注意力分数 $\mathbf{X}_{score}=\mathbf{X}\mathbf{X}_{tar}^{\top}/\alpha$，对其做 FFT 得 $\hat{\mathbf{X}}_{score}=\mathcal{F}(\mathbf{X}_{score})$，再以幅度谱 Softmax 作为频域权重调制序列频谱：
+1. **目标条件化频谱生成（Target-Aware Spectrum）**：痛点在于 DIFF 等对原始序列做 FFT，频谱与候选物品无关。本文先算原始注意力分数 $\mathbf{X}_{score}=\mathbf{X}\mathbf{X}_{tar}^{\top}/\alpha$，对其做 FFT 得$\hat{\mathbf{X}}_{score}=\mathcal{F}(\mathbf{X}_{score})$，再以幅度谱 Softmax 作为频域权重调制序列频谱：
 $$\hat{\mathbf{X}}_{attn}=\mathrm{Softmax}\big(\mathrm{Amp}(\hat{\mathbf{X}}_{score})\big)\otimes\mathcal{F}(\mathbf{X})$$
 直觉：Softmax 幅度谱等价于一个"目标激活的频率掩码"，只在用户与目标强共振的频段保留能量，从而把目标上下文注入频域分析。
 
@@ -73,7 +73,7 @@ $$\hat{\mathbf{X}}_{attn}=\mathrm{Softmax}\big(\mathrm{Amp}(\hat{\mathbf{X}}_{sc
 $$\mathbf{X}_{freq}=\mathrm{Sigmoid}\big(\mathrm{MLP}(\mathrm{Amp}(\hat{\mathbf{X}}_{score}))\big)\cdot\hat{\mathbf{X}}_{freq}$$
 低熵（共振清晰）时放大频域贡献，否则回退到时域——这正是对"正样本低熵"经验规律的显式建模。
 
-3. **训练目标、负采样与推理效率**：CTR 二分类交叉熵（FuxiCTR 框架默认），无显式负采样（曝光日志即负样本）；时域分支用非重叠 Patching（$P$ 为 patch 大小）将 Transformer 输入从 $L$ 降至 $N=L/P$，频域分支 $O(L\log L)$，双分支并行，实时推理开销可控。聚合端 Top-$k$ 目标注意力通过将非 top-$k$ 分数置 $-\infty$ 再 Softmax 保证可微，借鉴多任务"隔离参数防跷跷板"思想，避免弱兴趣信号稀释预测。
+3. **训练目标、负采样与推理效率**：CTR 二分类交叉熵（FuxiCTR 框架默认），无显式负采样（曝光日志即负样本）；时域分支用非重叠 Patching（$P$为 patch 大小）将 Transformer 输入从$L$降至$N=L/P$，频域分支$O(L\log L)$，双分支并行，实时推理开销可控。聚合端 Top-$k$目标注意力通过将非 top-$k$分数置$-\infty$ 再 Softmax 保证可微，借鉴多任务"隔离参数防跷跷板"思想，避免弱兴趣信号稀释预测。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -87,7 +87,7 @@ $$\mathbf{X}_{freq}=\mathrm{Sigmoid}\big(\mathrm{MLP}(\mathrm{Amp}(\hat{\mathbf{
 
 - **数据划分与防穿越 (Splitting Strategy)**: 按**全局时间戳**切分为 train/valid/test，严格防穿越。
 - **排名评测协议 (Ranking Protocol)**: 采用 CTR 场景标准 **AUC 与 GAUC**（用户级分组 AUC），非全库 ranking 指标；GAUC 对用户内排序更敏感，契合精排目标。
-- **对比基线与超参设置**: 基线含 Sum Pooling、DIN、DIEN、SASRec、BERT4Rec、GRU4Rec、BST、DIFF（DIFF 原为 next-item 任务，被改造为带候选物品 MLP 头的 CTR 版本）。统一 FuxiCTR 实现，Adam，lr $5e{-4}$，batch 2048，Embedding 维度 $d=32$，序列长度 100；显著性 $p<0.05$。
+- **对比基线与超参设置**: 基线含 Sum Pooling、DIN、DIEN、SASRec、BERT4Rec、GRU4Rec、BST、DIFF（DIFF 原为 next-item 任务，被改造为带候选物品 MLP 头的 CTR 版本）。统一 FuxiCTR 实现，Adam，lr $5e{-4}$，batch 2048，Embedding 维度$d=32$，序列长度 100；显著性$p<0.05$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -121,10 +121,15 @@ $$\mathbf{X}_{freq}=\mathrm{Sigmoid}\big(\mathrm{MLP}(\mathrm{Amp}(\hat{\mathbf{
 2. **"目标条件化"是频域分支的命门**：将目标条件谱换成静态可学习滤波（w/o Freq-Domain TA）后，Tmall GAUC 降 0.44pt、Alipay AUC 降 0.27pt，直接证实"脱离目标做频谱分析"次优，目标物品作为频率选择器的假设成立。
 3. **熵门控对稀疏场景收益最大**：去掉自适应缩放后 Alipay GAUC 降 0.32pt（0.9335→0.9303），而 Taobao 仅降 0.78pt 于 AUC 但 GAUC 降 0.78pt，说明在行为复杂度高、周期性弱的场景中，"按频谱清晰度动态调节频域依赖"比无条件融合更关键；抗噪实验（图 4）进一步显示随噪声率 $\rho$ 升至 0.8，频域分支相对性能衰减显著慢于时域分支。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 DIN 的本质区别是把目标注意力从"加权池化"改为"频域频率选择器"，并保留加权序列供细粒度演化建模；与 DIFF/FMLP-Rec 的本质区别是频谱变换对象从原始序列变为**目标条件化注意力分数**，且滤波为复数 MLP 而非固定/多序列滤波；与 SASRec/BERT4Rec 的区别是显式引入全局周期视角对抗点状噪声。
 - **可迁移亮点**: ① "对注意力分数而非原始输入做频域变换"可迁移到多模态序列、会话推荐等任意带 target attention 的结构；② 用频谱熵做门控的"按信号清晰度动态加权子分支"思路，可复用到多行为/多场景融合。
-- **审稿级局限批判**: ① 仅在三个阿里系电商/支付数据集验证，Embedding 维度仅 32、序列长度 100，长序列（$L\gg100$）下 FFT 与 Patching 的收益边界未探明；② 频域分支引入 FFT + 复数 MLP + 双分支并行，工业级 QPS 约束下的实际延迟与显存开销缺少线上 A/B 与吞吐报告；③ 频谱熵门控依赖超参 $k$ 与 patch size，图 3 显示二者均存在明显最优点，跨数据集鲁棒性需更多验证。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+- **审稿级局限批判**: ① 仅在三个阿里系电商/支付数据集验证，Embedding 维度仅 32、序列长度 100，长序列（$L\gg100$）下 FFT 与 Patching 的收益边界未探明；② 频域分支引入 FFT + 复数 MLP + 双分支并行，工业级 QPS 约束下的实际延迟与显存开销缺少线上 A/B 与吞吐报告；③ 频谱熵门控依赖超参$k$ 与 patch size，图 3 显示二者均存在明显最优点，跨数据集鲁棒性需更多验证。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

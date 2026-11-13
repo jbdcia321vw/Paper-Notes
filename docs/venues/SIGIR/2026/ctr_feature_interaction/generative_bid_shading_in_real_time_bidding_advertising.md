@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入为请求特征（用户/上下文/媒体）与上游排序分（pre-shadow bid $v$），编码器做多头自注意力特征交互，解码器以 `<SOS>` 起始自回归生成调价比例 token 序列，经解码函数 $g(\cdot)$ 累加残差得 $\alpha$，最终出价 $b=v\cdot\alpha$。训练分两段：预训练用 SFT（NTP 交叉熵 + 盈余负对数似然，teacher forcing 门控衰减 + gumbel-softmax 保可微）；后训练用 CHNet 作奖励模型，以盈余奖励与探索效用奖励构造组内相对优势，经 GRPO 更新策略。
+输入为请求特征（用户/上下文/媒体）与上游排序分（pre-shadow bid $v$），编码器做多头自注意力特征交互，解码器以 `<SOS>` 起始自回归生成调价比例 token 序列，经解码函数$g(\cdot)$累加残差得$\alpha$，最终出价$b=v\cdot\alpha$。训练分两段：预训练用 SFT（NTP 交叉熵 + 盈余负对数似然，teacher forcing 门控衰减 + gumbel-softmax 保可微）；后训练用 CHNet 作奖励模型，以盈余奖励与探索效用奖励构造组内相对优势，经 GRPO 更新策略。
 
 ```mermaid
 flowchart TD
@@ -59,11 +59,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **自回归残差调价生成（Autoregressive Residual Shading）**：针对离散桶独立预测丢失区间依赖的痛点，将 $\alpha$ 编码为单调递减 token 序列 $s_i=\{s_i^1,\dots,s_i^L\}$，满足 $s_i^1\ge s_i^2\ge\cdots\ge s_i^L$，解码为 $\alpha_i=g(s_i)=\sum_{l=1}^{L}g(s_i^l)$。词表由动态分位数算法构建（保证 token 唯一且频次均匀）。逐步残差累加使每步只需拟合剩余量，天然具备误差修正能力，且序列长度 $L\le 5$ 即可高精度逼近连续值。
+1. **自回归残差调价生成（Autoregressive Residual Shading）**：针对离散桶独立预测丢失区间依赖的痛点，将 $\alpha$编码为单调递减 token 序列$s_i=\{s_i^1,\dots,s_i^L\}$，满足$s_i^1\ge s_i^2\ge\cdots\ge s_i^L$，解码为$\alpha_i=g(s_i)=\sum_{l=1}^{L}g(s_i^l)$。词表由动态分位数算法构建（保证 token 唯一且频次均匀）。逐步残差累加使每步只需拟合剩余量，天然具备误差修正能力，且序列长度$L\le 5$ 即可高精度逼近连续值。
 
-2. **CHNet 通道感知分层动态奖励模型**：媒体计费方式各异导致出价景观跨通道差异大。显式通道层用通道嵌入经 MLP+reshape 生成 FC 权重 $W_{exp},b_{exp}$ 实例化场景专属层：$e_{explicit}=FC(e_{global};W_{exp},b_{exp})$；隐式层用通道嵌入生成 $G$ 组注意力头权重，再重参数化出各头 FC 参数，拼接后 softmax 输出 PDF。损失为 $L=\lambda_1 L_{win}+\lambda_2 L_{lose}+\lambda_3 L_{ranknet}$，其中 $L_{ranknet}$ 用胜/负样本对的胜率差做 pairwise 排序约束，弥补 FPA 下成交价非最小获胜价的监督缺失。
+2. **CHNet 通道感知分层动态奖励模型**：媒体计费方式各异导致出价景观跨通道差异大。显式通道层用通道嵌入经 MLP+reshape 生成 FC 权重 $W_{exp},b_{exp}$实例化场景专属层：$e_{explicit}=FC(e_{global};W_{exp},b_{exp})$；隐式层用通道嵌入生成$G$组注意力头权重，再重参数化出各头 FC 参数，拼接后 softmax 输出 PDF。损失为$L=\lambda_1 L_{win}+\lambda_2 L_{lose}+\lambda_3 L_{ranknet}$，其中$L_{ranknet}$ 用胜/负样本对的胜率差做 pairwise 排序约束，弥补 FPA 下成交价非最小获胜价的监督缺失。
 
-3. **GRPO 双奖励偏好对齐与训练目标**：预训练损失 $L=L_{NTP}+\lambda L_{surplus}$；后训练对每请求采样 $m$ 个 $\alpha$，奖励 $r=r_{surplus}+\omega\cdot r_{exploration}$，其中 $r_{exploration}=\phi_E(x_i,b_i)/C(b_i)$（胜率熵除以成本），探索权重 $\omega_i=\cos(e_i,\bar{e})$ 按代表性自适应分配。优势 $A_i=\frac{r_i-\text{mean}(\{r\})}{\text{std}(\{r\})}$，目标为带 clip 与 KL 惩罚的 GRPO 式 (17)。负采样方面无需显式负采样，靠组内相对比较；推理时直接一次前向输出 $\alpha$，无搜索开销。
+3. **GRPO 双奖励偏好对齐与训练目标**：预训练损失 $L=L_{NTP}+\lambda L_{surplus}$；后训练对每请求采样$m$个$\alpha$，奖励$r=r_{surplus}+\omega\cdot r_{exploration}$，其中$r_{exploration}=\phi_E(x_i,b_i)/C(b_i)$（胜率熵除以成本），探索权重$\omega_i=\cos(e_i,\bar{e})$按代表性自适应分配。优势$A_i=\frac{r_i-\text{mean}(\{r\})}{\text{std}(\{r\})}$，目标为带 clip 与 KL 惩罚的 GRPO 式 (17)。负采样方面无需显式负采样，靠组内相对比较；推理时直接一次前向输出$\alpha$，无搜索开销。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -75,8 +75,8 @@ flowchart TD
 | Private (美团) | 162,549,577 | 3.89% | 197 | 一个月竞价采样，仅测试集含最小获胜价 |
 
 - **数据划分与防穿越**: 两数据集均按 **7/3 随机划分**；并将训练/测试各切 100 段模拟请求连续到达，逐轮用胜/负标签更新 CHNet 与生成模型，共 100 轮。
-- **排名评测协议**: 非排序任务，采用业务指标 **盈余 Surplus $=\sum_i (v_i-b_i)\mathbb{I}(b_i>z_i)$** 与 **盈余率 SR $=\sum(v_i-b_i)\mathbb{I}(b_i>z_i)/\sum(v_i-z_i)$**（相对理论最优盈余的百分比）。
-- **对比基线与超参**: 基线含两阶段 EDDN/WR/TSBS-DLF/TSBS-ADM、端到端 MEBS、生成式 CVAE/DF 及其后训练版 Post-CVAE/Post-DF。预训练 Adam，batch $2^{10}$，lr $1e{-4}$，$L=5$，TF 门控 $\eta=5000$，$\tau=0.2$；CHNet 损失权重 $\lambda_1,\lambda_2,\lambda_3=0.5,1,0.2$，GRPO KL 权重 $\beta=0.01$。
+- **排名评测协议**: 非排序任务，采用业务指标 **盈余 Surplus $=\sum_i (v_i-b_i)\mathbb{I}(b_i>z_i)$** 与 **盈余率 SR$=\sum(v_i-b_i)\mathbb{I}(b_i>z_i)/\sum(v_i-z_i)$**（相对理论最优盈余的百分比）。
+- **对比基线与超参**: 基线含两阶段 EDDN/WR/TSBS-DLF/TSBS-ADM、端到端 MEBS、生成式 CVAE/DF 及其后训练版 Post-CVAE/Post-DF。预训练 Adam，batch $2^{10}$，lr$1e{-4}$，$L=5$，TF 门控$\eta=5000$，$\tau=0.2$；CHNet 损失权重$\lambda_1,\lambda_2,\lambda_3=0.5,1,0.2$，GRPO KL 权重$\beta=0.01$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -110,10 +110,15 @@ flowchart TD
 2. **自回归残差生成优于 CVAE 先验**：w/o GM 换回 CVAE 使 SR 降 5.11pp，验证逐步残差输出对连续值精细逼近的必要性；而 CVAE 加后训练（Post-CVAE）仍落后 GBS 5.11pp，说明生成架构本身贡献独立于对齐。
 3. **CHNet 与探索奖励互补**：w/o CHNet 降 3.58pp、w/o EUA 仅降 0.20pp，但 CHNet 的 AUC 从 0.8966（w/o EUA）升至 0.9005、BCE 从 0.1674 降至 0.1664，表明通道分层建模提升景观预测精度，探索模块主要缓解选择偏差、增益体现在泛化而非即时指标。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相较 TSBS-ADM 等两阶段法，GBS 用端到端生成消除级联误差与单峰假设；相较 MEBS 的端到端监督，GBS 引入 RL 后训练跳出 SFT 局部最优；相较 CVAE/DF 生成式基线，GBS 的残差 token 序列显式建模区间依赖，且首次将 GRPO 用于出价调价。
 - **可迁移亮点**: ① 单调残差 token 化 + 动态分位词表，可迁移到任意连续标量（如出价、预算、折扣）的生成式回归；② 用胜率熵/成本构造探索奖励并按样本代表性加权，是缓解竞价类选择偏差的通用技巧。
 - **审稿级局限批判**: ① 词表构建依赖两阶段方法产出的伪标签，若上游景观估计本身偏差大，预训练天花板受限；② 线上仅报相对提升、未给绝对 ROI/CPM 与置信区间，且私有数据胜率仅 3.89%，长尾稀疏场景下 CHNet 校准稳定性存疑。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

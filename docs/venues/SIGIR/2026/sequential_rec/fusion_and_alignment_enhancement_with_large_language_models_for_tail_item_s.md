@@ -1,181 +1,136 @@
 ---
 title: "[Paper Note] Fusion and Alignment Enhancement with Large Language Models for Tail-item Sequential Recommendation"
-description: "[SIGIR 2026][序列与会话推荐] 用自适应门控融合 ID/LLM 嵌入并以双层对齐+课程学习缓解长尾物品表征不足，在三个数据集多骨干上稳定提升。"
+description: "[SIGIR 2026][序列与会话推荐] 用自适应门控融合 ID/LLM 嵌入并以双层对齐+课程学习消除空间结构冲突，全库排序下尾部长尾 H@10 最高提升 427%。"
 tags:
   - SIGIR 2026
   - 序列与会话推荐
   - 召回
-  - LLM 语义嵌入融合
-  - 长尾物品表征
-  - 对比学习对齐
-date: 2026-11-12
+  - 自适应门控融合
+  - 双层对齐
+  - 长尾物品
+date: 2026-11-13
 venue: SIGIR
 year: 2026
 paper_url: "https://arxiv.org/abs/2604.03688v1"
 code_url: "https://github.com/ZhifuWei/FAERec"
 categories:
   - sequential_rec
-  - llm_rec
+  - cold_start_rec
 ---
 
-# Fusion and Alignment Enhancement with Large Language Models for Tail-item Sequential Recommendation (面向长尾物品序列推荐的大语言模型融合与对齐增强)
+# Fusion and Alignment Enhancement with Large Language Models for Tail-item Sequential Recommendation (面向长尾物品序列推荐的大模型融合与对齐增强)
 
 - **会议/期刊**: SIGIR 2026
-- **推荐链路定位**: 召回 (Retrieval) — 序列下一物品预测（Next-Item Prediction）
-- **研究方向**: 序列与会话推荐 / 大语言模型推荐 (LLM4Rec)
+- **作者与机构**: Zhifu Wei, Yizhou Dang, Guibing Guo (东北大学), Chuang Zhao (天津大学), Zhu Sun (SUTD)
+- **推荐链路定位**: 召回（序列下一物品预测）
+- **研究方向**: 序列与会话推荐 / 冷启动与长尾推荐
 - **论文原文**: [https://arxiv.org/abs/2604.03688v1](https://arxiv.org/abs/2604.03688v1)
 - **开源代码**: [https://github.com/ZhifuWei/FAERec](https://github.com/ZhifuWei/FAERec)
 
-## TL;DR (核心速览)
+## TL;DR (1分钟核心速览)
 
-针对序列推荐中长尾物品交互稀疏、ID 嵌入表征不足的痛点，FAERec 提出**自适应门控融合**（逐维加权融合 ID 与 LLM 语义嵌入）与**双层对齐**（物品级对比对齐 + 特征级 Barlow Twins 结构对齐，并用余弦课程学习调度两者权重），在 Beauty/Grocery/Yelp 三个数据集、三种 SR 骨干上以 Full-Ranking 协议稳定超越最强基线，长尾物品提升尤为显著。
+序列推荐中大量长尾物品交互稀疏，纯 ID 嵌入无法学到有效转移模式。现有 LLM 增强方法只把语义嵌入当"辅助信号"（初始化或对比迁移），推理时丢弃语义，且忽视 ID 空间（协同结构）与 LLM 空间（语义结构）的维度组织不一致，引入冲突信号。FAERec 提出**逐维自适应门控融合**保留双源信息，并用**物品级对比对齐 + 特征级 Barlow-Twins 对齐**（课程学习调度）消除结构冲突。在 Beauty/Grocery/Yelp 三数据集、6 种骨干上，Leave-One-Out + Full-Ranking 协议下尾物品 H@10 相对最优基线最高提升 427.35%（LRURec 骨干）。
 
-## Background & Motivation (背景与动机)
+## Background & Motivation (背景与核心矛盾)
 
-- **领域背景与主流范式**: 序列推荐（SR）以 SASRec/BERT4Rec 等 Transformer 架构为主流，核心依赖**随机初始化的 ID 嵌入**从用户-物品交互中学习协同信号，从而刻画物品转移模式。
-- **现有方法局限 (Limitations of Prior Work)**:
-  1. **语义利用不足 (Insufficient Semantic Leveraging)**：语义初始化（LLM2Bert4Rec、SAID）与知识迁移（RLMRec、LLM-ESR）仅把 LLM 嵌入当作学习 ID 嵌入的**辅助信号**，最终物品表征中并不显式保留 LLM 语义，导致融合质量次优（图 1(b)）。
-  2. **空间结构不一致 (Inconsistent Space Structures)**：ID 空间编码协同模式、LLM 空间编码文本语义，二者**维度组织方式与维度间相关性不同**，导致同一物品在两个空间中的邻域不一致——协同空间相近的物品在语义空间可能很远，引入冲突信号、损害精度（图 1(c)）。
-- **核心挑战 (Key Challenge)**: 长尾物品交互极少，纯协同信号无法提供足够信息；而简单拼接/相加 ID 与 LLM 嵌入既无法逐维平衡两类信号，也无法消除两空间的结构错位，反而放大冲突。
-- **核心洞察与切入点 (Key Insight)**: 作者在 Amazon Beauty 上训练 SASRec 并按交互频次分桶（图 1(a)），发现**大多数物品交互少于 5 条且性能明显偏低**，验证长尾瓶颈源于 ID 模型对协同信号的单一依赖。由此提出：既要**显式融合**（而非仅作辅助），又要**结构对齐**（而非仅点对点迁移）。
+- **主流范式**: 序列推荐以 SASRec/FMLP-Rec/LRURec 等 ID 嵌入模型为主，靠交互数据学协同转移模式；长尾侧则用头部物品知识迁移（CITIES/MELT/LOAM）或 LLM 语义增强（LLMInit 初始化、RLMRec 跨视图互信息、LLM-ESR 双视图蒸馏）。
+- **前人局限**: ① **语义利用不足**——LLMInit/RLMRec 仅把 LLM 嵌入当训练期辅助信号，最终物品表示中不保留语义，长尾物品仍缺信息；② **空间结构不一致**——ID 空间按协同模式组织维度、LLM 空间按文本语义组织维度，两空间近邻关系错位，强行融合产生冲突梯度。
+- **核心洞察 (Key Insight)**: 作者在 Beauty 上统计发现多数物品交互 <5 次且 SASRec 对其 H@10 极低；t-SNE 可视化（图 5）显示 LLM-ESR 的 ID/LLM 嵌入分布严重错位，而 RLMRec-Con 仅靠对比学习只能做到"分布相似"，无法保证维度级结构一致。
+- **本文切入点**: 融合要"保留双源"（门控插值而非单向迁移），对齐要"由点到面"（物品级对应 → 特征级相关结构），并用课程学习避免复杂目标过早介入。
 
-## Problem Formulation & Method (问题定义与方法架构)
+## Method (核心方法设计)
 
-### 1. 符号定义与输入表征 (Notations & Input Representations)
+### 1. 整体框架 (Overall Architecture)
 
-- 用户集 $\mathcal{U}$、物品集 $\mathcal{V}$；用户 $u$ 的时序交互序列 $s_u=[v_1,\dots,v_{|s_u|}]$，目标为预测 $v_{|s_u|+1}$：
-$$\arg\max_{v^*\in\mathcal{V}} P(v_{|s_u|+1}=v^*\mid s_u)$$
-- **ID 嵌入**：$\mathbf{E}^{ID}\in\mathbb{R}^{|\mathcal{V}|\times d}$，可训练，$d$ 为推荐模型隐维（典型 64/128）。
-- **LLM 嵌入**：原始维度 $d_{llm}$（如 OpenAI text-embedding-ada-002 的 1536 维），经两层 MLP 投影 $f_\theta(\cdot)$ 降至 $d$：$\mathbf{e}^{LLM}_i=f_\theta(\mathbf{e}^{LLM,ori}_i)$，原始 LLM 嵌入**全程冻结**、离线预生成并缓存。
-- **头/尾划分**：按流行度 $p_v$ 降序，依 Pareto 原则取前 20% 为头物品 $\mathcal{V}_{head}$，其余为尾物品 $\mathcal{V}_{tail}=\mathcal{V}\setminus\mathcal{V}_{head}$。
-
-### 2. 整体流水线 (Overall Architecture)
-
-数据流：物品属性构造 Prompt → LLM API 离线编码并缓存 → MLP 投影至 $d$ 维（PCA 初始化 ID 嵌入）→ 自适应门控逐维融合 ID/LLM 嵌入 → 融合序列送入 SR 编码器 → 下一物品打分；训练时并行施加物品级与特征级对齐损失，由课程学习调度权重。
+物品文本经 LLM API（text-embedding-ada-002）离线编码并缓存，经两层 MLP 投影到 $d$维；同时用 PCA 降维后的 LLM 嵌入初始化 ID 嵌入层以缓解优化不平衡。训练时每个物品的 ID 与 LLM 嵌入拼接后过门控网络，输出逐维权重做插值得到融合嵌入$\mathbf{f}_i$，送入任意 SR 编码器（SASRec/FMLP-Rec/LRURec 等）做下一物品预测。辅助分支上，物品级对比对齐与特征级 Barlow-Twins 对齐由余弦课程调度器加权，与 BCE 主损失联合优化。推理时因两空间已对齐，直接等权平均 ID 与 LLM 嵌入，省去门控开销。
 
 ```mermaid
 flowchart TD
-    A["输入层: 物品属性 Prompt (title/brand/category/description)"] --> B["LLM API 离线编码 + 缓存 (1536维)"]
-    A2["ID Embedding 表 (可训练, d维)"] --> C["自适应门控融合 (逐维加权)"]
-    B --> B2["两层 MLP 投影至 d 维 (冻结原嵌入)"]
-    B2 --> C
-    C --> D["融合序列 F_u 送入 SR Encoder (SASRec/BERT4Rec/GRU4Rec)"]
-    D --> E["下一物品打分预测"]
-    C --> F["双层对齐: 物品级对比 + 特征级 Barlow Twins"]
-    F --> G["课程学习调度器 (余弦退火平衡两损失)"]
+    A["物品文本 Prompt"] --> B["LLM 离线编码 + MLP 投影"]
+    A2["ID 嵌入层 (PCA 初始化)"] --> C["逐维自适应门控融合"]
+    B --> C
+    C --> D["SR 编码器 (SASRec/FMLP/LRURec)"]
+    C --> E["物品级对比对齐 L_ILA"]
+    C --> F["特征级 Barlow 对齐 L_FLA (按流行度分组)"]
+    E --> G["余弦课程调度加权 L_align"]
+    F --> G
+    D --> H["BCE 下一物品预测"]
+    G --> H
 ```
 
-<figure class="paper-figure" markdown="span">
-  ![图 2](../../../../assets/papers/2604.03688v1/figure_2.png)<figcaption>图 2</figcaption>
-</figure>
+### 2. 关键设计拆解 (Key Designs)
 
-### 3. 核心模块设计与数学原理 (Key Designs & Formulations)
+1. **逐维自适应门控融合 (AGF)**：痛点是不加区分地拼接/相加会让头部物品的强协同信号淹没长尾语义信号。做法是把 $[\mathbf{e}^{ID}_i \oplus \mathbf{e}^{LLM}_i]$送入两层 MLP 得门控向量$\mathbf{g}_i=\sigma(\mathbf{W}_2(\mathbf{W}_1[\mathbf{e}^{ID}_i\oplus\mathbf{e}^{LLM}_i]+\mathbf{b}_1)+\mathbf{b}_2)\in[0,1]^d$，再逐维插值$\mathbf{f}_i=\mathbf{g}_i\odot\mathbf{e}^{ID}_i+(1-\mathbf{g}_i)\odot\mathbf{e}^{LLM}_i$。直觉：每个维度独立决定"信协同还是信语义"，长尾物品的门控自然向语义侧偏移，头部物品保留协同主导。
 
-**(1) 自适应门控融合 (Adaptive Gating Fusion)**
-将物品 $v_i$ 的 ID 与 LLM 嵌入拼接后过门控网络，输出逐维权重 $\mathbf{g}_i\in[0,1]^d$：
-$$\mathbf{g}_i=\sigma\big(\mathbf{W}_2(\mathbf{W}_1[\mathbf{e}^{ID}_i\oplus\mathbf{e}^{LLM}_i]+\mathbf{b}_1)+\mathbf{b}_2\big)$$
-其中 $\mathbf{W}_1\in\mathbb{R}^{2d\times 2d}$、$\mathbf{W}_2\in\mathbb{R}^{d\times 2d}$。最终融合嵌入为逐维插值：
-$$\mathbf{f}_i=\mathbf{g}_i\odot\mathbf{e}^{ID}_i+(1-\mathbf{g}_i)\odot\mathbf{e}^{LLM}_i$$
-物理直觉：头物品协同信号可靠、门控偏向 ID；尾物品语义更可靠、门控偏向 LLM，实现**逐维细粒度互补**。此外用 PCA 将 LLM 嵌入降至 $d$ 维初始化 ID 嵌入，缓解"预训练 vs 从零学习"的优化不平衡。
+2. **双层对齐 (ILA + FLA)**：物品级用 InfoNCE 建立点对点对应，$\mathcal{L}_{ILA}=-\frac{1}{K}\sum_i\log\frac{\exp(\mathrm{sim}(\mathbf{e}^{ID}_i,\mathbf{e}^{LLM}_i)/\tau)}{\sum_j\exp(\mathrm{sim}(\mathbf{e}^{ID}_i,\mathbf{e}^{LLM}_j)/\tau)}$；特征级借鉴 Barlow Twins，先按批内**流行度中位数**把物品切成高/低流行两组（防止头部主导统计量），组内沿 batch 维标准化后算交叉相关矩阵$\mathbf{C}$，损失为$\mathcal{L}_{FLA}=\sum_i(1-\mathbf{C}_{ii})^2+\lambda\sum_{i}\sum_{j\neq i}\mathbf{C}_{ij}^2$——对角项拉齐对应维度、非对角项解耦冗余维度。直觉：ILA 保证"同一物品两视图靠近"，FLA 保证"两空间用相同维度编码相同信息"，后者才是结构一致性的真正来源。
 
-**(2) 物品级对齐 (Item-Level Alignment)**
-对 batch 内 $K$ 个物品，以同一物品的 ID-LLM 对为正例、不同物品为负例做 InfoNCE 对比：
-$$\mathcal{L}_{ILA}=-\frac{1}{K}\sum_{i=1}^{K}\log\frac{\exp(\text{sim}(\mathbf{e}^{ID}_i,\mathbf{e}^{LLM}_i)/\tau)}{\sum_{j=1}^{K}\exp(\text{sim}(\mathbf{e}^{ID}_i,\mathbf{e}^{LLM}_j)/\tau)}$$
-建立两空间**点对点**对应关系。
-
-**(3) 特征级对齐 (Feature-Level Alignment)**
-借鉴 Barlow Twins，先按 batch 维标准化（式 7），再计算跨视图相关矩阵 $\mathbf{C}\in\mathbb{R}^{d\times d}$：
-$$C_{ij}=\frac{\sum_{s=1}^{S}\tilde{e}^{ID}_{s,i}\tilde{e}^{LLM}_{s,j}}{\sqrt{\sum_{s=1}^{S}(\tilde{e}^{ID}_{s,i})^2}\sqrt{\sum_{s=1}^{S}(\tilde{e}^{LLM}_{s,j})^2}}$$
-损失含**不变性项**（对角对齐）与**冗余消减项**（非对角解耦）：
-$$\mathcal{L}_{FLA}=\sum_{i}(1-C_{ii})^2+\lambda\sum_{i}\sum_{j\neq i}(C_{ij})^2$$
-关键设计：以 batch 内**流行度中位数** $p_{median}$ 将物品分为高/低流行度两组分别计算（$\mathcal{L}_{FLA}=\mathcal{L}^{B_h}_{FLA}+\mathcal{L}^{B_l}_{FLA}$），避免高流行物品主导 batch 统计、削弱尾物品对齐效果。
-
-**(4) 课程学习调度 (Curriculum Learning Scheduler)**
-物品级对齐是简单点对点任务、特征级对齐是复杂空间结构任务，若同时施加会过早约束空间结构引入噪声。故用余弦调度动态调整物品级损失权重：
-$$w_i(t)=(w_{max}-w_{min})\cdot\frac{1+\cos(2\pi t/T)}{2}$$
-（原文后续公式在提取文本中被截断，具体 $w_{max}/w_{min}/T$ 取值需参见原文。）
-
-### 4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling & Complexity)
-
-- **损失函数**: 总损失为推荐主损失（依骨干而定，如 SASRec 的 BCE/CE）与对齐损失加权和，对齐部分 $\mathcal{L}_{align}=w_i(t)\cdot\mathcal{L}_{ILA}+w_f(t)\cdot\mathcal{L}_{FLA}$，其中 $\tau$ 为对比温度、$\lambda$ 为特征级冗余项权重（原文以 $\lambda$、$\alpha$ 做敏感度分析，见图 3）。
-- **训练负采样策略**: 物品级对齐采用 **In-batch 负采样**（batch 内其他物品的 LLM 嵌入作负例）；推荐主任务负采样策略依骨干默认设置（原文未额外强调）。
-- **时间与空间复杂度**: LLM 嵌入**离线预生成并缓存**，训练/推理阶段无额外 LLM 前向开销；在线仅增加门控网络（$2d\to2d\to d$ 两层 MLP）与投影网络的前向，复杂度为 $O(d^2)$ 量级，可忽略。对齐损失仅在训练期计算，推理不引入额外开销。原文未报告具体 ms/request 延迟与峰值显存数值。
+3. **课程学习调度与训练目标**：FLA 是空间结构级复杂目标，早期直接施加会污染 ILA 刚建立的对应关系。权重 $w_i(t)=(w_{\max}-w_{\min})\cdot\frac{1+\cos(2\pi t/T)}{2}+w_{\min}$余弦振荡，总损失$\mathcal{L}=\mathcal{L}_{rec}+\alpha\cdot[w_i(t)\mathcal{L}_{ILA}+(1-w_i(t))\mathcal{L}_{FLA}]$。负采样沿用 SR 常规 BCE 单负样本；LLM 嵌入全离线缓存，在线仅多一次门控 MLP 前向（推理时更可省去），开销可忽略。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
-- **数据集统计与预处理**: 三个公开数据集（Beauty、Grocery、Yelp），统计如下：
+- **数据集与预处理**: 过滤交互数 <3 的用户（冷启动用户不在研究范围），最大序列长度 50：
 
-<figure class="paper-figure" markdown="span">
-  ![表 1](../../../../assets/papers/2604.03688v1/table_1.png)<figcaption>表 1</figcaption>
-</figure>
+| 数据集 | #Users | #Items | 稀疏度 | 平均序列长 | 场景说明 |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| Beauty | 52,204 | 57,289 | 99.99% | 7.56 | Amazon 美妆 |
+| Grocery | 32,126 | 39,264 | 99.98% | 8.57 | Amazon 食品杂货 |
+| Yelp | 15,720 | 11,383 | 99.89% | 12.23 | 本地商户签到 |
 
-| 数据集 (Dataset) | 用户数 (#Users) | 物品数 (#Items) | 交互数 (#Interactions) | 稀疏度 (Sparsity) | 平均序列长度 (Avg.length) |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| Beauty | 52,204 | 57,289 | 原文未单列 | 99.99% | 7.56 |
-| Grocery | 32,126 | 39,264 | 原文未单列 | 99.98% | 8.57 |
-| Yelp | 15,720 | 11,383 | 原文未单列 | 99.89% | 12.23 |
+- **数据划分与防穿越**: `Leave-One-Out`（最后一项测试、倒数第二项验证），序列按时间顺序，无未来信息泄漏。
+- **排名评测协议**: 无偏 `Full-Ranking`（全物品库排序，非采样），指标 H@K / N@K，$K\in\{5,10,20\}$；长尾按帕累托原则取流行度后 80% 物品为$\mathcal{V}_{tail}$。
+- **对比基线与超参**: 传统长尾方法 CITIES/MELT/LOAM + LLM 方法 RLMRec-Con/RLMRec-Gen/LLMInit/LLM-ESR；骨干 SASRec、FMLP-Rec、LRURec（另加 NARM/LightSANs/gMLP 验证泛化）。嵌入维度 $d=128$，batch 256，Adam lr=0.001；$\lambda\in\{0.001,\dots,0.1\}$、$\alpha\in\{0.1,\dots,0.5\}$ 网格调参。
 
-- **数据划分方式 (Splitting Strategy)**: 原文提取文本未明确给出划分细节（正文相关段落被截断），按该领域惯例大概率为 **Leave-One-Out (留一法)** 或按时间序列切分；**具体划分需以原文完整版为准**，此处不做臆断。
-- **排名评测协议 (Ranking Protocol)**: 原文提取文本未显式声明 Full-Ranking 或 Sampled Ranking，需以原文实验章节为准（本笔记不臆造）。
-- **评价指标与显著性检验**: 采用序列推荐常用指标（如 HR@N / NDCG@N，具体 $N$ 与是否做配对显著性检验原文提取文本未完整呈现，需参见原文）。Embedding 维度 $d$ 与骨干对齐（典型 64/128）。
-
-## Key Experimental Results (核心实验结果)
+## Key Experimental Results (实验关键数据)
 
 ### 1. 主实验对比 (Main Results)
 
-原文表 2 报告了在多种 SR 骨干（SASRec/BERT4Rec/GRU4Rec 等）上与各基线（含语义初始化、知识迁移类 LLM 增强方法）的对比，FAERec 在三个数据集上均取得最优，并以 `Impr.` 列给出相对最强基线的提升。**具体数值因提取文本截断未完整呈现，需以原文表 2 为准**，下表为结构性占位：
+Beauty 数据集（SASRec / LRURec 骨干，Full-Ranking）：
 
-<figure class="paper-figure" markdown="span">
-  ![表 2](../../../../assets/papers/2604.03688v1/table_2.png)<figcaption>表 2</figcaption>
-</figure>
+| 方法 | SASRec H@10 | SASRec N@10 | SASRec Tail H@10 | LRURec H@10 | LRURec Tail H@10 |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Base (骨干) | 0.0331 | 0.0180 | 0.0113 | 0.0349 | 0.0108 |
+| CITIES | 0.0305 | 0.0159 | 0.0106 | 0.0330 | 0.0101 |
+| LOAM | 0.0300 | 0.0158 | 0.0115 | 0.0302 | 0.0110 |
+| MELT | 0.0178 | 0.0088 | 0.0001 | 0.0242 | 0.0018 |
+| RLMRec-Con | 0.0521 | 0.0287 | 0.0239 | 0.0372 | 0.0117 |
+| RLMRec-Gen | 0.0439 | 0.0242 | 0.0122 | 0.0418 | 0.0098 |
+| LLMInit | 0.0377 | 0.0200 | 0.0103 | 0.0383 | 0.0096 |
+| LLM-ESR | 0.0269 | 0.0140 | 0.0049 | 0.0277 | 0.0045 |
+| **FAERec** | **0.0642** | **0.0372** | **0.0633** | **0.0644** | **0.0617** |
+| Improv. | +23.22% | +29.62% | +164.85% | +54.07% | +427.35% |
 
-| 数据集 | 指标 | 传统/协同过滤基线 | 序列/LLM 增强最强基线 | 本文方法 (FAERec) | 相对提升 (Improv.) |
-| :--- | :--- | :---: | :---: | :---: | :---: |
-| Beauty | HR@N / NDCG@N | 原文表 2 | 原文表 2 | **最优** | 原文表 2 `Impr.` |
-| Grocery | HR@N / NDCG@N | 原文表 2 | 原文表 2 | **最优** | 原文表 2 `Impr.` |
-| Yelp | HR@N / NDCG@N | 原文表 2 | 原文表 2 | **最优** | 原文表 2 `Impr.` |
+Grocery 上 SASRec 骨干 FAERec 达 H@10 0.0776 / Tail H@10 0.0718（+27.84% / +71.77%）；Yelp 上 LRURec 骨干 Tail H@10 提升 +50.88%。唯一失手处为 FMLP-Rec 骨干的 Yelp 整体指标（-5.19%）。
 
-### 2. 消融实验与控制变量分析 (Ablation Study)
+### 2. 消融实验 (Ablation Study)
 
-原文表 3 在 Beauty 数据集、三种 SR 骨干上做消融，验证自适应门控融合、物品级对齐、特征级对齐及课程学习调度各自的贡献。**具体下降幅度数值因提取文本截断未完整呈现，需以原文表 3 为准**。从设计逻辑看，融合模块与双层对齐应为主要增益来源，课程学习调度用于稳定特征级对齐的收敛。
+Beauty 数据集，H@10 / Tail H@10：
 
-<figure class="paper-figure" markdown="span">
-  ![表 3](../../../../assets/papers/2604.03688v1/table_3.png)<figcaption>表 3</figcaption>
-</figure>
+| 变体 | SASRec | FMLP-Rec | LRURec |
+| :--- | :---: | :---: | :---: |
+| FAERec 完整 | **0.0642 / 0.0633** | **0.0622 / 0.0645** | **0.0644 / 0.0617** |
+| w/o AGF | 0.0534 / 0.0359 | 0.0624 / 0.0516 | 0.0561 / 0.0369 |
+| w/o ILA | 0.0568 / 0.0473 | 0.0585 / 0.0567 | 0.0519 / 0.0353 |
+| w/o FLA | 0.0626 / 0.0603 | 0.0597 / 0.0630 | 0.0632 / 0.0595 |
+| w/o CLS | 0.0554 / 0.0436 | 0.0576 / 0.0538 | 0.0529 / 0.0401 |
+| w/o PG | 0.0636 / 0.0601 | 0.0618 / 0.0642 | 0.0636 / 0.0583 |
+| Base | 0.0331 / 0.0113 | 0.0277 / 0.0066 | 0.0349 / 0.0108 |
 
-### 3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets & Hyperparameters)
+### 3. 关键实验发现 (Key Findings)
 
-- **长尾/头部分组表现**: 原文图 4 给出 SASRec 骨干下三个数据集的**分组分析**（头 vs 尾物品），预期尾物品提升显著大于头物品，这是本文核心卖点。
+1. **AGF 是长尾收益的最大来源**：去掉 AGF 后 SASRec 尾物品 H@10 从 0.0633 崩到 0.0359（-43%），说明"推理时保留语义嵌入"而非仅训练期迁移，才是长尾补偿的关键；这也解释了 LLMInit（推理丢弃语义）为何整体垫底。
+2. **课程学习不可省，且 FLA 需后置**：w/o CLS 的尾物品 H@10（0.0436）甚至低于 w/o FLA（0.0603），证明过早施加特征级结构约束会破坏 ILA 建立的物品对应关系，验证了"由简到繁"调度的必要性。
+3. **长尾与多样性双赢，但头部略有代价**：分组分析（图 4）显示 FAERec 在 1-4、5-9 交互组显著领先 RLMRec-Con，但在 50+ 头部组略逊；同时 Beauty 上 Cov@10 从 0.6972（Base）升至 0.8538、TCov@10 从 0.6266 升至 0.8249，说明语义融合缓解了长尾物品的曝光劣势。
 
-<figure class="paper-figure" markdown="span">
-  ![图 4](../../../../assets/papers/2604.03688v1/figure_4.png)<figcaption>图 4</figcaption>
-</figure>
+## Highlights & Limitations (亮点、对比与审稿批判)
 
-- **关键超参数敏感度**: 原文图 3 分析 $\lambda$（特征级冗余项权重）与 $\alpha$（对齐损失权重）在三个数据集、SASRec 骨干下的敏感度，需参见原文确定最优区间。
-
-<figure class="paper-figure" markdown="span">
-  ![图 3](../../../../assets/papers/2604.03688v1/figure_3.png)<figcaption>图 3</figcaption>
-</figure>
-
-- **线上 A/B 测试结果**: 原文仅包含离线实验，**未报告线上 A/B 测试**。
-
-## Highlights, Limitations & Critiques (亮点、局限与审稿级批判)
-
-- **核心亮点与可迁移性**:
-  1. **逐维门控融合**思路通用，可迁移到任何"ID + 辅助语义/多模态嵌入"的融合场景（如多模态推荐、跨域推荐）。
-  2. **双层对齐 + 课程学习**的组合（点对点对比 → 特征级 Barlow Twins 结构对齐）为缓解"异构嵌入空间结构错位"提供了可复用范式。
-  3. **按流行度中位数分组计算特征级对齐**，避免头部物品主导 batch 统计，是针对长尾场景的巧妙工程细节。
-  4. LLM 嵌入离线缓存，**在线零额外 LLM 开销**，工业落地友好。
-- **局限性与审稿视角批判 (Critical Limitations)**:
-  1. **评估协议透明度不足**：提取文本未明确数据划分（LOO vs 时间切分）与 Full-Ranking/Sampled Ranking 协议，审稿中需重点核查是否存在未来信息泄露或采样偏差。
-  2. **依赖商业 LLM API**（text-embedding-ada-002），可复现性与成本受外部服务影响；虽离线缓存，但换用开源 LLaMA 时效果是否稳定未充分讨论。
-  3. **超参较多**（$\tau$、$\lambda$、$\alpha$、$w_{max}/w_{min}/T$），课程学习调度对训练稳定性与收敛速度的影响缺乏充分消融。
-  4. **缺少线上验证与效率量化**：无 ms/request 延迟、峰值显存报告，工业价值论证偏弱。
-  5. 特征级对齐依赖 batch 内统计，**小 batch 或极端长尾分布下统计噪声**可能影响对齐质量，原文未深入讨论。
+- **与代表作对比 (vs. Prior Work)**: 相比 LLMInit（语义仅作初始化、训练后丢弃）与 RLMRec（互信息迁移、推理不留语义），FAERec 在推理阶段保留双源信息；相比 LLM-ESR（双视图融合但无空间一致性约束），FAERec 用特征级 Barlow 对齐显式约束维度相关结构，t-SNE 上呈现更一致的两空间分布。
+- **可迁移亮点**: ① 流行度中位数分组 + 组内 Barlow 对齐，可推广到任何"头部主导统计量"的跨视图对齐场景；② 推理时等权融合替代门控，是"训练复杂、推理轻量"的实用折衷，适合工业召回部署。
+- **审稿级局限批判**: ① 依赖 OpenAI text-embedding-ada-002 闭源 API，语义质量与成本不可控，且未与开源 LLaMA 编码做公平对比；② 特征级对齐需批内流行度统计与分组，对 batch 组成敏感，小 batch 或极端长尾分布下方差可能偏大；③ 头部物品性能略降（Yelp/FMLP-Rec 骨干整体指标为负），长尾-头部权衡未给出显式帕累托控制手段。
 
 ## Rating (四维评分)
 
-- **方法创新性 (Novelty)**: ⭐⭐⭐⭐
-- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐
-- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐
-- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （门控融合与双层对齐组合扎实，特征级 Barlow 对齐迁移到 ID-LLM 空间一致性属首次，但各组件均为已有技术的巧妙重组）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （3 数据集 × 6 骨干 × Full-Ranking 无偏协议，消融覆盖全部模块，另有分组分析、多样性、超参敏感度与 t-SNE 验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与符号定义清晰、动机图直观，但课程调度的周期 $T$与$w_{\max}/w_{\min}$ 取值未在正文给出）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、LLM 嵌入离线缓存、推理零额外开销，但闭源 API 依赖与门控训练成本需工程评估）
+

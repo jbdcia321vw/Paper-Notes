@@ -1,14 +1,18 @@
 # 🗣️ 对话推荐与智能体仿真
 
-**WWW (TheWebConf) 2026** · **4** 篇论文解读
+**WWW (TheWebConf) 2026** · **5** 篇论文解读
 
 > **方向说明**：多轮主动追问对话推荐 (CRS)、基于 LLM Agent 的用户行为模拟沙盒、可解释性推荐理由生成
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (4)](../../../CIKM/2026/agent_conversational_rec/) · [KDD 2026 (2)](../../../KDD/2026/agent_conversational_rec/) · [RecSys 2026 (6)](../../../RecSys/2026/agent_conversational_rec/) · [SIGIR 2026 (7)](../../../SIGIR/2026/agent_conversational_rec/) · [ACM TORS 2026 (1)](../../../TORS/2026/agent_conversational_rec/)
+📌 **同领域跨会议浏览：** [AAAI (RecSys Track) 2026 (3)](../../../AAAI/2026/agent_conversational_rec/) · [CIKM 2026 (5)](../../../CIKM/2026/agent_conversational_rec/) · [DASFAA 2026 (1)](../../../DASFAA/2026/agent_conversational_rec/) · [ECIR 2026 (3)](../../../ECIR/2026/agent_conversational_rec/) · [KDD 2026 (2)](../../../KDD/2026/agent_conversational_rec/) · [RecSys 2026 (9)](../../../RecSys/2026/agent_conversational_rec/) · [SIGIR 2026 (8)](../../../SIGIR/2026/agent_conversational_rec/) · [ACM TORS 2026 (1)](../../../TORS/2026/agent_conversational_rec/)
 
-🔥 **高频主题：** WWW 2026 ×4 · 端到端生成式 ×3
+🔥 **高频主题：** WWW 2026 ×5 · 端到端生成式 ×3 · 重排 ×2
 
 <dl>
+<dt><strong><a href="agentdr_dynamic_recommendation_with_implicit_item_item_relations_via_llm_ba/">AgentDR: Dynamic Recommendation with Implicit Item-Item Relations via LLM-based Agents</a></strong></dt>
+<dd>
+<p>将全库排序委托给传统推荐工具，用 LLM Agent 做个性化工具加权与替代/互补关系重排，全排序平均提升约两倍。</p>
+</dd>
 <dt><strong><a href="agenticshop_benchmarking_agentic_product_curation_for_personalized_web_shop/">AgenticShop: Benchmarking Agentic Product Curation for Personalized Web Shopping</a></strong></dt>
 <dd>
 <p>首个开放网络个性化商品策展基准，用真实购买史构建叙事画像与六维清单，LLM-as-a-judge 可验证评估，揭示现有智能体策展得分仅 15–38%。</p>

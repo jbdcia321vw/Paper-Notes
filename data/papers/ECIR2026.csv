@@ -1,0 +1,12 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Pre-trained LLMs Meet Sequential Recommenders: Efficient User-Centric Knowledge Distillation,2604.21536,https://arxiv.org/abs/2604.21536,,llm_rec,ECIR,2026
+Interplay: Training Independent Simulators for Reference-Free Conversational Recommendation,2603.18573,https://arxiv.org/abs/2603.18573,,agent_conversational_rec,ECIR,2026
+Post-Training Denoising of User Profiles with LLMs in Collaborative Filtering Recommendation,2601.18009,https://arxiv.org/abs/2601.18009,https://github.com/edervishaj/denoising-user-profiles-LLM,self_supervised_denoising,ECIR,2026
+Measuring Individual User Fairness with User Similarity and Effectiveness Disparity,2602.02516,https://arxiv.org/abs/2602.02516,https://github.com/theresiavr/PUF-individual-user-fairness-recsys,debias_fairness_industrial,ECIR,2026
+Efficient Optimization of Hierarchical Identifiers for Generative Recommendation,2512.18434,https://arxiv.org/abs/2512.18434,https://github.com/joshrosie/re-seater,generative_rec,ECIR,2026
+A Reproducible and Fair Evaluation of Partition-aware Collaborative Filtering,2512.17015,https://arxiv.org/abs/2512.17015,,collaborative_filtering,ECIR,2026
+Improving Conversational Recommendation with Contextual Adaptation of External Recommenders and LLM-based Reranking,2508.13889,https://arxiv.org/abs/2508.13889,,agent_conversational_rec,ECIR,2026
+Are Multimodal Embeddings Truly Beneficial for Recommendation? A Deep Dive into Whole vs. Individual Modalities,2508.07399,https://arxiv.org/abs/2508.07399,,multimodal_rec,ECIR,2026
+Modeling Behavioral Patterns in News Recommendations Using Fuzzy Neural Networks,2601.04019,https://arxiv.org/abs/2601.04019,,debias_fairness_industrial,ECIR,2026
+UserSimCRS v2: Simulation-Based Evaluation for Conversational Recommender Systems,2512.04588,https://arxiv.org/abs/2512.04588,,agent_conversational_rec,ECIR,2026
+SciNUP: Natural Language User Interest Profiles for Scientific Literature Recommendation,2510.21352,https://arxiv.org/abs/2510.21352,,llm_rec,ECIR,2026

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-generate_recsys_notes.py (v3.3 高密度精读 Note + 图表“按需精选内嵌、不堆砌文末、自动清理未用图片”版)
+generate_recsys_notes.py (v3.6 防截断校验 + 零转义警告 + 自动修复坏笔记版)
 核心改进：
   1. 彻底移除文末堆砌的 `## 论文图表`：
      - 仅当大模型认为某张图（如核心模型架构图、关键动机对比图）适合放在对应正文段落位置时，才在正文中内嵌最多 1–3 张图片。
@@ -315,12 +315,16 @@ def call_chat_completion(
     record_usage(res_json.get("usage") if isinstance(res_json, dict) else None, model)
     try:
         choice = res_json["choices"][0]
-        return (choice["message"].get("content") or "").strip()
+        finish_reason = choice.get("finish_reason", "")
+        content = (choice["message"].get("content") or "").strip()
+        if finish_reason == "length":
+            raise RuntimeError("LLM 输出因达到 max_tokens 上限被截断 (finish_reason=length)")
+        return content
     except (KeyError, IndexError, TypeError) as e:
         raise RuntimeError(f"LLM 响应格式异常: {str(res_json)[:800]}") from e
 
 
-SYSTEM_PROMPT = f"""你是一位推荐系统（Recommender Systems）与信息检索（Information Retrieval）领域的资深研究员。
+SYSTEM_PROMPT = rf"""你是一位推荐系统（Recommender Systems）与信息检索（Information Retrieval）领域的资深研究员。
 你的任务是将输入的学术论文提炼为一篇**高信息密度、5分钟即可读懂核心思想的精读笔记（Concise Paper Note）**，而不是写冗长的全文翻译或逐段复述的流水账！
 
 ### 一、16 大推荐系统正交分类归档
@@ -329,15 +333,15 @@ SYSTEM_PROMPT = f"""你是一位推荐系统（Recommender Systems）与信息�
 
 ### 二、「高密度精读 Note」写作铁律（严禁流水账，严控篇幅！）
 1. **定位是“精炼笔记 (Note)”，全文总字数严格控制在 1,800–2,600 中文字符以内**：
-   - **砍掉一切常识性流水账**：不要单独开章节罗列常规数学符号（如解释什么是用户集 $\\mathcal{{U}}$、物品集 $\\mathcal{{I}}$），不要抄写常规 Transformer Attention、GCN 邻接矩阵归一化或标准 BPR/InfoNCE 的基础教科书定义！
-   - **只写本文的“增量创新 (Delta)”**：每个模块只用 2-3 句话讲清楚 **「前人卡在哪里 $\\to$ 本文改了哪一步算子/损失 $\\to$ 核心公式长什么样 $\\to$ 为什么这样改有效（物理直觉）」**。
+   - **砍掉一切常识性流水账**：不要单独开章节罗列常规数学符号（如解释什么是用户集 $\mathcal{{U}}$、物品集 $\mathcal{{I}}$），不要抄写常规 Transformer Attention、GCN 邻接矩阵归一化或标准 BPR/InfoNCE 的基础教科书定义！
+   - **只写本文的“增量创新 (Delta)”**：每个模块只用 2-3 句话讲清楚 **「前人卡在哪里 $\to$ 本文改了哪一步算子/损失 $\to$ 核心公式长什么样 $\to$ 为什么这样改有效（物理直觉）」**。
    - 若开启了思考模式（Thinking），思考过程请控制在 800 字以内，把输出配额留给完整的实验表格与洞察。
 2. **推荐系统核心要素一个不能少（短小但刀刀见血）**：
    - **评估协议必查**：用精炼短句点明数据集过滤（如 `5-core`）、划分方式（`Leave-One-Out` / `比例划分` / `全局时间戳切分` / `冷启动划分`）、候选打分协议（无偏 `Full-Ranking 全库排序` vs. `Sampled 负采样排序`）以及训练负采样策略。
    - **实验表格必全**：主实验表保留原文 **5–8 个最具代表性的主流 Baseline** 与核心指标数值（加粗最优并标出 `Improv.%`），消融实验单独列一张紧凑表格，并在表后写出 **3 条结合具体数字的归因发现（Key Findings）**。
 3. **LaTeX 数学公式渲染铁律（严防网页红字与 `$` 裸露报错）**：
-   - **严禁使用 `\bm` 或 `\mathbbm`**：Web 端 KaTeX/MathJax 不支持 `\bm` 宏（会直接报红字错误），向量/矩阵加粗一律使用 `\boldsymbol{...}` 或 `\mathbf{...}`，示性函数使用 `\mathbb{I}`。
-   - **严禁在段落行内使用双美元符号 `$$...$$`**：凡是嵌在文字句子或列表项中间的公式，一律使用单美元符号 `$...$`，且 `$` 内侧首尾严禁留空格或换行（如写成 `$\hat{s}_{ij} = ...$`，绝不能写成 `$$\hat{s}_{ij} = ...$$` 或 `$ \hat{s}_{ij} $`）。
+   - **严禁使用 `\bm` 或 `\mathbbm`**：Web 端 KaTeX/MathJax 不支持 `\bm` 宏（会直接报红字错误），向量/矩阵加粗一律使用 `\boldsymbol{{...}}` 或 `\mathbf{{...}}`，示性函数使用 `\mathbb{{I}}`。
+   - **严禁在段落行内使用双美元符号 `$$...$$`**：凡是嵌在文字句子或列表项中间的公式，一律使用单美元符号 `$...$`，且 `$` 内侧首尾严禁留空格或换行（如写成 `$\hat{{s}}_{{ij}} = ...$`，绝不能写成 `$$\hat{{s}}_{{ij}} = ...$$` 或 `$ \hat{{s}}_{{ij}} $`）。
 
 ### 三、输出 Markdown 模板规范（第 1 行必须是 `---`，严格使用以下二级标题！）
 ---
@@ -395,9 +399,9 @@ flowchart TD
 ### 2. 关键设计拆解 (Key Designs)
 
 只提炼本文最重要的 **2–3 个核心创新点**（严禁罗列常规预处理或普通网络层；每点控制在 150 字以内 + 1 个最核心的数学公式）：
-1. **创新设计一（名称 + 一句话作用）**：痛点起因 $\\to$ 核心算子与公式 $\\to$ 为什么有效的直觉。
-2. **创新设计二（名称 + 一句话作用）**：痛点起因 $\\to$ 核心算子与公式 $\\to$ 为什么有效的直觉。
-3. **训练目标、负采样与推理效率**：写出总损失函数 $\\mathcal{{L}}$、训练负采样策略（Uniform / In-batch / Hard Negative / 免负采样）及在线推理开销。
+1. **创新设计一（名称 + 一句话作用）**：痛点起因 $\to$ 核心算子与公式 $\to$ 为什么有效的直觉。
+2. **创新设计二（名称 + 一句话作用）**：痛点起因 $\to$ 核心算子与公式 $\to$ 为什么有效的直觉。
+3. **训练目标、负采样与推理效率**：写出总损失函数 $\mathcal{{L}}$、训练负采样策略（Uniform / In-batch / Hard Negative / 免负采样）及在线推理开销。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -1032,7 +1036,7 @@ def _set_frontmatter_field(frontmatter: str, name: str, value: str) -> str:
 
 
 def sanitize_latex_and_markdown(md_note: str) -> str:
-    """自动修复笔记中的三大渲染与排版问题：
+    r"""自动修复笔记中的三大渲染与排版问题：
     1. 将 KaTeX/MathJax 不支持的 `\bm` 与 `\mathbbm` 统一替换为 `\boldsymbol{...}` 与 `\mathbb{...}`；
     2. 修复正文句子/列表项行内误用 `$$...$$` 导致两侧露出 `$` 符号的问题，以及单 `$` 跨行/首尾空格导致公式不渲染的问题；
     3. 将单行挤压的 `- **四维评分**: 创新性 ⭐⭐⭐⭐ | ...` 自动展开为独占一行的 `## Rating (四维评分)` 四行列表格式，并清理旧版文末堆砌的 `## 论文图表`。
@@ -1122,17 +1126,24 @@ def sanitize_latex_and_markdown(md_note: str) -> str:
     return md_note.strip() + "\n"
 
 
-def is_legacy_low_quality_note(md_path: Path) -> bool:
-    """判断一篇已存在的 .md 笔记是否为早期旧脚本生成的低质量/图片堆砌笔记：
-    1. 包含旧版文末集中堆砌的 `## 论文图表` 章节；
-    2. 单篇内嵌超过 2 张 `<figure class="paper-figure"`（旧版无节制插图）；
-    3. 缺少新版 v3.3+ 深度总结的核心结构标识（如 `关键设计拆解`、`关键实验发现`、`与代表作对比`）。
-    满足任一条件即判定为旧版低质量笔记，在 `--only-legacy` 模式下自动重刷。
+def is_legacy_or_broken_note(md_path: Path, check_legacy_style: bool = True) -> bool:
+    r"""判断一篇已存在的 .md 笔记是否为损坏/截断/缺章节笔记（始终需要重生成），
+    或在 `check_legacy_style=True` (`--only-legacy`) 时判断是否为早期旧脚本生成的低质量/图表堆砌笔记。
     """
     try:
         content = md_path.read_text(encoding="utf-8", errors="ignore")
     except OSError:
         return True
+
+    # 1. 任何存在截断或缺少 7 大核心章节（含 Highlights / Rating）的坏笔记，默认必须重生成
+    ok, _ = validate_note(content, venue="", year="")
+    if not ok:
+        return True
+
+    if not check_legacy_style:
+        return False
+
+    # 2. 在 --only-legacy 模式下，额外检查是否为旧版模板或图片堆砌笔记
     if re.search(r"^##+\s*(?:论文图表|Paper Figures)", content, re.MULTILINE | re.IGNORECASE):
         return True
     if content.count('<figure class="paper-figure"') > 2:
@@ -1146,7 +1157,7 @@ def is_legacy_low_quality_note(md_path: Path) -> bool:
 
 
 def repair_existing_notes_in_repo(docs_dir: Path, venue_filter: str = "", year_filter: str = "") -> tuple:
-    """零 API 成本秒级扫描并修复仓库中已有 .md 笔记的 `\bm` 报错、行内 `$$` 露出、四维评分未分行与文末图表堆砌。"""
+    r"""零 API 成本秒级扫描并修复仓库中已有 .md 笔记的 `\bm` 报错、行内 `$$` 露出、四维评分未分行与文末图表堆砌。"""
     search_root = docs_dir / "venues"
     if venue_filter and (search_root / venue_filter).exists():
         search_root = search_root / venue_filter
@@ -1236,9 +1247,32 @@ def ensure_and_normalize_frontmatter(
 
 SECTION_PATTERNS = [
     ("TL;DR", r"^##+\s+.*?(?:TL;DR|核心速览|速读|Executive Summary)"),
+    ("Background & Motivation", r"^##+\s+.*?(?:Background|Motivation|背景|核心矛盾)"),
+    ("Method", r"^##+\s+.*?(?:Method|核心方法|方法设计|Methodology)"),
     ("Experimental Setup", r"^##+\s+.*?(?:Experimental Setup|实验设置|评估协议|Evaluation Protocol)"),
     ("Key Experimental Results", r"^##+\s+.*?(?:Experimental Results|实验结果|关键实验|实验关键数据|Main Results)"),
+    ("Highlights & Limitations", r"^##+\s+.*?(?:Highlights|Limitations|亮点|局限|审稿)"),
+    ("Rating", r"^##+\s+.*?(?:Rating|四维评分)"),
 ]
+
+
+def is_note_truncated(md_note: str) -> tuple:
+    """检测笔记是否存在输出截断（代码块未闭合、末尾停在半句或缺少收尾标点/括号）。"""
+    stripped = (md_note or "").strip()
+    if not stripped:
+        return True, "笔记内容为空"
+    if stripped.count("```") % 2 != 0:
+        return True, "代码块 ``` 未闭合（疑似输出截断）"
+    last_line = stripped.splitlines()[-1].strip()
+    if not last_line:
+        return True, "末尾行为空"
+    # 正常笔记应以 Rating 列表项、句号、反括号、星号或 figure 闭合标签结尾
+    if re.search(r"[,:;，、：；\-—\\]$", last_line):
+        return True, f"末尾停在未完标点 `{last_line[-15:]}`（疑似截断）"
+    # 检查最后一行若包含左括号 `（` 或 `(` 但未闭合
+    if last_line.count("（") > last_line.count("）") or last_line.count("(") > last_line.count(")"):
+        return True, f"末尾括号未闭合 `{last_line[-25:]}`（疑似截断）"
+    return False, ""
 
 
 def validate_note(md_note: str, venue: str, year: str) -> tuple:
@@ -1253,13 +1287,19 @@ def validate_note(md_note: str, venue: str, year: str) -> tuple:
         if not re.search(pat, md_note, re.IGNORECASE | re.MULTILINE):
             return False, f"缺少必需章节: ## {label}"
 
-    fm_venue = re.search(r"^venue:\s*['\"]?([^'\"\n]+)", fm, re.MULTILINE)
-    if not fm_venue or fm_venue.group(1).strip() != venue:
-        return False, f"Frontmatter venue 与归档会刊不一致 ({venue})"
+    trunc, trunc_reason = is_note_truncated(md_note)
+    if trunc:
+        return False, trunc_reason
 
-    fm_year = re.search(r"^year:\s*['\"]?(\d{4})", fm, re.MULTILINE)
-    if not fm_year or fm_year.group(1) != year:
-        return False, f"Frontmatter year 与归档年份不一致 ({year})"
+    if venue:
+        fm_venue = re.search(r"^venue:\s*['\"]?([^'\"\n]+)", fm, re.MULTILINE)
+        if not fm_venue or fm_venue.group(1).strip() != venue:
+            return False, f"Frontmatter venue 与归档会刊不一致 ({venue})"
+
+    if year:
+        fm_year = re.search(r"^year:\s*['\"]?(\d{4})", fm, re.MULTILINE)
+        if not fm_year or fm_year.group(1) != str(year):
+            return False, f"Frontmatter year 与归档年份不一致 ({year})"
 
     cats = re.findall(r"^\s*-\s*([a-z0-9_]+)\s*$", fm, re.MULTILINE)
     if not any(c in CATEGORIES for c in cats):
@@ -1292,7 +1332,7 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
     if not existing:
         existing = list((docs_dir / "venues").rglob(f"{slug}.md"))
     if existing and not args.overwrite:
-        if getattr(args, "only_legacy", False) and is_legacy_low_quality_note(existing[0]):
+        if is_legacy_or_broken_note(existing[0], check_legacy_style=getattr(args, "only_legacy", False)):
             pass
         else:
             return f"[Skip] 已存在跳过: {existing[0].relative_to(docs_dir.parent)}", None
@@ -1415,26 +1455,36 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
 
 def tasks_from_curated_csv(csv_path: Path, cache_dir: Path, download_pdf: bool, limit: int = 0, docs_dir: Path = None, overwrite: bool = False, only_legacy: bool = False):
     rows = load_curated_csv(csv_path)
-    if limit and limit > 0:
-        rows = rows[:limit]
 
-    existing_slugs = set()
+    # 按 (venue, year, slug) 建立健康已生成笔记索引（截断或缺少 Rating/Highlights 的坏笔记不会进入 valid_existing，从而自动重刷修复）
+    valid_existing_by_vy = set()
+    valid_existing_any = set()
+    broken_or_legacy_count = 0
     if docs_dir and not overwrite and (docs_dir / "venues").exists():
         for p in (docs_dir / "venues").rglob("*.md"):
             if p.name == "index.md":
                 continue
-            if only_legacy and is_legacy_low_quality_note(p):
+            if is_legacy_or_broken_note(p, check_legacy_style=only_legacy):
+                broken_or_legacy_count += 1
                 continue
-            existing_slugs.add(p.stem)
+            rel_parts = p.relative_to(docs_dir / "venues").parts
+            if len(rel_parts) >= 3:
+                valid_existing_by_vy.add((rel_parts[0], rel_parts[1], p.stem))
+            valid_existing_any.add(p.stem)
 
     pending_rows = []
     ids = []
     skipped_existing = 0
     for row in rows:
         title_str = row.get("title", "")
-        if title_str and slugify(title_str) in existing_slugs:
-            skipped_existing += 1
-            continue
+        r_venue = (row.get("venue") or "").strip()
+        r_year = str(row.get("year") or "").strip()
+        r_slug = slugify(title_str) if title_str else ""
+        if r_slug:
+            is_done = ((r_venue, r_year, r_slug) in valid_existing_by_vy) if (r_venue and r_year) else (r_slug in valid_existing_any)
+            if is_done:
+                skipped_existing += 1
+                continue
         aid = row.get("arxiv_id", "")
         if not aid:
             m = re.search(r"arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})", row.get("paper_url", ""))
@@ -1442,8 +1492,12 @@ def tasks_from_curated_csv(csv_path: Path, cache_dir: Path, download_pdf: bool, 
         if aid:
             aid_clean = re.sub(r"v\d+$", "", aid.strip())
             row["arxiv_id"] = aid_clean
-            ids.append(aid_clean)
             pending_rows.append(row)
+
+    # P0-3 修复：在过滤掉已存在的健康笔记之后再应用 --limit，确保 --limit N 真正处理 N 篇待生成/待修复笔记
+    if limit and limit > 0:
+        pending_rows = pending_rows[:limit]
+    ids = [r["arxiv_id"] for r in pending_rows]
 
     if skipped_existing > 0:
         print(f"  [Fast-Skip] 已存在 {skipped_existing} 篇笔记，仅拉取剩余 {len(pending_rows)} 篇待生成论文的全文 ...")

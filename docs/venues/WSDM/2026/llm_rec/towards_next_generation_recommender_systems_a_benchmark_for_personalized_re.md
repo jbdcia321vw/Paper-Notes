@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-RecBench+ 的构建分两条流水线。**条件型查询**：先为电影（Wikipedia 抽取导演/演员/配乐/类型等 7 类属性）与图书（Amazon 元数据）构建 Item KG；再从用户交互历史 $\mathcal{H}_u$ 中用 KG 检索函数 $\mathcal{R}$ 抽取共享关系 $\mathcal{C}_{shared}=\{(r_1,t_1),\dots\}$ 及满足条件的物品子集 $G_{sub}$；随后按三种策略改写条件（直接采用/间接指代/注入事实错误），交由 GPT-4o 生成自然语言查询，满足条件的物品集 $G_q$ 即 ground truth，历史中剔除 $G_q$ 得 $\mathcal{H}'_u$。**画像型查询**：兴趣型从多用户共现序列挖掘共同兴趣集并让 LLM 反推推荐理由；人口统计型按 (职业,性别)/(年龄,性别) 分组取组内热门物品生成查询。最终得到约 3 万条查询，覆盖 5 类子任务。
+RecBench+ 的构建分两条流水线。**条件型查询**：先为电影（Wikipedia 抽取导演/演员/配乐/类型等 7 类属性）与图书（Amazon 元数据）构建 Item KG；再从用户交互历史 $\mathcal{H}_u$中用 KG 检索函数$\mathcal{R}$抽取共享关系$\mathcal{C}_{shared}=\{(r_1,t_1),\dots\}$及满足条件的物品子集$G_{sub}$；随后按三种策略改写条件（直接采用/间接指代/注入事实错误），交由 GPT-4o 生成自然语言查询，满足条件的物品集$G_q$即 ground truth，历史中剔除$G_q$得$\mathcal{H}'_u$。**画像型查询**：兴趣型从多用户共现序列挖掘共同兴趣集并让 LLM 反推推荐理由；人口统计型按 (职业,性别)/(年龄,性别) 分组取组内热门物品生成查询。最终得到约 3 万条查询，覆盖 5 类子任务。
 
 ```mermaid
 flowchart TD
@@ -61,11 +61,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **隐式条件改写（多跳推理的构造核心）**：痛点在于"直接说出导演名"太简单，测不出推理。本文对共享关系 $(r_m,t_m)$，用 KG 中与 $t_m$ 通过 $r_m$ 相连的另一物品 $i_k$ 做间接指代：
+1. **隐式条件改写（多跳推理的构造核心）**：痛点在于"直接说出导演名"太简单，测不出推理。本文对共享关系 $(r_m,t_m)$，用 KG 中与$t_m$通过$r_m$相连的另一物品$i_k$ 做间接指代：
 $$i_k\in\{i\in\mathcal{I}\mid (t_m)\xrightarrow{r_m}(i)\ \text{in KG}\},\quad \mathcal{C}_{implicit}=(r_i,\text{ref}(i_k))$$
 即把"导演 Cameron"改写成"《The Abyss》的导演"。直觉：模型必须先完成"物品→属性值"的反向检索才能对齐条件，天然引入一跳推理。
 
-2. **误导条件注入（鲁棒性探针）**：对共享关系 $(r_i,t_i)$，随机选 KG 中与 $t_i$ 无该关系的物品集 $\{i_1,\dots,i_m\}$，构造 $\mathcal{C}_{misinformed}=(r_i,t_i,\text{error info})$，如"Cameron 导演了《Star Trek》"。理想行为是先纠错再推荐；FTR 在此类查询中"越高越好"，因为拒答即代表识别出错误信息。
+2. **误导条件注入（鲁棒性探针）**：对共享关系 $(r_i,t_i)$，随机选 KG 中与$t_i$无该关系的物品集$\{i_1,\dots,i_m\}$，构造$\mathcal{C}_{misinformed}=(r_i,t_i,\text{error info})$，如"Cameron 导演了《Star Trek》"。理想行为是先纠错再推荐；FTR 在此类查询中"越高越好"，因为拒答即代表识别出错误信息。
 
 3. **训练目标、负采样与推理效率**：本文为基准而非模型，无自定义损失；微调实验采用全参数 SFT（下一 token 交叉熵）与基于 GRPO 的 RFT，奖励来自推荐结果与 ground truth 的匹配。推理为开放生成、不限定 K，直接解析模型输出的物品名与 $G_q$ 做集合匹配，无负采样环节。
 
@@ -78,7 +78,7 @@ $$i_k\in\{i\in\mathcal{I}\mid (t_m)\xrightarrow{r_m}(i)\ \text{in KG}\},\quad \m
 | Movie (ML-1M) | 6,036 | 3,247 | 29,459 | 19,529 | 含人口统计属性，5 类查询 |
 | Book (Amazon) | 48,535 | 50,088 | 55,424 | 14,965 | 仅条件型+兴趣型，无人口统计 |
 
-- **数据划分与防穿越 (Splitting Strategy)**: 非传统训练/测试切分，而是"查询级"评测；构造时已将 ground truth 物品 $G_q$ 从历史 $\mathcal{H}_u$ 中剔除（$\mathcal{H}'_u=\mathcal{H}_u\setminus G_q$），防止答案泄漏。
+- **数据划分与防穿越 (Splitting Strategy)**: 非传统训练/测试切分，而是"查询级"评测；构造时已将 ground truth 物品 $G_q$从历史$\mathcal{H}_u$中剔除（$\mathcal{H}'_u=\mathcal{H}_u\setminus G_q$），防止答案泄漏。
 - **排名评测协议 (Ranking Protocol)**: 开放生成式评测，**不预设 K**（模拟真实用户不指定数量），模型自由输出推荐列表后与 $G_q$ 做集合匹配；另设 K=5 固定实验作对照。指标为 Precision、Recall、Condition Match Rate (CMR，推荐中满足条件的比例)、Fail to Recommend (FTR)。
 - **对比基线与超参设置**: 7 个 LLM——GPT-4o、GPT-4o-mini、Gemini-1.5-Pro、Claude-3.5-Sonnet、DeepSeek-V3、DeepSeek-R1、Llama-3.1-70B；微调基座为 Qwen-2.5-3B 与 Llama-3.2-3B（全参数 SFT / GRPO-RFT / SFT+RFT）。
 
@@ -119,10 +119,15 @@ $$i_k\in\{i\in\mathcal{I}\mid (t_m)\xrightarrow{r_m}(i)\ \text{in KG}\},\quad \m
 2. **历史交互是双刃剑**：引入 $\mathcal{H}'_u$ 后各模型 Precision 普遍上升（个性化过滤候选池），但 CMR 未必提升——模型会因历史中的奇幻偏好而推荐《致命魔术》这类不满足"Nolan 电影"硬条件的干扰项，暴露"个性化 vs 条件遵循"的权衡。
 3. **SFT 是 RFT 的必要预热**：纯 RFT 的 Qwen 显式 Recall 仅 0.178，远低于纯 SFT 的 0.391；两阶段 SFT+RFT 达 0.410，验证了 RL 探索前需 SFT 建立任务先验；且在人口统计型查询上 RFT 反超 SFT（0.228 vs 0.154），说明推理型微调对画像推断更有效。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 LLMRec 聚焦评分预测/序列推荐等传统任务、PerRecBench 隔离个性化偏差、以及 Gaia/VoiceBench 等通用助手基准，RecBench+ 首次把"复杂自然语言查询 + 多跳推理 + 误导纠错 + 画像理解"统一进推荐助手评测，且用 KG 程序化生成保证 ground truth 可验证。
 - **可迁移亮点**: ① "KG 共享关系→条件改写→LLM 生成查询"的合成范式可低成本迁移到电商/POI 等任意有结构化属性的域；② CMR 指标与"误导查询下 FTR 越高越好"的评测设计，可直接复用于任何约束遵循型生成推荐系统。
 - **审稿级局限批判**: ① 查询由 GPT-4o 合成，存在模板化与分布偏移风险，与真实用户口语化查询仍有差距；② 开放生成评测依赖物品名字符串匹配，跨版本/别名（如《Dune》多版本）会造成假阴性，Book 域流行度趋势反转即为例证；③ 仅覆盖电影/图书两域，且未评测 GPT-o1（被策略拦截），结论外推性受限。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

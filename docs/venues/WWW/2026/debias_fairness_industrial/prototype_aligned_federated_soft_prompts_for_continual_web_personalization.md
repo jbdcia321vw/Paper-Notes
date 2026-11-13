@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-客户端持有冻结推荐骨干 $f_\theta$（SASRec 式 Transformer，H&M 另冻结 ViT-B/16 与 DistilBERT），仅训练两组提示 $p^{long}_u, p^{short}_{u,t}\in\mathbb{R}^{L_p\times d}$。推理时查询编码 $h_{u,t}=g(q_{u,t})$ 检索 Top-$M$ 原型，合成路由提示注入嵌入层打分；训练时短期提示走稀疏近端步、长期提示走对齐感知近端步；服务端周期性接收压缩加噪的长期提示嵌入，做 DP 聚类聚合、分离约束与剪枝后广播回客户端。
+客户端持有冻结推荐骨干 $f_\theta$（SASRec 式 Transformer，H&M 另冻结 ViT-B/16 与 DistilBERT），仅训练两组提示$p^{long}_u, p^{short}_{u,t}\in\mathbb{R}^{L_p\times d}$。推理时查询编码$h_{u,t}=g(q_{u,t})$检索 Top-$M$ 原型，合成路由提示注入嵌入层打分；训练时短期提示走稀疏近端步、长期提示走对齐感知近端步；服务端周期性接收压缩加噪的长期提示嵌入，做 DP 聚类聚合、分离约束与剪枝后广播回客户端。
 
 ```mermaid
 flowchart TD
@@ -63,11 +63,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **双时间尺度提示与漂移自适应缩放**：单提示无法同时兼顾快慢动态。合成提示为 $\tilde{p}_{u,t}=p^{long}_u+\alpha_{u,t}p^{short}_{u,t}+\sum_{k\in\text{Top-}M}w_k c_k$，其中 $\alpha_{u,t}=\sigma(a^\top\Delta_{u,t})$ 由会话嵌入滚动均值漂移量 $\Delta_{u,t}$ 驱动——漂移大则放大短期权重，实现"按需可塑"。短期更新用软阈值近端步 $p^{short}\leftarrow\text{SoftThresh}(p^{short}-\eta_s\nabla\mathcal{L}_{rec},\eta_s\lambda_p)$，ℓ1 稀疏化防止提示膨胀，使快变量只承载少量会话增量。
+1. **双时间尺度提示与漂移自适应缩放**：单提示无法同时兼顾快慢动态。合成提示为 $\tilde{p}_{u,t}=p^{long}_u+\alpha_{u,t}p^{short}_{u,t}+\sum_{k\in\text{Top-}M}w_k c_k$，其中$\alpha_{u,t}=\sigma(a^\top\Delta_{u,t})$由会话嵌入滚动均值漂移量$\Delta_{u,t}$驱动——漂移大则放大短期权重，实现"按需可塑"。短期更新用软阈值近端步$p^{short}\leftarrow\text{SoftThresh}(p^{short}-\eta_s\nabla\mathcal{L}_{rec},\eta_s\lambda_p)$，ℓ1 稀疏化防止提示膨胀，使快变量只承载少量会话增量。
 
-2. **原型锚定对齐损失（稳定性来源）**：无约束时 $p^{long}_u$ 会坍缩到近期特异信号。令 $z_u=\phi(p^{long}_u)$、$v_k=\phi(c_k)$，对齐项为 $\mathcal{A}(z_u,\mathcal{C})=\min_k D_\Psi(z_u\|v_k)+\gamma\cdot(-\log\frac{\exp(\langle z_u,v_{\pi(u)}\rangle/\tau_a)}{\sum_j\exp(\langle z_u,v_j\rangle/\tau_a)})$：Bregman 项把长期记忆**收缩**到最近锚点，InfoNCE 项**锐化**归属以抵抗干扰原型；可选 2-Wasserstein 版本约束整个上下文分布而非仅中心。直觉上原型构成群体语义的低曲率流形，锚定即给慢变量加"弹性绳"。
+2. **原型锚定对齐损失（稳定性来源）**：无约束时 $p^{long}_u$会坍缩到近期特异信号。令$z_u=\phi(p^{long}_u)$、$v_k=\phi(c_k)$，对齐项为$\mathcal{A}(z_u,\mathcal{C})=\min_k D_\Psi(z_u\|v_k)+\gamma\cdot(-\log\frac{\exp(\langle z_u,v_{\pi(u)}\rangle/\tau_a)}{\sum_j\exp(\langle z_u,v_j\rangle/\tau_a)})$：Bregman 项把长期记忆**收缩**到最近锚点，InfoNCE 项**锐化**归属以抵抗干扰原型；可选 2-Wasserstein 版本约束整个上下文分布而非仅中心。直觉上原型构成群体语义的低曲率流形，锚定即给慢变量加"弹性绳"。
 
-3. **DP 联邦原型聚合与训练目标**：客户端上传 $z_u=\text{compress}(\phi(p^{long}_u))+\xi,\ \xi\sim\mathcal{N}(0,\sigma^2 I)$（PCA 至 64 维 + 8-bit 乘积量化，裁剪半径 1.0），服务端按 $v_k\leftarrow(1-\beta)v_k+\beta(\bar{z}_k+\xi_k)$ 动量更新，并施加最小间距约束 $\min_{i\neq j}\|v_i-v_j\|_2\ge\rho$ 与低利用率剪枝防坍缩。总目标 $\mathcal{J}=\mathbb{E}_{(u,t)}[\mathcal{L}_{rec}+\lambda_s\mathcal{A}(\phi(p^{long}_u),\mathcal{C})+\lambda_p\|p^{short}_{u,t}\|_1]$，$\mathcal{L}_{rec}$ 为 BCE 或 BPR；用户自适应 $\lambda_s(u)=\lambda_{max}\exp(-\kappa\Delta_u)$ 让高漂移用户更可塑。每客户端内存 $O(L_p d)$，路由 $O(Kd_\phi)$ 可 ANN 加速。
+3. **DP 联邦原型聚合与训练目标**：客户端上传 $z_u=\text{compress}(\phi(p^{long}_u))+\xi,\ \xi\sim\mathcal{N}(0,\sigma^2 I)$（PCA 至 64 维 + 8-bit 乘积量化，裁剪半径 1.0），服务端按$v_k\leftarrow(1-\beta)v_k+\beta(\bar{z}_k+\xi_k)$动量更新，并施加最小间距约束$\min_{i\neq j}\|v_i-v_j\|_2\ge\rho$与低利用率剪枝防坍缩。总目标$\mathcal{J}=\mathbb{E}_{(u,t)}[\mathcal{L}_{rec}+\lambda_s\mathcal{A}(\phi(p^{long}_u),\mathcal{C})+\lambda_p\|p^{short}_{u,t}\|_1]$，$\mathcal{L}_{rec}$为 BCE 或 BPR；用户自适应$\lambda_s(u)=\lambda_{max}\exp(-\kappa\Delta_u)$让高漂移用户更可塑。每客户端内存$O(L_p d)$，路由$O(Kd_\phi)$ 可 ANN 加速。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -121,12 +121,17 @@ flowchart TD
 
 1. **长期提示是稳定性主承重墙**：移除后 Books N@10 掉 0.010（HR 掉 0.016），为所有消融中最大跌幅；而移除对齐项使 Books 第 8 片 AF 从 0.009 升至 0.024，证明原型锚定直接抑制漂移型遗忘。
 2. **短期提示是适应速度引擎**：去掉后 Books 第 8 片 Steps-to-95% 从 170 升至 270（+59%），且在多模态 H&M 上跌幅最大（-0.005），说明会话级快变量对密集交互/多模态漂移最敏感；Full 模型在 Books 上形成 NDCG 上升而 AF<0.01 的最优 Pareto 前沿。
-3. **隐私代价温和且聚合器不敏感**：$\sigma=0.4$（$\varepsilon\approx3.4$）时 NDCG 落在 Non-DP 误差带内、AF 仅微升；$\sigma=0.8$（$\varepsilon\approx1.8$）仅降 1–2.5 点且优雅退化；替换为几何中位数/Wasserstein 重心精度变化 ≤0.003，说明增益来自锚定机制而非特定聚合规则。高漂移用户（无论活跃度）与冷启动新用户获得最大且显著的 $\Delta$NDCG。
+3. **隐私代价温和且聚合器不敏感**：$\sigma=0.4$（$\varepsilon\approx3.4$）时 NDCG 落在 Non-DP 误差带内、AF 仅微升；$\sigma=0.8$（$\varepsilon\approx1.8$）仅降 1–2.5 点且优雅退化；替换为几何中位数/Wasserstein 重心精度变化 ≤0.003，说明增益来自锚定机制而非特定聚合规则。高漂移用户（无论活跃度）与冷启动新用户获得最大且显著的$\Delta$NDCG。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
-- **与代表作对比 (vs. Prior Work)**: 相比 INFER 的**样本级重放**，本文以压缩提示嵌入替代原始交互，天然规避隐私与存储；相比 Dual-LoRA 的**每用户独立适配器**，本文用共享原型库提供跨用户语义先验，冷启动与高漂移段受益更明显；相比 FedRAP 的**联邦权重个性化**，本文把个性化下沉到 $O(L_p d)$ 提示层并附显式 $(\varepsilon,\delta)$ 账本。
+- **与代表作对比 (vs. Prior Work)**: 相比 INFER 的**样本级重放**，本文以压缩提示嵌入替代原始交互，天然规避隐私与存储；相比 Dual-LoRA 的**每用户独立适配器**，本文用共享原型库提供跨用户语义先验，冷启动与高漂移段受益更明显；相比 FedRAP 的**联邦权重个性化**，本文把个性化下沉到 $O(L_p d)$提示层并附显式$(\varepsilon,\delta)$ 账本。
 - **可迁移亮点**: ① "慢变量锚定 + 快变量稀疏近端"的双速更新范式可移植到任何 PEFT 持续学习场景；② 用 DP 聚类中心作为可广播的群体先验，是联邦场景下低成本知识共享的通用技巧。
-- **审稿级局限批判**: ① 联邦为 Flower/FedML 仿真（1k–5k 客户端、5% 采样），DP 隐私账本为 accountant 估计，缺线上 A/B 与真实攻击评估；② 原型数 $K$、分离边距 $\rho$、$\lambda_s$ 需逐数据集网格搜索，且骨干全程冻结，未验证与可训练骨干或更大 LLM 的兼容性。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+- **审稿级局限批判**: ① 联邦为 Flower/FedML 仿真（1k–5k 客户端、5% 采样），DP 隐私账本为 accountant 估计，缺线上 A/B 与真实攻击评估；② 原型数 $K$、分离边距$\rho$、$\lambda_s$ 需逐数据集网格搜索，且骨干全程冻结，未验证与可训练骨干或更大 LLM 的兼容性。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

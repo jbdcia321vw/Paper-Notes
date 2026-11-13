@@ -1,25 +1,33 @@
 # 🛡️ 去偏公平、可信隐私与工业架构
 
-**KDD 2026** · **5** 篇论文解读
+**KDD 2026** · **7** 篇论文解读
 
 > **方向说明**：曝光/流行度/位置因果去偏 (Causal Rec)、双边公平性、联邦防投毒推荐、工业级全链路架构与评测基准
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (2)](../../../CIKM/2026/debias_fairness_industrial/) · [RecSys 2026 (8)](../../../RecSys/2026/debias_fairness_industrial/) · [SIGIR 2026 (11)](../../../SIGIR/2026/debias_fairness_industrial/) · [ACM TOIS 2026 (1)](../../../TOIS/2026/debias_fairness_industrial/) · [ACM TORS 2026 (4)](../../../TORS/2026/debias_fairness_industrial/) · [WWW (TheWebConf) 2026 (8)](../../../WWW/2026/debias_fairness_industrial/)
+📌 **同领域跨会议浏览：** [AAAI (RecSys Track) 2026 (7)](../../../AAAI/2026/debias_fairness_industrial/) · [ACM MM 2026 (1)](../../../ACM_MM/2026/debias_fairness_industrial/) · [CIKM 2026 (4)](../../../CIKM/2026/debias_fairness_industrial/) · [ECIR 2026 (2)](../../../ECIR/2026/debias_fairness_industrial/) · [ICDM 2026 (2)](../../../ICDM/2026/debias_fairness_industrial/) · [IJCAI (RecSys Track) 2026 (1)](../../../IJCAI/2026/debias_fairness_industrial/) · [RecSys 2026 (14)](../../../RecSys/2026/debias_fairness_industrial/) · [SIGIR 2026 (13)](../../../SIGIR/2026/debias_fairness_industrial/) · [ACM TOIS 2026 (1)](../../../TOIS/2026/debias_fairness_industrial/) · [ACM TORS 2026 (2)](../../../TORS/2026/debias_fairness_industrial/) · [WWW (TheWebConf) 2026 (10)](../../../WWW/2026/debias_fairness_industrial/)
 
-🔥 **高频主题：** 精排 ×4 · 去偏公平与工业架构 ×3
+🔥 **高频主题：** 去偏公平与工业架构 ×5 · 精排 ×3 · 召回 ×2
 
 <dl>
+<dt><strong><a href="bradley_terry_rankings_for_recommender_systems_across_dataset_taxonomies/">Bradley-Terry Rankings for Recommender Systems Across Dataset Taxonomies</a></strong></dt>
+<dd>
+<p>用 Bradley-Terry 概率排序替代指标均值聚合，在 14 算法×89 数据集上给出数据集感知的推荐算法排名与免运行预测。</p>
+</dd>
 <dt><strong><a href="canniuplift_a_holistic_framework_for_mitigating_seller_and_incentive_cannib/">CanniUplift: A Holistic Framework for Mitigating Seller and Incentive Cannibalization in E-commerce Uplift Modeling</a></strong></dt>
 <dd>
 <p>用平台级GMV一致性约束与核销路径分解，缓解多卖家电商uplift建模中的卖家级与激励级蚕食，线上ΔGMV相对提升4.08%。</p>
 </dd>
-<dt><strong><a href="isotonic_layer_a_unified_framework_for_recommendation_calibration_and_debia/">Isotonic Layer: A Unified Framework for Recommendation Calibration and Debiasing</a></strong></dt>
+<dt><strong><a href="deep_learning_causal_retrieval_optimization_for_efficient_e_commerce_distri/">Deep-learning Causal Retrieval Optimization for Efficient e-commerce Distribution in Pinterest</a></strong></dt>
 <dd>
-<p>将非负桶权重参数化为上下文嵌入，用单个可微分段线性层统一校准与位置去偏，LinkedIn 线上 A/B 显著提升。</p>
+<p>将购物候选生成器触发建模为因果决策，用 DR 多任务提升学习+随机 Holdout+线性回放，线上触发率降 85% 而购物会话持平。</p>
 </dd>
 <dt><strong><a href="llm_as_a_judge_for_reliable_and_explainable_offline_evaluation_in_top_k_rec/">LLM-as-a-Judge for Reliable and Explainable Offline Evaluation in Top-K Recommendation</a></strong></dt>
 <dd>
 <p>用 LLM 从用户文本行为构建语义偏好代理替代 holdout ID 匹配，以 reasoning-then-scoring 生成可解释 Top-K 评测，模型排序一致性较常规测试提升 40–150%。</p>
+</dd>
+<dt><strong><a href="lower_bias_higher_welfare_how_creator_competition_reshapes_bias_variance_tr/">Lower Bias, Higher Welfare: How Creator Competition Reshapes Bias-Variance Tradeoff in Recommendation Platforms?</a></strong></dt>
+<dd>
+<p>博弈论建模创作者竞争如何重塑平台正则化选择，理论与实验一致表明策略环境下应弱正则（低偏差）以最大化用户福利。</p>
 </dd>
 <dt><strong><a href="rethinking_popularity_bias_in_collaborative_filtering_via_analytical_vector/">Rethinking Popularity Bias in Collaborative Filtering via Analytical Vector Decomposition</a></strong></dt>
 <dd>

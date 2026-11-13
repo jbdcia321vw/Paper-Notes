@@ -28,7 +28,7 @@ categories:
 
 ## TL;DR (1分钟核心速览)
 
-序列推荐中的对比学习增强长期依赖随机 mask/删除/高斯噪声，会破坏用户行为序列的语义与上下文一致性，产生"伪正样本"。SimDiffRec 提出三条改造：(1) 用序列内物品的 top-$k$ 语义近邻嵌入均值作为**确定性结构化噪声**替代高斯噪声；(2) 用扩散去噪后的**重建置信度**挑选增强位置，只在模型已充分理解的上下文处做替换；(3) 在同一 softmax 分布上取第 $k_{sample}$ 名构造**难负样本**。在 5 个基准、Leave-One-Out + Full-Ranking 协议下，HR@10 相对最强基线 CaDiRec 提升 4.0%–12.4%。
+序列推荐中的对比学习增强长期依赖随机 mask/删除/高斯噪声，会破坏用户行为序列的语义与上下文一致性，产生"伪正样本"。SimDiffRec 提出三条改造：(1) 用序列内物品的 top-$k$语义近邻嵌入均值作为**确定性结构化噪声**替代高斯噪声；(2) 用扩散去噪后的**重建置信度**挑选增强位置，只在模型已充分理解的上下文处做替换；(3) 在同一 softmax 分布上取第$k_{sample}$ 名构造**难负样本**。在 5 个基准、Leave-One-Out + Full-Ranking 协议下，HR@10 相对最强基线 CaDiRec 提升 4.0%–12.4%。
 
 ## Background & Motivation (背景与核心矛盾)
 
@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入用户序列 $S_u$，经 Transformer 序列编码器的嵌入层得到 $e^u=[e_1,\dots,e_n]$；对每个位置计算与全物品矩阵的相似度并取 top-$k_{noise}$ 近邻均值，得到确定性噪声 $noise$；扩散编码器以 $z_t=\alpha_t z_{t-1}+\beta_t\cdot noise$ 做前向加噪，反向去噪后经可训练 rounding 映射回离散物品；去噪输出的 softmax 分布同时承担两个职责——取最大概率位置作为增强位置（置信度排序 top-$k$），取该位置最高概率物品作正样本、第 $k_{sample}$ 名作难负样本；增强视图与原序列经共享序列编码器后计算 InfoNCE，与推荐损失、扩散损失联合端到端训练。推理阶段完全丢弃扩散模块，仅保留骨干序列编码器。
+输入用户序列 $S_u$，经 Transformer 序列编码器的嵌入层得到$e^u=[e_1,\dots,e_n]$；对每个位置计算与全物品矩阵的相似度并取 top-$k_{noise}$近邻均值，得到确定性噪声$noise$；扩散编码器以$z_t=\alpha_t z_{t-1}+\beta_t\cdot noise$做前向加噪，反向去噪后经可训练 rounding 映射回离散物品；去噪输出的 softmax 分布同时承担两个职责——取最大概率位置作为增强位置（置信度排序 top-$k$），取该位置最高概率物品作正样本、第$k_{sample}$ 名作难负样本；增强视图与原序列经共享序列编码器后计算 InfoNCE，与推荐损失、扩散损失联合端到端训练。推理阶段完全丢弃扩散模块，仅保留骨干序列编码器。
 
 ```mermaid
 flowchart TD
@@ -62,11 +62,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **语义相似度噪声生成 (Semantic Similarity-based Noise)**：痛点是用 $\mathcal{N}(0,I)$ 采样在训练早期就把序列推向分布外。做法是对每个物品 $e_i$ 计算 $similarity=e^u W^\top$（自掩码排除自身），取 top-$k_{noise}$ 近邻嵌入求均值 $noise=\frac{1}{k}\sum_{i=1}^{k}e_{j_i}$ 作为固定噪声。直觉：噪声落在原物品的语义邻域内，扩散重建时"最省力的解"就是原物品本身，从而把增强约束为语义保真的轻微扰动，而非结构破坏。
+1. **语义相似度噪声生成 (Semantic Similarity-based Noise)**：痛点是用 $\mathcal{N}(0,I)$采样在训练早期就把序列推向分布外。做法是对每个物品$e_i$计算$similarity=e^u W^\top$（自掩码排除自身），取 top-$k_{noise}$近邻嵌入求均值$noise=\frac{1}{k}\sum_{i=1}^{k}e_{j_i}$ 作为固定噪声。直觉：噪声落在原物品的语义邻域内，扩散重建时"最省力的解"就是原物品本身，从而把增强约束为语义保真的轻微扰动，而非结构破坏。
 
-2. **扩散置信度定位增强 (Confidence-based Positioning)**：痛点在于随机位置可能落在欠训练区域。做法是取去噪后位置 $i$ 的 logits $z_i=W h_i$，softmax 得 $p_{ij}$，定义 $c_i=\max_{j\in V}p_{ij}$，按 $c_i$ 降序取 top-$k$ 位置做替换。直觉：高置信度意味着该位置上下文已被模型稳定编码，在此处替换产生的正样本与原序列差异可控，对比学习梯度不会污染未收敛区域，等价于一种"课程式"增强调度。
+2. **扩散置信度定位增强 (Confidence-based Positioning)**：痛点在于随机位置可能落在欠训练区域。做法是取去噪后位置 $i$的 logits$z_i=W h_i$，softmax 得$p_{ij}$，定义$c_i=\max_{j\in V}p_{ij}$，按$c_i$降序取 top-$k$ 位置做替换。直觉：高置信度意味着该位置上下文已被模型稳定编码，在此处替换产生的正样本与原序列差异可控，对比学习梯度不会污染未收敛区域，等价于一种"课程式"增强调度。
 
-3. **难负采样与联合目标**：正样本取该位置 top-1 物品，难负样本取同一分布第 $k_{sample}$ 名（$k_{sample}$ 越小越难分）。总损失 $\mathcal{L}_{Total}=\mathcal{L}_{sr}+\alpha\mathcal{L}_{cl}+\beta\mathcal{L}_{d}$，其中 $\mathcal{L}_{cl}$ 为含 batch 内负样本的 InfoNCE，$\mathcal{L}_d$ 沿用 DiffuSeq 的逐步重建 + rounding 概率项。训练负采样为 in-batch + 分布内难负样本，无需额外全库检索；推理零扩散开销。
+3. **难负采样与联合目标**：正样本取该位置 top-1 物品，难负样本取同一分布第 $k_{sample}$名（$k_{sample}$越小越难分）。总损失$\mathcal{L}_{Total}=\mathcal{L}_{sr}+\alpha\mathcal{L}_{cl}+\beta\mathcal{L}_{d}$，其中$\mathcal{L}_{cl}$为含 batch 内负样本的 InfoNCE，$\mathcal{L}_d$ 沿用 DiffuSeq 的逐步重建 + rounding 概率项。训练负采样为 in-batch + 分布内难负样本，无需额外全库检索；推理零扩散开销。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -82,7 +82,7 @@ flowchart TD
 
 - **数据划分与防穿越**: 标准 `Leave-One-Out`——每用户最后一项测试、倒数第二项验证、其余训练。
 - **排名评测协议**: `Full-Ranking`（对全物品库未交互项排序），指标 HR@{5,10}、NDCG@{5,10}；每实验重复 10 次至方差 < 0.01。
-- **对比基线与超参**: 9 个基线分三类（经典 SASRec/BERT4Rec；对比学习 CL4SRec/DuoRec/MCLRec/ECL-SR；扩散 DiffuASR/DreamRec/CaDiRec）。序列编码器 2 层 2 头，扩散模块 1 层 2 头、1000 步；$\alpha,\beta\in[0.1,0.5]$ 网格搜索；batch 256、lr $1e^{-4}$、300 epoch；最大序列长 50（ML-1m 为 200）。
+- **对比基线与超参**: 9 个基线分三类（经典 SASRec/BERT4Rec；对比学习 CL4SRec/DuoRec/MCLRec/ECL-SR；扩散 DiffuASR/DreamRec/CaDiRec）。序列编码器 2 层 2 头，扩散模块 1 层 2 头、1000 步；$\alpha,\beta\in[0.1,0.5]$网格搜索；batch 256、lr$1e^{-4}$、300 epoch；最大序列长 50（ML-1m 为 200）。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -101,7 +101,7 @@ flowchart TD
 
 ### 2. 消融实验 (Ablation Study)
 
-| 数据集 | 指标 | w/o $k_{noise}$ | w/o $c_{aug}$ | w/o $k_{sample}$ | **Ours** |
+| 数据集 | 指标 | w/o $k_{noise}$| w/o$c_{aug}$| w/o$k_{sample}$ | **Ours** |
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | Beauty | HR@10 | 0.0911 | 0.0900 | 0.0921 | **0.0932** |
 | Beauty | NDCG@10 | 0.0420 | 0.0412 | 0.0419 | **0.0427** |
@@ -112,14 +112,19 @@ flowchart TD
 
 ### 3. 关键实验发现 (Key Findings)
 
-1. **置信度定位是最大单点贡献**：去掉 $c_{aug}$ 后 Beauty HR@10 从 0.0932 掉到 0.0900（-3.4%），Toys 从 0.0896 掉到 0.0882，且三个数据集上一致下降，说明"在哪增强"比"用什么噪声增强"更关键；T-SNE（图 5）进一步显示带 $c_{aug}$ 时同序列物品簇更紧致。
+1. **置信度定位是最大单点贡献**：去掉 $c_{aug}$后 Beauty HR@10 从 0.0932 掉到 0.0900（-3.4%），Toys 从 0.0896 掉到 0.0882，且三个数据集上一致下降，说明"在哪增强"比"用什么噪声增强"更关键；T-SNE（图 5）进一步显示带$c_{aug}$ 时同序列物品簇更紧致。
 2. **难负样本主要提升排序质量而非命中率**：去掉 $k_{sample}$ 后 Toys 的 HR@10 仅降 0.0020，但 NDCG@10 降 0.0011（相对 -2.8%），Sports 上 NDCG@10 从 0.0252 降至 0.0244，印证难负样本强化的是"正样本排得更靠前"的细粒度判别力。
-3. **语义噪声的收益与稀疏度强相关**：$k_{noise}$ 在低稀疏的 Beauty/Toys 上取 25–50 最优，而在高稀疏 Sports 上仅 1–5 最优（图 4），说明序列越稀疏、可用近邻越不可靠，噪声锥必须收窄；同时 $\alpha$ 在 Beauty 上需 0.4、Toys/Sports 仅 0.1，对比损失权重需随数据密度反向调节。
+3. **语义噪声的收益与稀疏度强相关**：$k_{noise}$在低稀疏的 Beauty/Toys 上取 25–50 最优，而在高稀疏 Sports 上仅 1–5 最优（图 4），说明序列越稀疏、可用近邻越不可靠，噪声锥必须收窄；同时$\alpha$ 在 Beauty 上需 0.4、Toys/Sports 仅 0.1，对比损失权重需随数据密度反向调节。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 CL4SRec/DuoRec 的随机 mask 与模型级 dropout，本文把增强的随机性从"位置 + 内容"两个维度同时消除；相比 CaDiRec 用行为上下文生成物品，本文不改动生成目标，而是改造扩散的**噪声分布与注入位置**，属于更轻量的 plug-in；相比 DreamRec 需在推理时采样扩散，本文推理零额外开销（Beauty 上 0.44s vs DreamRec 0.88s）。
 - **可迁移亮点**: ① "用嵌入近邻均值替代高斯噪声"可低成本移植到任何扩散式增强/生成模块；② 用去噪 softmax 最大概率作为"位置可增强性"探针，可迁移到序列 mask 预训练（BERT4Rec 式）的掩码位置采样策略。
 - **审稿级局限批判**: ① 扩散模块训练开销约为 SASRec 的 1.8–2.0 倍（Beauty 9.14s vs 4.94s），且 1000 步扩散 + 三损失联合使 $\alpha,\beta,k_{noise},k_{sample}$ 四个超参需逐数据集调，工程成本不低；② 增强位置与正负样本均来自同一去噪分布，存在"自证"风险——若扩散模型本身在某位置系统性偏差，置信度筛选会放大而非纠正该偏差，论文未给出该失效模式的诊断实验。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

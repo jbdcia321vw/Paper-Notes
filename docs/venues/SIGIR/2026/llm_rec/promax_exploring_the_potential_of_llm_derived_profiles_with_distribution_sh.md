@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-离线阶段：GPT 生成用户/物品文本画像 → 文本嵌入得 $d_s$ 维向量 → PCA 降至 $\kappa=d=32$ 维得 $\tilde{c}_u,\tilde{c}_i$。检索阶段：用户侧稠密检索 Top-$K_1$ 相似用户，聚合其交互得候选集 $C_u$；物品侧以均值池化用户向量 $\tilde{c}^*_u$ 对 $C_u$ 排序，再经 GPT-4o-mini 重排并按稀疏度偏移预算 $K_u$ 取新物品，扩充交互集为 $M'_u$。训练阶段：基座模型架构不变，仅额外计算 SDR 与 S2DR 两个损失。
+离线阶段：GPT 生成用户/物品文本画像 → 文本嵌入得 $d_s$维向量 → PCA 降至$\kappa=d=32$维得$\tilde{c}_u,\tilde{c}_i$。检索阶段：用户侧稠密检索 Top-$K_1$相似用户，聚合其交互得候选集$C_u$；物品侧以均值池化用户向量$\tilde{c}^*_u$对$C_u$排序，再经 GPT-4o-mini 重排并按稀疏度偏移预算$K_u$取新物品，扩充交互集为$M'_u$。训练阶段：基座模型架构不变，仅额外计算 SDR 与 S2DR 两个损失。
 
 ```mermaid
 flowchart TD
@@ -58,17 +58,17 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **稀疏度偏移的画像引导检索 (Sparsity Level Shift)**：固定追加 $K$ 个物品会淹没长尾用户、对头部用户几乎无影响。本文按交互量四分位 $\{Q_{0.25},Q_{0.5},Q_{0.75}\}$ 将用户分为最稀疏/稀疏/常规/活跃四组，令每用户补足至下一分位：
+1. **稀疏度偏移的画像引导检索 (Sparsity Level Shift)**：固定追加 $K$个物品会淹没长尾用户、对头部用户几乎无影响。本文按交互量四分位$\{Q_{0.25},Q_{0.5},Q_{0.75}\}$ 将用户分为最稀疏/稀疏/常规/活跃四组，令每用户补足至下一分位：
 $$K_u=\max(0,\ T(|M_u|)-|M_u|+1),\quad T(|M_u|)=\min\{Q\in\{Q_{0.25},Q_{0.5},Q_{0.75}\}:|M_u|<Q\}$$
-直觉：让中段用户（$U_2,U_3$）获得最多补充，活跃用户几乎不动，从而在不扭曲原始分布的前提下抬升整体交互密度。检索打分采用 item-CF 式加权 $\frac{1}{\sqrt{\text{count}(i)}}s(\tilde{c}^*_u,\tilde{c}_i)$ 抑制流行度偏置。
+直觉：让中段用户（$U_2,U_3$）获得最多补充，活跃用户几乎不动，从而在不扭曲原始分布的前提下抬升整体交互密度。检索打分采用 item-CF 式加权$\frac{1}{\sqrt{\text{count}(i)}}s(\tilde{c}^*_u,\tilde{c}_i)$ 抑制流行度偏置。
 
 2. **监督分布重塑 SDR**：画像分布 $p_{\text{LLM}}(i|u)=\text{Softmax}(s(\tilde{c}_u,\tilde{c}_i)/\tau)$ 作为软标签，用 stop-gradient 蒸馏给基座模型：
 $$\mathcal{L}_{\text{SDR}}=-\frac{1}{|\mathcal{U}_B|}\sum_{u}w(u)\sum_{i\in\mathcal{I}}\text{sg}[p_{\text{LLM}}(i|u)]\log p_\Theta(i|u)$$
-关键在不确定性加权 $w(u)=1-\hat{H}(u)$，$\hat{H}(u)=H(p_{\text{LLM}})/\log|\mathcal{I}|$ 为归一化熵：画像分布越集中（越自信）权重越大，避免噪声画像污染训练。因画像不参与训练，$p_{\text{LLM}}$ 可离线预计算。
+关键在不确定性加权 $w(u)=1-\hat{H}(u)$，$\hat{H}(u)=H(p_{\text{LLM}})/\log|\mathcal{I}|$为归一化熵：画像分布越集中（越自信）权重越大，避免噪声画像污染训练。因画像不参与训练，$p_{\text{LLM}}$ 可离线预计算。
 
-3. **自监督分布重塑 S2DR 与总损失**：SDR 过度依赖原始画像质量，故对同一用户构造 $M_u$ 与 $M'_u$ 两个视图，强制双向一致性：
+3. **自监督分布重塑 S2DR 与总损失**：SDR 过度依赖原始画像质量，故对同一用户构造 $M_u$与$M'_u$ 两个视图，强制双向一致性：
 $$\mathcal{L}_{\text{S2DR}}=-\frac{1}{2|\mathcal{B}|}\sum_{\langle u,i\rangle\in\mathcal{B}}\sum_{o\in\{M_u,M'_u\}}\log p_\Theta(i_{\bar{o}}|u_o)$$
-总损失 $\mathcal{L}_{\text{ProMax}}=\mathcal{L}_{\text{rec}}+\lambda_1\mathcal{L}_{\text{SDR}}+\lambda_2\mathcal{L}_{\text{S2DR}}$，$\mathcal{L}_{\text{rec}}$ 为 BPR 成对损失。负采样沿用基座模型默认策略；SDR 复杂度 $O(|\mathcal{B}|N\max(d,\kappa))$、S2DR 为 $O(|\mathcal{B}|^2d)$，均低于基座编码开销，训练时间仅温和增加。
+总损失 $\mathcal{L}_{\text{ProMax}}=\mathcal{L}_{\text{rec}}+\lambda_1\mathcal{L}_{\text{SDR}}+\lambda_2\mathcal{L}_{\text{S2DR}}$，$\mathcal{L}_{\text{rec}}$为 BPR 成对损失。负采样沿用基座模型默认策略；SDR 复杂度$O(|\mathcal{B}|N\max(d,\kappa))$、S2DR 为$O(|\mathcal{B}|^2d)$，均低于基座编码开销，训练时间仅温和增加。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -109,19 +109,24 @@ $$\mathcal{L}_{\text{S2DR}}=-\frac{1}{2|\mathcal{B}|}\sum_{\langle u,i\rangle\in
 | Base | 0.1411 | 0.1157 | 0.1348 |
 | V1: w/o S2DR | 下降 | 下降 | 下降 |
 | V2: w/o SDR | 下降 | 下降 | 下降 |
-| V3: 用 $R^{\text{item}}_u$ 替代 $R^{\text{LLM}}_u$ | 略低于 ProMax | 略低于 ProMax | 略低于 ProMax |
+| V3: 用 $R^{\text{item}}_u$替代$R^{\text{LLM}}_u$ | 略低于 ProMax | 略低于 ProMax | 略低于 ProMax |
 | **ProMax** | **0.1603** | **0.1338** | **0.1500** |
 
 ### 3. 关键实验发现 (Key Findings)
 
 1. **双路重塑缺一不可**：V1（仅原始画像）与 V2（缺 LLM 直接引导）均显著退化，说明 SDR 提供跨物品泛化监督、S2DR 抑制画像噪声，二者互补；V3 去掉 LLM 重排仅小幅下降，证明稠密检索已捕获主要协同信号，LLM 重排是细粒度增益。
-2. **稀疏度偏移精准命中中段用户**：图 5 显示 ProMax 在常规用户组 $U_3$ 增益最大，因其在偏移后获得最多补充交互；最稀疏组 $U_1$ 亦显著受益，验证了按分位补足而非固定追加的设计合理性。
-3. **效率-效果帕累托占优**：图 6 中 ProMax 训练时间仅略高于 Base、明显低于 ProEx，但 NDCG@10 三数据集全面最优；$\lambda_1$ 在 [0.5,1.5]、$\lambda_2$ 在 [0.05,0.1] 区间性能平稳，超参鲁棒性强。
+2. **稀疏度偏移精准命中中段用户**：图 5 显示 ProMax 在常规用户组 $U_3$增益最大，因其在偏移后获得最多补充交互；最稀疏组$U_1$ 亦显著受益，验证了按分位补足而非固定追加的设计合理性。
+3. **效率-效果帕累托占优**：图 6 中 ProMax 训练时间仅略高于 Base、明显低于 ProEx，但 NDCG@10 三数据集全面最优；$\lambda_1$在 [0.5,1.5]、$\lambda_2$ 在 [0.05,0.1] 区间性能平稳，超参鲁棒性强。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: RLMRec 用 MLP 对齐画像与 ID 嵌入，语义损失且画像仅作辅助特征；IRLLRec 引入意图画像但构造与训练成本更高；ProEx 多画像策略需额外 LLM 调用。ProMax 仅用**单份画像 + 两个损失项**，画像完全不参与训练，以分布级软监督替代点级对齐，成本更低而增益更大。
 - **可迁移亮点**: ① "画像作软标签、stop-gradient 蒸馏"可无缝迁移到任何有外部语义先验的召回/精排模型；② 基于分位数的稀疏度偏移预算分配，是缓解长尾用户监督不足的通用数据增广技巧。
 - **审稿级局限批判**: ① 依赖 GPT-4o-mini 做重排，离线预处理成本与 LLM 版本敏感性未量化；② 仅在三个中等规模隐式反馈数据集验证，未涉及序列推荐或工业级千万物品全库检索的延迟评估；③ 画像质量继承自 RLMRec 的固定画像，未讨论画像本身错误传播的上界。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

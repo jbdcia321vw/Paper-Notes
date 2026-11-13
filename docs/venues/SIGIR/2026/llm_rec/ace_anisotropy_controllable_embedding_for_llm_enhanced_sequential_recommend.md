@@ -34,14 +34,14 @@ LLM-as-Extractor 范式把 LLM 生成的物品嵌入直接灌入序列推荐骨�
 
 - **主流范式**: LLM-as-Extractor 用 LLM 编码物品文本属性得到高维嵌入（如 $d=3072$），经 PCA 或 MLP 投影到低维（$k=128$）后作为 SR 骨干（SASRec/GRU4Rec/BERT4Rec）的物品嵌入初始化，再端到端微调。
 - **前人局限**: ① LLM2X 仅做 PCA 截断，对语义如何适配协同信号几乎无控制力；② WhitenRec+ 用白化强制完美各向同性，把反映语义重要性的特征值层级一并抹平，造成语义畸变（图 1b 可见簇结构被破坏），在部分数据集上甚至不如朴素 PCA；③ AlphaRec/LLMEmb/AlphaFuse 聚焦"投影层如何对齐"，却忽略了**微调前的初始化几何**这一更根本因素。
-- **核心洞察 (Key Insight)**: 作者从协方差特征值谱切入，发现 LLM 嵌入的谱极度倾斜（图 2 红线）。白化等价于 $g(\sigma_i)=1$ 的硬截断，而"不处理"等价于 $g(\sigma_i)=\sigma_i$——两者只是收缩函数的两端特例，中间存在一整族**保序但压缩**的连续解。
+- **核心洞察 (Key Insight)**: 作者从协方差特征值谱切入，发现 LLM 嵌入的谱极度倾斜（图 2 红线）。白化等价于 $g(\sigma_i)=1$的硬截断，而"不处理"等价于$g(\sigma_i)=\sigma_i$——两者只是收缩函数的两端特例，中间存在一整族**保序但压缩**的连续解。
 - **本文切入点**: 用 LAE 的闭式谱解构造一族由 $\lambda$ 参数化的收缩函数，把各向异性调控从"二值开关"变成"连续旋钮"。
 
 ## Method (核心方法设计)
 
 ### 1. 整体框架 (Overall Architecture)
 
-ACE 是一个**训练前的嵌入重塑插件**：输入 LLM 物品嵌入矩阵 $\mathbf{E}\in\mathbb{R}^{n\times d}$，先对其做 SVD，再用 $\lambda$ 控制的收缩函数 $g_\lambda$ 逐奇异值加权，截取前 $k$ 维并乘缩放因子 $\gamma$ 恢复量纲，得到 $\mathbf{E}^{(k)}_{\text{ACE}}$ 作为任意 SR 骨干的物品嵌入表初始化，随后骨干按原训练流程微调。整个过程无额外可学习参数、不改变骨干结构，属于"一次性预处理 + 常规微调"的轻量闭环。
+ACE 是一个**训练前的嵌入重塑插件**：输入 LLM 物品嵌入矩阵 $\mathbf{E}\in\mathbb{R}^{n\times d}$，先对其做 SVD，再用$\lambda$控制的收缩函数$g_\lambda$逐奇异值加权，截取前$k$维并乘缩放因子$\gamma$恢复量纲，得到$\mathbf{E}^{(k)}_{\text{ACE}}$ 作为任意 SR 骨干的物品嵌入表初始化，随后骨干按原训练流程微调。整个过程无额外可学习参数、不改变骨干结构，属于"一次性预处理 + 常规微调"的轻量闭环。
 
 ```mermaid
 flowchart TD
@@ -54,13 +54,13 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **LAE 目标与闭式解（把"重塑"变成"求逆"）**：直接学一个 $n\times n$ 的物品-物品相似度矩阵 $\mathbf{B}_{\text{ACE}}$ 代价过高，作者改为最小化
+1. **LAE 目标与闭式解（把"重塑"变成"求逆"）**：直接学一个 $n\times n$的物品-物品相似度矩阵$\mathbf{B}_{\text{ACE}}$ 代价过高，作者改为最小化
 $$\mathcal{L}(\mathbf{B}_{\text{ACE}})=\|\mathbf{E}^\top-\mathbf{E}^\top\mathbf{B}_{\text{ACE}}\|_F^2+\lambda\|\mathbf{B}_{\text{ACE}}\|_F^2,\quad \hat{\mathbf{B}}_{\text{ACE}}=(\mathbf{E}\mathbf{E}^\top+\lambda\mathbf{I})^{-1}\mathbf{E}\mathbf{E}^\top$$
 该岭回归式目标有闭式解，无需迭代训练；$\lambda$ 越大，解越远离"完美重建"而趋向收缩，为后续谱分析提供了解析抓手。
 
 2. **幅度依赖的谱收缩算子（核心增量）**：由 $\mathbf{E}=\mathbf{U}\mathbf{S}\mathbf{V}^\top$ 出发，定义
 $$\mathbf{E}_{\text{ACE}}=\mathbf{U}\,g_\lambda(\mathbf{S}),\qquad g_\lambda(\sigma_i)=\sqrt{\frac{\sigma_i^2}{\sigma_i^2+\lambda}}$$
-对应诱导的相似度算子为 $\hat{\mathbf{B}}_{\text{ACE}}=\mathbf{U}\,\mathrm{diag}\!\left(\frac{\sigma_i^2}{\sigma_i^2+\lambda}\right)\mathbf{U}^\top$。物理直觉极清晰：**大奇异值被压得狠、小奇异值几乎不动**，谱被"压平"但不"压断"，语义层级以保序方式保留。两个极限验证了设计自洽性——$\lambda\to 0$ 时 $g_\lambda\to 1$，退化为白化（各向同性）；$\lambda\to\infty$ 时 $g_\lambda(\sigma)\approx\sigma/\sqrt{\lambda}$，退化为原始谱形（保持各向异性）。因此 ACE 是白化的**严格推广**，$\lambda$ 是连续插值旋钮。
+对应诱导的相似度算子为 $\hat{\mathbf{B}}_{\text{ACE}}=\mathbf{U}\,\mathrm{diag}\!\left(\frac{\sigma_i^2}{\sigma_i^2+\lambda}\right)\mathbf{U}^\top$。物理直觉极清晰：**大奇异值被压得狠、小奇异值几乎不动**，谱被"压平"但不"压断"，语义层级以保序方式保留。两个极限验证了设计自洽性——$\lambda\to 0$时$g_\lambda\to 1$，退化为白化（各向同性）；$\lambda\to\infty$时$g_\lambda(\sigma)\approx\sigma/\sqrt{\lambda}$，退化为原始谱形（保持各向异性）。因此 ACE 是白化的**严格推广**，$\lambda$ 是连续插值旋钮。
 
 3. **训练目标、负采样与推理效率**：ACE 本身无训练损失，仅需一次 SVD（$O(nd^2)$ 量级，离线完成）；下游沿用各骨干原生损失（SASRec 的 CE、GRU4Rec/BERT4Rec 的 CE），负采样策略与基线完全一致以保证公平对比。在线推理零额外开销——重塑后的嵌入表直接替换原初始化，服务时延与骨干本身相同。
 
@@ -79,7 +79,7 @@ $$\mathbf{E}_{\text{ACE}}=\mathbf{U}\,g_\lambda(\mathbf{S}),\qquad g_\lambda(\si
 
 - **数据划分与防穿越 (Splitting Strategy)**: `Leave-One-Out`——每个用户最后一条交互为测试、倒数第二条为验证、其余为训练，严格按时间序，无未来信息泄漏。
 - **排名评测协议 (Ranking Protocol)**: 无偏 `Full-Ranking`（全库未交互物品排序，不做候选过滤、不做负采样），指标为 Recall@{10,20} 与 NDCG@{10,20}。
-- **对比基线与超参设置**: 基线含 PCA 类（LLM2X）、白化类（WhitenRec+）、语义适配类（LLMEmb、AlphaRec、AlphaFuse），另加原始 SASRec/GRU4Rec/BERT4Rec 作下界。嵌入维度 $k=128$，最大序列长 50，batch 256，早停 patience 10（监控验证集 NDCG@10），Adam，学习率 $10^{-3}\sim10^{-5}$ 对数搜索；ACE 的 $\lambda\in\{0,1,5,\dots,5\times10^3\}$，$\gamma\in\{0.1,0.5,1\}$；结果四次运行取均值，显著性用单尾 $t$ 检验（$p<0.05$）。
+- **对比基线与超参设置**: 基线含 PCA 类（LLM2X）、白化类（WhitenRec+）、语义适配类（LLMEmb、AlphaRec、AlphaFuse），另加原始 SASRec/GRU4Rec/BERT4Rec 作下界。嵌入维度 $k=128$，最大序列长 50，batch 256，早停 patience 10（监控验证集 NDCG@10），Adam，学习率$10^{-3}\sim10^{-5}$对数搜索；ACE 的$\lambda\in\{0,1,5,\dots,5\times10^3\}$，$\gamma\in\{0.1,0.5,1\}$；结果四次运行取均值，显著性用单尾$t$检验（$p<0.05$）。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -123,10 +123,15 @@ SASRec 骨干，四数据集（R=Recall，N=NDCG）：
 2. **增益在弱骨干上更显著**：GRU4Rec + Yelp 上 ACE 相对最优基线提升 12.4% / 11.8%，而 BERT4Rec + Beauty 仅 +0.5% / +0.8%。说明嵌入初始化几何的收益与骨干自身的表征能力呈**互补关系**——骨干越弱，越依赖高质量初始化；强骨干（BERT4Rec 双向注意力）能自行纠偏部分几何缺陷。
 3. **增益不依赖特定 LLM 编码器**：在 F2LLM-4B、Qwen3-8B、KaLM-12B 三种编码器下，ACE 的 R@20 均稳定领先最强基线 AlphaFuse 约 2.94%，说明谱收缩作用于嵌入的**几何统计性质**而非某种编码器的语义偏置，具备编码器无关的普适性。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
-- **与代表作对比 (vs. Prior Work)**: 与 LLM2X 的本质区别是"截断 vs. 保序收缩"——前者只降维不管谱形，后者显式重塑谱；与 WhitenRec+ 的区别是"硬白化 vs. 软白化"——前者 $g\equiv1$ 抹平层级，后者 $g_\lambda$ 幅度依赖地保留层级；与 AlphaFuse 的区别是作用位置——AlphaFuse 在微调中冻结语义子空间，ACE 在微调前就把初始化几何调好，二者正交、理论上可叠加。
+- **与代表作对比 (vs. Prior Work)**: 与 LLM2X 的本质区别是"截断 vs. 保序收缩"——前者只降维不管谱形，后者显式重塑谱；与 WhitenRec+ 的区别是"硬白化 vs. 软白化"——前者 $g\equiv1$抹平层级，后者$g_\lambda$ 幅度依赖地保留层级；与 AlphaFuse 的区别是作用位置——AlphaFuse 在微调中冻结语义子空间，ACE 在微调前就把初始化几何调好，二者正交、理论上可叠加。
 - **可迁移亮点**: ① 谱收缩算子 $g_\lambda(\sigma)=\sigma/\sqrt{\sigma^2+\lambda}$ 可直接迁移到任何"预训练嵌入 + 下游微调"场景（跨域推荐、多模态特征对齐、冷启动物品初始化）；② "用岭回归闭式解反推谱算子"这一推导套路，可复用于设计其他带约束的嵌入预处理。
-- **审稿级局限批判**: ① 需对 $n\times d$ 嵌入矩阵做完整 SVD，物品量级到千万时离线成本与存储不可忽视，论文未讨论增量/近似 SVD 方案；② 评估仅限离线 Full-Ranking，缺少线上 A/B 与训练稳定性/收敛速度的量化分析，且 $\lambda$、$\gamma$ 需按数据集网格搜索，跨域迁移时的选参成本未评估；③ 作为 5 页短文，未与 AlphaFuse 做叠加实验，错失了验证"正交性"这一最有说服力的论据。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+- **审稿级局限批判**: ① 需对 $n\times d$嵌入矩阵做完整 SVD，物品量级到千万时离线成本与存储不可忽视，论文未讨论增量/近似 SVD 方案；② 评估仅限离线 Full-Ranking，缺少线上 A/B 与训练稳定性/收敛速度的量化分析，且$\lambda$、$\gamma$ 需按数据集网格搜索，跨域迁移时的选参成本未评估；③ 作为 5 页短文，未与 AlphaFuse 做叠加实验，错失了验证"正交性"这一最有说服力的论据。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

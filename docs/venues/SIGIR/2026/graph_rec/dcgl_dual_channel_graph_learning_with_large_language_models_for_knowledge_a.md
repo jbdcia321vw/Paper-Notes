@@ -45,7 +45,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入侧为两条并行管线：LLM 通道用 Llama-3-8B-Instruct 将实体结构化字段改写为中性描述文本，经 text-embedding-3-small 编码为 1536 维向量，再由两层 MLP adapter 投影到 $d=64$；ID 通道则随机初始化、纯靠交互优化。两通道各自先用 RGAT 编码 KG（关系感知注意力 + TransE 辅助正则），再把 RGAT 输出的物品表示作为 LightGCN 的初始节点做协同传播，得到 $\mathbf{U}^{(c)},\mathbf{I}^{(c)}$。随后多级对比学习（通道内增广对比 + 通道间投影对齐）精炼表示，最后由频率感知门控按用户/物品交互频次生成权重 $g_u,g_i$ 做加权拼接与归一化打分。LLM 语义抽取完全离线，在线无 LLM 推理开销。
+输入侧为两条并行管线：LLM 通道用 Llama-3-8B-Instruct 将实体结构化字段改写为中性描述文本，经 text-embedding-3-small 编码为 1536 维向量，再由两层 MLP adapter 投影到 $d=64$；ID 通道则随机初始化、纯靠交互优化。两通道各自先用 RGAT 编码 KG（关系感知注意力 + TransE 辅助正则），再把 RGAT 输出的物品表示作为 LightGCN 的初始节点做协同传播，得到$\mathbf{U}^{(c)},\mathbf{I}^{(c)}$。随后多级对比学习（通道内增广对比 + 通道间投影对齐）精炼表示，最后由频率感知门控按用户/物品交互频次生成权重$g_u,g_i$ 做加权拼接与归一化打分。LLM 语义抽取完全离线，在线无 LLM 推理开销。
 
 ```mermaid
 flowchart TD
@@ -68,7 +68,7 @@ $$\mathcal{L}_{\text{aug}}=\sum_{c\in\{\text{id},\text{llm}\}}\left[\mathcal{L}_
 
 3. **频率感知门控融合与归一化打分**：门控输入为双通道表示 + 对数归一化频率 $\phi(\text{freq}_i)=\log(1+\text{freq}_i)/\log(1+\max_j \text{freq}_j)$：
 $$g_i=\sigma\left(\mathbf{W}_g[\mathbf{x}^{(\text{id})}_i\|\mathbf{x}^{(\text{llm})}_i\|\phi(\text{freq}_i)]+b_g\right)$$
-直接内积会因权重质量 $g_ug_i+(1-g_u)(1-g_i)$ 随门控值漂移而产生尺度失衡，故引入归一化因子 $\alpha_{ui}$，使最终得分化为凸组合 $\hat{y}_{ui}=w\cdot s_{\text{id}}+(1-w)\cdot s_{\text{llm}}$，$w\in(0,1)$，保证数值尺度稳定与梯度平滑。另加门控正则 $\mathcal{L}_{\text{gate}}=\frac{1}{|\mathcal{O}|}\sum\sum_{x}[-\log g_x-\log(1-g_x)]$ 防止门控饱和到 0/1 的平凡解。
+直接内积会因权重质量 $g_ug_i+(1-g_u)(1-g_i)$随门控值漂移而产生尺度失衡，故引入归一化因子$\alpha_{ui}$，使最终得分化为凸组合$\hat{y}_{ui}=w\cdot s_{\text{id}}+(1-w)\cdot s_{\text{llm}}$，$w\in(0,1)$，保证数值尺度稳定与梯度平滑。另加门控正则$\mathcal{L}_{\text{gate}}=\frac{1}{|\mathcal{O}|}\sum\sum_{x}[-\log g_x-\log(1-g_x)]$ 防止门控饱和到 0/1 的平凡解。
 
 4. **训练目标与负采样**：总损失 $\mathcal{L}=\mathcal{L}_{\text{BPR}}+\lambda_{\text{aug}}\mathcal{L}_{\text{aug}}+\lambda_{\text{align}}\mathcal{L}_{\text{align}}+\lambda_{\text{gate}}\mathcal{L}_{\text{gate}}+\lambda_{\text{reg}}\|\Theta\|_2^2$，其中 BPR 用归一化因子加权：$\mathcal{L}_{\text{BPR}}=\sum-\alpha_{ui}\log\sigma(\hat{y}_{ui}-\hat{y}_{ui'})$。负采样为标准**均匀随机负采样**（每正样本配一个未交互负样本），TransE 部分对尾实体随机替换构造 corrupted triplet。推理时仅需前向传播双通道 GCN 与门控，复杂度随图规模线性增长，与 GNN 基线同量级。
 
@@ -85,7 +85,7 @@ $$g_i=\sigma\left(\mathbf{W}_g[\mathbf{x}^{(\text{id})}_i\|\mathbf{x}^{(\text{ll
 
 - **数据划分与防穿越**: 每个用户的历史交互按 **7:1:2 随机划分**为训练/验证/测试集（非全局时间戳切分，存在轻度未来信息泄漏风险）。
 - **排名评测协议**: **Full-Ranking 全库未交互物品排序**，指标 Recall@{50,100} 与 NDCG@{50,100}；10 次不同随机种子取均值，$p<0.05$ 显著性检验。
-- **对比基线与超参**: 五类基线共 13 个（CF: LightGCN/SGL/SimGCL；嵌入式 KG: CKE/CFKG；GNN-KG: KGAT/KGIN/KGCL/MCCL/KGRec；LLM+GNN: RLMRec；LLM+KG: CoLaKG/CIKGRec）。统一 $d=64$，RGAT 与 LightGCN 层数均为 3，KG 边丢弃率 $\rho=0.5$，LLM 生成温度 $\tau=0$、top-$p=0.001$。
+- **对比基线与超参**: 五类基线共 13 个（CF: LightGCN/SGL/SimGCL；嵌入式 KG: CKE/CFKG；GNN-KG: KGAT/KGIN/KGCL/MCCL/KGRec；LLM+GNN: RLMRec；LLM+KG: CoLaKG/CIKGRec）。统一 $d=64$，RGAT 与 LightGCN 层数均为 3，KG 边丢弃率$\rho=0.5$，LLM 生成温度$\tau=0$、top-$p=0.001$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -122,10 +122,15 @@ $$g_i=\sigma\left(\mathbf{W}_g[\mathbf{x}^{(\text{id})}_i\|\mathbf{x}^{(\text{ll
 2. **通道内对比（AUG）比通道间对齐（ALIGN）更关键**：去掉 AUG 使 Amazon-Book N@100 从 0.2317 掉到 0.2121（-8.5%），而去掉 ALIGN 仅掉到 0.2292（-1.1%）；但两者在 Book-Crossing 上分别掉 9.7% 与 1.7%，表明增广带来的抗噪鲁棒性是稀疏数据下的第一贡献项，对齐更多是锦上添花。
 3. **门控可视化验证了频率自适应**：图 6 显示学习到的 $g_i$、$g_u$ 与归一化交互频率呈清晰正相关，低频区门控压低 ID 通道权重、高频区抬升，直接对应动机中 Bob/Alice 两种失效模式的修复；去掉频率信号（w/o FREQ）在 Amazon-Book 上 N@100 掉 0.4%，虽幅度不大但方向一致。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 **CIKGRec**（仅丰富用户侧语义、静态融合）与 **CoLaKG**（依赖 LLM 检索补全 KG 事实、易受幻觉影响），DCGL 同时覆盖用户与物品双侧语义，且融合权重由数据频率驱动而非固定；相比 **KGCL/MCCL** 的对比学习，本文的通道间对齐额外承担了"让 ID 通道内化隐式语义"的功能，这是纯结构对比学习做不到的。
 - **可迁移亮点**: ① 门控打分前引入归一化因子 $\alpha_{ui}$ 把加权内积化为凸组合，这一技巧可直接迁移到任何多路召回/多视图融合的打分环节以消除尺度漂移；② 用离线 LLM 描述 + 轻量 adapter 投影替代在线 LLM 推理，是低成本引入语义信号的实用范式。
 - **审稿级局限批判**: ① 数据划分采用**随机 7:1:2 而非全局时间戳切分**，存在未来交互泄漏，对时序敏感场景的结论外推需谨慎；② 门控权重依赖全局交互频次统计，在**动态流式场景**下频次分布漂移会使门控失准，论文未讨论增量更新策略；③ 消融中 w/o FREQ 的降幅在部分数据集上仅 0.1–0.4 个百分点，门控模块的独立贡献相对温和，其价值更多体现在分组分析而非整体均值。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

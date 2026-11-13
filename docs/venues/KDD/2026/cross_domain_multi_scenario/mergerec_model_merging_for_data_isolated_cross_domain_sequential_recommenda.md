@@ -45,7 +45,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-给定 $K$ 个域各自微调的文本序列推荐模型 $\{\theta_k\}$ 与共享预训练底座 $\theta_{base}$，MergeRec 分三步闭环：(a) **合并初始化**——计算任务向量 $\tau_k=\theta_k-\theta_{base}$，按域级或层级权重线性叠加得到初始统一模型；(b) **伪用户构造**——把每个域内每个物品 $i$ 单独视为一条序列 $[i]$，作为探针输入各域教师模型，得到条件分布 $\hat p_k(\cdot|[i])$；(c) **协同合并优化**——仅优化合并权重 $w$（域级 $K$ 个或层级 $K\times L$ 个），联合最小化蒸馏损失与推荐损失，最终输出单一通用推荐模型。
+给定 $K$个域各自微调的文本序列推荐模型$\{\theta_k\}$与共享预训练底座$\theta_{base}$，MergeRec 分三步闭环：(a) **合并初始化**——计算任务向量$\tau_k=\theta_k-\theta_{base}$，按域级或层级权重线性叠加得到初始统一模型；(b) **伪用户构造**——把每个域内每个物品$i$单独视为一条序列$[i]$，作为探针输入各域教师模型，得到条件分布$\hat p_k(\cdot|[i])$；(c) **协同合并优化**——仅优化合并权重$w$（域级$K$个或层级$K\times L$ 个），联合最小化蒸馏损失与推荐损失，最终输出单一通用推荐模型。
 
 ```mermaid
 flowchart TD
@@ -63,13 +63,13 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **层级/域级任务向量合并（Merging Initialization）**：单一域标量无法抑制层间抽象差异带来的域间干扰 $\to$ 为每域每层分配独立权重，$\theta_{merge}=\{\theta^l_{base}+\sum_{k}w^l_k\cdot\tau^l_k\}_{l=1}^{L}$。直觉：浅层共享通用文本表征、深层承载域特有 CF 模式，分层加权可细粒度控制知识注入强度。
+1. **层级/域级任务向量合并（Merging Initialization）**：单一域标量无法抑制层间抽象差异带来的域间干扰 $\to$为每域每层分配独立权重，$\theta_{merge}=\{\theta^l_{base}+\sum_{k}w^l_k\cdot\tau^l_k\}_{l=1}^{L}$。直觉：浅层共享通用文本表征、深层承载域特有 CF 模式，分层加权可细粒度控制知识注入强度。
 
-2. **伪用户数据构造（Pseudo-user Construction）**：数据隔离下无任何样本可学权重 $\to$ 令 $\tilde{\mathcal{U}}_k=\{[i]\mid i\in\mathcal{I}_k\}$，把单物品序列喂入教师模型 $f_{\theta_k}$，其输出分布即刻画物品 $i$ 的局部共现结构。直觉：CF 知识已固化在参数中，单物品探针足以「唤醒」它，等价于模拟跨域冷启动用户，且完全不触碰真实日志。
+2. **伪用户数据构造（Pseudo-user Construction）**：数据隔离下无任何样本可学权重 $\to$令$\tilde{\mathcal{U}}_k=\{[i]\mid i\in\mathcal{I}_k\}$，把单物品序列喂入教师模型$f_{\theta_k}$，其输出分布即刻画物品$i$ 的局部共现结构。直觉：CF 知识已固化在参数中，单物品探针足以「唤醒」它，等价于模拟跨域冷启动用户，且完全不触碰真实日志。
 
 3. **推荐 + 蒸馏联合目标（Collaborative Merging Optimization）**：AdaMerging 仅最小化预测熵，只放大 top-1 置信度，无法刻画用户多意图（图 3 显示其交叉熵不降）$\to$ 引入
 $$\mathcal{L}=\mathcal{L}_{Rec}+\lambda\cdot\mathcal{L}_{KD},\quad \mathcal{L}_{KD}=\sum_{k}\sum_{u\in\tilde{\mathcal{U}}_k}\mathrm{KL}(\hat p_{merge,u}\,\|\,\hat p_{k,u})$$
-其中 $\mathcal{L}_{Rec}$ 以教师模型对伪用户的 top-1 预测 $\tilde i^+$ 作硬伪标签、域内负采样构造 BPR 式交叉熵。蒸馏传软分布（多意图 CF 信号），推荐损失保排序判别力。**训练仅更新 $K$ 或 $K\times L$ 个标量权重**，底座与任务向量冻结，推理零额外开销。
+其中 $\mathcal{L}_{Rec}$以教师模型对伪用户的 top-1 预测$\tilde i^+$作硬伪标签、域内负采样构造 BPR 式交叉熵。蒸馏传软分布（多意图 CF 信号），推荐损失保排序判别力。**训练仅更新$K$或$K\times L$ 个标量权重**，底座与任务向量冻结，推理零额外开销。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -81,7 +81,7 @@ $$\mathcal{L}=\mathcal{L}_{Rec}+\lambda\cdot\mathcal{L}_{KD},\quad \mathcal{L}_{
 
 - **数据划分与防穿越 (Splitting Strategy)**: `Leave-One-Out`——每用户最后 1 次交互作测试、倒数第 2 次作验证、其余训练；训练数据仅用于微调与 Joint Learning，合并阶段不可见。
 - **排名评测协议 (Ranking Protocol)**: 域内全物品排序，报告 Recall@10 与 NDCG@10；主表采用**相对微调模型的归一化 R@10**（微调=100%），并给出未归一化结果于附录 C。
-- **对比基线与超参设置**: Zero-shot、Fine-tuning、Joint Learning、Weight Averaging、Task Arithmetic、TIES、AdaMerging（域级/层级，为公平起见改用同一伪用户数据做无监督熵最小化）；骨干为 RecFormer-base/large 与 BLaIR-base/large；温度 $T=1$，$\lambda$ 做敏感性扫描；显著性用单尾 t 检验 $p<0.02$。
+- **对比基线与超参设置**: Zero-shot、Fine-tuning、Joint Learning、Weight Averaging、Task Arithmetic、TIES、AdaMerging（域级/层级，为公平起见改用同一伪用户数据做无监督熵最小化）；骨干为 RecFormer-base/large 与 BLaIR-base/large；温度 $T=1$，$\lambda$做敏感性扫描；显著性用单尾 t 检验$p<0.02$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -121,10 +121,15 @@ $$\mathcal{L}=\mathcal{L}_{Rec}+\lambda\cdot\mathcal{L}_{KD},\quad \mathcal{L}_{
 2. **域数越多优势越大**：图 4 中 Task Arithmetic/TIES 在 4–5 域时尚可竞争，随域数增至 8 明显退化，而 MergeRec 单调上升，验证任务向量冲突随域数累积、而推荐导向目标可有效消解。
 3. **稀疏域与长尾物品受益最大**：Scientific 域上 MergeRec 较微调提升 1.44%（RecFormer-base 域级）至 5.18%（BLaIR-large 层级）；图 5(b) 中最冷门物品组（1–10）增益最显著；数据稀缺实验（目标域仅 1%/5%/10% 用户）中 MergeRec 平均 R@10 达 0.1089/0.1128/0.1120，全面优于微调与 AdaMerging；未见域（Inst./Office/Sci.）上较 Task Arithmetic 最高 +3.92%。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 C2DSR/MAN/DTCDR 等 CDSR 的本质区别是**彻底放弃跨域数据与重叠实体假设**，只交换参数；与 FedGCDR 等隐私保护 CDR 的区别是训练期完全无跨域协调、无梯度/参数交换；与 AdaMerging 的区别是把「无监督熵最小化」替换为「教师软分布蒸馏 + 伪标签推荐」的推荐感知目标。
 - **可迁移亮点**: ① 「物品即伪用户」的单物品探针可迁移到任何缺乏原始数据、仅有模型权重的联邦/多租户合并场景；② 用教师 top-1 作硬伪标签 + KL 软分布的双监督组合，是低成本补齐「排序判别力」的通用配方。
 - **审稿级局限批判**: ① 伪用户仅用单物品序列，丢失序列上下文，长序列用户（图 5a 中 20+）增益有限；② 合并权重数量随域数线性增长，且需预先固定底座与任务向量，底座不同（跨架构）时无法合并；③ 评估仅限 Amazon 文本序列推荐与归一化指标，缺少工业级在线 A/B 与延迟实测。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

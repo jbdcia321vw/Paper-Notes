@@ -45,7 +45,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入为用户 $u$ 的历史交互序列 $\mathbf{x}_u=[v_1,\dots,v_l]$（one-hot，$l=20$），用户/物品嵌入由预训练 3 层 LightGCN 初始化。前向过程按**流行度感知调度**逐步把物品替换为 `[MASK]` 吸收态，直至全掩码；反向过程由 Transformer 编码器实例化的**一致性函数** $F_\theta$ 直接从任意时刻 $t$ 的掩码序列预测原始交互 $\hat{\mathbf{x}}_0$（序列前缀拼接协同用户嵌入 $\mathbf{p}_u$，时间步嵌入加到 $\mathbf{p}_u$ 上，输出经与物品矩阵余弦相似度投影回离散空间）。训练联合一致性损失、扩散重建损失与多跳对比损失；推理时把生成物品嵌入聚合为用户表征，与全库物品内积取 top-$k$。
+输入为用户 $u$的历史交互序列$\mathbf{x}_u=[v_1,\dots,v_l]$（one-hot，$l=20$），用户/物品嵌入由预训练 3 层 LightGCN 初始化。前向过程按**流行度感知调度**逐步把物品替换为 `[MASK]` 吸收态，直至全掩码；反向过程由 Transformer 编码器实例化的**一致性函数**$F_\theta$直接从任意时刻$t$的掩码序列预测原始交互$\hat{\mathbf{x}}_0$（序列前缀拼接协同用户嵌入$\mathbf{p}_u$，时间步嵌入加到$\mathbf{p}_u$上，输出经与物品矩阵余弦相似度投影回离散空间）。训练联合一致性损失、扩散重建损失与多跳对比损失；推理时把生成物品嵌入聚合为用户表征，与全库物品内积取 top-$k$。
 
 ```mermaid
 flowchart TD
@@ -64,15 +64,15 @@ flowchart TD
 
 1. **流行度感知噪声调度（Popularity-aware Noise Schedule）**：线性/余弦调度假设所有物品对偏好建模贡献均等，导致掩码轨迹无语义。本文定义序列内流行度偏差 $I(v)=\mathrm{pop}(v)-\frac{1}{l}\sum_{i}\mathrm{pop}(v_i)$，并把吸收概率写成
 $$\beta(t)_{v_i}=\frac{t}{T}-\omega\exp\!\Big(-\frac{(t-T)^2}{2\sigma^2}\Big)I(v_i),$$
-即热门物品（$I>0$）吸收更慢、冷门物品更早被掩。直觉：真实交互总是"先看热门再看长尾"，反向生成因此形成 **easy-to-hard** 课程，热门物品的稳定模式先被学到，长尾在后段被建模。该调度仍满足标准转移率要求（收敛性 + 转移核可解析计算 $q_{t|0}=\big(S\exp(\Lambda\bar\beta(t))S^{-1}\big)_{ij}$）。
+即热门物品（$I>0$）吸收更慢、冷门物品更早被掩。直觉：真实交互总是"先看热门再看长尾"，反向生成因此形成 **easy-to-hard** 课程，热门物品的稳定模式先被学到，长尾在后段被建模。该调度仍满足标准转移率要求（收敛性 + 转移核可解析计算$q_{t|0}=\big(S\exp(\Lambda\bar\beta(t))S^{-1}\big)_{ij}$）。
 
-2. **一致性驱动的反向参数化（Consistency Function）**：直接估 $p_{0|t}$ 在离散分布下效果差，学 score 比 $q_t(y)/q_t(x)$ 又需正性约束与高算力。本文改用一致性函数 $f:(\mathbf{x}_t,t)\mapsto\mathbf{x}_\varepsilon$，因离散态无法做 skip-connection 叠加，故分段定义为 $f_\theta(\mathbf{x},t)=\mathbf{x}\ (t=\varepsilon)$、$=F_\theta(\mathbf{x},t)\ (t\in(\varepsilon,T])$。训练目标
+2. **一致性驱动的反向参数化（Consistency Function）**：直接估 $p_{0|t}$在离散分布下效果差，学 score 比$q_t(y)/q_t(x)$又需正性约束与高算力。本文改用一致性函数$f:(\mathbf{x}_t,t)\mapsto\mathbf{x}_\varepsilon$，因离散态无法做 skip-connection 叠加，故分段定义为$f_\theta(\mathbf{x},t)=\mathbf{x}\ (t=\varepsilon)$、$=F_\theta(\mathbf{x},t)\ (t\in(\varepsilon,T])$。训练目标
 $$\mathcal{L}_{Con}=\mathbb{E}_{\mathbf{x}_0,t_n}\big[\gamma(t_n)\,d\big(f_\theta(\mathbf{x}_{t_n},t_n),\,f_{\theta^-}(\bar{\mathbf{x}}_{t_{n-1}},t_{n-1})\big)\big],$$
-其中 $d$ 取 KL 散度、$\theta^-$ 为 EMA。关键难点是构造相邻时刻对 $(\bar{\mathbf{x}}_{t_{n-1}},\mathbf{x}_{t_n})$：作者给出 one-step recovery（只恢复掩码概率最低的一个物品）与 **pseudo-Euler**（按 $\nabla t$ 自适应解掩，$p=1-(B_{t_n-\nabla t}/B_{t_n})$）两种方案，后者更贴合前向过程。
+其中 $d$取 KL 散度、$\theta^-$为 EMA。关键难点是构造相邻时刻对$(\bar{\mathbf{x}}_{t_{n-1}},\mathbf{x}_{t_n})$：作者给出 one-step recovery（只恢复掩码概率最低的一个物品）与 **pseudo-Euler**（按$\nabla t$自适应解掩，$p=1-(B_{t_n-\nabla t}/B_{t_n})$）两种方案，后者更贴合前向过程。
 
-3. **对比引导 + 联合训练**：一致性损失会让热门物品被过度强调（它们在轨迹中存活更久），故加辅助扩散重建损失 $\mathcal{L}_{Diff}=-\sum_i \mathbf{x}^i_u\log p^i_\theta(\mathbf{x}_0|\mathbf{x}_t)$ 稳定训练；同时把生成序列的物品嵌入聚合为 $\mathbf{e}_u$（模拟单层 GNN 传播），以预训练 $\mathbf{p}_u$ 为正样本、随机未交互物品为负样本做 InfoNCE：
+3. **对比引导 + 联合训练**：一致性损失会让热门物品被过度强调（它们在轨迹中存活更久），故加辅助扩散重建损失 $\mathcal{L}_{Diff}=-\sum_i \mathbf{x}^i_u\log p^i_\theta(\mathbf{x}_0|\mathbf{x}_t)$稳定训练；同时把生成序列的物品嵌入聚合为$\mathbf{e}_u$（模拟单层 GNN 传播），以预训练$\mathbf{p}_u$ 为正样本、随机未交互物品为负样本做 InfoNCE：
 $$\mathcal{L}_{cl}=\sum_{u}-\log\frac{\varsigma(\mathbf{e}_u,\mathbf{p}_u)}{\varsigma(\mathbf{e}_u,\mathbf{p}_u)+\sum_{v\in\mathcal{V}^-_u}\varsigma(\mathbf{e}_u,\mathbf{q}_v)}.$$
-总损失 $\mathcal{L}=\lambda_1\mathcal{L}_{Con}+(1-\lambda_1)\mathcal{L}_{Diff}+\lambda_2\mathcal{L}_{cl}$，$\lambda_1=0.4$ 最优。**负采样**：对比损失用随机未交互物品（非 in-batch、非 hard negative）；推理支持单步（$N=1$）或多步（最优 $N=30,T=60$），单步即可媲美扩散基线。
+总损失 $\mathcal{L}=\lambda_1\mathcal{L}_{Con}+(1-\lambda_1)\mathcal{L}_{Diff}+\lambda_2\mathcal{L}_{cl}$，$\lambda_1=0.4$最优。**负采样**：对比损失用随机未交互物品（非 in-batch、非 hard negative）；推理支持单步（$N=1$）或多步（最优$N=30,T=60$），单步即可媲美扩散基线。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -121,10 +121,15 @@ $$\mathcal{L}_{cl}=\sum_{u}-\log\frac{\varsigma(\mathbf{e}_u,\mathbf{p}_u)}{\var
 2. **一致性损失与扩散损失是双支柱**：消融中 `w/o con` 与 `w/o diff` 降幅最大，说明单靠一致性（易过拟合热门）或单靠重建（无轨迹约束）都不足；$\lambda_1=0.4$ 的折中最优点也印证二者互补。
 3. **效率与精度可兼得**：单步生成（$N=1$）已可媲美扩散基线，$N=30,T=60$ 为最优点，继续加步反而因噪声累积掉点；在 Dianping 上同 batch=1024 设置下 CDRec 采样耗时明显低于 DiffRec（掩码操作 vs 全物品向量加噪）。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 DiffRec/GiffCF/BSPM 的本质区别是**状态空间**——它们把离散协同数据编码后加高斯噪声，CDRec 直接在物品 one-hot 序列上做掩码转移；与 DCDR 的区别是后者仅用离散扩散扰动重排位置，CDRec 用其直接建模偏好分布；与文本域 D3PM/SEDD 的区别是引入**流行度先验调度**与**推荐定制的一致性训练对构造**。
 - **可迁移亮点**: ① 用物品流行度偏差 $I(v)$ 调制噪声调度，可平移到任何"带曝光先验"的生成式任务（如语义 ID 生成式检索的 token 掩码课程）；② 用 pseudo-Euler 解掩构造一致性训练对，绕开离散空间无 score 无偏估计的难题，可复用到其他离散扩散推荐。
 - **审稿级局限批判**: ① 对比损失仅用随机负样本，未探索 hard negative，长尾物品的判别边界可能仍偏弱；② 8:1:1 随机划分而非时间切分，存在未来交互泄漏风险，且未报告冷启动/长尾分桶实验；③ 一致性函数依赖预训练 LightGCN 嵌入，预训练质量与扩散模块的耦合未被消融隔离。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

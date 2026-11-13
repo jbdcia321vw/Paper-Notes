@@ -67,9 +67,9 @@ flowchart TD
 
 2. **动态记忆与偏好演化（Dynamic Memory & Evolving Preference）**：用户历史近似无限且噪声大，本文定义带重要性阈值的参与记忆
 $$\mathcal{M}^t_u=\{(a_k,i_k,\tau_k)\in\mathcal{H}_u \mid \alpha_k>\delta\},\quad \alpha_k=h(a_k,i_k,\tau_k\mid \mathcal{C}^t)$$
-并分交互级 $\mathcal{M}^{t,\text{int}}_u$ 与会话级 $\mathcal{M}^{t,\text{sess}}_u=\{\boldsymbol{s}_1,\dots,\boldsymbol{s}_m\}$ 两层组织；偏好状态按 $\boldsymbol{z}^t=\boldsymbol{z}^{t-1}+\Delta\boldsymbol{m}^t$ 增量更新，$\Delta\boldsymbol{m}^t=f(\mathcal{M}^t_u,\mathcal{C}^t,r^t,\Delta^t)$。直觉：只保留与当前上下文相关的行为，用"mindset 增量"而非全量重算刻画兴趣漂移。
+并分交互级 $\mathcal{M}^{t,\text{int}}_u$与会话级$\mathcal{M}^{t,\text{sess}}_u=\{\boldsymbol{s}_1,\dots,\boldsymbol{s}_m\}$两层组织；偏好状态按$\boldsymbol{z}^t=\boldsymbol{z}^{t-1}+\Delta\boldsymbol{m}^t$增量更新，$\Delta\boldsymbol{m}^t=f(\mathcal{M}^t_u,\mathcal{C}^t,r^t,\Delta^t)$。直觉：只保留与当前上下文相关的行为，用"mindset 增量"而非全量重算刻画兴趣漂移。
 
-3. **三种历史建模范式与训练目标**：文本建模（全文本 prompt，灵活但丢失语气/音乐等细节）、多模态建模（MLLM 直接摄入音视频，表征丰富但推理弱、token 开销大）、语义 ID 建模（RQ 式 SID 压缩，需持续预训练与周期重训）。推荐器侧建模为 MDP：状态 $s_t$ 为用户 mindset，转移 $p_\theta(s_{t+1}|s_t,a_t)$ 由模拟器实现，策略 $a_t\sim p_\phi(a|s_t)$，用 PPO（on-policy）或 DPO（off-policy）优化累计奖励；奖励融合会话总时长、点击数、自评分数，并采用多次 rollout + LLM judge 按 rubric 过滤高质量轨迹。
+3. **三种历史建模范式与训练目标**：文本建模（全文本 prompt，灵活但丢失语气/音乐等细节）、多模态建模（MLLM 直接摄入音视频，表征丰富但推理弱、token 开销大）、语义 ID 建模（RQ 式 SID 压缩，需持续预训练与周期重训）。推荐器侧建模为 MDP：状态 $s_t$为用户 mindset，转移$p_\theta(s_{t+1}|s_t,a_t)$由模拟器实现，策略$a_t\sim p_\phi(a|s_t)$，用 PPO（on-policy）或 DPO（off-policy）优化累计奖励；奖励融合会话总时长、点击数、自评分数，并采用多次 rollout + LLM judge 按 rubric 过滤高质量轨迹。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -104,10 +104,15 @@ $$\mathcal{M}^t_u=\{(a_k,i_k,\tau_k)\in\mathcal{H}_u \mid \alpha_k>\delta\},\qua
 2. **指令是流失的转化器**：Table 2 显示模拟器能在第 4 条 item 上主动"选择性降级"（Watch 15s 后 Skip），说明 LLM 可模拟"有兴趣但怕腻"的微妙状态，这是传统点击模型无法表达的信号。
 3. **多智能体可做创作者沙盒**：通过 $u_i(t+1)=f(u_i(t),\cup_{j\in\mathcal{N}(i)}s_{ij}(t),e(t))$ 的邻居传播更新，可在 6h/12h/24h/2d/1w 多时间点预测内容表现，为创作者提供发布策略预演——属设计愿景而非实测结论。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 KuaiSim（多行为反馈 + 跨会话，但用户不主动发指令）与 AgentRecBench（标准化 world API，偏任务求解），RecoWorld 的差异在于**把"用户主动指令"作为一等公民**；相比 Agent4Rec / AgentCF 等非对话式模拟器，它补上了"反思—指令—重排"的闭环；与 CRS（如 RecAgent）的区别在于 InFoRec 是**被动精确执行指令**，而非主动说服式推荐。
 - **可迁移亮点**: ① "离开前反思生成指令"可迁移到任何需要负反馈信号的 RL 推荐训练；② 双层记忆（交互级 + 会话级摘要）是长行为序列压缩的通用技巧；③ 用 LLM judge + rubric 过滤轨迹，可直接复用到生成式推荐的 SFT 数据清洗。
 - **审稿级局限批判**: ① **零定量实验**是最大短板——所有关于留存提升、指令遵循能力的论断均无数据支撑，作为 Best Paper 更多是愿景价值；② 语义 ID 方案需持续预训练与周期重训，多模态方案 token 开销大、推理弱，三者均未给出效率/成本对比；③ 模拟器保真度仅靠"与人类标注者统计对比"的 sanity check，缺乏系统性校准方法；④ 多智能体部分公式 (6)(7) 停留在符号层面，未说明 $f,g$ 的具体实现与规模可行性。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

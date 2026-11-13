@@ -47,3 +47,20 @@ EchoTrace: Diagnosing Recursive Risks in LLM-Powered Recommender Systems,2602.07
 LFM4Ads: Large Foundation Model for Ads Recommendation,2508.14948,https://arxiv.org/abs/2508.14948,https://github.com/ZhuangQu/LFM4Ads,cross_domain_multi_scenario,CIKM,2026
 Bidding-Aware Retrieval for Multi-Stage Consistency in Online Advertising,2508.05206,https://arxiv.org/abs/2508.05206,,ctr_feature_interaction,CIKM,2026
 On Mitigating Data Sparsity in Conversational Recommender Systems,2507.00479,https://arxiv.org/abs/2507.00479,,agent_conversational_rec,CIKM,2026
+Do Recommenders Need to Think in Words? Latent Reasoning for Efficient LLM-Based Recommendation,2611.07866,https://arxiv.org/abs/2611.07866,,llm_rec,CIKM,2026
+SPRIG: Semantic-ID-enhanced Paths for Knowledge Graph-based Generative Recommendation,2610.06590,https://arxiv.org/abs/2610.06590,https://github.com/justinhangoebl/semantic-id-knowledge-graph-recommender,generative_rec,CIKM,2026
+Revisiting N2DCG: An Empirically Grounded Reformulation of Carousel Recommendation Evaluation,2608.21877,https://arxiv.org/abs/2608.21877,,debias_fairness_industrial,CIKM,2026
+Can Large Language Models Identify Meaningful Touchpoints in Conversion Attribution?,2608.28649,https://arxiv.org/abs/2608.28649,,ctr_feature_interaction,CIKM,2026
+Do LLM Recommenders Know When They're Hallucinating? Auditing Confidence Calibration in Catalog Faithfulness,2608.10008,https://arxiv.org/abs/2608.10008,,llm_rec,CIKM,2026
+IntSR: An Integrated Generative Framework for Search and Recommendation,2509.21179,https://arxiv.org/abs/2509.21179,,generative_rec,CIKM,2026
+Cross-Domain Sequential Recommendation with Representation-Level User Transfer,2610.35550,https://arxiv.org/abs/2610.35550,,cross_domain_multi_scenario,CIKM,2026
+Revisiting Generative vs. Dense Retrieval: A Static Value Prior Reverses the Gap,2610.19065,https://arxiv.org/abs/2610.19065,,generative_rec,CIKM,2026
+Self-Evolving Memory for Generative Recommendation,2609.15598,https://arxiv.org/abs/2609.15598,https://github.com/JazyJiang/Self-Evolving-Memory-for-Generative-Recommendation,generative_rec,CIKM,2026
+SelfDR: Self-Distillation from Reasoning for LLM-Based Recommendation,2609.03313,https://arxiv.org/abs/2609.03313,https://github.com/JiangDeccc/SelfDistillation,llm_rec,CIKM,2026
+"Retrieval, Scoring, and Decoding Shape Performance and Stability in LLM-based Conversational Recommendation",2609.00086,https://arxiv.org/abs/2609.00086,,agent_conversational_rec,CIKM,2026
+Tlow: Flow-based Item Tokenizer for Recommendation,2608.24176,https://arxiv.org/abs/2608.24176,https://github.com/wjjln/Tlow,generative_rec,CIKM,2026
+Decoupled Temporal Encoding for Generative Recommendation,2608.16274,https://arxiv.org/abs/2608.16274,,generative_rec,CIKM,2026
+Decomposing Staleness in Recommender Systems: A Dual-Filter Framework for Supersession and Decay,2608.15780,https://arxiv.org/abs/2608.15780,,debias_fairness_industrial,CIKM,2026
+SORT: A Systematically Optimized Ranking Transformer for Industrial-scale Recommenders,2603.03988,https://arxiv.org/abs/2603.03988,,multi_task_reranking,CIKM,2026
+MERGE: Next-Generation Item Indexing Paradigm for Large-Scale Streaming Recommendation,2601.20199,https://arxiv.org/abs/2601.20199,https://github.com/baiyimeng/MERGE,generative_rec,CIKM,2026
+Towards Comprehensible Recommendation with Large Language Model Fine-tuning,2508.07595,https://arxiv.org/abs/2508.07595,,llm_rec,CIKM,2026

@@ -33,9 +33,9 @@ categories:
 
 ## Background & Motivation (背景与核心矛盾)
 
-- **主流范式**: 离线评测在 holdout 反馈 $\hat{T}_u$ 上计算 Recall@K / NDCG@K，本质是"推荐列表 $\pi_K(u)$ 与测试集做严格 ID 交集"。
-- **前人局限**: ① 可靠性——用户历史采集受曝光控制与浏览行为双重偏置（MNAR），$\hat{T}_u$ 只是真实偏好 $\mathcal{T}_u$ 的有偏子集，ID 匹配无法覆盖未观测兴趣，且把"未曝光"误判为"不喜欢"（假阴性）；② 可解释性——Top-K 指标只给数字，无法说明某模型为何胜出、某次命中/未命中缘于何种偏好。
-- **核心洞察**: 理想评测应匹配"真实偏好空间"而非"反馈集合"。LLM 具备世界知识与推理能力，可从文本历史中推断出超越 MNAR 的潜在意图，从而构造更接近 $\mathcal{T}_u$ 的语义代理 $\mathcal{P}_u$，使 $\text{Metric}(\pi_K,\mathcal{P}) \to \text{Metric}(\pi_K,\mathcal{T})$。
+- **主流范式**: 离线评测在 holdout 反馈 $\hat{T}_u$上计算 Recall@K / NDCG@K，本质是"推荐列表$\pi_K(u)$ 与测试集做严格 ID 交集"。
+- **前人局限**: ① 可靠性——用户历史采集受曝光控制与浏览行为双重偏置（MNAR），$\hat{T}_u$只是真实偏好$\mathcal{T}_u$ 的有偏子集，ID 匹配无法覆盖未观测兴趣，且把"未曝光"误判为"不喜欢"（假阴性）；② 可解释性——Top-K 指标只给数字，无法说明某模型为何胜出、某次命中/未命中缘于何种偏好。
+- **核心洞察**: 理想评测应匹配"真实偏好空间"而非"反馈集合"。LLM 具备世界知识与推理能力，可从文本历史中推断出超越 MNAR 的潜在意图，从而构造更接近 $\mathcal{T}_u$的语义代理$\mathcal{P}_u$，使$\text{Metric}(\pi_K,\mathcal{P}) \to \text{Metric}(\pi_K,\mathcal{T})$。
 - **本文切入点**: 用语义匹配替代 ID 匹配解决可靠性，用"先推理后打分"解决可解释性，二者封装在同一次 LLM 查询中。
 
 <figure class="paper-figure" markdown="span">
@@ -46,7 +46,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入为用户文本历史（标题/属性/描述）与推荐模型产出的 Top-K 列表；Judge 先在 reasoning 步从历史中归纳高层兴趣形成语义代理 $\mathcal{P}_u$，再对每个候选做语义匹配并引用证据；scoring 步在推理结论条件下输出二值相关性 $y_{u,i_r}\in\{0,1\}$ 与一句 rationale；最后把逐点判定按标准 Top-K 公式聚合为全局指标，并保留每条理由用于误差诊断。整个流程对任意推荐模型黑盒可用，只需替换 prompt 中的任务定义块即可迁移到新场景。
+输入为用户文本历史（标题/属性/描述）与推荐模型产出的 Top-K 列表；Judge 先在 reasoning 步从历史中归纳高层兴趣形成语义代理 $\mathcal{P}_u$，再对每个候选做语义匹配并引用证据；scoring 步在推理结论条件下输出二值相关性$y_{u,i_r}\in\{0,1\}$ 与一句 rationale；最后把逐点判定按标准 Top-K 公式聚合为全局指标，并保留每条理由用于误差诊断。整个流程对任意推荐模型黑盒可用，只需替换 prompt 中的任务定义块即可迁移到新场景。
 
 ```mermaid
 flowchart TD
@@ -58,13 +58,13 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **语义代理替代 holdout 代理（可靠性核心）**：痛点是用 ID 交集度量偏好必然漏掉未曝光兴趣。本文令 LLM 从 $\mathcal{I}^+_u$ 的文本中抽象出偏好画像 $\mathcal{P}_u$，判定改为语义蕴含而非 ID 相等，因此"用户看过科幻片→推荐太空殖民地纪录片"这类跨品类但意图一致的候选可被正确判为命中，直接缓解 MNAR 假阴性。其有效性直觉在于：语义空间中的偏好是低维、可泛化的，而 ID 空间中的偏好是稀疏、被曝光策略截断的。
+1. **语义代理替代 holdout 代理（可靠性核心）**：痛点是用 ID 交集度量偏好必然漏掉未曝光兴趣。本文令 LLM 从 $\mathcal{I}^+_u$的文本中抽象出偏好画像$\mathcal{P}_u$，判定改为语义蕴含而非 ID 相等，因此"用户看过科幻片→推荐太空殖民地纪录片"这类跨品类但意图一致的候选可被正确判为命中，直接缓解 MNAR 假阴性。其有效性直觉在于：语义空间中的偏好是低维、可泛化的，而 ID 空间中的偏好是稀疏、被曝光策略截断的。
 
 2. **Reasoning-then-Scoring + Reject-by-Default（可解释性核心）**：LLM 直接打分会退化为"发散联想 + 过度认可"。本文强制先写证据链再给分，并设定默认拒绝策略——除非证据无可辩驳地支持完美匹配，否则判 0。该保守先验抑制了 LLM 幻觉导致的假阳性膨胀，使打分分布更接近真实相关性；同时每条判定附带单句理由，构成可审计的评测证据。
 
 3. **指标适配与推理开销**：由于不再有 holdout 集合，$|\mathcal{T}_u|$ 不可得，Recall 改为以 K 归一化：
 $$\text{Recall}_{\text{Judge}}@K=\frac{1}{|\mathcal{U}|}\sum_{u}\frac{1}{K}\sum_{r=1}^{K}y_{u,i_r}$$
-NDCG 则直接把 $y_{u,i_r}$ 当作 DCG 中的相关性信号，iDCG 按命中数重排至顶部计算。全流程无需训练、无需负采样，成本为 $O(|\mathcal{U}|\cdot K)$ 次 LLM 调用（默认骨干 Qwen3-30B-A3B，temperature=0 保证确定性）。
+NDCG 则直接把 $y_{u,i_r}$当作 DCG 中的相关性信号，iDCG 按命中数重排至顶部计算。全流程无需训练、无需负采样，成本为$O(|\mathcal{U}|\cdot K)$ 次 LLM 调用（默认骨干 Qwen3-30B-A3B，temperature=0 保证确定性）。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -76,8 +76,8 @@ NDCG 则直接把 $y_{u,i_r}$ 当作 DCG 中的相关性信号，iDCG 按命中�
 | Coat | 290 | 300 | 6.5k | 密度约 7.5% | 服装购物；每用户对 16 个随机曝光物品全部评分 |
 
 - **数据划分与防穿越**: MNAR 反馈按 **7:3 比例划分** 训练/验证；无偏测试集独立采集（Kuairec 全曝光子集、Coat 随机曝光 16 物品），不参与训练。
-- **排名评测协议**: 采用 **Full-Ranking 全库未交互排序** 生成 Top-K 列表；无偏测试数据二值化（Kuairec：观看≥2 次为正；Coat：评分>3 为正）。Kuairec 取 $K\in\{20,50,100\}$，Coat 取 $K\in\{3,5,10\}$。
-- **对比基线与超参**: 9 个协同过滤模型构成排序列表——MF、NeuMF、NGCF、LR-GCCF、LightGCN、SimGCL、MGCCF、GTN、CAGED；以"常规测试（验证集）"为下界、"无偏测试"为真值上界。可靠性用 Pearson / Spearman / Kendall-$\tau$ / MAE 度量，显著性用双侧 t 检验 $p<0.05$；可解释性由 3 名人工标注者按 Coherence / Faithfulness / Persuasiveness 三维度打分（Fleiss' $\kappa>0.75$）。
+- **排名评测协议**: 采用 **Full-Ranking 全库未交互排序** 生成 Top-K 列表；无偏测试数据二值化（Kuairec：观看≥2 次为正；Coat：评分>3 为正）。Kuairec 取 $K\in\{20,50,100\}$，Coat 取$K\in\{3,5,10\}$。
+- **对比基线与超参**: 9 个协同过滤模型构成排序列表——MF、NeuMF、NGCF、LR-GCCF、LightGCN、SimGCL、MGCCF、GTN、CAGED；以"常规测试（验证集）"为下界、"无偏测试"为真值上界。可靠性用 Pearson / Spearman / Kendall-$\tau$/ MAE 度量，显著性用双侧 t 检验$p<0.05$；可解释性由 3 名人工标注者按 Coherence / Faithfulness / Persuasiveness 三维度打分（Fleiss'$\kappa>0.75$）。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -97,7 +97,7 @@ NDCG 则直接把 $y_{u,i_r}$ 当作 DCG 中的相关性信号，iDCG 按命中�
 | Coat | NDCG@5 Pearson | −48.31% | **85.61%*** | +133.93% |
 | Coat | NDCG@10 Spearman | −45.24% | **83.33%*** | +128.57% |
 
-分数级一致性（图 3 回归统计）：Judge 的斜率 $k$ 普遍逼近理想值 1（如 Coat NDCG@5 达 $k=0.99$），标准差 $\sigma$ 与 MAE $\bar{d}$ 均显著低于常规测试（如 Kuairec Recall@20：$\bar{d}$ 由 0.23 降至 0.12）。
+分数级一致性（图 3 回归统计）：Judge 的斜率 $k$普遍逼近理想值 1（如 Coat NDCG@5 达$k=0.99$），标准差$\sigma$与 MAE$\bar{d}$均显著低于常规测试（如 Kuairec Recall@20：$\bar{d}$ 由 0.23 降至 0.12）。
 
 ### 2. 消融实验 (Ablation Study)
 
@@ -119,10 +119,15 @@ Coat 数据集上的输入配置消融：
 2. **默认拒绝策略是"排序质量"而非"召回数量"的守门人**：w/o-RJ 在 Recall@5 上反而略升（90.74 vs 85.70），但 NDCG@5 Pearson 从 85.61 暴跌至 36.33——说明去掉保守先验后 LLM 过度认可模糊候选，虽增加命中数却引入大量位置噪声，破坏排序保真度。
 3. **历史稀疏容忍度存在明确断崖**：保留 ≥30% 历史时多数指标仍可用（NDCG@5 Pearson 51.93），但降至 10% 时全面崩溃（−34.62），对应 Coat 中仅 1–2 条历史的冷启动场景——此时连传统 holdout 评测本身也失效，说明该框架的适用边界是"有最低限度行为证据"的用户。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与倾向加权类去偏方法（如 SNIPS/IPS 系列）相比，本文不建模曝光概率、不依赖 propensities，而是绕开 ID 匹配直接换掉"代理"本身，因此能处理倾向加权无法触及的假阴性问题；与 Fabbri 等的 profile-based LLM judge 相比，本文不要求结构化用户画像，仅用原始文本历史，场景适应性更强；与纯 LLM 打分相比，本文的 reject-by-default 与 reasoning-then-scoring 是可复用的工程约束。
 - **可迁移亮点**: ① "先推理后打分 + 默认拒绝"这一 prompt 结构可直接迁移到任何 LLM 相关性标注任务（如检索段落相关性、生成式推荐的质量评估）；② 用"模型排序列表一致性"而非绝对分数来验证评测器可靠性，是评测类工作值得借鉴的实验设计范式。
 - **审稿级局限批判**: ① 成本与延迟——每用户每 K 条候选均需一次 LLM 调用，全库级评测（数万用户 × K=100）开销远超传统指标，论文仅在附录给出 runtime，缺少与 IPS 类方法的成本-精度权衡曲线；② 评测效度依赖 LLM 与人类偏好的一致性，而人工验证仅 100 条/组、3 名标注者、两个数据集，且 Kuairec 上 Mismatch 组三维度均低于 76%，说明"拒绝"理由的质量弱于"命中"理由，在噪声文本场景下可解释性并不均衡；③ 二值相关性假设丢失了分级相关性信息，对 NDCG 这类增益敏感指标可能低估细粒度差异。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

@@ -64,15 +64,15 @@ flowchart TD
 
 1. **可靠性感知语义接口（Reliability-Aware Semantic Interface）**：冻结分词器导致 CF 信号无法进入 token 空间，且各客户端独立训练的 CF 嵌入坐标系不可比、质量不均。本文不改分词器，而是在输入表征上做残差融合：
 $$h_t=\sum_{l=1}^{L}E^{l}_{\text{sid}}(c^{l}_{v_t})+E_{\text{pos}}(t)+\rho_{v_t,i}\cdot g_i\cdot A_i(e^{\text{cf}}_{v_t,i})$$
-其中 $\rho_{v,i}=\frac{\log(1+n_{v,i})}{\epsilon+\max_{v'}\log(1+n_{v',i})}$ 为物品级置信度，$g_i=\sigma(\alpha_i)$ 为客户端本地门控。直觉：头部物品 CF 可信、长尾物品 CF 噪声大，用频次置信度做软抑制，门控再校准域级贡献强度；适配器 $A_i$ 与 CF 嵌入均不上传，规避坐标系对齐问题。
+其中 $\rho_{v,i}=\frac{\log(1+n_{v,i})}{\epsilon+\max_{v'}\log(1+n_{v',i})}$为物品级置信度，$g_i=\sigma(\alpha_i)$为客户端本地门控。直觉：头部物品 CF 可信、长尾物品 CF 噪声大，用频次置信度做软抑制，门控再校准域级贡献强度；适配器$A_i$ 与 CF 嵌入均不上传，规避坐标系对齐问题。
 
-2. **原型个性化联邦生成器（Prototype-Personalized Generator）**：均匀 FedAvg 在域异构下负迁移，且自回归 SID 的早期 token 扰动会沿前缀树级联。本文在 FFN 处引入共享-私有 MoE（$N_s$ 个共享专家 + 1 个本地私有专家，top-$k$ 路由），并让服务器按域原型相似度加权聚合：
+2. **原型个性化联邦生成器（Prototype-Personalized Generator）**：均匀 FedAvg 在域异构下负迁移，且自回归 SID 的早期 token 扰动会沿前缀树级联。本文在 FFN 处引入共享-私有 MoE（$N_s$个共享专家 + 1 个本地私有专家，top-$k$ 路由），并让服务器按域原型相似度加权聚合：
 $$\omega_{ij}=\frac{n_j\exp(\cos(p_i,p_j)/\tau_a)}{\sum_k n_k\exp(\cos(p_i,p_k)/\tau_a)},\quad \bar{W}_{i,\text{sh}}=\sum_{j}\omega_{ij}W_{j,\text{sh}}$$
-原型 $p_i$ 由编码器物品位置记忆池化后 EMA 更新并 L2 归一化。$\tau_a\to\infty$ 时退化为 FedAvg，故该式是 FedAvg 的严格推广；行为相近的域获得更强参数共享，异构域自动降权。
+原型 $p_i$由编码器物品位置记忆池化后 EMA 更新并 L2 归一化。$\tau_a\to\infty$ 时退化为 FedAvg，故该式是 FedAvg 的严格推广；行为相近的域获得更强参数共享，异构域自动降权。
 
 3. **训练目标、负采样与推理效率**：本地损失
 $$\mathcal{L}_i=\mathcal{L}_{\text{sid}}+\lambda_d\mathcal{L}_{\text{dense}}+\lambda_a\mathcal{L}_{\text{aux}}+\frac{\mu}{2}\|W_{i,\text{sh}}-\bar{W}^{(t)}_{i,\text{sh}}\|_2^2$$
-其中 $\mathcal{L}_{\text{dense}}$ 为置信度加权、仅用客户端本地 in-batch 负样本的 InfoNCE（目标为本地 CF 嵌入，stop-gradient），$\mathcal{L}_{\text{aux}}$ 为 MoE 负载均衡损失，近端项仅作用于共享参数。SID 生成本身免负采样。推理用域前缀树 + beam size 50，稠密辅助头训练后丢弃；每轮上传 5.1M 参数（20.6 MB），比 FedAvg 基线多约 18%，但收敛更快。
+其中 $\mathcal{L}_{\text{dense}}$为置信度加权、仅用客户端本地 in-batch 负样本的 InfoNCE（目标为本地 CF 嵌入，stop-gradient），$\mathcal{L}_{\text{aux}}$ 为 MoE 负载均衡损失，近端项仅作用于共享参数。SID 生成本身免负采样。推理用域前缀树 + beam size 50，稠密辅助头训练后丢弃；每轮上传 5.1M 参数（20.6 MB），比 FedAvg 基线多约 18%，但收敛更快。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -136,12 +136,17 @@ N@10 场景宏平均（FK / GKBS / 平均相对变化）：
 
 1. **交叉效应揭示两机制的适用边界**：高相关 FK 上移除 CF 残差（−12.5%）比换回 FedAvg（−8.3%）更伤，瓶颈在恢复域内协同行为；异构 GKBS 上反转（FedAvg −14.1% vs. CF −13.0%），负迁移成为主导约束。这为"何时该加本地证据、何时该改聚合"提供了可操作的判据。
 2. **冷启动增益主要来自稳定 SID 词表，CF 残差随活跃度递增**：冷用户组 FedCGR 与 SID-only 均优于 TIGER+FedProx，说明语义词表是冷启动底座；而 Full 与 SID-only 的差距从 cold 到 active 逐步拉大，验证了 $\rho_v$ 门控"可信才启用"的设计——不靠噪声 CF 硬撑冷启动。
-3. **个性化聚合的收益随异构度单调放大，且转化为通信节省**：$\tau_a=0.10$ 与 $\tau_a=\infty$ 的差距在四域 GKBS 上达 14.8%（GB 仅 11.0%）；尽管每轮多传 18% 参数，达到同等 N@10 目标的总上传量在 GBS 降 34%、GKBS 降 45%，说明收敛加速足以抵消单轮开销。
+3. **个性化聚合的收益随异构度单调放大，且转化为通信节省**：$\tau_a=0.10$与$\tau_a=\infty$ 的差距在四域 GKBS 上达 14.8%（GB 仅 11.0%）；尽管每轮多传 18% 参数，达到同等 N@10 目标的总上传量在 GBS 降 34%、GKBS 降 45%，说明收敛加速足以抵消单轮开销。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 FedDCSR 等判别式联邦 CDR，本文把对齐从"私有连续空间的额外目标"变为"共享离散词表的天然属性"，解耦了隐私与对齐；相比 TIGER+FedProx，本文指出冻结分词器造成的语义瓶颈与自回归级联负迁移是生成式联邦特有的两个约束，并分别用可靠性残差与原型聚合对症下药；相比集中式 GenCDR，本文在交互不出域的前提下复现了统一语义分词的收益。
 - **可迁移亮点**: ① "冻结离散词表 + 本地残差注入"可作为任何需要跨方共享 token 空间（如跨平台生成式召回）的通用接口范式；② 用编码器记忆池化的域原型做聚合权重，仅上传 <1 KB 即可实现个性化联邦，成本极低。
 - **审稿级局限批判**: ① 未提供形式化差分隐私保证，原型与共享梯度仍可能泄露域级分布信息，作者亦承认 secure aggregation 为未来工作；② 全库排序下在交互稠密域（GBS-Beauty：SASRec 0.191 vs. FedCGR 0.162）仍逊于判别式模型，生成式范式在强协同信号场景的劣势未被完全消解；③ 每域需一次性 8 分钟本地 CF 预训练，且 $\lambda_d$、$\tau_a$ 均在 0.10 附近呈尖峰最优，超参敏感度对落地调参提出要求。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

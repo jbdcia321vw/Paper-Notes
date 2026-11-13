@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-classify_curated_csv.py (v3.4 严格剔除非推荐论文 + 跨CSV并集防误删孤儿笔记版)
+classify_curated_csv.py (v3.7 严格剔除非推荐论文 + 跨CSV并集防误删孤儿笔记版)
 对现有策展 CSV 逐篇抓取 arXiv 标题/摘要，调用 LLM 严格判断推荐相关性并修正主分类。
 
 核心升级：
@@ -31,6 +31,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 from init_clean_recsys_repo import CATEGORIES
+from build_curated_list import COMMON_NEGATIVE_HINTS
 from generate_recsys_notes import (
     fetch_arxiv_by_ids,
     print_usage_summary,
@@ -81,6 +82,24 @@ def remove_paper_artifacts(repo_root: Path, title: str, arxiv_id: str, venue: st
             deleted_paths.append(str(asset_dir.relative_to(repo_root)))
             if not dry_run:
                 shutil.rmtree(asset_dir, ignore_errors=True)
+
+    manifest_path = repo_root / "data" / "manifest.jsonl"
+    if manifest_path.exists() and not dry_run:
+        try:
+            kept_lines = []
+            for line in manifest_path.read_text(encoding="utf-8", errors="ignore").splitlines():
+                if not line.strip():
+                    continue
+                try:
+                    rec = json.loads(line)
+                    if rec.get("slug") == slug or (arxiv_id and rec.get("arxiv_id") == arxiv_id):
+                        continue
+                except Exception:
+                    pass
+                kept_lines.append(line)
+            manifest_path.write_text("\n".join(kept_lines) + ("\n" if kept_lines else ""), encoding="utf-8")
+        except OSError:
+            pass
 
     return deleted_paths
 
@@ -248,6 +267,25 @@ def main():
 
         for row in rows:
             arxiv_id = re.sub(r"v\d+$", "", (row.get("arxiv_id") or "").strip())
+            paper_meta = by_id.get(arxiv_id, {})
+            comment_str = (paper_meta.get("comment") or "").lower()
+            # 自动过滤此前可能混入的“在投未录用 (submitted to / under review)”或 Workshop 论文
+            matched_neg = next((neg for neg in COMMON_NEGATIVE_HINTS if neg in comment_str), None)
+            if matched_neg and not args.no_remove:
+                removed.append(
+                    (row.get("title", ""), 0.99, f"arXiv 备注含未录用/非主会标识 `{matched_neg}`: {paper_meta.get('comment', '')[:60]}")
+                )
+                d_paths = remove_paper_artifacts(
+                    repo_root,
+                    title=row.get("title", ""),
+                    arxiv_id=arxiv_id,
+                    venue=row.get("venue", ""),
+                    year=row.get("year", ""),
+                    dry_run=args.dry_run,
+                )
+                deleted_files.extend(d_paths)
+                continue
+
             result = results.get(arxiv_id)
             if not result or result.get("source") == "error":
                 errors.append(row.get("title", arxiv_id))

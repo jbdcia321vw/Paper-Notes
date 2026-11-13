@@ -81,7 +81,7 @@ $$r_{total}=\begin{cases} r_{base}+\lambda L, & r_{base}=1,\ L<L_{target}\\ r_{b
 
 - **数据划分与防穿越 (Splitting Strategy)**: 论文正文未披露具体划分比例，仅说明每任务采集 query 与人工验证标签，完整评测/训练协议见附录 A；属工业内部划分，非 LOO 或全局时间戳切分。
 - **排名评测协议 (Ranking Protocol)**: 非排序任务，采用 **macro-F1**（5 次独立运行平均）作为主指标，辅以平均终止长度 (Len.) 监控崩溃；另设 Self-Consistency (K=8) 多数投票作为推理时扩展基线。
-- **对比基线与超参设置**: 专有侧为 Frontier-LLM 与 Frontier-Reasoner（low/high effort）；开源侧为 Mistral-7B-Instruct（数学推理较弱）与 Qwen2.5-7B-Instruct（数学对齐强）；RL 算法含 GRPO、Dr.GRPO、GSPO；$L_{target}$ 约 1000 token，$\lambda$ 为缩放常数。
+- **对比基线与超参设置**: 专有侧为 Frontier-LLM 与 Frontier-Reasoner（low/high effort）；开源侧为 Mistral-7B-Instruct（数学推理较弱）与 Qwen2.5-7B-Instruct（数学对齐强）；RL 算法含 GRPO、Dr.GRPO、GSPO；$L_{target}$约 1000 token，$\lambda$ 为缩放常数。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -126,10 +126,15 @@ $$r_{total}=\begin{cases} r_{base}+\lambda L, & r_{base}=1,\ L<L_{target}\\ r_{b
 2. **崩溃与模型数学先验强相关**：Qwen 在 GRPO 下 Query Sensitivity 从 0.805 跌至 0.749，Dr.GRPO/GSPO 仅微调至 0.758/0.762，无法救回；而数学较弱的 Mistral 在所有算法下单调增益（0.724→0.802），印证"monolithic 数学推理链"是负资产。
 3. **条件奖励是唯一同时保住长度与精度的方案**：无约束奖励 F1 崩至 0.210（8192 token 乱码），目标约束仅 0.760（填充文本），条件奖励达 0.851，甚至在推理本无益的 ID: Response Quality 上从 0.539 提升到 0.572，反超无推理基线。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相较 GRPO/Dr.GRPO/GSPO 等只修"优化偏置与方差"的 RLVR 变体，本文指出主观域的瓶颈是**奖励归因缺失 + 推理风格错配**，属问题定义层面的推进；相较常规 LLM-as-a-Judge 工作只报告"推理有/无"的粗粒度对比，本文给出了崩溃的训练动力学证据（长度曲线）与人格方差量化（0.38 F1）。
 - **可迁移亮点**: ① "正确性门控 + 上限截断"的长度奖励可直接迁移到任何缺乏可靠验证器的生成式推荐/解释生成任务；② 把 RLVR 从"教如何推理"改写为"教选哪种推理偏置"，等价于上下文 bandit，可复用到多场景/多人群的推荐理由生成。
 - **审稿级局限批判**: ① 人格路由仅为蓝图，未训练也未部署，1500 人格实验只是推理时提示合成，缺乏路由器的可行性验证与最坏情况评估；② 数据全部来自 Netflix 单一生产环境且不可公开，专有模型经 API 访问、供应商侧更新会使绝对值漂移，结论只能停留在相对趋势；③ 条件奖励把在线生成长度从 ~150 抬到 ~980 token，验证吞吐成本上升约 6 倍，论文未给出延迟/成本分析。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入为新笔记的标题文本与封面图，经 Prompt 模板 `[BOS]<image><text>The compression word is:"[EMB]"[EOS]` 送入 MLLM，取 token 级隐状态做注意力池化得内容向量，MLP 投影 + L2 归一化后进入 Stage 1 对比对齐，拟合线上 ID 嵌入分布得到粗代理 $\mathbf{p}^{\text{coarse}}_i$；Stage 2 从 MLLM 多层隐状态中聚类选三层，经轻量适配器与残差门控融合为细代理 $\mathbf{p}^{\text{fine}}_i$，与用户嵌入、原始 ID 嵌入、上下文特征一同送入排序器，在 CTR 交叉熵下端到端训练（MLLM 冻结）。线上以"代理生成服务"实时写入存储，排序侧按 ID 检索复用。
+输入为新笔记的标题文本与封面图，经 Prompt 模板 `[BOS]<image><text>The compression word is:"[EMB]"[EOS]` 送入 MLLM，取 token 级隐状态做注意力池化得内容向量，MLP 投影 + L2 归一化后进入 Stage 1 对比对齐，拟合线上 ID 嵌入分布得到粗代理 $\mathbf{p}^{\text{coarse}}_i$；Stage 2 从 MLLM 多层隐状态中聚类选三层，经轻量适配器与残差门控融合为细代理$\mathbf{p}^{\text{fine}}_i$，与用户嵌入、原始 ID 嵌入、上下文特征一同送入排序器，在 CTR 交叉熵下端到端训练（MLLM 冻结）。线上以"代理生成服务"实时写入存储，排序侧按 ID 检索复用。
 
 ```mermaid
 flowchart TD
@@ -67,7 +67,7 @@ $$\mathcal{L}_{\text{PAL}}=-\frac{1}{|\mathcal{B}|}\sum_{i\in\mathcal{B}}\log\fr
 $$\mathbf{p}^{\text{fine}}_i = W_c\,\mathbf{p}^{\text{coarse}}_i + \mathbf{r}\odot \mathbf{p}^{\text{raw\_fine}}_i,\quad \mathbf{r}=\sigma(W_g[\mathbf{p}^{\text{coarse}}_i,\mathbf{p}^{\text{raw\_fine}}_i])$$
 直觉：粗代理保底、细信号增量，门控自动抑制冗余维度，避免破坏已对齐的分布。
 
-3. **结构复用式端到端训练与推理开销**：总损失即 CTR 交叉熵 $\mathcal{L}_{\text{CTR}}$，Stage 2 只更新适配器 $\tilde\phi, W_g, W_c$ 与排序器参数 $\theta$，MLLM 冻结。关键工程点是把 $\mathbf{p}^{\text{fine}}_i$ 直接注入排序器的**原子 ID 槽位**（而非作为普通拼接特征），使其继承目标 Attention 与 Cross 网络的训练好的结构先验——这正是 v4→v5 的增益来源。负采样沿用 CTR 日志天然负例，无额外负采样开销；适配器离线训练一次，线上仅做前向生成与查表。
+3. **结构复用式端到端训练与推理开销**：总损失即 CTR 交叉熵 $\mathcal{L}_{\text{CTR}}$，Stage 2 只更新适配器$\tilde\phi, W_g, W_c$与排序器参数$\theta$，MLLM 冻结。关键工程点是把$\mathbf{p}^{\text{fine}}_i$ 直接注入排序器的**原子 ID 槽位**（而非作为普通拼接特征），使其继承目标 Attention 与 Cross 网络的训练好的结构先验——这正是 v4→v5 的增益来源。负采样沿用 CTR 日志天然负例，无额外负采样开销；适配器离线训练一次，线上仅做前向生成与查表。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -79,7 +79,7 @@ $$\mathbf{p}^{\text{fine}}_i = W_c\,\mathbf{p}^{\text{coarse}}_i + \mathbf{r}\od
 
 - **数据划分与防穿越 (Splitting Strategy)**: 论文未明确说明离线划分方式（工业日志按时间自然累积），线上以 5 日滚动窗口观测 AUC；新笔记定义为发布 24 小时内的帖子。
 - **排名评测协议 (Ranking Protocol)**: 离线报告相对生产基线的 **ΔAUC**（非 Full-Ranking 列表指标），公司内部认定 ΔAUC ≥ 0.0010 为实际显著；线上为大规模用户随机分组 A/B，指标显著性水平 1%。
-- **对比基线与超参设置**: 基线为小红书高度优化的生产 CTR 系统 Base（含复杂 ID 特征交叉与用户序列建模），以及 NoteLLM2 式多模态嵌入 (v1)、CB2CF 式冻结嵌入 + MLP 映射 (v2)。MLLM 用 InternVL，AdamW，学习率 $1\times10^{-4}$，batch size 512，温度 $\tau_c$ 未披露。
+- **对比基线与超参设置**: 基线为小红书高度优化的生产 CTR 系统 Base（含复杂 ID 特征交叉与用户序列建模），以及 NoteLLM2 式多模态嵌入 (v1)、CB2CF 式冻结嵌入 + MLP 映射 (v2)。MLLM 用 InternVL，AdamW，学习率 $1\times10^{-4}$，batch size 512，温度$\tau_c$ 未披露。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -120,10 +120,15 @@ $$\mathbf{p}^{\text{fine}}_i = W_c\,\mathbf{p}^{\text{coarse}}_i + \mathbf{r}\od
 2. **冷启动增益约为全局的 2 倍**：线上新笔记 AUC 提升 0.23%–0.32%，全局仅 0.12%–0.15%，且 5 日内稳定不衰减，证明代理嵌入确实在无交互窗口内替代了失效的 ID 嵌入，而非仅带来全局噪声性提升。
 3. **对齐方式决定上限**：v1/v2 两种"内容→协同"主流路线在工业 ID 分布上仅得 +0.015%/+0.02%，而显式拟合 ID 分布的 Stage 1 单独即达 +0.05%，验证了图 1 揭示的分布失配是冷启动代理失效的主因。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 QARM/MOON 类行为共现对齐，本文不依赖人工设计的共现结构目标，而是直接回归线上 ID 分布；相比 CB2CF/CLCRec 的静态 MLP 映射，本文用 MLLM + 两阶段端到端精调，能适配工业 ID 的非簇状几何；相比 NoteLLM2 式纯内容向量，本文的代理可直接替换 ID 槽位，零改造接入生产管线。
 - **可迁移亮点**: ①"代理嵌入注入原子 ID 槽位而非拼接"这一结构复用技巧，可迁移到任何 ID 主导的精排/召回模型做冷启动物品增强；②用 k-means 对 MLLM 层做浅/中/深分组池化，是低成本榨取多层隐状态的通用做法。
 - **审稿级局限批判**: ①对齐目标仅用 in-batch 负采样对比损失，未系统比较最优传输或回归式分布匹配，负例质量对稀疏 ID 的几何刻画可能不足；②MLLM 全程冻结、以静态 ID 嵌入为目标，CTR 梯度无法回流内容编码器，长期存在"目标漂移"风险；③离线仅报 ΔAUC 且数据统计与超参大量因保密省略，复现性与列表级指标（NDCG/HR）缺失，工业结论的外部效度有限。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

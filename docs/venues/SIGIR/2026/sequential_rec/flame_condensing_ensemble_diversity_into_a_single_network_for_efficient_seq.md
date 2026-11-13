@@ -28,7 +28,7 @@ categories:
 
 ## TL;DR (1分钟核心速览)
 
-序列推荐中单一网络难以覆盖用户多面行为，而传统集成需并行训练多个网络，带来数倍计算开销与早期互监督噪声导致的训练震荡（收敛慢至 2.94×）。FLAME 仅用两个网络（一个预训练冻结、一个从头学习），将每个网络拆成 $M$ 个子模块并交叉组合，用 $2^M$ 条路径模拟指数级集成多样性；冻结网络作为语义锚点提供稳定引导。推理时只保留可学习网络，零额外开销。在 6 个数据集、Leave-One-Out + Full-Ranking 协议下，NDCG@20 最高相对提升 9.70%，收敛速度最高快 7.69×。
+序列推荐中单一网络难以覆盖用户多面行为，而传统集成需并行训练多个网络，带来数倍计算开销与早期互监督噪声导致的训练震荡（收敛慢至 2.94×）。FLAME 仅用两个网络（一个预训练冻结、一个从头学习），将每个网络拆成 $M$个子模块并交叉组合，用$2^M$ 条路径模拟指数级集成多样性；冻结网络作为语义锚点提供稳定引导。推理时只保留可学习网络，零额外开销。在 6 个数据集、Leave-One-Out + Full-Ranking 协议下，NDCG@20 最高相对提升 9.70%，收敛速度最高快 7.69×。
 
 ## Background & Motivation (背景与核心矛盾)
 
@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-FLAME 构建两个同构 SASRec：预训练后冻结的 $f^{frz}$ 与从头训练的 $f^{lrn}$，各自按 $M$ 个子模块切分（默认 $M=2$：Embedding 模块 + 序列编码模块）。训练时，对每条序列在每个子模块阶段独立选择来自冻结或可学习网络，枚举全部 $2^M$ 条路径得到 $\{\tilde{h}^p_u\}_{p\in\{frz,lrn\}^M}$；这些表示经**相似度加权对比对齐**拉入统一语义空间，同时可学习网络自身承担下一项预测损失。推理时丢弃冻结网络与所有组合路径，仅用 $f^{lrn}$ 打分，开销与单 SASRec 完全一致。
+FLAME 构建两个同构 SASRec：预训练后冻结的 $f^{frz}$与从头训练的$f^{lrn}$，各自按$M$个子模块切分（默认$M=2$：Embedding 模块 + 序列编码模块）。训练时，对每条序列在每个子模块阶段独立选择来自冻结或可学习网络，枚举全部$2^M$条路径得到$\{\tilde{h}^p_u\}_{p\in\{frz,lrn\}^M}$；这些表示经**相似度加权对比对齐**拉入统一语义空间，同时可学习网络自身承担下一项预测损失。推理时丢弃冻结网络与所有组合路径，仅用$f^{lrn}$ 打分，开销与单 SASRec 完全一致。
 
 ```mermaid
 flowchart TD
@@ -70,7 +70,7 @@ $$\tilde{h}^p_u=\big(f^{(M)}_{p_M}\circ f^{(M-1)}_{p_{M-1}}\circ\cdots\circ f^{(
 $$w_{p,q}=\frac{\exp(-\text{sim}_{p,q})}{\sum_{\{p',q'\}\subset\mathcal{P}}\exp(-\text{sim}_{p',q'})},\quad \mathcal{L}_{mkt}(u)=\sum_{\{p,q\}\subset\mathcal{P}} w_{p,q}\,\mathcal{L}_{nce}(\tilde{h}^p_u,\tilde{h}^q_u)$$
 直觉是"越像越少推"，把梯度预算让给真正互补的路径对；冻结网络则保证被对齐的目标空间本身是可靠的。
 
-3. **训练目标、负采样与推理效率**：总损失 $\mathcal{L}=\sum_u\big(\mathcal{L}_{rec}(u)+\lambda(r)\cdot\mathcal{L}_{mkt}(u)\big)$，其中 $\lambda(r)=\lambda_0(\lambda_R/\lambda_0)^{r/R}$ 指数退火（$\lambda_R=1e{-5}$），早期靠对比引导、后期回归任务本身以防过拟合冻结空间。负样本为 **in-batch 负采样**（对比部分）+ **softmax 全库负样本**（$\mathcal{L}_{rec}$ 部分），无额外 hard negative 挖掘。推理仅前向 $f^{lrn}$，参数量与单 SASRec 相同（Beauty 上 1.67M vs. FamouSRec 2.30M），时延 1.30s vs. 3.29s。
+3. **训练目标、负采样与推理效率**：总损失 $\mathcal{L}=\sum_u\big(\mathcal{L}_{rec}(u)+\lambda(r)\cdot\mathcal{L}_{mkt}(u)\big)$，其中$\lambda(r)=\lambda_0(\lambda_R/\lambda_0)^{r/R}$指数退火（$\lambda_R=1e{-5}$），早期靠对比引导、后期回归任务本身以防过拟合冻结空间。负样本为 **in-batch 负采样**（对比部分）+ **softmax 全库负样本**（$\mathcal{L}_{rec}$部分），无额外 hard negative 挖掘。推理仅前向$f^{lrn}$，参数量与单 SASRec 相同（Beauty 上 1.67M vs. FamouSRec 2.30M），时延 1.30s vs. 3.29s。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -87,7 +87,7 @@ $$w_{p,q}=\frac{\exp(-\text{sim}_{p,q})}{\sum_{\{p',q'\}\subset\mathcal{P}}\exp(
 
 - **数据划分与防穿越**: `Leave-One-Out`——每用户最后一项作测试、倒数第二项作验证，严格按序列时序，无未来信息泄漏。
 - **排名评测协议**: 无偏 `Full-Ranking`（全库未交互物品排序，不做负采样），报告 HR@{5,10,20} 与 NDCG@{5,10,20}。
-- **对比基线与超参**: 三组基线——通用序列（GRU4Rec / Caser / SASRec / BERT4Rec / FMLPRec）、对比学习序列（CL4SRec / DuoRec / MCLRec / CT4Rec）、集成式（EMKD 四路 BERT4Rec、DHEN、FamouSRec 四异构架构）。FLAME 用 $L=2$ 层、2 头、$d=64$、$T=50$、dropout 0.5、$M=2$、Adam lr=1e-3、batch=256、200 epochs、验证 NDCG@20 早停（patience=30）。
+- **对比基线与超参**: 三组基线——通用序列（GRU4Rec / Caser / SASRec / BERT4Rec / FMLPRec）、对比学习序列（CL4SRec / DuoRec / MCLRec / CT4Rec）、集成式（EMKD 四路 BERT4Rec、DHEN、FamouSRec 四异构架构）。FLAME 用 $L=2$层、2 头、$d=64$、$T=50$、dropout 0.5、$M=2$、Adam lr=1e-3、batch=256、200 epochs、验证 NDCG@20 早停（patience=30）。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -124,12 +124,17 @@ $$w_{p,q}=\frac{\exp(-\text{sim}_{p,q})}{\sum_{\{p',q'\}\subset\mathcal{P}}\exp(
 
 1. **"冻结"比"组合"更关键**：去掉引导（变体 3）在 ML-1M 上 NDCG@20 掉 8.05%（0.1714→0.1576），跌幅甚至略大于去掉模块化（变体 2，-6.48%），说明早期互监督噪声是集成失效的主因，而非多样性不足；这与图 1 中 Ensemble-Scratch 曲线剧烈震荡、Ensemble-Guide 平稳超越 Single 的现象互为印证。
 2. **多样性必须"结构化"才有效**：图 5 显示，把对比学习基线的视图数强行加到与 FLAME 相同（4/8/16），性能反而下降；而 FLAME 在 $M$ 从 2 增至 4 时仍提升最多 4.74%，且**不增加任何模型容量**。异构集成 DHEN/FamouSRec 则随视图数线性增本却收益边际化。
-3. **效率-精度双赢是真实的**：表 4 中 FLAME 参数量（Beauty 1.67M）与 SASRec-Ensemble 持平，但 NDCG@20 从 0.0513 升至 0.0660；推理时延 1.30s 与单 SASRec 完全相同，比 EMKD（5.52s）低 4.2×、比 FamouSRec（3.29s）低 2.5×；收敛速度比集成基线快 4.55–7.69×。此外 $M>4$ 后收益递减（图 6），$M=2$ 是性价比拐点。
+3. **效率-精度双赢是真实的**：表 4 中 FLAME 参数量（Beauty 1.67M）与 SASRec-Ensemble 持平，但 NDCG@20 从 0.0513 升至 0.0660；推理时延 1.30s 与单 SASRec 完全相同，比 EMKD（5.52s）低 4.2×、比 FamouSRec（3.29s）低 2.5×；收敛速度比集成基线快 4.55–7.69×。此外 $M>4$后收益递减（图 6），$M=2$ 是性价比拐点。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 **EMKD** 的本质区别是后者需 4 个 BERT4Rec 全程并行且互蒸馏，FLAME 只保留 1 个可训练网络 + 1 个冻结锚点；与 **FamouSRec** 相比，后者靠异构架构（Attention/GRU/MLP/Mamba）制造多样性但知识难共享、扩展性差，FLAME 在同构网络内用子模块路径组合获得更高多样性密度；与 **CL4SRec/DuoRec** 等单网络对比方法相比，FLAME 的多样性来自结构路径而非数据增广，因而视图数增加时不会退化。
 - **可迁移亮点**: ① "冻结锚点 + 相似度反比加权对比"可作为通用训练稳定器，迁移到任何需要多视图对齐的召回模型（如多兴趣、多场景共享底层）；② 子模块级路径枚举是一种**零推理成本**的容量扩展手段，适合时延敏感的在线召回。
-- **审稿级局限批判**: ① 训练阶段仍需前向 $2^M$ 条路径（$M=2$ 时 4 条），训练成本高于单网络，论文只报告了收敛 epoch 数而非总 FLOPs；② 冻结网络需一次完整预训练，超参（$\lambda_0$、$\tau$）虽称鲁棒但仍需按数据集调，且 $M$ 的收益在 $M>4$ 后迅速饱和，说明"指数多样性"的实际可用上界有限；③ 全部实验为离线 Full-Ranking，缺少线上 A/B 或工业级时延验证。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+- **审稿级局限批判**: ① 训练阶段仍需前向 $2^M$条路径（$M=2$时 4 条），训练成本高于单网络，论文只报告了收敛 epoch 数而非总 FLOPs；② 冻结网络需一次完整预训练，超参（$\lambda_0$、$\tau$）虽称鲁棒但仍需按数据集调，且$M$的收益在$M>4$ 后迅速饱和，说明"指数多样性"的实际可用上界有限；③ 全部实验为离线 Full-Ranking，缺少线上 A/B 或工业级时延验证。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

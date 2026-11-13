@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-两阶段流水线：**阶段一**训练 Global PEFT（单 PEFT 模块 + 投影 MLP + 可学习转导嵌入 $\mathbf{h}_k$ + SASRec），取每个用户的末位预测嵌入 $\mathbf{u}_t$ 作为兴趣表征，K-Means 聚成 $C=8$ 个不相交用户群；**阶段二**为每群复制一份 PEFT 模块 $\theta^{(c)}$ 与投影 MLP$^{(c)}$（用 Global PEFT 参数初始化），转导嵌入与 SASRec 保持全局共享，各群仅用本群用户样本、本群物品池负采样训练 20 epoch。推理时按用户所属群取对应物品嵌入集，喂入 SASRec 打分。
+两阶段流水线：**阶段一**训练 Global PEFT（单 PEFT 模块 + 投影 MLP + 可学习转导嵌入 $\mathbf{h}_k$+ SASRec），取每个用户的末位预测嵌入$\mathbf{u}_t$作为兴趣表征，K-Means 聚成$C=8$个不相交用户群；**阶段二**为每群复制一份 PEFT 模块$\theta^{(c)}$与投影 MLP$^{(c)}$（用 Global PEFT 参数初始化），转导嵌入与 SASRec 保持全局共享，各群仅用本群用户样本、本群物品池负采样训练 20 epoch。推理时按用户所属群取对应物品嵌入集，喂入 SASRec 打分。
 
 ```mermaid
 flowchart TD
@@ -61,11 +61,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **群特化 PEFT 编码（Per-Group Item Encoder）**：痛点是 Global PEFT 下 $f_\theta$ 对所有用户输出同一 $\mathbf{m}_k$。本文改为对 $u_t\in\mathcal{U}^{(c)}$ 使用 $\theta^{(c)}$、MLP$^{(c)}$：
+1. **群特化 PEFT 编码（Per-Group Item Encoder）**：痛点是 Global PEFT 下 $f_\theta$对所有用户输出同一$\mathbf{m}_k$。本文改为对$u_t\in\mathcal{U}^{(c)}$使用$\theta^{(c)}$、MLP$^{(c)}$：
 $$\mathbf{m}_k^{(c)}=\mathrm{MLP}^{(c)}\big([\mathbf{x}_k^{(c)}\,\|\,\mathbf{y}_k^{(c)}]\big),\quad \mathbf{z}_k^{(c)}=\mathbf{h}_k+\mathbf{m}_k^{(c)}$$
 直觉：不同群的正样本分布不同，独立模块被迫学习"本群购买决策最相关的物品侧面"，等价于给 CLIP 加了群条件的注意力先验。仅 PEFT 与投影 MLP 分群，转导嵌入与 SASRec 共享——消融显示全拆分反而参数爆炸且无收益。
 
-2. **群内难负采样（Group-Specific Negative Sampling）**：痛点是若沿用全局物品集 $\mathcal{I}$ 采负样本，大量负样本从不出现在本群正样本中，模型可"轻松降 loss"而不学群特化侧面（消融中该变体甚至不如 Global PEFT）。改为从本群物品池 $\mathcal{I}^{(c)}$（本群用户至少购买过一次的物品）采样：
+2. **群内难负采样（Group-Specific Negative Sampling）**：痛点是若沿用全局物品集 $\mathcal{I}$采负样本，大量负样本从不出现在本群正样本中，模型可"轻松降 loss"而不学群特化侧面（消融中该变体甚至不如 Global PEFT）。改为从本群物品池$\mathcal{I}^{(c)}$（本群用户至少购买过一次的物品）采样：
 $$\mathcal{L}_t^{(pers)}=\sum_{p=1}^{n-1}\Big[\log\sigma\big((\mathbf{z}_{a_p}^{(c)})^\top \mathbf{z}_{t,p}^{(c)\prime}\big)-\log\sigma\big((\mathbf{z}_{t,(p+1)}^{(c)})^\top \mathbf{z}_{t,p}^{(c)\prime}\big)\Big],\ \ i_{a_p}\subset\mathcal{I}^{(c)}$$
 直觉：负样本与正样本同处一个语义子空间，梯度必须依赖细粒度侧面（如"露营食品" vs "露营装备"）才能区分，从而逼出群内细粒度兴趣。
 
@@ -84,7 +84,7 @@ $$\mathcal{L}_t^{(pers)}=\sum_{p=1}^{n-1}\Big[\log\sigma\big((\mathbf{z}_{a_p}^{
 
 - **数据划分与防穿越**: `Leave-One-Out`——每用户最近一次购买为测试、次近为验证，其余为训练序列；超参在验证集上选，测试时输入 = 训练序列 + 验证物品。
 - **排名评测协议**: **Full-Ranking（全库未交互物品排序）**，指标 Hit-Ratio@{20,30} 与 NDCG@{20,30}，三次随机初始化取均值与标准差。
-- **对比基线与超参**: 7 个基线分 5 类——w/o MM (纯 SASRec)、Frozen MM（CLIP 冻结）、Global PEFT、User-level 1/2（用户嵌入作序列元素 / 用户-物品拼接）、Group-level 1/2（群嵌入两种用法）；PEFT 骨干为 LoRA（rank=4）、(IA)³、IISAN（adapter 隐维 32）；嵌入维 $d=32$、dropout 0.3、2 层 4 头 SASRec、batch=16、AdamW，学习率 $\{10^{-4},5\times10^{-5},10^{-5}\}$；群数固定 $C=8$。
+- **对比基线与超参**: 7 个基线分 5 类——w/o MM (纯 SASRec)、Frozen MM（CLIP 冻结）、Global PEFT、User-level 1/2（用户嵌入作序列元素 / 用户-物品拼接）、Group-level 1/2（群嵌入两种用法）；PEFT 骨干为 LoRA（rank=4）、(IA)³、IISAN（adapter 隐维 32）；嵌入维 $d=32$、dropout 0.3、2 层 4 头 SASRec、batch=16、AdamW，学习率$\{10^{-4},5\times10^{-5},10^{-5}\}$；群数固定$C=8$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -124,10 +124,15 @@ LoRA 骨干，H@20 / N@20：
 2. **群内难负采样是不可省的增益源**：去掉后 Sports N@20 从 2.05 掉到 1.84（−10.2%），Beauty 从 1.74 掉到 1.61；作者指出沿用全局负采样时 PerPEFT 甚至打不过 Global PEFT，印证"正负样本空间错配"假设。
 3. **文本模态是主承载、视觉是补充**：去掉文本使 Sports N@20 崩至 1.62（−21%），去掉视觉仅降至 1.99；但 Arts 域去视觉反而略升（2.74 vs 2.76 基本持平），说明图像信息在部分品类冗余，双模态并非处处等权。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 **IISAN**（PEFT 用于多模态推荐，但全局共享一个 adapter）相比，本文把 adapter 变成"群条件编码器"，是正交增强（IISAN 上仍 +5% 左右）；与 **User-level / Group-level 个性化**（只在打分侧加 embedding）相比，本文改变的是基础模型对物品的注意力分配，故在所有设置上均胜出；与 **LATTICE/BM³** 等非序列多模态模型相比，序列建模 + 群特化编码双重占优。
 - **可迁移亮点**: ① "先用全局模型产出用户表征 → 聚类 → 每群复制轻量适配器"的两阶段范式，可低成本移植到任何"基础模型 + PEFT"的推荐场景（如 LLM4Rec 的 LoRA 分群）；② 群内负采样这一"负样本池与正样本池对齐"的技巧，对任何多兴趣/多域联合训练都适用。
 - **审稿级局限批判**: ① **硬分群**假设用户只属一个兴趣群，多兴趣用户（如既玩高尔夫又露营）无法表达，且未见用户需额外分群步骤使推理约 2×；② 依赖图文双模态完整，缺失模态场景未处理；③ 群数 $C=8$ 为逐数据集调优所得（4/16 均更差），跨域迁移时需重新搜索，且缺乏理论刻画 PEFT 如何改变 CLIP 表征。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

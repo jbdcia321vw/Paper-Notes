@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-PUDA 分两阶段。阶段一：用 Lamarckian 算子从可观测样本 $\mathcal{X}$ 逆向生成初始提示种群 $\mathcal{P}^{(0)}$，每个候选提示训练代理模型 $\mathcal{S}$ 并以 HR 打分；随后迭代执行交叉、变异与精英保留，直至精英得分不再提升，得到蒸馏提示 $P^*$。代理训练语料由可观测交互 $\mathcal{D}'$ 与"扰动序列 + 受害模型软标签"合成数据 $\mathcal{D}_{syn}$ 组成，以缓解数据可见性不足。阶段二：在 $P^*$ 与代理 $S^*$ 之上，一方面用 LLM 三步推理改写目标商品标题（锚点模式抽取→受约束改写→相似度门控迭代），另一方面自回归生成行为保真的投毒序列，二者合并后迁移至受害模型评估。
+PUDA 分两阶段。阶段一：用 Lamarckian 算子从可观测样本 $\mathcal{X}$逆向生成初始提示种群$\mathcal{P}^{(0)}$，每个候选提示训练代理模型$\mathcal{S}$并以 HR 打分；随后迭代执行交叉、变异与精英保留，直至精英得分不再提升，得到蒸馏提示$P^*$。代理训练语料由可观测交互$\mathcal{D}'$与"扰动序列 + 受害模型软标签"合成数据$\mathcal{D}_{syn}$组成，以缓解数据可见性不足。阶段二：在$P^*$与代理$S^*$ 之上，一方面用 LLM 三步推理改写目标商品标题（锚点模式抽取→受约束改写→相似度门控迭代），另一方面自回归生成行为保真的投毒序列，二者合并后迁移至受害模型评估。
 
 ```mermaid
 flowchart TD
@@ -62,11 +62,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **进化式提示蒸馏（Evolutionary Prompt Distillation）**：痛点是无梯度、离散、搜索空间巨大的提示词无法直接优化。核心是以代理模型的下游推荐得分为适应度：$\text{score}(P^{(t)}_k)=\mathbb{E}_{(s,y)\sim\mathcal{X}}[f(\mathcal{S}(P^{(t)}_k,s),y)]$，每代由交叉算子 $\mathcal{O}_C$ 重组两个最优父代、变异算子 $\mathcal{O}_M$ 扰动 top-$\kappa$ 提示，并按 $\mathcal{P}^{(t+1)}=\{P^{(t)}_{\text{elite}}\}\cup\mathcal{P}^{(t)}_{\text{cross}}\cup\mathcal{P}^{(t)}_{\text{mut}}$ 组装新种群，收敛条件为 $\text{score}(P^{(t+1)}_{\text{elite}})\le \text{score}(P^{(t)}_{\text{elite}})$。直觉上，把"提示词写得好不好"直接折算成"代理推荐得准不准"，使离散文本搜索获得稠密可比的反馈信号，且精英保留保证单调不退化。
+1. **进化式提示蒸馏（Evolutionary Prompt Distillation）**：痛点是无梯度、离散、搜索空间巨大的提示词无法直接优化。核心是以代理模型的下游推荐得分为适应度：$\text{score}(P^{(t)}_k)=\mathbb{E}_{(s,y)\sim\mathcal{X}}[f(\mathcal{S}(P^{(t)}_k,s),y)]$，每代由交叉算子$\mathcal{O}_C$重组两个最优父代、变异算子$\mathcal{O}_M$扰动 top-$\kappa$提示，并按$\mathcal{P}^{(t+1)}=\{P^{(t)}_{\text{elite}}\}\cup\mathcal{P}^{(t)}_{\text{cross}}\cup\mathcal{P}^{(t)}_{\text{mut}}$组装新种群，收敛条件为$\text{score}(P^{(t+1)}_{\text{elite}})\le \text{score}(P^{(t)}_{\text{elite}})$。直觉上，把"提示词写得好不好"直接折算成"代理推荐得准不准"，使离散文本搜索获得稠密可比的反馈信号，且精英保留保证单调不退化。
 
-2. **LLM 引导的锚点模式标题改写（Anchor-Pattern Refinement）**：痛点是长尾商品标题缺乏吸引力且直接同义替换扰动太弱。方法构造两个锚点集——热门集 $\mathcal{I}_{pop}$ 与"易推集" $\mathcal{I}_{easy}=\{i\mid \text{Freq}_{S^*}(i)\ge\gamma\}$（由代理高频推荐项定义，捕捉系统归纳偏置而非全局热度），令 LLM 先抽取锚点标题的体裁线索/结构模板/语气信号，再在"保留核心实体"约束下重写目标标题，并用语义相似度 $\text{Sim}_{sem}=\cos(e(\mathcal{T}),e(\tilde{\mathcal{T}}))$ 与词法 Jaccard 相似度 $\text{Sim}_{lex}$ 双阈值门控迭代。直觉是：把标题推向推荐器语义偏好区，同时用双阈值防止语义漂移被审核识破。
+2. **LLM 引导的锚点模式标题改写（Anchor-Pattern Refinement）**：痛点是长尾商品标题缺乏吸引力且直接同义替换扰动太弱。方法构造两个锚点集——热门集 $\mathcal{I}_{pop}$与"易推集"$\mathcal{I}_{easy}=\{i\mid \text{Freq}_{S^*}(i)\ge\gamma\}$（由代理高频推荐项定义，捕捉系统归纳偏置而非全局热度），令 LLM 先抽取锚点标题的体裁线索/结构模板/语气信号，再在"保留核心实体"约束下重写目标标题，并用语义相似度$\text{Sim}_{sem}=\cos(e(\mathcal{T}),e(\tilde{\mathcal{T}}))$与词法 Jaccard 相似度$\text{Sim}_{lex}$ 双阈值门控迭代。直觉是：把标题推向推荐器语义偏好区，同时用双阈值防止语义漂移被审核识破。
 
-3. **代理引导的行为保真投毒序列 + 训练目标**：痛点是纯文本攻击无法建立目标商品与高曝光商品的共现。每步以热门种子初始化前缀，候选池 $\mathcal{C}=\mathcal{R}^{(t)}_J\cup\mathcal{I}_{tar}\cup\mathcal{I}_{pop}^{10\%}$ 显式注入目标与头部商品，再以行为相似度 $\text{BehSim}(c\mid s)=\text{Sim}(e_{[s;c]},e_{avg})$ 选下一项 $\hat{c}_t=\arg\max_{c\in\mathcal{C}}\text{BehSim}$，保证序列与真实用户行为分布一致。代理训练用标准自回归 SFT 损失 $\theta^*=\arg\min_\theta \mathbb{E}_{(s,y)\in\mathcal{D}_{st}}[-\frac{1}{|y|}\sum_t \log \mathcal{S}_\theta(y_t\mid P^*,s,y_{<t})]$，无需负采样；推理侧仅需对受害模型做有限次查询获取软标签，攻击成本由 2% 恶意用户预算控制。
+3. **代理引导的行为保真投毒序列 + 训练目标**：痛点是纯文本攻击无法建立目标商品与高曝光商品的共现。每步以热门种子初始化前缀，候选池 $\mathcal{C}=\mathcal{R}^{(t)}_J\cup\mathcal{I}_{tar}\cup\mathcal{I}_{pop}^{10\%}$显式注入目标与头部商品，再以行为相似度$\text{BehSim}(c\mid s)=\text{Sim}(e_{[s;c]},e_{avg})$选下一项$\hat{c}_t=\arg\max_{c\in\mathcal{C}}\text{BehSim}$，保证序列与真实用户行为分布一致。代理训练用标准自回归 SFT 损失$\theta^*=\arg\min_\theta \mathbb{E}_{(s,y)\in\mathcal{D}_{st}}[-\frac{1}{|y|}\sum_t \log \mathcal{S}_\theta(y_t\mid P^*,s,y_{<t})]$，无需负采样；推理侧仅需对受害模型做有限次查询获取软标签，攻击成本由 2% 恶意用户预算控制。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -115,10 +115,15 @@ flowchart TD
 2. **代理保真度直接决定攻击上限**：图 4 中本文蒸馏提示在三个数据集上 AGR@10/50 均最高，且对应 HR 也最高；图 7 显示训练数据从 10% 增至 30% 时一致性单调上升，且 Top-50/100 的一致性显著高于 Top-5，说明代理更擅长复现粗粒度排序偏好而非精确头部。
 3. **攻击预算与语义信号双重驱动**：图 6 显示恶意用户从 0.5% 增至 2.0% 时 HR@50/NDCG@50 单调上升；但预算为 0 时目标商品仍有非零曝光，印证 LLM-SRS 的排序并非纯频次驱动，文本语义本身即可贡献曝光——这也是纯文本攻击在 Goodreads 上能把 HR@50 从 0 抬到 0.0587 的原因。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 CheatAgent（需改写系统提示词）与 Zhang et al.（需白盒/测试期访问），PUDA 首次在"模型+提示词双黑盒"下成立；相比 TextSimu 的纯热门模仿改写，本文引入 $\mathcal{I}_{easy}$ 捕捉系统归纳偏置并叠加行为级投毒，攻击面从文本扩展到交互序列。
 - **可迁移亮点**: ①"以下游任务指标为适应度的进化式离散提示蒸馏"可直接迁移到黑盒 LLM 推荐器的模型窃取与鲁棒性评测；②"语义+词法双阈值门控的 LLM 改写"是通用的可控文本对抗扰动模板，可用于红队测试与内容审核阈值标定。
 - **审稿级局限批判**: ①标题改写与提示蒸馏均依赖 GPT-4o 多次调用，攻击成本与可复现性未量化，且蒸馏收敛需多代代理重训，实际部署开销偏高；②受害模型仅覆盖 LLaMA-3B + SPRec 单一组合，未验证对 P5/TALLRec 或商用 API 的迁移性，防御侧（如投毒检测、标题一致性校验）也完全未讨论。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

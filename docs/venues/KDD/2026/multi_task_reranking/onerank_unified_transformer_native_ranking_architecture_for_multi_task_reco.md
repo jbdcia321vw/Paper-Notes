@@ -32,16 +32,16 @@ categories:
 
 ## Background & Motivation (背景与核心矛盾)
 
-- **主流范式**: 工业界已用 Transformer 替换 DNN 做序列与特征建模（MTGR、OneTrans、HyFormer），但多任务部分仍是 MMoE/PLE/ResFlow 式的「共享底 + 任务塔」，即 $\mathcal{F}$ 产出任务无关表征 $Z$，再由 $\mathcal{G}_k$ 各自预测。
+- **主流范式**: 工业界已用 Transformer 替换 DNN 做序列与特征建模（MTGR、OneTrans、HyFormer），但多任务部分仍是 MMoE/PLE/ResFlow 式的「共享底 + 任务塔」，即 $\mathcal{F}$产出任务无关表征$Z$，再由$\mathcal{G}_k$ 各自预测。
 - **前人局限**: ① 共享 $Z$ 构成任务无关信息瓶颈，任务专属信号在编码阶段即被纠缠，只能靠容量受限的预测塔事后解耦；② 共享参数上的冲突梯度引发跷跷板现象，缺乏显式的任务优化方向隔离机制；③ 注意力是逐层上下文路由，而 MLP 塔是静态全局决策边界，读写动态不兼容，破坏端到端任务推理与规模化。
 - **核心洞察 (Key Insight)**: 问题不在编码器容量，而在「编码-预测」的结构性割裂——把 Transformer 当任务无关编码器，等于放弃了它在栈内做任务条件化路由的能力。
-- **本文切入点**: 不再修补 $\mathcal{G}$，而是取消 $\mathcal{F}$–$\mathcal{G}$ 边界，让任务特化、跨候选聚合、跨任务迁移、打分全部在同一 Transformer 栈内以 token 与 mask 表达。
+- **本文切入点**: 不再修补 $\mathcal{G}$，而是取消$\mathcal{F}$–$\mathcal{G}$ 边界，让任务特化、跨候选聚合、跨任务迁移、打分全部在同一 Transformer 栈内以 token 与 mask 表达。
 
 ## Method (核心方法设计)
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入被组织为一条统一 token 序列：交互历史 $\mathcal{S}^{IH}$（带可学习位置编码）、偏好锚定 $\mathcal{S}^{PA}$（检索得到的高互动序列，用 BOS/EOS 包裹，借鉴 RAG 思路）、以及 $N$ 个候选-任务组 $\mathcal{G}_i=[e^C_i, t_1,\dots,t_K]$。经 $L$ 层结构化掩码 MHSA 后，每个任务 token 的输出 $r^i_k$ 即候选 $i$ 在任务 $k$ 下的上下文条件化表征；再由任务专属 MHCA 以情境描述符为 query 聚合全候选得到任务级全局表征 $h_k$；跨任务注意力做受控迁移并截断梯度；最终以内积 $s^i_k=z_k^\top r^i_k$ 动态打分。训练用 InfoNCE + BCE 混合目标，推理时用户侧 KV 可缓存，仅候选与任务 token 需在线计算。
+输入被组织为一条统一 token 序列：交互历史 $\mathcal{S}^{IH}$（带可学习位置编码）、偏好锚定$\mathcal{S}^{PA}$（检索得到的高互动序列，用 BOS/EOS 包裹，借鉴 RAG 思路）、以及$N$个候选-任务组$\mathcal{G}_i=[e^C_i, t_1,\dots,t_K]$。经$L$层结构化掩码 MHSA 后，每个任务 token 的输出$r^i_k$即候选$i$在任务$k$下的上下文条件化表征；再由任务专属 MHCA 以情境描述符为 query 聚合全候选得到任务级全局表征$h_k$；跨任务注意力做受控迁移并截断梯度；最终以内积$s^i_k=z_k^\top r^i_k$ 动态打分。训练用 InfoNCE + BCE 混合目标，推理时用户侧 KV 可缓存，仅候选与任务 token 需在线计算。
 
 ```mermaid
 flowchart TD
@@ -63,13 +63,13 @@ $$M_{pq}=1 \iff \begin{cases}\text{pos}(q)\le\text{pos}(p), & p,q\in\{\mathcal{S
 
 直觉：任务 token 参数共享但注意力路径隔离，同一模板在不同候选上产出不同表征，等于在输入层就为每个任务开出独立梯度通道，从源头压制跷跷板。
 
-2. **候选感知上下文化 + 匹配式动态打分（弥合训练-服务鸿沟）**：逐点训练与全库排序的服务环境不匹配。做法是用情境描述符 $s$（用户画像、query、时段/地点等）经任务专属投影 $q_k=\mathrm{LN}(f_k(s))$，再以任务专属 MHCA 聚合全部候选表征：$h_k=\mathrm{MHCA}_k(q_k,\{r^i_k\},\{r^i_k\})$。打分改为 $s^i_k=z_k^\top r^i_k$，其中 $z_k$ 经跨任务注意力与 FFN 精炼。直觉：全局表征编码了候选池的竞争分布，同一用户-物品对在不同 session 下得分不同，且内积把任务表征与候选表征拉进同一几何空间联合优化，梯度流优于分离的 MLP 塔。
+2. **候选感知上下文化 + 匹配式动态打分（弥合训练-服务鸿沟）**：逐点训练与全库排序的服务环境不匹配。做法是用情境描述符 $s$（用户画像、query、时段/地点等）经任务专属投影$q_k=\mathrm{LN}(f_k(s))$，再以任务专属 MHCA 聚合全部候选表征：$h_k=\mathrm{MHCA}_k(q_k,\{r^i_k\},\{r^i_k\})$。打分改为$s^i_k=z_k^\top r^i_k$，其中$z_k$ 经跨任务注意力与 FFN 精炼。直觉：全局表征编码了候选池的竞争分布，同一用户-物品对在不同 session 下得分不同，且内积把任务表征与候选表征拉进同一几何空间联合优化，梯度流优于分离的 MLP 塔。
 
-3. **跨任务注意力 + 战略梯度截断 + 灵活掩码（受控迁移）**：$\tilde h_k=\mathrm{MHSA}(h_k,\{h_j\}_{j:A_{kj}=1})$，反向时对 $j\ne k$ 置 $\partial\mathcal{L}/\partial h_j=0$，只保留对角梯度。效果是把跨任务注意力变成「只读存储器」：前向可借稀疏任务所需的上游信号，后向不产生负迁移。掩码 $A$ 支持 Parallel（互不可见）、Null（全可见）、Cascade（$A_{kj}=\mathbb{I}[j\le k]$，点击→加购→下单漏斗）、Hybrid（如短视频场景点赞/评论双向、点击→关注单向）四种策略。总损失
+3. **跨任务注意力 + 战略梯度截断 + 灵活掩码（受控迁移）**：$\tilde h_k=\mathrm{MHSA}(h_k,\{h_j\}_{j:A_{kj}=1})$，反向时对$j\ne k$置$\partial\mathcal{L}/\partial h_j=0$，只保留对角梯度。效果是把跨任务注意力变成「只读存储器」：前向可借稀疏任务所需的上游信号，后向不产生负迁移。掩码$A$支持 Parallel（互不可见）、Null（全可见）、Cascade（$A_{kj}=\mathbb{I}[j\le k]$，点击→加购→下单漏斗）、Hybrid（如短视频场景点赞/评论双向、点击→关注单向）四种策略。总损失
 
 $$\mathcal{L}=\sum_{k=1}^{K}\left(\alpha\mathcal{L}^{\text{list}}_k+\beta\mathcal{L}^{\text{point}}_k\right),\quad \mathcal{L}^{\text{list}}_k=-\sum_{i\in\mathcal{I}^+_k}\log\frac{\exp(s^i_k/\tau)}{\sum_{j=1}^{N}\exp(s^j_k/\tau)}$$
 
-负样本来自同一次前向的候选集内（in-batch/list-wise，免额外采样），$\tau$ 初始 0.2，$\alpha=\beta=1$。推理侧 KV-cache 复用用户上下文，在线仅算候选与任务 token。
+负样本来自同一次前向的候选集内（in-batch/list-wise，免额外采样），$\tau$初始 0.2，$\alpha=\beta=1$。推理侧 KV-cache 复用用户上下文，在线仅算候选与任务 token。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -119,10 +119,15 @@ $$\mathcal{L}=\sum_{k=1}^{K}\left(\alpha\mathcal{L}^{\text{list}}_k+\beta\mathca
 2. **任务 token 的价值在稀疏任务上更明显**：V1 去掉任务 token 后 A-AUC 从 0.8463 降至 0.8424、O-GAUC 从 0.8350 降至 0.8337，而 C-AUC 仅降 0.0021——早期特化主要救的是稀疏且易被点击信号淹没的加购/下单任务，与跷跷板诊断一致。
 3. **梯度截断是「稳定性保险」而非「精度增益」**：V4 去掉截断后多数指标仅微降（C-AUC 0.7901 vs 0.7910），但 A-AUC 出现 0.8460 vs 0.8463 的不稳定波动，印证其作用是在保留前向迁移的同时抑制稀疏任务的负迁移；同时 V6 全双向掩码全面劣于受控掩码，说明「能看见」不等于「该看见」。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 PLE/MMoE 的本质区别是把任务隔离从「专家路由」下沉到「token 与注意力掩码」，隔离发生在编码阶段而非预测阶段；与 OneTrans/MTGR 的区别是它们只统一了特征交互与序列建模，多任务头仍是 MLP 塔，OneRank 连打分都换成内积匹配；与 OnePiece 的 reasoning token 思路相近，但 OnePiece 仍保留编码器-预测器分离与 MLP 打分。
 - **可迁移亮点**: ① 「前向可读、后向截断」的跨任务注意力可直接移植到任何多目标排序栈，用一行自定义 backward 换掉复杂的梯度手术（PCGrad 类）；② 单用户多候选打包 + 用户侧 KV 缓存，是把精排做成类生成式推理的实用工程范式。
 - **审稿级局限批判**: ① 仅在一个内部电商数据集上验证，缺少公开多任务基准（如 AliExpress/KKBox 类）与跨域复现，泛化性证据偏弱；② FLOPs 达 1.0G，比 OneTrans+PLE 高约 21%，论文只给参数量优势而未给线上 P99 延迟与吞吐数字，「保持计算效率」的论断缺乏延迟侧硬证据；③ 掩码策略需人工按业务先验设计，Hybrid 掩码的选择本身构成新的超参搜索空间。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

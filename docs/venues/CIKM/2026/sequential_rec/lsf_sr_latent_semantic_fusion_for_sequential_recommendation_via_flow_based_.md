@@ -46,7 +46,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-离线阶段用 LLaMA 3.1-8B-Instruct 依据「属性 + 历史交互子序列」的结构化 Prompt 为每个物品合成描述性文本 $T_i$，再由冻结的 SimCSE (RoBERTa-large, $d_s{=}1024$) 编码并经线性投影得到语义条件 $\hat{\mathbf{c}}_i \in \mathbb{R}^d$。在线阶段，物品 ID 嵌入 $\mathbf{e}_i$ 与 $\hat{\mathbf{c}}_i$ 拼接送入条件编码器得到后验参数，重参数化采样后经 $K$ 层归一化流变换为 $\mathbf{z}_K$，条件解码器输出增强嵌入 $\mathbf{e}'_i$；该嵌入加位置编码后进入 Transformer 序列主干，与融合模块在统一目标下端到端联合优化。
+离线阶段用 LLaMA 3.1-8B-Instruct 依据「属性 + 历史交互子序列」的结构化 Prompt 为每个物品合成描述性文本 $T_i$，再由冻结的 SimCSE (RoBERTa-large,$d_s{=}1024$) 编码并经线性投影得到语义条件$\hat{\mathbf{c}}_i \in \mathbb{R}^d$。在线阶段，物品 ID 嵌入$\mathbf{e}_i$与$\hat{\mathbf{c}}_i$拼接送入条件编码器得到后验参数，重参数化采样后经$K$层归一化流变换为$\mathbf{z}_K$，条件解码器输出增强嵌入$\mathbf{e}'_i$；该嵌入加位置编码后进入 Transformer 序列主干，与融合模块在统一目标下端到端联合优化。
 
 ```mermaid
 flowchart TD
@@ -67,17 +67,17 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **条件语义融合的概率化重构（Probabilistic Fusion）**：痛点是用确定性算子强行对齐两个异构空间会丢失不确定性。本文将语义条件同时注入编码器与解码器，学习近似后验 $q_\phi(\mathbf{z}\mid \mathbf{e}_i,\hat{\mathbf{c}}_i)$，解码器**不重建** $\mathbf{e}_i$ 而是直接生成面向下一项预测的 $\mathbf{e}'_i$：
+1. **条件语义融合的概率化重构（Probabilistic Fusion）**：痛点是用确定性算子强行对齐两个异构空间会丢失不确定性。本文将语义条件同时注入编码器与解码器，学习近似后验 $q_\phi(\mathbf{z}\mid \mathbf{e}_i,\hat{\mathbf{c}}_i)$，解码器**不重建**$\mathbf{e}_i$而是直接生成面向下一项预测的$\mathbf{e}'_i$：
 $$\mathbf{e}'_i=\mathrm{MLP}_{dec}([\mathbf{z}_K;\hat{\mathbf{c}}_i])$$
 直觉：语义条件在编码/解码两端双重锚定，使协同嵌入被"拉"到语义流形上，相似语义物品在隐空间中自然聚类。
 
-2. **归一化流增强后验（Flow-Augmented Posterior）**：对角高斯后验无法刻画协同-语义联合分布的非高斯几何。对基分布采样 $\mathbf{z}_0$ 施加 $K$ 个可逆变换，按变量替换公式得
+2. **归一化流增强后验（Flow-Augmented Posterior）**：对角高斯后验无法刻画协同-语义联合分布的非高斯几何。对基分布采样 $\mathbf{z}_0$施加$K$ 个可逆变换，按变量替换公式得
 $$\ln q_K(\mathbf{z}_K)=\ln q_0(\mathbf{z}_0)-\sum_{k=1}^{K}\ln\left|\det\frac{\partial f_k}{\partial \mathbf{z}_{k-1}}\right|$$
-其中 Planar flow $f(\mathbf{z})=\mathbf{z}+\mathbf{u}\tanh(\mathbf{w}^\top\mathbf{z}+b)$ 沿超平面方向扭曲以刻画簇间非线性边界，Radial flow 以参考点 $\mathbf{z}_{ref}$ 为中心做局部径向伸缩以建模语义簇。直觉：可逆变换在保持概率归一化的前提下"掰弯"高斯，使后验贴合真实流形。
+其中 Planar flow $f(\mathbf{z})=\mathbf{z}+\mathbf{u}\tanh(\mathbf{w}^\top\mathbf{z}+b)$沿超平面方向扭曲以刻画簇间非线性边界，Radial flow 以参考点$\mathbf{z}_{ref}$ 为中心做局部径向伸缩以建模语义簇。直觉：可逆变换在保持概率归一化的前提下"掰弯"高斯，使后验贴合真实流形。
 
 3. **训练目标、KL 退火与推理效率**：总损失
 $$\mathcal{L}_{total}=\mathcal{L}_{rec}+\beta\cdot\mathcal{L}_{KL},\quad \mathcal{L}_{KL}=\mathbb{E}_{q_0}\Big[\ln q_0(\mathbf{z}_0)-\sum_k \ln|\det J_k|-\ln p(\mathbf{z}_K)\Big]$$
-$\mathcal{L}_{rec}$ 为全库 softmax 的负对数似然；训练时 KL 走随机采样路径，而全库 logits 走确定性路径（$\mathbf{z}_K=\mathrm{flow}(\boldsymbol{\mu}_i)$，不采样）以稳定打分。$\beta$ 采用**循环退火**（锯齿波，30 epoch 一周期，从 0.01 升至 $\beta_{end}$），周期性放松/收紧 KL 约束以逃离局部最优并防止后验坍缩。负采样策略为**免负采样**（全库 softmax）；LLM 调用完全离线，在线仅多一次 MLP + $K$ 层流变换，开销可忽略。
+$\mathcal{L}_{rec}$为全库 softmax 的负对数似然；训练时 KL 走随机采样路径，而全库 logits 走确定性路径（$\mathbf{z}_K=\mathrm{flow}(\boldsymbol{\mu}_i)$，不采样）以稳定打分。$\beta$采用**循环退火**（锯齿波，30 epoch 一周期，从 0.01 升至$\beta_{end}$），周期性放松/收紧 KL 约束以逃离局部最优并防止后验坍缩。负采样策略为**免负采样**（全库 softmax）；LLM 调用完全离线，在线仅多一次 MLP +$K$ 层流变换，开销可忽略。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -92,8 +92,8 @@ $\mathcal{L}_{rec}$ 为全库 softmax 的负对数似然；训练时 KL 走随�
 | Yelp | 19,936 | 14,587 | 207,952 | 99.93% | 本地生活，元数据贫乏 |
 
 - **数据划分与防穿越**: `Leave-One-Out`——最后一项为测试、倒数第二项为验证、其余为训练。
-- **排名评测协议**: 无偏 `Full-Ranking`（对全物品库排序），指标 Recall@{10,20}、NDCG@{10,20}；5 个随机种子取均值，双尾配对 $t$ 检验 $p<0.05$。
-- **对比基线与超参**: 行为侧 10 个基线（SASRec、ICLRec、DuoRec、MCLRec、ICSRec、FENRec、FMLP-Rec、FEARec、BSARec、DIFF）+ LLM 侧 3 个（LRD、LLM-ESR、SRA-CL）。嵌入维度 $d{=}64$，2 层 2 头注意力，dropout 0.3，序列长度 20，学习率 1e-3（Yelp 1e-4），隐空间 $d_z{=}32$；流深 $K{=}2$（Beauty/Sports）、$K{=}3$（Toys/Yelp 用 Planar，Office 用 Radial）；$\beta_{end}\in[0.1,0.2]$。所有 LLM 基线统一使用 LLaMA 3.1-8B-Instruct + SimCSE 文本管线以保证公平。
+- **排名评测协议**: 无偏 `Full-Ranking`（对全物品库排序），指标 Recall@{10,20}、NDCG@{10,20}；5 个随机种子取均值，双尾配对 $t$检验$p<0.05$。
+- **对比基线与超参**: 行为侧 10 个基线（SASRec、ICLRec、DuoRec、MCLRec、ICSRec、FENRec、FMLP-Rec、FEARec、BSARec、DIFF）+ LLM 侧 3 个（LRD、LLM-ESR、SRA-CL）。嵌入维度 $d{=}64$，2 层 2 头注意力，dropout 0.3，序列长度 20，学习率 1e-3（Yelp 1e-4），隐空间$d_z{=}32$；流深$K{=}2$（Beauty/Sports）、$K{=}3$（Toys/Yelp 用 Planar，Office 用 Radial）；$\beta_{end}\in[0.1,0.2]$。所有 LLM 基线统一使用 LLaMA 3.1-8B-Instruct + SimCSE 文本管线以保证公平。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -132,10 +132,15 @@ $\mathcal{L}_{rec}$ 为全库 softmax 的负对数似然；训练时 KL 走随�
 3. **循环退火优于固定与单调退火**：Cyclical 在 5 个数据集 NDCG@20 上全部最优或并列最优，Beauty N@20 较 Fixed 提升 5.4%（0.0629 vs 0.0597）；周期性放松 KL 使优化多次跳出局部极小，是稳定收敛的关键。
 4. **冷启动与长尾优势显著**：短序列（长度 ≤5）用户组上 LSF-SR 全面领先；尾部物品（频次 ≤9）上 NDCG@20 较最强 LLM 基线 SRA-CL 分别提升 **22.88%（Beauty）与 18.50%（Yelp）**，证明语义条件使尾部物品按语义相关性而非流行度定位。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 **LLM-ESR**（冻结语义嵌入 + 双视图自蒸馏）和 **SRA-CL**（语义检索构造对比正样本）的本质区别在于：二者仍在确定性/对比框架内做"对齐"，而 LSF-SR 把对齐建模为带不确定性的变分推断，并用可逆流显式重塑后验几何；与 **LRD**（DVAE 发现离散隐关系）相比，本文保留连续隐空间并引入条件解码，直接产出面向预测的增强嵌入而非重建。
 - **可迁移亮点**: ① "LLM 离线物品级 profiling + 在线零额外开销"的工程范式，可直接套用到任何需要语义增强的召回/粗排模型；② 循环 KL 退火 + 确定性/随机双路径打分（训练采样、推理取均值）的组合，是 CVAE 类推荐模型防坍缩的通用配方。
-- **审稿级局限批判**: ① 流深 $K$ 与 $\beta_{end}$ 需逐数据集网格搜索（$K\in\{2,3\}$、$\beta_{end}\in[0.1,0.2]$），且消融显示稀疏域收益有限，自适应流架构尚未解决；② 全库 softmax 训练在 18K 物品规模可行，但未讨论十万级以上物品库的采样近似与延迟；③ 仅报告离线 Full-Ranking，缺少线上 A/B 与推理时延实测。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+- **审稿级局限批判**: ① 流深 $K$与$\beta_{end}$需逐数据集网格搜索（$K\in\{2,3\}$、$\beta_{end}\in[0.1,0.2]$），且消融显示稀疏域收益有限，自适应流架构尚未解决；② 全库 softmax 训练在 18K 物品规模可行，但未讨论十万级以上物品库的采样近似与延迟；③ 仅报告离线 Full-Ranking，缺少线上 A/B 与推理时延实测。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

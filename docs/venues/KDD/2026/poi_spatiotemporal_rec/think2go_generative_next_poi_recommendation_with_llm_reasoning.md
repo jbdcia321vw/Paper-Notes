@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-模型基于 decoder-only 骨干 + LoRA，旧策略先对每个 prompt 采样 $G$ 条轨迹，输出结构为 `Think`（推理）→`Go`（预测 SID）→`Self-Correct`（自纠错桥接）→`Answer`（监督答案）。其中 Think/Go token 走策略梯度（CAPO），Answer token 走标准 next-token SFT，总损失 $\mathcal{L}=\mathcal{L}_{SFT}+\alpha\mathcal{L}_{CAPO}$。奖励由渐进式格式奖励（部分格式 0.5、完整 `</think><answer>` 且长度 >300 token 得 1.0）与按 SID 语义单元分解的细粒度正确性奖励（每单元 $3/L$）构成，缓解稀疏奖励冷启动。
+模型基于 decoder-only 骨干 + LoRA，旧策略先对每个 prompt 采样 $G$条轨迹，输出结构为 `Think`（推理）→`Go`（预测 SID）→`Self-Correct`（自纠错桥接）→`Answer`（监督答案）。其中 Think/Go token 走策略梯度（CAPO），Answer token 走标准 next-token SFT，总损失$\mathcal{L}=\mathcal{L}_{SFT}+\alpha\mathcal{L}_{CAPO}$。奖励由渐进式格式奖励（部分格式 0.5、完整 `</think><answer>` 且长度 >300 token 得 1.0）与按 SID 语义单元分解的细粒度正确性奖励（每单元$3/L$）构成，缓解稀疏奖励冷启动。
 
 ```mermaid
 flowchart TD
@@ -68,7 +68,7 @@ flowchart TD
 
 2. **难度感知奖励差 DRG（模型级更新幅度校准）**：痛点是组内标准化丢失奖励绝对强度。定义 $m=1-\frac{R_{max}-R}{R_{max}}$，使易样本系数约 [1.0,1.0,0.778]、难样本约 [0.556,0.556,0.333]，从而对错误/低奖励预测施加更保守更新，保持推理 token 高熵、抑制熵坍缩。
 
-3. **训练目标、负采样与推理效率**：最终优势 $\hat{A}_t^i=e^{(\gamma\cdot p\cdot m)}\cdot A_t^i$，其中 $A_t^i=R_i-\text{mean}(\{R_i\})$（去掉 Dr.GRPO 指出的方差项偏差），并叠加 token 级熵奖励 $e_t^i$。无需负采样（生成式全库隐式竞争）；推理时仅需一次自回归解码，test-time 计算深度可调，但长 CoT 带来额外延迟。
+3. **训练目标、负采样与推理效率**：最终优势 $\hat{A}_t^i=e^{(\gamma\cdot p\cdot m)}\cdot A_t^i$，其中$A_t^i=R_i-\text{mean}(\{R_i\})$（去掉 Dr.GRPO 指出的方差项偏差），并叠加 token 级熵奖励$e_t^i$。无需负采样（生成式全库隐式竞争）；推理时仅需一次自回归解码，test-time 计算深度可调，但长 CoT 带来额外延迟。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -114,10 +114,15 @@ flowchart TD
 2. **SID 语义理解被推理显著激活**：在 10 选 1 的 SID→类别预测任务上，Think2Go 达 0.3024/0.2673/0.1722，较纯 SFT 的 GNPR 相对提升 58.96%/61.15%/31.36%，直接证明解耦训练导致的 SID 理解缺陷可被 RL 推理弥补。
 3. **跨域泛化更稳**：六组源→目标迁移（如 NYC→CA 0.2484 vs GNPR 0.2297、CA→TKY 0.3042 vs 0.2869）全面领先，且训练曲线显示 DRG 使熵在 400 步后维持高位、Acc@1 与奖励持续高于 Refine-POI，验证其抗熵坍缩与抗过拟合噪声的能力。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 GNPR 的本质差异在于 SID 不再"先训后用"而是与推理联合优化；与 Refine-POI 的差异在于把 GRPO 的等权优势替换为 prompt 级（STEU）+ 模型级（DRG）双重校准，且用 Self-Correct token 桥接 SFT 与 RL，避免两阶段灾难遗忘。
 - **可迁移亮点**: ① 用 KDE 在用户历史分布上量化"查询反常度"作为探索权重，可迁移到任何有时空/周期先验的序列推荐；② 奖励/最大奖励比的难度缩放是极轻量的 GRPO 改进，几乎零额外开销即可缓解熵坍缩。
-- **审稿级局限批判**: ① 推理需生成数百 token 的 CoT，线上 POI 推荐的延迟与算力成本未做量化，工业落地存疑；② 主实验仅报 Acc@1/5/10 与 MRR，未给显著性检验，且 GNPR/LLM4POI 缺 Acc@5/10 导致对比不完整；③ STEU 的核带宽 $\sigma$ 与 $\beta,\gamma$ 敏感度未做系统分析。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐
+- **审稿级局限批判**: ① 推理需生成数百 token 的 CoT，线上 POI 推荐的延迟与算力成本未做量化，工业落地存疑；② 主实验仅报 Acc@1/5/10 与 MRR，未给显著性检验，且 GNPR/LLM4POI 缺 Acc@5/10 导致对比不完整；③ STEU 的核带宽 $\sigma$与$\beta,\gamma$ 敏感度未做系统分析。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

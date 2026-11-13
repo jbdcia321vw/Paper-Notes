@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-两阶段流水线。**第一阶段**：为每个物品构建 $K=4$ 级语义层级 $[x^{(1)},\dots,x^{(K)}]$（类目/标题/描述/CF），前三级文本经预训练 LLaMA-7B 取嵌入后过**共享** MLP 语义编码器，各自用独立码本量化；第四级从预训练 SASRec 取 CF 嵌入，过**独立** CF 编码器与码本量化。**第二阶段**：把用户历史中每个物品展开为 4 个 token，注入 token-ID、层级、位置三类嵌入后送入 T5/LLaMA 自回归骨干，按粗到细顺序逐 token 生成下一物品，推理时 beam size=20。
+两阶段流水线。**第一阶段**：为每个物品构建 $K=4$级语义层级$[x^{(1)},\dots,x^{(K)}]$（类目/标题/描述/CF），前三级文本经预训练 LLaMA-7B 取嵌入后过**共享** MLP 语义编码器，各自用独立码本量化；第四级从预训练 SASRec 取 CF 嵌入，过**独立** CF 编码器与码本量化。**第二阶段**：把用户历史中每个物品展开为 4 个 token，注入 token-ID、层级、位置三类嵌入后送入 T5/LLaMA 自回归骨干，按粗到细顺序逐 token 生成下一物品，推理时 beam size=20。
 
 ```mermaid
 flowchart TD
@@ -57,9 +57,9 @@ flowchart TD
 
 1. **分层独立量化 (CoFiRec Tokenizer)**：痛点是压平嵌入让不同粒度语义互相污染、码本碰撞严重。做法是每级独立编码 + 独立码本最近邻量化 $s_i^{(k)} = \arg\min_j \|h_i^{(k)} - c_j^{(k)}\|^2$，前三级共享编解码器以保持跨层一致，CF 层单独一套。直觉：粗层只需区分大类（码本 256 够用），细层需区分同款近似物品（码本 512 更优），容量按粒度分配后碰撞率从 RQ-VAE 的 0.0027/0.0410/0.0009 降到 0.0001/0.0002/0.0002，**低一个数量级以上**。
 
-2. **由粗到细自回归解码 + 层级/位置嵌入**：痛点是扁平 token 序列不区分 token 的语义角色。生成概率改写为 $P(s^{(K)},\dots,s^{(1)}\mid H_u)=\prod_{k=1}^{K}P(s^{(k)}\mid s^{(<k)},H_u)$，输入嵌入为 $e_t^{(k)}=E_{id}(s^{(k)}_{i_t})+E_{level}(k)+E_{pos}(t)$。CF token 置于末位，使其在已知粗层意图的条件下做用户级消歧。作者进一步给出 Proposition 1：在每级正确率 $p>1/V$ 时，层级解码的期望不相似度 $\mathbb{E}_{hier}[d]=K-\sum_{k=1}^{K}p^k$ 严格小于独立解码的 $\mathbb{E}_{indep}[d]$，即结构先验把错误"局部化"在深层而非整条序列。
+2. **由粗到细自回归解码 + 层级/位置嵌入**：痛点是扁平 token 序列不区分 token 的语义角色。生成概率改写为 $P(s^{(K)},\dots,s^{(1)}\mid H_u)=\prod_{k=1}^{K}P(s^{(k)}\mid s^{(<k)},H_u)$，输入嵌入为$e_t^{(k)}=E_{id}(s^{(k)}_{i_t})+E_{level}(k)+E_{pos}(t)$。CF token 置于末位，使其在已知粗层意图的条件下做用户级消歧。作者进一步给出 Proposition 1：在每级正确率$p>1/V$时，层级解码的期望不相似度$\mathbb{E}_{hier}[d]=K-\sum_{k=1}^{K}p^k$严格小于独立解码的$\mathbb{E}_{indep}[d]$，即结构先验把错误"局部化"在深层而非整条序列。
 
-3. **训练目标、负采样与推理效率**：Tokenizer 用重构损失 + commitment 损失 $\mathcal{L}_{Tokenizer}=\mathcal{L}_{Recon}+\mathcal{L}_{Commit}$（$\mu=0.25$，直通估计器）；下游用**免负采样**的层级 softmax 生成损失 $\mathcal{L}_{Rank}=-\sum_{k}\log\frac{\exp(\phi(s^{(k)})/\tau)}{\sum_{v\in\mathcal{V}_k}\exp(\phi(v)/\tau)}$，$\tau=1$，每级词表内全量归一化。推理开销与 TIGER 基本持平（生成 0.0943s/step vs. 0.0998s/step，显存 <4GB）。
+3. **训练目标、负采样与推理效率**：Tokenizer 用重构损失 + commitment 损失 $\mathcal{L}_{Tokenizer}=\mathcal{L}_{Recon}+\mathcal{L}_{Commit}$（$\mu=0.25$，直通估计器）；下游用**免负采样**的层级 softmax 生成损失$\mathcal{L}_{Rank}=-\sum_{k}\log\frac{\exp(\phi(s^{(k)})/\tau)}{\sum_{v\in\mathcal{V}_k}\exp(\phi(v)/\tau)}$，$\tau=1$，每级词表内全量归一化。推理开销与 TIGER 基本持平（生成 0.0943s/step vs. 0.0998s/step，显存 <4GB）。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -73,7 +73,7 @@ flowchart TD
 
 - **数据划分与防穿越**: `Leave-One-Out`（最后一条测试、倒数第二条验证、其余训练），历史截断至最近 20 项，按时间排序。
 - **排名评测协议**: 遵循 TIGER 的**全库排序**（对全部未交互物品打分排序），报告 Recall@{5,10} 与 NDCG@{5,10}；生成模型统一 beam size=20，取验证集最优 checkpoint。
-- **对比基线与超参**: ID-based（MF、BERT4Rec、LightGCN、SASRec）与生成式（BigRec、SemID、CID、LETTER、TIGER、IDGenRec）共 10 个基线；语义嵌入取自 LLaMA-7B，CF 编码器 SASRec（$d=768$），码本大小在 {256,512,1024} 中搜索，学习率 {3e-4~6e-4}，提升显著性 $p\ll0.05$。
+- **对比基线与超参**: ID-based（MF、BERT4Rec、LightGCN、SASRec）与生成式（BigRec、SemID、CID、LETTER、TIGER、IDGenRec）共 10 个基线；语义嵌入取自 LLaMA-7B，CF 编码器 SASRec（$d=768$），码本大小在 {256,512,1024} 中搜索，学习率 {3e-4~6e-4}，提升显著性$p\ll0.05$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -96,7 +96,7 @@ flowchart TD
 | :--- | :---: | :---: | :---: | :---: |
 | Reverse Indices（层级倒序） | 0.0859 | 0.1047 | 0.0724 | 0.0785 |
 | Random Indices（随机打乱） | 0.0834 | 0.0991 | 0.0725 | 0.0775 |
-| w/o $E_{level}$ & $E_{pos}$ | 0.0885 | 0.1072 | **0.0753** | 0.0813 |
+| w/o $E_{level}$&$E_{pos}$ | 0.0885 | 0.1072 | **0.0753** | 0.0813 |
 | w/o $e_i^{cf}$（CF 层换成语义层） | 0.0870 | 0.1082 | 0.0740 | 0.0808 |
 | VAR w/ Text（池化构层级） | 0.0675 | 0.0798 | 0.0599 | 0.0639 |
 | **CoFiRec** | **0.0897** | **0.1118** | 0.0752 | **0.0820** |
@@ -107,10 +107,15 @@ flowchart TD
 2. **CF 层不可替代**：末位 CF token 换成语义 token 后 R@10 降至 0.1082，证明文本语义相近的物品必须靠协同共现信号在最后一层消歧；同时层级嵌入/位置嵌入移除后 N@5 反而略升（0.0753 vs. 0.0752），提示结构嵌入主要改善排序头部之外的召回而非头部精度。
 3. **冷启动与骨干鲁棒性是最大增量**：冷启动物品（频次最低 2%）上 CoFiRec 相对 TIGER 提升 10.0%（R@10 0.0943 vs. 0.0801），远高于热启的 4.7%；换 LLaMA-1B/3B 骨干时 TIGER 的 R@5 崩到 0.0202/0.0242，CoFiRec 稳定在 0.0403，说明结构化 token 对解码器规模不敏感。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 TIGER 的本质区别是"残差量化产生隐式层级"vs."元数据显式分层 + 独立码本"，前者靠追加 token 解决碰撞、易语义漂移，后者从源头把碰撞率降一个数量级；与 SemID 的区别是层级**可学习**而非人工 taxonomy；与视觉域 VAR 的区别是处理离散文本语义而非连续 latent map，池化式构层级（VAR w/ Text）在此任务上直接失效（R@10 仅 0.0798）。
 - **可迁移亮点**: ① "按语义粒度分配码本容量"（粗层 256、细层 512）可直接用于任何 RQ-VAE 类 tokenizer 的容量调参；② 用 GPT-4o 从纯标题/描述自动构建 4 级层级（AHC）即可逼近全元数据效果，为元数据缺失场景提供低成本兜底。
 - **审稿级局限批判**: ① Tokenizer 与生成器**两阶段分离训练**，码本空间未与下游生成目标联合对齐，作者亦在 Future Work 中承认；② 层级依赖 `category/title/description` 三字段，缺失时需 IE 或 LLM 补全，且层级数 $K$ 固定为 4、码本配置对性能敏感（Large 配置反而下降）；③ 仅在 2 万级公开数据集验证，无工业级线上 A/B 与延迟数据。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

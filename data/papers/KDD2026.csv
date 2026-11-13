@@ -22,14 +22,11 @@ Uncertainty-Calibrated Recommendations for Low-Active Users,2605.17788,https://a
 Text-Guided Visual Representation Learning for Robust Multimodal E-Commerce Recommendation,2605.17366,https://arxiv.org/abs/2605.17366,,multimodal_rec,KDD,2026
 Hierarchical Long-Term Semantic Memory for LinkedIn's Hiring Agent,2604.26197,https://arxiv.org/abs/2604.26197,,agent_conversational_rec,KDD,2026
 Reasoning over Semantic IDs Enhances Generative Recommendation,2603.23183,https://arxiv.org/abs/2603.23183,,generative_rec,KDD,2026
-Beyond Interleaving: Causal Attention Reformulations for Generative Recommender Systems,2603.10369,https://arxiv.org/abs/2603.10369,,generative_rec,KDD,2026
 MAC: A Conversion Rate Prediction Benchmark Featuring Labels Under Multiple Attribution Mechanisms,2603.02184,https://arxiv.org/abs/2603.02184,https://github.com/alimama-tech/PyMAL,ctr_feature_interaction,KDD,2026
 Vectorizing the Trie: Efficient Constrained Decoding for LLM-based Generative Retrieval on Accelerators,2602.22647,https://arxiv.org/abs/2602.22647,https://github.com/youtube/static-constraint-decoding,generative_rec,KDD,2026
-AgentLTV: An Agent-Based Unified Search-and-Evolution Framework for Automated Lifetime Value Prediction,2602.21634,https://arxiv.org/abs/2602.21634,,rl_bandit_rec,KDD,2026
 MixFormer: Co-Scaling Up Dense and Sequence in Industrial Recommenders,2602.14110,https://arxiv.org/abs/2602.14110,,sequential_rec,KDD,2026
 Hi-SAM: A Hierarchical Structure-Aware Multi-modal Framework for Large-Scale Recommendation,2602.11799,https://arxiv.org/abs/2602.11799,,generative_rec,KDD,2026
 Uncertainty-aware Generative Recommendation,2602.11719,https://arxiv.org/abs/2602.11719,https://github.com/cxfann/UGR,generative_rec,KDD,2026
-Isotonic Layer: A Unified Framework for Recommendation Calibration and Debiasing,2603.06589,https://arxiv.org/abs/2603.06589,,debias_fairness_industrial,KDD,2026
 S$^2$GR: Stepwise Semantic-Guided Reasoning in Latent Space for Generative Recommendation,2601.18664,https://arxiv.org/abs/2601.18664,,generative_rec,KDD,2026
 Enriching Semantic Profiles into Knowledge Graph for Recommender Systems Using Large Language Models,2601.08148,https://arxiv.org/abs/2601.08148,,llm_rec,KDD,2026
 Unleashing the Potential of Neighbors: Diffusion-based Latent Neighbor Generation for Session-based Recommendation,2601.03903,https://arxiv.org/abs/2601.03903,,sequential_rec,KDD,2026
@@ -37,3 +34,30 @@ MergeRec: Model Merging for Data-Isolated Cross-Domain Sequential Recommendation
 Personalizing Marketplace Policies with Competing Objectives and Constrained Experiments: Evidence from a Job Marketplace,2606.30932,https://arxiv.org/abs/2606.30932,,multi_task_reranking,KDD,2026
 SafeCRS: Personalized Safety Alignment for LLM-Based Conversational Recommender Systems,2603.03536,https://arxiv.org/abs/2603.03536,,agent_conversational_rec,KDD,2026
 Rethinking Popularity Bias in Collaborative Filtering via Analytical Vector Decomposition,2512.10688,https://arxiv.org/abs/2512.10688,https://github.com/LingFeng-Liu-AI/DDC,debias_fairness_industrial,KDD,2026
+Scaling Multilingual Semantic Search in Uber Eats Delivery,2603.06586,https://arxiv.org/abs/2603.06586,,collaborative_filtering,KDD,2026
+Sharpness-aware Model Merging with Salience Recovery for LLM-based Cross-Domain Sequential Recommendation,2607.25366,https://arxiv.org/abs/2607.25366,https://github.com/muyiahhh/SharpRec,cross_domain_multi_scenario,KDD,2026
+Deep-learning Causal Retrieval Optimization for Efficient e-commerce Distribution in Pinterest,2607.14161,https://arxiv.org/abs/2607.14161,,debias_fairness_industrial,KDD,2026
+CoPersona: Collaborative Persona Graphs for Robust LLM Personalization,2607.01485,https://arxiv.org/abs/2607.01485,,llm_rec,KDD,2026
+Atomic Intent Reasoning: Bringing LLM Semantics to Industrial Cross-Domain Recommendations,2606.10357,https://arxiv.org/abs/2606.10357,,cross_domain_multi_scenario,KDD,2026
+Bradley-Terry Rankings for Recommender Systems Across Dataset Taxonomies,2606.07492,https://arxiv.org/abs/2606.07492,,debias_fairness_industrial,KDD,2026
+Dynamic Spectral Denoising with Global-Context Attention for Multi-Behavior Recommendation,2606.02417,https://arxiv.org/abs/2606.02417,,self_supervised_denoising,KDD,2026
+FlowTime: Towards Continuous Generative Watch Time Prediction via Flow-based Personalized Priors,2606.01352,https://arxiv.org/abs/2606.01352,,generative_rec,KDD,2026
+UniNote: A Unified Embedding Model for Multimodal Representation and Ranking,2605.29287,https://arxiv.org/abs/2605.29287,,multimodal_rec,KDD,2026
+APAO: Bridging the Training-Inference Gap in Generative Recommendation via Adaptive Prefix-Aware Optimization,2603.02730,https://arxiv.org/abs/2603.02730,https://github.com/yuyq18/APAO,generative_rec,KDD,2026
+Whose Name Comes Up? II: Benchmarking and Intervention-Based Auditing of LLM-Based Scholar Recommendation,2602.08873,https://arxiv.org/abs/2602.08873,,llm_rec,KDD,2026
+FuXi-$γ$: Efficient Sequential Recommendation with Exponential-Power Temporal Encoder and Diagonal-Sparse Positional Mechanism,2512.12740,https://arxiv.org/abs/2512.12740,https://github.com/Yeedzhi/FuXi-gamma,sequential_rec,KDD,2026
+Meta Lattice: Model Space Redesign for Cost-Effective Industry-Scale Ads Recommendations,2512.09200,https://arxiv.org/abs/2512.09200,,cross_domain_multi_scenario,KDD,2026
+VI-MMRec: Similarity-Aware Training Cost-free Virtual User-Item Interactions for Multimodal Recommendation,2512.08702,https://arxiv.org/abs/2512.08702,,multimodal_rec,KDD,2026
+ProEx: A Unified Framework Leveraging Large Language Model with Profile Extrapolation for Recommendation,2512.00679,https://arxiv.org/abs/2512.00679,,llm_rec,KDD,2026
+"Lower Bias, Higher Welfare: How Creator Competition Reshapes Bias-Variance Tradeoff in Recommendation Platforms?",2511.20289,https://arxiv.org/abs/2511.20289,,debias_fairness_industrial,KDD,2026
+Heterogeneous Multi-treatment Uplift Modeling for Trade-off Optimization in Short-Video Recommendation,2511.18997,https://arxiv.org/abs/2511.18997,,rl_bandit_rec,KDD,2026
+From Scaling to Structured Expressivity: Rethinking Transformers for CTR Prediction,2511.12081,https://arxiv.org/abs/2511.12081,,ctr_feature_interaction,KDD,2026
+MGFRec: Towards Reinforced Reasoning Recommendation with Multiple Groundings and Feedback,2510.22888,https://arxiv.org/abs/2510.22888,,llm_rec,KDD,2026
+Learning Peer Influence Probabilities with Linear Contextual Bandits,2510.19119,https://arxiv.org/abs/2510.19119,,rl_bandit_rec,KDD,2026
+Breaking the Likelihood Trap: Consistent Generative Recommendation with Graph-structured Model,2510.10127,https://arxiv.org/abs/2510.10127,,generative_rec,KDD,2026
+Understanding Generative Recommendation with Semantic IDs from a Model-scaling View,2509.25522,https://arxiv.org/abs/2509.25522,,generative_rec,KDD,2026
+FORGE: Forming Semantic Identifiers for Generative Retrieval in Industrial Datasets,2509.20904,https://arxiv.org/abs/2509.20904,https://github.com/selous123/al_sid,generative_rec,KDD,2026
+PCR-CA: Parallel Codebook Representations with Contrastive Alignment for Multiple-Category App Recommendation,2508.18166,https://arxiv.org/abs/2508.18166,,generative_rec,KDD,2026
+CTR-Sink: Attention Sink for Language Models in Click-Through Rate Prediction,2508.03668,https://arxiv.org/abs/2508.03668,https://github.com/UGUESS-lzx/CTR-SINK,ctr_feature_interaction,KDD,2026
+Scaling Recommender Transformers to One Billion Parameters,2507.15994,https://arxiv.org/abs/2507.15994,,sequential_rec,KDD,2026
+Breaking Information Cocoons: A Hyperbolic Framework for Balancing Exploration and Exploitation in Recommender Systems,2411.13865,https://arxiv.org/abs/2411.13865,https://github.com/Martin-qyma/HERec,collaborative_filtering,KDD,2026

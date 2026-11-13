@@ -46,7 +46,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入会话先经 ID 与多模态两条通道编码：物品 ID 嵌入与“文本标题+GoogLeNet 图像伪标签拼接后过 BERT”的多模态嵌入，分别在共现物品图上做 3 层 GCN 传播并层平均，再以 last-click 物品为 query 做注意力聚合，得到会话表示 $\mathbf{s}^{id}$ 与 $\mathbf{s}^{mo}$。二者分别送入两个扩散模块：检索增强扩散以 top-k 邻居为条件生成潜在邻居 $\mathbf{s}_N^0$；自增强扩散以 $\mathbf{s}^{mo}$ 为条件走另一条去噪路径，两条路径在中间步做对比对齐。最终表示 $\mathbf{s}_f=\rho\mathbf{s}^{id}+(1-\rho)\mathbf{s}_N^0$ 与物品嵌入内积打分，交叉熵训练。
+输入会话先经 ID 与多模态两条通道编码：物品 ID 嵌入与“文本标题+GoogLeNet 图像伪标签拼接后过 BERT”的多模态嵌入，分别在共现物品图上做 3 层 GCN 传播并层平均，再以 last-click 物品为 query 做注意力聚合，得到会话表示 $\mathbf{s}^{id}$与$\mathbf{s}^{mo}$。二者分别送入两个扩散模块：检索增强扩散以 top-k 邻居为条件生成潜在邻居$\mathbf{s}_N^0$；自增强扩散以$\mathbf{s}^{mo}$为条件走另一条去噪路径，两条路径在中间步做对比对齐。最终表示$\mathbf{s}_f=\rho\mathbf{s}^{id}+(1-\rho)\mathbf{s}_N^0$ 与物品嵌入内积打分，交叉熵训练。
 
 ```mermaid
 flowchart TD
@@ -65,11 +65,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **检索增强扩散 + 反馈驱动检索器优化（让生成“有方向”）**：痛点是无条件扩散在兴趣空间中漫游、易生成语义无关邻居。做法是把 top-k 邻居的 softmax 归一化权重 $\omega_j$ 作为条件注入去噪网络，直接预测干净邻居而非噪声：$\mathbf{s}_N^0=f_\theta(\mathbf{s}_L^t,\mathcal{N}_k,t)$，损失 $\mathcal{L}_d=\mathbb{E}\|\mathbf{s}^{id}-f_\theta(\sqrt{\bar\alpha_t}\mathbf{s}_L^0+\sqrt{1-\bar\alpha_t}\boldsymbol{\epsilon},\mathcal{N}_k,t)\|^2$。更关键的是闭环：以“某邻居作条件时的扩散损失 $\mathcal{L}_{d_j}$ 越小则该邻居越有用”为相对监督信号，令 $\mathcal{L}_r=\sum_{\omega_j\in\text{top-}k}\mathcal{L}_{d_j}\cdot\omega_j$，使检索器按生成器偏好重排邻居——把检索从“静态相似”变为“任务对齐”。
+1. **检索增强扩散 + 反馈驱动检索器优化（让生成“有方向”）**：痛点是无条件扩散在兴趣空间中漫游、易生成语义无关邻居。做法是把 top-k 邻居的 softmax 归一化权重 $\omega_j$作为条件注入去噪网络，直接预测干净邻居而非噪声：$\mathbf{s}_N^0=f_\theta(\mathbf{s}_L^t,\mathcal{N}_k,t)$，损失$\mathcal{L}_d=\mathbb{E}\|\mathbf{s}^{id}-f_\theta(\sqrt{\bar\alpha_t}\mathbf{s}_L^0+\sqrt{1-\bar\alpha_t}\boldsymbol{\epsilon},\mathcal{N}_k,t)\|^2$。更关键的是闭环：以“某邻居作条件时的扩散损失$\mathcal{L}_{d_j}$越小则该邻居越有用”为相对监督信号，令$\mathcal{L}_r=\sum_{\omega_j\in\text{top-}k}\mathcal{L}_{d_j}\cdot\omega_j$，使检索器按生成器偏好重排邻居——把检索从“静态相似”变为“任务对齐”。
 
-2. **自增强扩散 + 跨路径对比（让多模态“进生成”而非“进编码”）**：痛点在于早融合/晚融合/条件融合（EF/LF/CF）都把模态当作静态特征，与去噪过程不对齐。本文让多模态表示 $\mathbf{s}^{mo}$ 作为独立条件驱动第二条去噪链 $f_\psi(\mathbf{s}_L^t,\mathbf{s}^{mo},t)$，再对两条链在步 $t$ 的输出做 InfoNCE 对齐：$\mathcal{L}_m=-\frac{1}{B}\sum_i\log\frac{\exp(\text{sim}(\mathbf{s}_{N,i}^t,\mathbf{s}_{M,i}^t)/\tau)}{\sum_j\exp(\text{sim}(\mathbf{s}_{N,i}^t,\mathbf{s}_{M,j}^t)/\tau)}$。直觉是：模态不直接改写邻居，而是通过对比“拉近”生成分布，避免污染检索先验通道。
+2. **自增强扩散 + 跨路径对比（让多模态“进生成”而非“进编码”）**：痛点在于早融合/晚融合/条件融合（EF/LF/CF）都把模态当作静态特征，与去噪过程不对齐。本文让多模态表示 $\mathbf{s}^{mo}$作为独立条件驱动第二条去噪链$f_\psi(\mathbf{s}_L^t,\mathbf{s}^{mo},t)$，再对两条链在步$t$的输出做 InfoNCE 对齐：$\mathcal{L}_m=-\frac{1}{B}\sum_i\log\frac{\exp(\text{sim}(\mathbf{s}_{N,i}^t,\mathbf{s}_{M,i}^t)/\tau)}{\sum_j\exp(\text{sim}(\mathbf{s}_{N,i}^t,\mathbf{s}_{M,j}^t)/\tau)}$。直觉是：模态不直接改写邻居，而是通过对比“拉近”生成分布，避免污染检索先验通道。
 
-3. **训练目标与推理效率**：总损失 $\mathcal{L}=\mathcal{L}_e+\gamma(\mathcal{L}_r+\mathcal{L}_s)+\delta\mathcal{L}_m$，$\mathcal{L}_e$ 为交叉熵；无显式负采样，全库 softmax 训练。推理采用确定性 DDPM：先对 $\mathbf{s}^{id}$ 前向加噪 $T'$ 步，再以检索先验为条件反向去噪 $T'$ 步（方差置零、直接用预测均值），扩散步数 32、截断线性噪声表；每会话仅需一次 top-k 检索 + 32 步 MLP 去噪，开销远低于逐物品生成。
+3. **训练目标与推理效率**：总损失 $\mathcal{L}=\mathcal{L}_e+\gamma(\mathcal{L}_r+\mathcal{L}_s)+\delta\mathcal{L}_m$，$\mathcal{L}_e$为交叉熵；无显式负采样，全库 softmax 训练。推理采用确定性 DDPM：先对$\mathbf{s}^{id}$前向加噪$T'$步，再以检索先验为条件反向去噪$T'$ 步（方差置零、直接用预测均值），扩散步数 32、截断线性噪声表；每会话仅需一次 top-k 检索 + 32 步 MLP 去噪，开销远低于逐物品生成。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -121,12 +121,17 @@ flowchart TD
 
 1. **潜在邻居 > 可观测邻居是核心增益来源**：将同一框架内的邻居替换为纯检索邻居（Observable-Neighbors）后，三个数据集 P@20/MRR@20 全面落后于 Latent-Neighbors；t-SNE 显示潜在邻居更紧贴目标会话、填补稀疏区，而检索邻居分布散乱——直接证明“生成”而非“更强编码”带来收益。
 2. **多模态必须“进扩散”而非“进编码”**：w/o SAD 在 Instacart 上 P@20 从 20.34 掉到 18.55（-8.8%），而 EF/CF 等融合替代方案甚至低于 w/o SAD（CF 仅 17.56），说明粗粒度融合会干扰去噪；仅保留对比对齐的完整设计才最优，验证“独立条件链 + 对比拉近”的必要性。
-3. **检索先验需“少而准”且与生成器协同**：$k$ 从 1 增至 3 性能上升，超过后回落（Sports 峰值 $k=2$），过多邻居引入噪声；去掉反馈优化（w/o FDRQ）即掉点，说明检索器按生成损失重排比静态相似度更有效。$\gamma$ 最优 7–8、$\delta$ 最优 0.05–0.1，过大则扩散/对比项压制主任务。
+3. **检索先验需“少而准”且与生成器协同**：$k$从 1 增至 3 性能上升，超过后回落（Sports 峰值$k=2$），过多邻居引入噪声；去掉反馈优化（w/o FDRQ）即掉点，说明检索器按生成损失重排比静态相似度更有效。$\gamma$最优 7–8、$\delta$ 最优 0.05–0.1，过大则扩散/对比项压制主任务。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 对比 DIMO（最强基线，解耦 ID/模态 + 共现图）——DIMO 仍把邻居当静态检索结果，DiffSBR 把邻居变成可生成的隐变量；对比 DiQDiff/DiffuRec（扩散序列推荐）——它们用扩散生成**目标物品或序列表示**，本文首次用扩散生成**邻居**这一中间结构，且引入检索闭环与多模态双条件；对比 MSGAT/MGS——同属邻居检索，但受限于可观测数据边界。
 - **可迁移亮点**: ① “生成器损失反传检索器打分”的闭环监督可迁移到 RAG 式召回、图邻居采样等任何“检索-下游”耦合场景；② 用独立条件扩散链 + 跨链对比注入辅助模态，避免辅助信号污染主条件通道，适用于多模态/多源特征融合。
 - **审稿级局限批判**: ① 推理需每会话 top-k 检索 + 32 步去噪，且训练含双扩散链与对比损失，工业级低延迟场景成本未评估；② 仅在 4 个中小规模 Amazon/Instacart 数据集验证，无大规模或线上 A/B；③ 潜在邻居缺乏“真值”校验，仅以推荐指标间接证明质量，且 $k$、$\gamma$、$\delta$ 均需逐数据集调参，敏感度较高。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

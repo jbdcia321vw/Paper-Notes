@@ -64,7 +64,7 @@ flowchart TD
 
 3. **pass^k 可靠性指标与策略合规**：沿用 $τ$-bench，
    $$\text{pass}^k = \frac{1}{|T|}\sum_{t\in T}\frac{\binom{c_t}{k}}{\binom{n_t}{k}}$$
-   其中 $c_t$ 为任务 $t$ 成功次数、$n_t$ 为试验次数；pass^1 测能力，$k>1$ 测一致性。策略合规由程序化审计 7 条策略：`recommend_tool`、`watch_history`、`availability`、`age_restricted`、`sponsored`、`transparency`（不可能任务须显式拒答）、`single_recommendation`。训练/推理侧无负采样概念，评测成本主要来自多轮工具调用（中位 5–30 次/任务）。
+   其中 $c_t$为任务$t$成功次数、$n_t$为试验次数；pass^1 测能力，$k>1$ 测一致性。策略合规由程序化审计 7 条策略：`recommend_tool`、`watch_history`、`availability`、`age_restricted`、`sponsored`、`transparency`（不可能任务须显式拒答）、`single_recommendation`。训练/推理侧无负采样概念，评测成本主要来自多轮工具调用（中位 5–30 次/任务）。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -116,10 +116,15 @@ flowchart TD
 2. **信息揭示方式比模型能力更能决定成败**：同一 DS V4 Flash 在 volunteer 任务 pass^1=0.846，hidden 任务仅 0.200（4× 落差）；Sonnet 4.6 落差更达 0.923→0.233。这证明"已知偏好集上做约束满足"与"从拒绝信号中推断偏好"是两种截然不同的能力，后者是当前智能体的真正短板。
 3. **失败呈两极分化：拒答者 vs 乱答者**。Gemini 2.5 Flash（No-rec 0.672）、GPT-5 mini（0.446）、Qwen3-32B（0.433）以极少工具调用（5–8 次）草率退出；Qwen3-32B 同时 availability 违规率高达 0.210，属"自信违规"。而平衡型模型（DS V4 Flash、GPT-5.4+T、Sonnet 4.6）投入 15–30 次工具调用并果断提交，取得最高约束分 0.57–0.60——**工具投入量与约束满足度正相关**。此外 thinking 模式收益呈次线性：DS V4 Flash 从 no-thinking 到 max thinking 仅 +0.025 pass^1，说明当前模型在此基准上受**能力约束**而非算力约束。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相较 AgentRecBench（1 正/19 负池上的单轮 Hit@N，无多轮、无 pass^k、无策略、无新鲜目录），$τ$-Rec 是真正的多轮 TAU 闭环；相较 UserSimCRS v2（有模拟器但策略不在范围内、无 RTE），本文把策略合规与信息揭示控制做成一等目标；相较 MATCHA（有安全策略但为专有数据上的部署系统，97.9% 对抗防御率），本文是可复用基准。
 - **可迁移亮点**: ①**RTE 三档标签**可直接移植到电商/内容推荐的对话评测，封堵"首轮偏好全给"的作弊路径；②**后训练截止目录快照 + 谓词自动重校验**是低成本、可长期维护的污染防御范式，任何 LLM 评测集都可借鉴。
 - **审稿级局限批判**: ①目录仅 153 部电影、单一领域，虽作者辩称"规模对模型不透明以隔离推理能力"，但失败模式多样性受限，且 60 任务 × 4 试验导致 pass^4 的 CI 达 ±0.10–0.13，多个模型 CI 重叠难以区分优劣；②评测完全依赖 GPT-5 mini 单一模拟器，模拟器本身的偏差（如拒绝信号的表达方式）会系统性影响 hidden 任务得分，缺少模拟器敏感性分析；③策略合规以程序化审计为主，对"如何推荐"的语用层面（如披露话术是否自然）覆盖有限。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

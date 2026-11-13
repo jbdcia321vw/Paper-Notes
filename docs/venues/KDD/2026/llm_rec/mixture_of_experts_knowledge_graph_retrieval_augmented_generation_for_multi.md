@@ -46,7 +46,7 @@ LLM 推荐依赖参数化知识，易幻觉且知识过时，KG-RAG 是主流补
 
 ### 1. 整体框架 (Overall Architecture)
 
-给定用户查询 $q$（含历史交互与意图描述）与候选集 $\mathcal{O}$，MoE 检索智能体先从四档专家中选择一个执行 KG 检索得到结构化知识 $\mathcal{K}_e$；知识偏好对齐智能体将 $\mathcal{K}_e$ 经模板化草稿 $\text{Temp}(\mathcal{K}_e)$ 改写为 LLM 友好的自然语言片段 $\tilde{\mathcal{K}}$；推荐智能体以 $(q, \tilde{\mathcal{K}}, \mathcal{O})$ 为条件生成推荐。三智能体通过 MMAPO 联合训练：检索与对齐用 GAE 优势估计的 PPO 式裁剪更新，推荐用对比偏好优化，共享奖励同时计入推荐正确性与检索边际信息增益。
+给定用户查询 $q$（含历史交互与意图描述）与候选集$\mathcal{O}$，MoE 检索智能体先从四档专家中选择一个执行 KG 检索得到结构化知识$\mathcal{K}_e$；知识偏好对齐智能体将$\mathcal{K}_e$经模板化草稿$\text{Temp}(\mathcal{K}_e)$改写为 LLM 友好的自然语言片段$\tilde{\mathcal{K}}$；推荐智能体以$(q, \tilde{\mathcal{K}}, \mathcal{O})$ 为条件生成推荐。三智能体通过 MMAPO 联合训练：检索与对齐用 GAE 优势估计的 PPO 式裁剪更新，推荐用对比偏好优化，共享奖励同时计入推荐正确性与检索边际信息增益。
 
 ```mermaid
 flowchart TD
@@ -64,13 +64,13 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **MoE 多粒度检索智能体（查询感知的粒度路由）**：痛点是一刀切检索导致效用-成本失衡。四个专家分别为：Expert 1 直接生成（$\mathcal{K}_1=\varnothing$）；Expert 2 按查询-三元组余弦相似度取 Top-$M$ 三元组；Expert 3 先取 Top-$M$ 种子实体再展开 $k$-hop 邻域子图；Expert 4 在种子集上跑 Personalized PageRank 取 Top-$M$ 实体，再以边代价 $\text{cost}(e)=1-\cos(z_q, z_{r(e)})$ 用 Kruskal 算法求最小生成树得到连通子图。直觉是：把"检索多少"变成离散动作，让策略网络按查询复杂度自适应选择，简单查询零成本、复杂查询才付高价。
+1. **MoE 多粒度检索智能体（查询感知的粒度路由）**：痛点是一刀切检索导致效用-成本失衡。四个专家分别为：Expert 1 直接生成（$\mathcal{K}_1=\varnothing$）；Expert 2 按查询-三元组余弦相似度取 Top-$M$三元组；Expert 3 先取 Top-$M$种子实体再展开$k$-hop 邻域子图；Expert 4 在种子集上跑 Personalized PageRank 取 Top-$M$实体，再以边代价$\text{cost}(e)=1-\cos(z_q, z_{r(e)})$ 用 Kruskal 算法求最小生成树得到连通子图。直觉是：把"检索多少"变成离散动作，让策略网络按查询复杂度自适应选择，简单查询零成本、复杂查询才付高价。
 
-2. **知识偏好对齐智能体（结构-语义桥接）**：痛点是图结构直接序列化引入噪声、丢失结构。先用关系感知模板将三元组/子图线性化为稳定草稿（如"{head} has {relation} {tail}"），再由对齐策略 $\tilde{\mathcal{K}}=\text{Align}_\psi(q, \text{Temp}(\mathcal{K}))$ 生成精炼知识片段。该智能体以 LLM 生成动作参与 RL 轨迹，其价值头 $V_\psi(c_t)$ 定义在生成上下文上，使下游推荐奖励能回传到"如何表述知识"这一决策。
+2. **知识偏好对齐智能体（结构-语义桥接）**：痛点是图结构直接序列化引入噪声、丢失结构。先用关系感知模板将三元组/子图线性化为稳定草稿（如"{head} has {relation} {tail}"），再由对齐策略 $\tilde{\mathcal{K}}=\text{Align}_\psi(q, \text{Temp}(\mathcal{K}))$生成精炼知识片段。该智能体以 LLM 生成动作参与 RL 轨迹，其价值头$V_\psi(c_t)$ 定义在生成上下文上，使下游推荐奖励能回传到"如何表述知识"这一决策。
 
 3. **MMAPO 统一优化与对比偏好训练**：痛点是三智能体耦合导致粒度选择无法从原始回报中解耦。共享奖励为
 $$R_{\text{total}} = R_{\text{rec}} + \alpha \cdot R_{\text{MIG}},\quad R_{\text{MIG}} = D_{\text{KL}}(P_{\text{expert}} \| P_{\text{base}}) - \eta \cdot C(e)$$
-其中 $R_{\text{rec}}$ 在命中目标时取模型置信度、否则 $-0.1$；$R_{\text{MIG}}$ 以 Expert 1 分布为基线度量检索带来的信息增益并惩罚成本 $C(e)$。检索与对齐用 GAE 优势 $A_t^{\text{GAE}}=\sum_l (\gamma\lambda)^l \delta_{t+l}$ 加 PPO 裁剪更新；推荐智能体用硬负采样（按当前策略取 Top-$N$ 竞争负例）的对比偏好损失
+其中 $R_{\text{rec}}$在命中目标时取模型置信度、否则$-0.1$；$R_{\text{MIG}}$以 Expert 1 分布为基线度量检索带来的信息增益并惩罚成本$C(e)$。检索与对齐用 GAE 优势$A_t^{\text{GAE}}=\sum_l (\gamma\lambda)^l \delta_{t+l}$加 PPO 裁剪更新；推荐智能体用硬负采样（按当前策略取 Top-$N$ 竞争负例）的对比偏好损失
 $$\mathcal{L}_{\text{pref}} = -\log\sigma\!\Big(\beta\big[\log\tfrac{\pi_\omega(o^\star|x)}{\pi_{\text{ref}}(o^\star|x)} - \log\tfrac{\pi_\omega(o^-|x)}{\pi_{\text{ref}}(o^-|x)}\big]\Big)$$
 负采样为策略内 Hard Negative（$N=10$），无需全库负采样；推理时仅需一次专家路由 + 一次对齐生成，开销远低于逐物品检索的 K-RagRec。
 
@@ -86,7 +86,7 @@ $$\mathcal{L}_{\text{pref}} = -\log\sigma\!\Big(\beta\big[\log\tfrac{\pi_\omega(
 
 - **数据划分与防穿越 (Splitting Strategy)**: 采用**最近交互预测**协议——取用户最近一次交互为目标物品，其前 10 次交互作为上下文，属时间序切分，无未来信息泄漏。
 - **排名评测协议 (Ranking Protocol)**: **Sampled Ranking**——候选池 = 目标物品 + 19 个干扰项（正负比 1:19），报告 Accuracy 与 Recall@3/5；仅输出单一选项的推理式基线只报 Accuracy。
-- **对比基线与超参设置**: 基线覆盖 Zero-shot（GPT-4o、Gemini-2.0-Flash、Deepseek-r1、LLaMA3-8B、Mistral-7B）、LLM 微调推荐（TALLRec、Rec-r1）、KG-RAG（KG-Text、KAPING、G-retriever、K-RagRec）。骨干为 LLaMA3-8B 与 Mistral-7B，LoRA rank 16；检索/对齐策略学习率 $3\times10^{-4}$、$\gamma=0.99$、$\lambda=0.95$、裁剪系数 0.2；偏好温度 $\beta=0.2$、硬负例 $N=10$；MIG 权重 $\alpha=0.2$、成本惩罚 $\eta=0.005$、检索预算 $M=3$；KG 索引编码器为 all-MiniLM-L6-v2。
+- **对比基线与超参设置**: 基线覆盖 Zero-shot（GPT-4o、Gemini-2.0-Flash、Deepseek-r1、LLaMA3-8B、Mistral-7B）、LLM 微调推荐（TALLRec、Rec-r1）、KG-RAG（KG-Text、KAPING、G-retriever、K-RagRec）。骨干为 LLaMA3-8B 与 Mistral-7B，LoRA rank 16；检索/对齐策略学习率 $3\times10^{-4}$、$\gamma=0.99$、$\lambda=0.95$、裁剪系数 0.2；偏好温度$\beta=0.2$、硬负例$N=10$；MIG 权重$\alpha=0.2$、成本惩罚$\eta=0.005$、检索预算$M=3$；KG 索引编码器为 all-MiniLM-L6-v2。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -125,12 +125,17 @@ LLaMA3-8B，ML-1M / LFM-1K（图 4 数值趋势）：
 
 1. **对齐智能体是最大贡献源**：移除 Align 后 LFM-1K 降幅居五变体之首，说明图结构→自然语言的改写质量比"检索什么"更直接决定知识可用性；而 KG-Text/KAPING 这类直接文本注入甚至不如强 LLM 微调基线（ML-1M Acc 0.234/0.232 vs. TALLRec 0.391），印证结构信息保留的必要性。
 2. **粒度路由带来"高精度 + 低时延"双赢**：ML-1M 上 MixRAGRec 检索耗时仅 0.063s、端到端 1.563s，低于 K-RagRec 的 2.867s/3.776s，却取得最高 Acc 0.504；单专家对比显示 Expert 2→4 精度从 0.488 升至 0.499 但耗时从 0.066s 升至 0.374s，策略学会了"只在收益足够时才调用昂贵专家"。
-3. **冷启动场景路由行为显著偏移**：冷启动下 Expert 3/4 被选中比例达 37.9%/58.7%（常规 LFM-1K 下 Expert 1–3 各约 30%、Expert 4 仅 13.0%），对应冷启动 Acc 0.501 vs. K-RagRec 0.392，证明策略确实按查询难度自适应而非塌缩到固定粒度；MIG 权重 $\alpha=0.2$ 时 Recall@3/5 最优且检索时间显著下降，$\alpha=0$ 则退化为长时延、排序质量更差的固定偏好。
+3. **冷启动场景路由行为显著偏移**：冷启动下 Expert 3/4 被选中比例达 37.9%/58.7%（常规 LFM-1K 下 Expert 1–3 各约 30%、Expert 4 仅 13.0%），对应冷启动 Acc 0.501 vs. K-RagRec 0.392，证明策略确实按查询难度自适应而非塌缩到固定粒度；MIG 权重 $\alpha=0.2$时 Recall@3/5 最优且检索时间显著下降，$\alpha=0$ 则退化为长时延、排序质量更差的固定偏好。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 K-RagRec 的固定多跳子图检索，本文把粒度选择变为可学习离散动作；相比 G-retriever 的查询级统一子图构建，本文引入成本感知的 MIG 奖励；相比 TALLRec/Rec-r1 的纯参数化微调，本文以外部 KG 接地缓解知识滞后，且推理时延更低。
 - **可迁移亮点**: (1) 将"检索预算/粒度"建模为带 KL 信息增益 + 成本惩罚的 RL 动作，可直接迁移到任意 RAG 推荐管线；(2) 用模板草稿 + 对齐策略的两段式结构-文本桥接，可复用于表格、序列等其他结构化知识的 LLM 注入。
 - **审稿级局限批判**: (1) 评测采用 1:19 采样候选池而非全库 Full-Ranking，Accuracy 绝对值偏高，真实全库排序下的收益幅度待验证；(2) 三智能体 RL 训练需维护多个价值网络与参考模型，超参（$\alpha$、$\eta$、$N$、$M$）敏感且训练成本高，工业部署的稳定性与可复现性存疑。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

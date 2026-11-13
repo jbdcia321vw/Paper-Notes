@@ -1,17 +1,21 @@
 # 🎮 强化学习与动态探索推荐
 
-**WWW (TheWebConf) 2026** · **2** 篇论文解读
+**WWW (TheWebConf) 2026** · **3** 篇论文解读
 
 > **方向说明**：Contextual Bandit 探索与利用 (E&E)、Offline RL 长期留存与生命周期价值 (LTV) 策略优化
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (2)](../../../CIKM/2026/rl_bandit_rec/) · [KDD 2026 (3)](../../../KDD/2026/rl_bandit_rec/) · [RecSys 2026 (1)](../../../RecSys/2026/rl_bandit_rec/)
+📌 **同领域跨会议浏览：** [AAAI (RecSys Track) 2026 (1)](../../../AAAI/2026/rl_bandit_rec/) · [CIKM 2026 (2)](../../../CIKM/2026/rl_bandit_rec/) · [DASFAA 2026 (1)](../../../DASFAA/2026/rl_bandit_rec/) · [IJCAI (RecSys Track) 2026 (1)](../../../IJCAI/2026/rl_bandit_rec/) · [KDD 2026 (4)](../../../KDD/2026/rl_bandit_rec/) · [RecSys 2026 (1)](../../../RecSys/2026/rl_bandit_rec/)
 
-🔥 **高频主题：** WWW 2026 ×2
+🔥 **高频主题：** WWW 2026 ×3
 
 <dl>
 <dt><strong><a href="ahbid_an_adaptable_hierarchical_bidding_framework_for_cross_channel_adverti/">AHBid: An Adaptable Hierarchical Bidding Framework for Cross-Channel Advertising</a></strong></dt>
 <dd>
 <p>用扩散模型生成跨渠道预算/约束目标轨迹、结合约束执行与实时控制出价，离线与线上 A/B 收益提升 13.57%。</p>
+</dd>
+<dt><strong><a href="dara_few_shot_budget_allocation_in_online_advertising_via_in_context_decisi/">DARA: Few-shot Budget Allocation in Online Advertising via In-Context Decision Making with RL-Finetuned LLMs</a></strong></dt>
+<dd>
+<p>双阶段 LLM 智能体分离少样本规划与精细优化，配合动态参考策略 GRPO-Adaptive 微调，在真实与合成广告环境中显著降低边际 ROI 方差。</p>
 </dd>
 <dt><strong><a href="off_policy_learning_with_limited_supply/">Off-Policy Learning with Limited Supply</a></strong></dt>
 <dd>

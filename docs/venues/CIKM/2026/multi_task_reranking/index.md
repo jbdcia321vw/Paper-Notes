@@ -1,12 +1,12 @@
 # ⚖️ 多任务学习与列表级重排
 
-**CIKM 2026** · **4** 篇论文解读
+**CIKM 2026** · **5** 篇论文解读
 
 > **方向说明**：MMoE/PLE 多任务多目标精排、帕累托最优、上下文列表重排 (Re-ranking) 与粗精排级联一致性
 
-📌 **同领域跨会议浏览：** [KDD 2026 (3)](../../../KDD/2026/multi_task_reranking/) · [RecSys 2026 (5)](../../../RecSys/2026/multi_task_reranking/) · [SIGIR 2026 (4)](../../../SIGIR/2026/multi_task_reranking/) · [WSDM 2026 (1)](../../../WSDM/2026/multi_task_reranking/)
+📌 **同领域跨会议浏览：** [KDD 2026 (3)](../../../KDD/2026/multi_task_reranking/) · [RecSys 2026 (7)](../../../RecSys/2026/multi_task_reranking/) · [SIGIR 2026 (4)](../../../SIGIR/2026/multi_task_reranking/) · [WSDM 2026 (1)](../../../WSDM/2026/multi_task_reranking/) · [WWW (TheWebConf) 2026 (1)](../../../WWW/2026/multi_task_reranking/)
 
-🔥 **高频主题：** 精排 ×2 · 重排 ×2
+🔥 **高频主题：** 精排 ×3 · 重排 ×2
 
 <dl>
 <dt><strong><a href="personalized_task_dependency_graphs_for_mitigating_signal_erosion_in_multi_/">Personalized Task Dependency Graphs for Mitigating Signal Erosion in Multi-Task Recommendation</a></strong></dt>
@@ -20,6 +20,10 @@
 <dt><strong><a href="sequential_multimodal_evidence_optimization_for_product_media_ranking_in_e_/">Sequential Multimodal Evidence Optimization for Product Media Ranking in E-Commerce</a></strong></dt>
 <dd>
 <p>将商品媒体排序建模为证据累积序列决策，两阶段解耦效用学习与生存加权自回归策略，离线 DR-CVR +5.4%、MSC −15.3%。</p>
+</dd>
+<dt><strong><a href="sort_a_systematically_optimized_ranking_transformer_for_industrial_scale_re/">SORT: A Systematically Optimized Ranking Transformer for Industrial-scale Recommenders</a></strong></dt>
+<dd>
+<p>以请求为中心组织样本、局部注意力+查询剪枝、生成式预训练与稀疏MoE重构工业精排Transformer，线上GMV+8.65%且延迟降62%。</p>
 </dd>
 <dt><strong><a href="task_blind_no_more_multi_task_information_flow_in_unified_ranking_backbones/">Task-Blind No MORE: Multi-Task Information Flow in Unified Ranking Backbones</a></strong></dt>
 <dd>

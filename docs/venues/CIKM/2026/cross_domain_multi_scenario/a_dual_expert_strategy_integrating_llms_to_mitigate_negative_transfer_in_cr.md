@@ -42,7 +42,7 @@ LLMRec 在跨域序列推荐中只建模 token 级自回归模式，丢失物品
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入为用户跨域交互序列的文本拼接（如 `iron man-action movie`），经 LLM tokenizer 得到子词序列 $S$（长度 $L=\sum_i l_{x_i}$），送入冻结的 TinyLlama-1.1B 主干（LoRA/PEFT）得到隐表示 $H\in\mathbb{R}^{L\times m}$。在 $H$ 之上并联两个浅层 Transformer 专家：单域专家用块级掩码 $M_s$ 只允许同域物品间因果注意力，跨域专家用 $M_c$ 允许全物品因果注意力；取每个物品最后一个子词的表示作为物品级向量 $V_s,V_c\in\mathbb{R}^{n\times m}$，经物品级门控融合为 $V_{mixed}$。主任务用下一物品 pairwise 排序损失，辅以指令微调辅助任务；推理时用最后位置表示与候选物品嵌入做内积检索。
+输入为用户跨域交互序列的文本拼接（如 `iron man-action movie`），经 LLM tokenizer 得到子词序列 $S$（长度$L=\sum_i l_{x_i}$），送入冻结的 TinyLlama-1.1B 主干（LoRA/PEFT）得到隐表示$H\in\mathbb{R}^{L\times m}$。在$H$之上并联两个浅层 Transformer 专家：单域专家用块级掩码$M_s$只允许同域物品间因果注意力，跨域专家用$M_c$允许全物品因果注意力；取每个物品最后一个子词的表示作为物品级向量$V_s,V_c\in\mathbb{R}^{n\times m}$，经物品级门控融合为$V_{mixed}$。主任务用下一物品 pairwise 排序损失，辅以指令微调辅助任务；推理时用最后位置表示与候选物品嵌入做内积检索。
 
 ```mermaid
 flowchart TD
@@ -62,15 +62,15 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **物品感知注意力变换 + 双专家（Item-Aware Attention Transformation）**：痛点在于 LLM 的子词注意力粒度与"物品共现"目标错位。做法是把同一物品的子词视为一个块，掩码在块级重定义：单域专家 $M_s$ 仅允许同域历史物品可见，跨域专家 $M_c$ 允许所有域历史物品可见；块内子词全互见以保留语义。物品表示取块内末位子词 $u_{l_{x_i}}$。直觉：把注意力作用域从"子词"抬升到"物品"，让 LLM 直接建模物品级依赖，同时保留子词语义。
+1. **物品感知注意力变换 + 双专家（Item-Aware Attention Transformation）**：痛点在于 LLM 的子词注意力粒度与"物品共现"目标错位。做法是把同一物品的子词视为一个块，掩码在块级重定义：单域专家 $M_s$仅允许同域历史物品可见，跨域专家$M_c$允许所有域历史物品可见；块内子词全互见以保留语义。物品表示取块内末位子词$u_{l_{x_i}}$。直觉：把注意力作用域从"子词"抬升到"物品"，让 LLM 直接建模物品级依赖，同时保留子词语义。
 
 2. **物品级门控网络（Item-Wise Gating）**：痛点是如何在"无偏但无迁移"的单域专家与"有迁移但含噪"的跨域专家间取舍。门控逐物品计算：
 $$V_{mixed}=g([V_s+V_c])_{[:,0]}V_s+g([V_s+V_c])_{[:,1]}V_c,\quad g(Y)=\text{softmax}\big(W_1Y+(\text{StdNorm}*\text{SoftPlus}(W_2Y))\big)$$
-作者给出偏差-方差解释：设跨域专家含干扰项 $b_i$，则最优门控权重 $g_i^\star=\frac{\|b_i\|^2+\sigma_c^2}{\sigma_s^2+\|b_i\|^2+\sigma_c^2}$——跨域偏差越大，权重越偏向单域专家。这为"用单域信号压制负迁移"提供了理论依据（图 4 显示 Jewelry 域强烈偏向单域专家，Web-View 域偏向跨域专家）。
+作者给出偏差-方差解释：设跨域专家含干扰项 $b_i$，则最优门控权重$g_i^\star=\frac{\|b_i\|^2+\sigma_c^2}{\sigma_s^2+\|b_i\|^2+\sigma_c^2}$——跨域偏差越大，权重越偏向单域专家。这为"用单域信号压制负迁移"提供了理论依据（图 4 显示 Jewelry 域强烈偏向单域专家，Web-View 域偏向跨域专家）。
 
-3. **双池负采样 token-to-item 对比学习 + 训练目标**：痛点在于传统 CDSR 只从同域采负样本，学不到跨域判别力。做法是物品级嵌入 `ItemEmb(x)` 取 LLM 对物品子词序列的末位表示，负样本以概率 $p$ 从跨域池 $\mathcal{V}\setminus\mathcal{V}_d$ 采样、否则从同域池 $\mathcal{V}_d$ 采样：
+3. **双池负采样 token-to-item 对比学习 + 训练目标**：痛点在于传统 CDSR 只从同域采负样本，学不到跨域判别力。做法是物品级嵌入 `ItemEmb(x)` 取 LLM 对物品子词序列的末位表示，负样本以概率 $p$从跨域池$\mathcal{V}\setminus\mathcal{V}_d$采样、否则从同域池$\mathcal{V}_d$ 采样：
 $$x^-\sim\begin{cases}\mathcal{U}(\mathcal{V}_d), & \alpha>p\\ \mathcal{U}(\mathcal{V}\setminus\mathcal{V}_d), & \alpha\le p\end{cases}$$
-总损失 $\mathcal{L}=\eta\mathcal{L}_{inst}+(1-\eta)\mathcal{L}_{nip}$，其中 $\mathcal{L}_{nip}$ 为下一物品 pairwise sigmoid 排序损失，$\eta=0.5$、$p=0.4$。推理为对候选集 $\mathcal{V}_d$ 的内积 top-k 检索，天然规避生成式幻觉。
+总损失 $\mathcal{L}=\eta\mathcal{L}_{inst}+(1-\eta)\mathcal{L}_{nip}$，其中$\mathcal{L}_{nip}$为下一物品 pairwise sigmoid 排序损失，$\eta=0.5$、$p=0.4$。推理为对候选集$\mathcal{V}_d$ 的内积 top-k 检索，天然规避生成式幻觉。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -137,13 +137,18 @@ MRR 相对本文模型的变化（负值=掉点，原文表 5，节选 5 域）�
 ### 3. 关键实验发现 (Key Findings)
 
 1. **负迁移被显著逆转**：表 4 显示除本文外所有 CDSR 模型在多数域上相对 SASRec 单域训练掉点（如 CALRec 在 Jewelry HR@5 −41.2%、Shopping −53.5%），而 DuELRec 在全部 10 域均为正增益（Jewelry +10.2%、Toys +29.1%、Shopping +14.7%），证明门控确实把跨域噪声压回单域信号。
-2. **双专家与双池采样缺一不可，且跨域负采样是"放大器"**：去掉 DGDE 在 Call-Log 掉 49.0%、Jewelry 掉 22.2%；去掉 SSCN 在 Call-Log 掉 53.3%、Shopping 掉 41.5%，说明仅靠同域负样本（$p=0$）无法学到跨域判别边界；$p$ 从 0 增至 0.5 性能单调上升，$p=0.4$ 为最优折中。
+2. **双专家与双池采样缺一不可，且跨域负采样是"放大器"**：去掉 DGDE 在 Call-Log 掉 49.0%、Jewelry 掉 22.2%；去掉 SSCN 在 Call-Log 掉 53.3%、Shopping 掉 41.5%，说明仅靠同域负样本（$p=0$）无法学到跨域判别边界；$p$从 0 增至 0.5 性能单调上升，$p=0.4$ 为最优折中。
 3. **冷/暖物品与冷用户双赢**：LLMRec 普遍冷物品强、暖物品弱于 IDRec，而 DuELRec 在冷、暖物品上均超 IDRec（图 5）；冷用户（交互长度后 1%）场景下亦全面领先（图 6），说明物品级协同信号与 LLM 语义表征互补。线上 A/B（2025.1–3，约 500 万用户 14 域）CTR 0.90%→1.33%（$p<0.01$），代价是推理延迟 105ms→242ms。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 CGRec/SyNCRec 用域权重或互信息"事后惩罚"负迁移，本文在注意力掩码层面"事前隔离"单/跨域信号；相比 RecFormer/SAID 等 LLMRec 只做子词级建模或两阶段 ID 对齐，本文首次实现 ID-free、单模型支持 >3 域的物品级协同建模。
 - **可迁移亮点**: ① 块级因果掩码把任意 token 级 LLM 改造成"物品级序列建模器"，可迁移到多行为/多场景序列；② 双池负采样（同域+跨域）是低成本提升跨域判别力的通用技巧；③ 门控的偏差-方差最优权重给出了"何时信单域、何时信跨域"的可解释判据。
 - **审稿级局限批判**: ① 推理延迟 242ms/call，约为 SASRec 变体的 2.3 倍，对高并发召回不友好；② 评测采用 1:99 采样排序而非 Full-Ranking，绝对数值可能偏乐观，且 Telco-Benefits 仅 72 个物品，域间规模极不均衡；③ 门控权重与 $p$ 需逐数据集调参，跨域数量增至 14 域时的扩展性仅由线上实验间接佐证。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

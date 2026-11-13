@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-沿用浅层线性自编码器思路，把偏好矩阵写成 $\mathbf{R}\mathbf{B}$，并将 $\mathbf{B}$ 分解为 $\mathbf{B}=\mathbf{Y}\mathbf{Y}^\top$，其中 $\mathbf{Y}=f(\mathbf{X}^1,\dots,\mathbf{X}^M)$ 为内容编码器输出的 L2 归一化物品向量。于是用户偏好变为 $\mathbf{R}\mathbf{Y}\mathbf{Y}^\top$，新物品只需编码内容后与用户向量 $\mathbf{R}\mathbf{Y}$ 做内积即可打分，无需查询全量热物品。训练采用 batch 内负采样的对比目标，并用 α-entmax 替换 softmax 产生稀疏概率；可选地叠加内容空间蒸馏（离线预训练教师 / 在线 EMA 教师）精炼 item-item 相似度结构。
+沿用浅层线性自编码器思路，把偏好矩阵写成 $\mathbf{R}\mathbf{B}$，并将$\mathbf{B}$分解为$\mathbf{B}=\mathbf{Y}\mathbf{Y}^\top$，其中$\mathbf{Y}=f(\mathbf{X}^1,\dots,\mathbf{X}^M)$为内容编码器输出的 L2 归一化物品向量。于是用户偏好变为$\mathbf{R}\mathbf{Y}\mathbf{Y}^\top$，新物品只需编码内容后与用户向量$\mathbf{R}\mathbf{Y}$ 做内积即可打分，无需查询全量热物品。训练采用 batch 内负采样的对比目标，并用 α-entmax 替换 softmax 产生稀疏概率；可选地叠加内容空间蒸馏（离线预训练教师 / 在线 EMA 教师）精炼 item-item 相似度结构。
 
 ```mermaid
 flowchart TD
@@ -55,11 +55,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **Sampled Entmax 损失（SEM）**：标准 sampled softmax 输出稠密概率，batch 达 2048 时大量无关负例仍获非零梯度，稀释监督信号。本文用 Fenchel-Young 形式的 α-entmax 交叉熵替代：$\mathcal{L}_{\alpha,\tau}(\mathbf{z},\mathbf{p})=(\hat{\mathbf{p}}-\mathbf{p})^\top\mathbf{z}+H_\alpha(\hat{\mathbf{p}})$，其梯度恰为 $\nabla\mathcal{L}=\alpha\text{-entmax}(\mathbf{z})-\mathbf{p}$。当 $\alpha>1$ 时，低于阈值 $\eta/(\alpha-1)$ 的 logit 梯度被直接置零，模型更新只聚焦最相关物品——这正是内容相似度噪声大时所需要的"锐化"监督。$\alpha=1$ 退化为标准 softmax，$\alpha=2$ 即 sparsemax。
+1. **Sampled Entmax 损失（SEM）**：标准 sampled softmax 输出稠密概率，batch 达 2048 时大量无关负例仍获非零梯度，稀释监督信号。本文用 Fenchel-Young 形式的 α-entmax 交叉熵替代：$\mathcal{L}_{\alpha,\tau}(\mathbf{z},\mathbf{p})=(\hat{\mathbf{p}}-\mathbf{p})^\top\mathbf{z}+H_\alpha(\hat{\mathbf{p}})$，其梯度恰为$\nabla\mathcal{L}=\alpha\text{-entmax}(\mathbf{z})-\mathbf{p}$。当$\alpha>1$时，低于阈值$\eta/(\alpha-1)$的 logit 梯度被直接置零，模型更新只聚焦最相关物品——这正是内容相似度噪声大时所需要的"锐化"监督。$\alpha=1$退化为标准 softmax，$\alpha=2$ 即 sparsemax。
 
-2. **Item-Item 相似度蒸馏**：SEMCo 中 item-item 相似度是"原子"知识，故蒸馏直接在内容空间进行：教师 $\mathbf{Y}_T$ 经两层 MLP 投影到学生维度，对 batch 内每个物品 $c$ 计算教师/学生对其余物品的余弦相似度，损失为 $\mathcal{L}_{Distill}(c)=\mathcal{L}_{\alpha,\omega}\big(\mathbf{z}_{c,S}/\omega_0,\ \alpha\text{-entmax}(\mathbf{z}_{c,T}/\omega_0)\big)$。关键细节是蒸馏集 $\mathcal{C}$ 不用 batch 用户构造，而是从 batch 中抽样用户、每用户取多个正例，使 intra-user 物品对提供更具信息量的监督；教师 logit 同样经 α-entmax 稀疏化，蒸馏信号聚焦教师认为最相关的相似度。
+2. **Item-Item 相似度蒸馏**：SEMCo 中 item-item 相似度是"原子"知识，故蒸馏直接在内容空间进行：教师 $\mathbf{Y}_T$经两层 MLP 投影到学生维度，对 batch 内每个物品$c$计算教师/学生对其余物品的余弦相似度，损失为$\mathcal{L}_{Distill}(c)=\mathcal{L}_{\alpha,\omega}\big(\mathbf{z}_{c,S}/\omega_0,\ \alpha\text{-entmax}(\mathbf{z}_{c,T}/\omega_0)\big)$。关键细节是蒸馏集$\mathcal{C}$ 不用 batch 用户构造，而是从 batch 中抽样用户、每用户取多个正例，使 intra-user 物品对提供更具信息量的监督；教师 logit 同样经 α-entmax 稀疏化，蒸馏信号聚焦教师认为最相关的相似度。
 
-3. **训练目标、负采样与推理效率**：总损失 $\mathcal{L}_{Total}=\mathcal{L}_{Distill}+\lambda\mathcal{L}_{SEM}$，负采样为 in-batch 方式（batch=2048），无需额外负例池。在线蒸馏时教师用 $\mathcal{L}_{SEM}$ 监督、学生输入取教师输出的 EMA，类似 early-exit 自蒸馏。α-entmax 计算复杂度 $O(d\log d)$，实测仅增加 10–20% 训练时间；推理时新物品只需一次前向编码 + 内积检索，但用户向量 $\mathbf{R}\mathbf{Y}$ 需对全物品集做矩阵乘，大目录下可通过只保留"活跃" batch 物品缓解。
+3. **训练目标、负采样与推理效率**：总损失 $\mathcal{L}_{Total}=\mathcal{L}_{Distill}+\lambda\mathcal{L}_{SEM}$，负采样为 in-batch 方式（batch=2048），无需额外负例池。在线蒸馏时教师用$\mathcal{L}_{SEM}$监督、学生输入取教师输出的 EMA，类似 early-exit 自蒸馏。α-entmax 计算复杂度$O(d\log d)$，实测仅增加 10–20% 训练时间；推理时新物品只需一次前向编码 + 内积检索，但用户向量$\mathbf{R}\mathbf{Y}$ 需对全物品集做矩阵乘，大目录下可通过只保留"活跃" batch 物品缓解。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -115,10 +115,15 @@ flowchart TD
   ![图1：Electronics 数据集中冷物品群体上的 MDG@20 与预测计数。每个点代表一个物品，MDG 或预测计数为零的物品未在图中显示。MS 表示幅度缩放 \[26\]。](../../../../assets/papers/2604.12990v1/figure_1.png)<figcaption>图1：Electronics 数据集中冷物品群体上的 MDG@20 与预测计数。每个点代表一个物品，MDG 或预测计数为零的物品未在图中显示。MS 表示幅度缩放 [26]。</figcaption>
 </figure>
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 GoRec/ALDI/GAR/Heater 的本质区别在于**监督信号来源**——它们以预训练 CF 嵌入为目标，本文以内容空间 item-item 相似度为原子知识，从根上切断流行度偏置的传导；与 CLCRec 相比，本文不做内容-CF 对比对齐，而是纯内容对比 + 稀疏化；与常规 RS 蒸馏（用户-物品分数或排序列表）相比，本文蒸馏发生在内容空间，规避了 CF-内容信息鸿沟。
 - **可迁移亮点**: ① α-entmax 稀疏化 sampled softmax 可直接移植到任何 in-batch 对比召回训练（含双塔），作为"梯度聚焦"正则；② "从 batch 中抽样用户、每用户取多正例构造蒸馏集"的技巧，可提升任何 item-item 蒸馏的监督信息量。
-- **审稿级局限批判**: ① 用户向量 $\mathbf{R}\mathbf{Y}$ 需对全物品集矩阵乘，大目录下推理/更新成本高，文中仅给出"只保留活跃 batch 物品"的定性缓解，缺乏规模实验；② 在线蒸馏需联合调优师生超参、训练稳定性差（作者自认），且 α、温度 $\tau$、蒸馏温度 $\omega$、$\lambda$ 多个超参敏感，实际落地调参成本不低；③ 冷启动模拟为随机 20% 物品剔除，未覆盖"严格零样本 + 模态缺失"场景，泛化性有待验证。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+- **审稿级局限批判**: ① 用户向量 $\mathbf{R}\mathbf{Y}$需对全物品集矩阵乘，大目录下推理/更新成本高，文中仅给出"只保留活跃 batch 物品"的定性缓解，缺乏规模实验；② 在线蒸馏需联合调优师生超参、训练稳定性差（作者自认），且 α、温度$\tau$、蒸馏温度$\omega$、$\lambda$ 多个超参敏感，实际落地调参成本不低；③ 冷启动模拟为随机 20% 物品剔除，未覆盖"严格零样本 + 模态缺失"场景，泛化性有待验证。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

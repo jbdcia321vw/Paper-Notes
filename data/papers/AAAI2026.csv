@@ -1,0 +1,32 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+MoToRec: Sparse-Regularized Multimodal Tokenization for Cold-Start Recommendation,2602.11062,https://arxiv.org/abs/2602.11062,,cold_start_rec,AAAI,2026
+Length-Adaptive Interest Network for Balancing Long and Short Sequence Modeling in CTR Prediction,2601.19142,https://arxiv.org/abs/2601.19142,,ctr_feature_interaction,AAAI,2026
+Behavior Tokens Speak Louder: Disentangled Explainable Recommendation with Behavior Vocabulary,2512.15614,https://arxiv.org/abs/2512.15614,,generative_rec,AAAI,2026
+Plug-and-Play Parameter-Efficient Tuning of Embeddings for Federated Recommendation,2512.13734,https://arxiv.org/abs/2512.13734,https://github.com/young1010/FedPEFT,debias_fairness_industrial,AAAI,2026
+Reference Recommendation based Membership Inference Attack against Hybrid-based Recommender Systems,2512.09442,https://arxiv.org/abs/2512.09442,,debias_fairness_industrial,AAAI,2026
+RecToM: A Benchmark for Evaluating Machine Theory of Mind in LLM-based Conversational Recommender Systems,2511.22275,https://arxiv.org/abs/2511.22275,,agent_conversational_rec,AAAI,2026
+When Top-ranked Recommendations Fail: Modeling Multi-Granular Negative Feedback for Explainable and Robust Video Recommendation,2511.18700,https://arxiv.org/abs/2511.18700,,agent_conversational_rec,AAAI,2026
+Fidelity-Aware Recommendation Explanations via Stochastic Path Integration,2511.18047,https://arxiv.org/abs/2511.18047,https://github.com/DeltaLabTLV/SPINRec,debias_fairness_industrial,AAAI,2026
+Extracting Interaction-Aware Monosemantic Concepts in Recommender Systems,2511.18024,https://arxiv.org/abs/2511.18024,https://github.com/DeltaLabTLV/Monosemanticity4Rec,debias_fairness_industrial,AAAI,2026
+CroPS: Improving Dense Retrieval with Cross-Perspective Positive Samples in Short-Video Search,2511.15443,https://arxiv.org/abs/2511.15443,,collaborative_filtering,AAAI,2026
+Multi-Aspect Cross-modal Quantization for Generative Recommendation,2511.15122,https://arxiv.org/abs/2511.15122,,generative_rec,AAAI,2026
+Generalization Bounds for Semi-supervised Matrix Completion with Distributional Side Information,2511.13049,https://arxiv.org/abs/2511.13049,,collaborative_filtering,AAAI,2026
+Task-Aware Retrieval Augmentation for Dynamic Recommendation,2511.12495,https://arxiv.org/abs/2511.12495,,graph_rec,AAAI,2026
+Align$^3$GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation,2511.11255,https://arxiv.org/abs/2511.11255,,llm_rec,AAAI,2026
+Preference is More Than Comparisons: Rethinking Dueling Bandits with Augmented Human Feedback,2511.09047,https://arxiv.org/abs/2511.09047,,rl_bandit_rec,AAAI,2026
+Bid Farewell to Seesaw: Towards Accurate Long-tail Session-based Recommendation via Dual Constraints of Hybrid Intents,2511.08378,https://arxiv.org/abs/2511.08378,,sequential_rec,AAAI,2026
+From IDs to Semantics: A Generative Framework for Cross-Domain Recommendation with Adaptive Semantic Tokenization,2511.08006,https://arxiv.org/abs/2511.08006,,cross_domain_multi_scenario,AAAI,2026
+Hard vs. Noise: Resolving Hard-Noisy Sample Confusion in Recommender Systems via Large Language Models,2511.07295,https://arxiv.org/abs/2511.07295,,self_supervised_denoising,AAAI,2026
+Wavelet Enhanced Adaptive Frequency Filter for Sequential Recommendation,2511.07028,https://arxiv.org/abs/2511.07028,,sequential_rec,AAAI,2026
+HyMoERec: Hybrid Mixture-of-Experts for Sequential Recommendation,2511.06388,https://arxiv.org/abs/2511.06388,,sequential_rec,AAAI,2026
+Exploiting Inter-Session Information with Frequency-enhanced Dual-Path Networks for Sequential Recommendation,2511.06285,https://arxiv.org/abs/2511.06285,,sequential_rec,AAAI,2026
+G-UBS: Towards Robust Understanding of Implicit Feedback via Group-Aware User Behavior Simulation,2508.05709,https://arxiv.org/abs/2508.05709,,self_supervised_denoising,AAAI,2026
+Inductive Generative Recommendation via Retrieval-based Speculation,2410.02939,https://arxiv.org/abs/2410.02939,https://github.com/Jamesding000/SpecGR,generative_rec,AAAI,2026
+The Beginning of ChatGPT Ads,2608.05008,https://arxiv.org/abs/2608.05008,,debias_fairness_industrial,AAAI,2026
+"Seeking Help, Facing Harm: Auditing TikTok's Mental Health Recommendations",2604.14832,https://arxiv.org/abs/2604.14832,,debias_fairness_industrial,AAAI,2026
+Driving Engagement in Daily Fantasy Sports with a Scalable and Urgency-Aware Ranking Engine,2604.13796,https://arxiv.org/abs/2604.13796,,sequential_rec,AAAI,2026
+"Tokenize Once, Recommend Anywhere: Unified Item Tokenization for Multi-domain LLM-based Recommendation",2511.12922,https://arxiv.org/abs/2511.12922,,generative_rec,AAAI,2026
+The Role of Follow Networks and Twitter's Content Recommender on Partisan Skew and Rumor Exposure during the 2022 U.S. Midterm Election,2509.09826,https://arxiv.org/abs/2509.09826,,debias_fairness_industrial,AAAI,2026
+StyleTailor: Towards Personalized Fashion Styling via Hierarchical Negative Feedback,2508.06555,https://arxiv.org/abs/2508.06555,,agent_conversational_rec,AAAI,2026
+Modeling Item-Level Dynamic Variability with Residual Diffusion for Bundle Recommendation,2507.03280,https://arxiv.org/abs/2507.03280,,generative_rec,AAAI,2026
+Contextualizing Recommendation Explanations with LLMs: A User Study,2501.12152,https://arxiv.org/abs/2501.12152,,llm_rec,AAAI,2026

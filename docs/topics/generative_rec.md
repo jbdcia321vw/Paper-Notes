@@ -2,12 +2,52 @@
 
 > **研究范畴**：RQ-VAE/VQ 残差量化码本、TIGER 自回归生成式检索、扩散/流匹配生成推荐 (Diffusion/Flow Rec)
 
-当前方向共收录 **63** 篇顶会/顶刊论文解读：
+当前方向共收录 **107** 篇顶会/顶刊论文解读：
 
 <dl>
+<dt><strong><a href="../../venues/AAAI/2026/llm_rec/align_3_gr_unified_multi_level_alignment_for_llm_based_generative_recommend/">Align$^3$GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation</a></strong></dt>
+<dd>
+<p>提出 token/行为/偏好三级对齐框架，双端 SCID 分词 + 渐进式 SP/RF-DPO，Instruments 上 R@10 提升 17.8%。</p>
+</dd>
+<dt><strong><a href="../../venues/AAAI/2026/generative_rec/behavior_tokens_speak_louder_disentangled_explainable_recommendation_with_b/">Behavior Tokens Speak Louder: Disentangled Explainable Recommendation with Behavior Vocabulary</a></strong></dt>
+<dd>
+<p>用VQ-VAE将用户/物品行为离散化为宏观兴趣+微观意图的行为词表，经多级文本监督与语义对齐正则注入冻结LLM，零样本解释推荐SOTA</p>
+</dd>
+<dt><strong><a href="../../venues/AAAI/2026/cross_domain_multi_scenario/from_ids_to_semantics_a_generative_framework_for_cross_domain_recommendatio/">From IDs to Semantics: A Generative Framework for Cross-Domain Recommendation with Adaptive Semantic Tokenization</a></strong></dt>
+<dd>
+<p>用领域自适应语义ID分词+对称动态路由的生成式跨域推荐框架，Leave-Last-Out全库排序下全面超越SOTA。</p>
+</dd>
+<dt><strong><a href="../../venues/AAAI/2026/generative_rec/inductive_generative_recommendation_via_retrieval_based_speculation/">Inductive Generative Recommendation via Retrieval-based Speculation</a></strong></dt>
+<dd>
+<p>将投机解码的草稿-验证范式迁移至生成式推荐，用归纳式检索器起草候选、GR 模型做目标感知验证，使语义 ID 生成模型具备新物品推荐能力。</p>
+</dd>
+<dt><strong><a href="../../venues/AAAI/2026/generative_rec/modeling_item_level_dynamic_variability_with_residual_diffusion_for_bundle_/">Modeling Item-Level Dynamic Variability with Residual Diffusion for Bundle Recommendation</a></strong></dt>
+<dd>
+<p>用残差扩散在潜空间重建捆绑包item级表征，模型无关地适配B-I归属动态变化，Recall/NDCG最高提升约23%，训练开销仅增4%。</p>
+</dd>
+<dt><strong><a href="../../venues/AAAI/2026/generative_rec/multi_aspect_cross_modal_quantization_for_generative_recommendation/">Multi-Aspect Cross-modal Quantization for Generative Recommendation</a></strong></dt>
+<dd>
+<p>在 RQ-VAE 量化各层注入跨模态对比与重建对齐，并在 GR 训练中加隐式/显式对齐，Full-Ranking 下 HR@10 最高提升约 9.4%。</p>
+</dd>
+<dt><strong><a href="../../venues/AAAI/2026/debias_fairness_industrial/plug_and_play_parameter_efficient_tuning_of_embeddings_for_federated_recomm/">Plug-and-Play Parameter-Efficient Tuning of Embeddings for Federated Recommendation</a></strong></dt>
+<dd>
+<p>冻结预训练全量物品嵌入、仅微调并上传压缩嵌入（LoRA/Hash/RQ-VAE），在联邦推荐中同时降通信与提精度。</p>
+</dd>
+<dt><strong><a href="../../venues/AAAI/2026/generative_rec/tokenize_once_recommend_anywhere_unified_item_tokenization_for_multi_domain/">Tokenize Once, Recommend Anywhere: Unified Item Tokenization for Multi-domain LLM-based Recommendation</a></strong></dt>
+<dd>
+<p>提出 TokenMoE+码本+互信息校准的统一物品分词框架 UniTok，单模型跨 10 域训练，NDCG@10 最高提升 51.89%，参数量降 9.63×。</p>
+</dd>
 <dt><strong><a href="../../venues/CIKM/2026/generative_rec/cross_country_code_mixing_for_generative_recommendation/">Cross-Country Code-Mixing for Generative Recommendation</a></strong></dt>
 <dd>
 <p>借鉴多语言 code-switching，用双约束 token 级跨国混码合成混合序列并做上下文自适应重加权，在无重叠 ID 的跨国场景显著提升小国召回。</p>
+</dd>
+<dt><strong><a href="../../venues/CIKM/2026/generative_rec/decoupled_temporal_encoding_for_generative_recommendation/">Decoupled Temporal Encoding for Generative Recommendation</a></strong></dt>
+<dd>
+<p>将宏观时间动态与微观序列顺序解耦的双模块位置编码，工业数据集 GAUC +1.16pt，线上 CTR +1.8%、RPM +3.0%，延迟仅 +0.3%。</p>
+</dd>
+<dt><strong><a href="../../venues/CIKM/2026/llm_rec/do_recommenders_need_to_think_in_words_latent_reasoning_for_efficient_llm_b/">Do Recommenders Need to Think in Words? Latent Reasoning for Efficient LLM-Based Recommendation</a></strong></dt>
+<dd>
+<p>用训练期逐步头监督替代推理期 CoT/隐式推理，HR@10 相对提升 4.0–5.0% 且延迟降低 18.3×</p>
 </dd>
 <dt><strong><a href="../../venues/CIKM/2026/generative_rec/faithful_evaluation_of_semantic_id_tokenizers_for_generative_recommendation/">Faithful Evaluation of Semantic-ID Tokenizers for Generative Recommendation</a></strong></dt>
 <dd>
@@ -17,6 +57,10 @@
 <dd>
 <p>以固定 SID 词表为跨域通信接口，用可靠性感知 CF 残差与原型个性化聚合解决联邦生成式 CDR 的语义瓶颈与负迁移，全库排序下显著超越联邦生成基线。</p>
 </dd>
+<dt><strong><a href="../../venues/CIKM/2026/generative_rec/intsr_an_integrated_generative_framework_for_search_and_recommendation/">IntSR: An Integrated Generative Framework for Search and Recommendation</a></strong></dt>
+<dd>
+<p>以 query 模态统一搜索/推荐与召回/排序四任务，提出 query 驱动解码器与时间对齐负采样，Amap 线上 GMV+9.34%。</p>
+</dd>
 <dt><strong><a href="../../venues/CIKM/2026/generative_rec/latent_residual_reasoning_for_ranking_in_generative_recommendation/">Latent Residual Reasoning for Ranking in Generative Recommendation</a></strong></dt>
 <dd>
 <p>在冻结的生成式排序骨干上叠加 LoRA 与残差推理头，用多步隐空间加性修正精化候选打分，公开集 GAUC 提升 2.7%–4.3%，线上 PV-CTR +0.75%。</p>
@@ -24,6 +68,10 @@
 <dt><strong><a href="../../venues/CIKM/2026/generative_rec/learning_from_unreachable_rewards_hint_conditioned_reinforcement_learning_f/">Learning from Unreachable Rewards: Hint-Conditioned Reinforcement Learning for Generative Recommendation</a></strong></dt>
 <dd>
 <p>用 SFT 检查点诊断语义 ID 前缀树可达性，对不可达样本注入最短目标前缀提示并以提示感知信用分解（前缀 SFT + 后缀 GRPO）恢复学习信号，零优势组从 70%+ 降至 20% 以下。</p>
+</dd>
+<dt><strong><a href="../../venues/CIKM/2026/generative_rec/merge_next_generation_item_indexing_paradigm_for_large_scale_streaming_reco/">MERGE: Next-Generation Item Indexing Paradigm for Large-Scale Streaming Recommendation</a></strong></dt>
+<dd>
+<p>以并查集动态生成聚类替代 VQ 盲分配，配合占用监控与由细到粗合并构建分层码本，工业 A/B 显著提升曝光多样性与互动。</p>
 </dd>
 <dt><strong><a href="../../venues/CIKM/2026/generative_rec/palate_pretrained_autoregressive_latent_embeddings/">PALATE: Pretrained Autoregressive LATent Embeddings</a></strong></dt>
 <dd>
@@ -33,13 +81,53 @@
 <dd>
 <p>指出固定长度SID复用于历史侧引发“物品内注意力过载”，提出历史侧语义子词重分词(IST)+行为共现增强(BCA)的非对称分词，三数据集三骨干全库排序NDCG@10最高+13.8%。</p>
 </dd>
+<dt><strong><a href="../../venues/CIKM/2026/generative_rec/revisiting_generative_vs_dense_retrieval_a_static_value_prior_reverses_the_/">Revisiting Generative vs. Dense Retrieval: A Static Value Prior Reverses the Gap</a></strong></dt>
+<dd>
+<p>在受控 GR/DR 对比下揭示指标选择反转胜负，用免训练静态价值先验重排 DR 即反超 GR 最佳物品价值并保持召回领先。</p>
+</dd>
+<dt><strong><a href="../../venues/CIKM/2026/generative_rec/self_evolving_memory_for_generative_recommendation/">Self-Evolving Memory for Generative Recommendation</a></strong></dt>
+<dd>
+<p>揭示生成式推荐持续演化中的“演化冲突”问题，提出稀疏 KV 记忆层 LION，以隔离记忆+巩固损失实现异构行为模式的持续演化。</p>
+</dd>
 <dt><strong><a href="../../venues/CIKM/2026/generative_rec/sidinspector_a_mapping_first_diagnostic_resource_for_semantic_id_tokenizers/">SIDInspector: A Mapping-First Diagnostic Resource for Semantic-ID Tokenizers</a></strong></dt>
 <dd>
 <p>提出映射优先的 SID 分词器诊断资源，用 D1–D5 探针在生成器训练前分离容量、可寻址性与行为前缀对齐，并给出四类分词器工件画像。</p>
 </dd>
-<dt><strong><a href="../../venues/KDD/2026/generative_rec/beyond_interleaving_causal_attention_reformulations_for_generative_recommen/">Beyond Interleaving: Causal Attention Reformulations for Generative Recommender Systems</a></strong></dt>
+<dt><strong><a href="../../venues/CIKM/2026/generative_rec/sprig_semantic_id_enhanced_paths_for_knowledge_graph_based_generative_recom/">SPRIG: Semantic-ID-enhanced Paths for Knowledge Graph-based Generative Recommendation</a></strong></dt>
 <dd>
-<p>揭示交错式生成推荐是相似度加权动作池化的低效代理，提出 AttnLFA/AttnMVP 显式编码 item→action 因果，序列长度减半、训练提速 23%/12% 且 NE 全面下降</p>
+<p>将内容派生的分层语义 ID 注入知识图谱路径语言建模，以 768 个共享码替代逐物品词表，nDCG@10 较 KGGLM 提升 44%/58% 且参数与算力更低。</p>
+</dd>
+<dt><strong><a href="../../venues/CIKM/2026/generative_rec/tlow_flow_based_item_tokenizer_for_recommendation/">Tlow: Flow-based Item Tokenizer for Recommendation</a></strong></dt>
+<dd>
+<p>用可逆流模型将语义嵌入变换为标准正态潜空间后做PQ独立分词，配合码本引导对齐，微信线上新物品CTR提升11.64%</p>
+</dd>
+<dt><strong><a href="../../venues/ECIR/2026/generative_rec/efficient_optimization_of_hierarchical_identifiers_for_generative_recommend/">Efficient Optimization of Hierarchical Identifiers for Generative Recommendation</a></strong></dt>
+<dd>
+<p>复现SEATER并指出其平衡k-ary树构建是训练瓶颈，提出贪心/混合聚类将建树时间降至2%/5-8%且检索质量持平甚至更优。</p>
+</dd>
+<dt><strong><a href="../../venues/ICDM/2026/llm_rec/autoresearch_at_production_scale_failure_modes_and_a_multi_agent_framework/">AutoResearch at Production Scale: Failure Modes and a Multi-Agent Framework</a></strong></dt>
+<dd>
+<p>将 LLM 自主科研范式落地生产级推荐表征学习，归纳五大失效模式并提出 prevent/persist/redirect 三智能体脚手架，Recall@6 提升 1.82 倍。</p>
+</dd>
+<dt><strong><a href="../../venues/ICDM/2026/generative_rec/controllable_generative_recommendation_via_guided_token_refinement/">Controllable Generative Recommendation via Guided Token Refinement</a></strong></dt>
+<dd>
+<p>将语义 ID 生成从自回归改为并行掩码填充，用 logit 引导+置信度精炼+前缀树约束实现免训练实时多样性控制，Diversity@10 提升约 15% 且有效率保持 99.97%。</p>
+</dd>
+<dt><strong><a href="../../venues/ICDM/2026/generative_rec/hyprq_vae_hyperbolic_item_indexing_for_long_tail_aware_generative_recommend/">HypRQ-VAE: Hyperbolic Item Indexing for Long-Tail-Aware Generative Recommender Systems</a></strong></dt>
+<dd>
+<p>将 RQ-VAE 语义 ID 量化搬进 Poincaré 双曲球，用 Möbius 加减替代欧氏残差，长尾 Hit@10 提升 52.7%，全库排序验证。</p>
+</dd>
+<dt><strong><a href="../../venues/IJCAI/2026/generative_rec/dav_gen_end_to_end_generative_retrieval_via_draft_and_verify/">DaV-Gen: End-to-End Generative Retrieval via Draft-and-Verify</a></strong></dt>
+<dd>
+<p>将生成式检索重构为“起草-验证”双阶段单模型范式，以混合稀疏-稠密表征与复合损失统一召回与排序，工业搜索延迟降至70ms。</p>
+</dd>
+<dt><strong><a href="../../venues/KDD/2026/generative_rec/apao_bridging_the_training_inference_gap_in_generative_recommendation_via_a/">APAO: Bridging the Training-Inference Gap in Generative Recommendation via Adaptive Prefix-Aware Optimization</a></strong></dt>
+<dd>
+<p>揭示 Beam Search 剪枝与 teacher-forcing 训练的前缀级不一致，用自适应最差前缀损失对齐训练与推理，全库排序下 Recall@20 最高提升 13.3%。</p>
+</dd>
+<dt><strong><a href="../../venues/KDD/2026/generative_rec/breaking_the_likelihood_trap_consistent_generative_recommendation_with_grap/">Breaking the Likelihood Trap: Consistent Generative Recommendation with Graph-structured Model</a></strong></dt>
+<dd>
+<p>用有向无环图解码器扩展非自回归生成空间，并以 Gumbel-Softmax 打通评估器梯度，破解似然陷阱，快手线上 Views +0.78%。</p>
 </dd>
 <dt><strong><a href="../../venues/KDD/2026/generative_rec/collaborative_memory_augmentation_for_generative_recommendation/">Collaborative Memory Augmentation for Generative Recommendation</a></strong></dt>
 <dd>
@@ -49,6 +137,18 @@
 <dd>
 <p>离线束搜索挖掘前瞻序列+累积回归稠密监督蒸馏至轻量生成器，单次贪心解码逼近全局最优，线上GMV+3.75%</p>
 </dd>
+<dt><strong><a href="../../venues/KDD/2026/generative_rec/flowtime_towards_continuous_generative_watch_time_prediction_via_flow_based/">FlowTime: Towards Continuous Generative Watch Time Prediction via Flow-based Personalized Priors</a></strong></dt>
+<dd>
+<p>提出连续生成式回归新范式，用一步VAE+归一化流个性化先验建模多峰观看时长分布，KuaiRec MAE降0.676%、线上播放时长+1.044%。</p>
+</dd>
+<dt><strong><a href="../../venues/KDD/2026/generative_rec/forge_forming_semantic_identifiers_for_generative_retrieval_in_industrial_d/">FORGE: Forming Semantic Identifiers for Generative Retrieval in Industrial Datasets</a></strong></dt>
+<dd>
+<p>系统化拆解 SID 构建全流程（多模态特征/量化编码/冲突后处理），提出免训练的 Embedding HitRate 与 Gini 系数代理指标，淘宝线上交易量 +0.35%。</p>
+</dd>
+<dt><strong><a href="../../venues/KDD/2026/sequential_rec/fuxi_efficient_sequential_recommendation_with_exponential_power_temporal_en/">FuXi-$γ$: Efficient Sequential Recommendation with Exponential-Power Temporal Encoder and Diagonal-Sparse Positional Mechanism</a></strong></dt>
+<dd>
+<p>用艾宾浩斯遗忘曲线启发的指数幂时间编码器替代分桶查表，配合 Toeplitz 对角稀疏位置剪枝，在 Full-Ranking 下精度 SOTA 且训练/推理加速最高 4.74×/6.18×。</p>
+</dd>
 <dt><strong><a href="../../venues/KDD/2026/generative_rec/hi_sam_a_hierarchical_structure_aware_multi_modal_framework_for_large_scale/">Hi-SAM: A Hierarchical Structure-Aware Multi-modal Framework for Large-Scale Recommendation</a></strong></dt>
 <dd>
 <p>解耦语义分词器+分层记忆锚点Transformer，修复语义ID推荐中分词冗余与扁平架构失配，工业A/B响应率+6.55%</p>
@@ -56,6 +156,10 @@
 <dt><strong><a href="../../venues/KDD/2026/generative_rec/hierarchical_residual_policy_optimization_for_generative_recommendations/">Hierarchical Residual Policy Optimization for Generative Recommendations</a></strong></dt>
 <dd>
 <p>将物品级反馈分解为 SID 前缀残差信用，用 RRPO 做保守 token 级策略优化，KuaiSim 会话回报 10.53 vs 8.14，线上 IAA Target Cost 最高 +3.49%。</p>
+</dd>
+<dt><strong><a href="../../venues/KDD/2026/generative_rec/pcr_ca_parallel_codebook_representations_with_contrastive_alignment_for_mul/">PCR-CA: Parallel Codebook Representations with Contrastive Alignment for Multiple-Category App Recommendation</a></strong></dt>
+<dd>
+<p>用并行码本VQ-AE替代RQ-VAE层级量化建模多类别App语义，配合用户/物品双层对比对齐与双流注意力，微软商店线上CTR+10.52%。</p>
 </dd>
 <dt><strong><a href="../../venues/KDD/2026/generative_rec/reasoning_over_semantic_ids_enhances_generative_recommendation/">Reasoning over Semantic IDs Enhances Generative Recommendation</a></strong></dt>
 <dd>
@@ -65,6 +169,10 @@
 <dd>
 <p>在每级 SID 码生成前插入受码本聚类语义对比监督的思考 token，实现逐步可验证潜在推理，工业短视频 A/B 显著提升时长。</p>
 </dd>
+<dt><strong><a href="../../venues/KDD/2026/sequential_rec/scaling_recommender_transformers_to_one_billion_parameters/">Scaling Recommender Transformers to One Billion Parameters</a></strong></dt>
+<dd>
+<p>ARGUS 将自回归预训练解耦为反馈预测与下一物品预测双任务，把推荐 Transformer 编码器扩到 10 亿参数，线上听歌时长 +2.26%、点赞率 +6.37%。</p>
+</dd>
 <dt><strong><a href="../../venues/KDD/2026/poi_spatiotemporal_rec/think2go_generative_next_poi_recommendation_with_llm_reasoning/">Think2Go: Generative Next POI Recommendation with LLM Reasoning</a></strong></dt>
 <dd>
 <p>统一SFT与RL推理的生成式Next-POI框架，用KDE时空认知不确定性与难度感知奖励差校准优势函数，Acc@1较GNPR提升5.8–7.5%。</p>
@@ -72,6 +180,14 @@
 <dt><strong><a href="../../venues/KDD/2026/generative_rec/uncertainty_aware_generative_recommendation/">Uncertainty-aware Generative Recommendation</a></strong></dt>
 <dd>
 <p>将生成置信度与样本难度转化为GRPO奖励与梯度权重，并显式对齐置信度token，稳定训练并支持风险感知推荐。</p>
+</dd>
+<dt><strong><a href="../../venues/KDD/2026/generative_rec/understanding_generative_recommendation_with_semantic_ids_from_a_model_scal/">Understanding Generative Recommendation with Semantic IDs from a Model-scaling View</a></strong></dt>
+<dd>
+<p>揭示 SID 式生成推荐在编码器/量化器/RS 三轴扩展均快速饱和，归因于 SID 语义容量瓶颈，并证明 Text-based GR 具备更优扩展性且 CF 能力随规模提升。</p>
+</dd>
+<dt><strong><a href="../../venues/KDD/2026/multimodal_rec/uninote_a_unified_embedding_model_for_multimodal_representation_and_ranking/">UniNote: A Unified Embedding Model for Multimodal Representation and Ranking</a></strong></dt>
+<dd>
+<p>小红书工业级 I2I 统一嵌入模型：对比 SFT + GRPO 相对重排两阶段训练，10 类检索任务全 SOTA，MRL 支持弹性维度部署。</p>
 </dd>
 <dt><strong><a href="../../venues/KDD/2026/sequential_rec/unleashing_the_potential_of_neighbors_diffusion_based_latent_neighbor_gener/">Unleashing the Potential of Neighbors: Diffusion-based Latent Neighbor Generation for Session-based Recommendation</a></strong></dt>
 <dd>
@@ -89,6 +205,14 @@
 <dd>
 <p>将物品元数据按类目→标题→描述→CF信号分层独立量化，自回归由粗到细解码，Leave-One-Out全库排序下平均超越SOTA约6.4%。</p>
 </dd>
+<dt><strong><a href="../../venues/RecSys/2026/generative_rec/distribution_level_contrastive_supervision_for_generative_recommendation/">Distribution-Level Contrastive Supervision for Generative Recommendation</a></strong></dt>
+<dd>
+<p>用分词器多层码本概率分布作软语义目标，以负对称KL+BPR对比监督对齐推荐器表征，即插即用提升多种生成式骨干。</p>
+</dd>
+<dt><strong><a href="../../venues/RecSys/2026/sequential_rec/dp_rec_towards_dynamic_patching_for_efficient_long_sequence_recommendation/">DP-Rec: Towards Dynamic Patching for Efficient Long-Sequence Recommendation</a></strong></dt>
+<dd>
+<p>用对比熵惊讶度动态切分长交互序列为变长行为块，在 FLOPs 匹配下 NDCG@10 最高提升 21.1%，实现更优效率-精度前沿。</p>
+</dd>
 <dt><strong><a href="../../venues/RecSys/2026/generative_rec/egr_embedding_native_generative_retrieval_with_a_shared_llm/">EGR: Embedding-Native Generative Retrieval with a Shared LLM</a></strong></dt>
 <dd>
 <p>用单一共享 LLM 同时编码物品与用户历史，以双对比损失联合训练，免量化免 grounding，线上 CVR +2.91%</p>
@@ -97,9 +221,21 @@
 <dd>
 <p>跨域共享-专属多塔 RQ-VAE 混合分词 + 两段式串并解码，Leave-One-Out 全库排序下精度 +1.5%、时延 -85.1%。</p>
 </dd>
+<dt><strong><a href="../../venues/RecSys/2026/poi_spatiotemporal_rec/generative_spatiotemporal_intent_sequence_recommendation_via_implicit_reaso/">Generative Spatiotemporal Intent Sequence Recommendation via Implicit Reasoning in Amap</a></strong></dt>
+<dd>
+<p>将LLM显式CoT压缩为隐式潜token并配合时空反事实DPO，在Amap工业数据与线上A/B中实现低延迟意图序列生成。</p>
+</dd>
 <dt><strong><a href="../../venues/RecSys/2026/generative_rec/genpage_towards_end_to_end_generative_homepage_construction_at_netflix/">GenPage: Towards End-to-End Generative Homepage Construction at Netflix</a></strong></dt>
 <dd>
 <p>用单个 Transformer 将用户上下文 token 化后自回归生成整页多行首页，WBC/RL 后训练，线上 +0.24% 核心参与度且延迟降 20%。</p>
+</dd>
+<dt><strong><a href="../../venues/RecSys/2026/generative_rec/hypothesis_driven_shelf_generation_for_personalised_recommendation/">Hypothesis-Driven Shelf Generation for Personalised Recommendation</a></strong></dt>
+<dd>
+<p>用自然语言货架假设替代固定模板，解耦规划与目录履约，生成式检索+货架对齐显著提升个性化供给</p>
+</dd>
+<dt><strong><a href="../../venues/RecSys/2026/generative_rec/not_all_branches_are_equal_adaptive_semantic_id_construction_for_generative/">Not All Branches Are Equal: Adaptive Semantic ID Construction for Generative Recommendation</a></strong></dt>
+<dd>
+<p>将语义 ID 重构为树路径，用轮廓系数自适应分支+概率质量约束构建 AST，五域 Amazon 全库排序平均相对提升 13.08%</p>
 </dd>
 <dt><strong><a href="../../venues/RecSys/2026/sequential_rec/recrec_latent_interests_recursive_reasoning_for_sequential_recommendation/">RecRec: Latent Interests Recursive Reasoning for Sequential Recommendation</a></strong></dt>
 <dd>
@@ -113,13 +249,21 @@
 <dd>
 <p>揭示 RQ-VAE 语义 ID 量化中的拓扑失真问题，提出由粗到细的三级拓扑蒸馏 TopoTok，在 Amazon 三数据集 Full-Ranking 下 Recall@5 最高提升 9.42%。</p>
 </dd>
+<dt><strong><a href="../../venues/RecSys/2026/generative_rec/towards_generalizable_and_efficient_large_scale_generative_recommenders/">Towards Generalizable and Efficient Large-Scale Generative Recommenders</a></strong></dt>
+<dd>
+<p>将生成式推荐骨干从2M扩至1B，用偏移幂律缩放律诊断任务天花板，并以MTP、采样softmax与语义塔解决缓存陈旧与冷启动，1M用户影子MRR全线提升。</p>
+</dd>
+<dt><strong><a href="../../venues/RecSys/2026/collaborative_filtering/unipinrec_unifying_generative_retrieval_and_ranking_at_pinterest_scale/">UniPinRec: Unifying Generative Retrieval and Ranking at Pinterest Scale</a></strong></dt>
+<dd>
+<p>用 MAM 掩码动作建模 + 混合样本 + 跨阶段 KV 缓存复用，将生成式召回与排序全栈统一，线上延迟降 11.1%、QPS 升 63.6%。</p>
+</dd>
 <dt><strong><a href="../../venues/RecSys/2026/generative_rec/unirec_bridging_the_expressive_gap_between_generative_and_discriminative_re/">UniRec: Bridging the Expressive Gap between Generative and Discriminative Recommendation via Chain-of-Attribute</a></strong></dt>
 <dd>
 <p>用贝叶斯等价性证明生成式推荐差距源于特征覆盖，以属性链 CoA 前缀解码 + 容量约束 SID + 条件解码上下文补齐，Shopee 线上 GMV +5.60%。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/a_cascaded_generative_approach_for_e_commerce_recommendations/">A Cascaded Generative Approach for e-Commerce Recommendations</a></strong></dt>
 <dd>
-<p>级联 LLM 生成货架主题与 RAG 约束关键词驱动检索，教师-学生蒸馏落地，线上加购 +2.7%</p>
+<p>提出级联生成式货架构建框架：LLM1 生成投放主题、LLM2 经 RAG 约束生成检索关键词，教师-学生蒸馏降本，线上购物车添加 +2.7%。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/debias_fairness_industrial/adaptive_autoguidance_for_item_side_fairness_in_diffusion_recommender_syste/">Adaptive Autoguidance for Item-Side Fairness in Diffusion Recommender Systems</a></strong></dt>
 <dd>
@@ -139,15 +283,15 @@
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/bi_level_optimization_for_generative_recommendation_bridging_tokenization_a/">Bi-Level Optimization for Generative Recommendation: Bridging Tokenization and Generation</a></strong></dt>
 <dd>
-<p>将 tokenizer 与 recommender 重构为双层优化问题，用元学习+梯度手术对齐语义ID与推荐目标，全库排序下稳定超越 SOTA。</p>
+<p>将分词器与推荐器建模为双层优化，用元学习+梯度手术让推荐损失直接监督RQ-VAE码本，Full-Ranking下全面超越TIGER/LETTER/ETEGRec。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/card_non_uniform_quantization_of_visual_semantic_unit_for_generative_recomm/">CARD: Non-Uniform Quantization of Visual Semantic Unit for Generative Recommendation</a></strong></dt>
 <dd>
-<p>将文本/视觉/协同信号渲染为卡片式视觉语义单元，并用可学习可逆非均匀变换的 NU-RQ-VAE 量化，缓解码本失衡与生成偏置。</p>
+<p>将文本/图像/协同信号渲染为统一视觉语义单元，并用可逆非均匀变换校正偏斜分布，提升码本利用率与生成式推荐精度。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/differentiable_semantic_id_for_generative_recommendation/">Differentiable Semantic ID for Generative Recommendation</a></strong></dt>
 <dd>
-<p>用 Gumbel 噪声+不确定性衰减实现可微语义ID联合训练，缓解码本坍缩，Full-Ranking 下 NDCG@10 稳定提升</p>
+<p>用 Gumbel 噪声+不确定性衰减实现可微语义ID联合训练，Leave-One-Out 全库排序下 R@10 相对 TIGER 提升约 12%。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/discrete_preference_learning_for_personalized_multimodal_generation/">Discrete Preference Learning for Personalized Multimodal Generation</a></strong></dt>
 <dd>
@@ -155,11 +299,15 @@
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/dual_diffusional_generative_fashion_recommendation/">Dual-Diffusional Generative Fashion Recommendation</a></strong></dt>
 <dd>
-<p>双扩散 Transformer 联合生成时尚单品图像与属性级文本，实现可解释个性化穿搭推荐，PFITB/GOR 双任务全面领先。</p>
+<p>双分支扩散 Transformer 联合生成时尚单品图像与属性级文本，以结构化偏好加权采样建模用户，PFITB/GOR 双任务个性化指标显著领先且训练提速约 7 倍。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/multi_task_reranking/equip_pre_ranking_with_target_attention_by_residual_quantization/">Equip Pre-ranking with Target Attention by Residual Quantization</a></strong></dt>
 <dd>
 <p>用残差量化码本近似 Target Attention，将交互式建模引入粗排，AUC 0.799、线上 GMV +7.57%。</p>
+</dd>
+<dt><strong><a href="../../venues/SIGIR/2026/llm_rec/factorized_latent_reasoning_for_llm_based_recommendation/">Factorized Latent Reasoning for LLM-based Recommendation</a></strong></dt>
+<dd>
+<p>将 LLM 隐式推理拆为 K 个解耦偏好因子并配 GRPO 对齐，全库约束解码下 N@5 最高提升 10.26%</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/fave_flow_based_average_velocity_establishment_for_sequential_recommendatio/">FAVE: Flow-based Average Velocity Establishment for Sequential Recommendation</a></strong></dt>
 <dd>
@@ -175,11 +323,11 @@
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/cold_start_rec/genrecedit_adapting_model_editing_for_generative_recommendation_with_cold_s/">GenRecEdit: Adapting Model Editing for Generative Recommendation with Cold-Start Items</a></strong></dt>
 <dd>
-<p>将NLP模型编辑范式迁移至生成式推荐，通过位置级迭代编辑与One-One触发机制注入冷启动物品SID模式，仅需9.5%重训时间即显著提升冷启推荐。</p>
+<p>将 NLP 模型编辑迁移至生成式推荐，用逐位置定位-编辑+One-One 触发注入冷启动物品 SID 模式，仅需重训 9.5% 时间即大幅缓解冷启动坍缩。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/gflowgr_fine_tuning_generative_recommendation_frameworks_with_generative_fl/">GFlowGR: Fine-tuning Generative Recommendation Frameworks with Generative Flow Networks</a></strong></dt>
 <dd>
-<p>将GR重构为多步集合生成任务，用GFlowNets做token级微调对齐物品效用，三数据集双骨干一致提升并落地淘宝搜索广告。</p>
+<p>将生成式推荐重构为集合级序列生成，用 GFlowNets 微调使生成概率正比于行为感知奖励，缓解曝光偏差，淘宝线上年收入相对提升 0.4%。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/learning_decomposed_contextual_token_representations_from_pretrained_and_co/">Learning Decomposed Contextual Token Representations from Pretrained and Collaborative Signals for Generative Recommendation</a></strong></dt>
 <dd>
@@ -187,27 +335,27 @@
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/llm_rec/lwgr_lagrangian_constrained_personalized_world_knowledge_for_generative_rec/">LWGR: Lagrangian-Constrained Personalized World Knowledge for Generative Recommendation</a></strong></dt>
 <dd>
-<p>用 OPQ 并行码本生成用户个性化软指令提取 LLM 世界知识，并以拉格朗日原始-对偶约束可控融合进生成式推荐，离线最高 +11.23%，线上广告收入 +1.35%</p>
+<p>用并行码本生成用户个性化软指令抽取 LLM 世界知识，并以拉格朗日原始-对偶约束控制知识融合，Full-Ranking 下最高相对提升 11.23%，线上广告收入 +1.35%</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/mitigating_collaborative_semantic_id_staleness_in_generative_retrieval/">Mitigating Collaborative Semantic ID Staleness in Generative Retrieval</a></strong></dt>
 <dd>
-<p>提出模型无关的 SID 对齐更新，将新日志重建的协同语义 ID 映射回旧词表以支持热启动微调，严格时序评估下 Recall@500 提升且训练算力降低约 8-9 倍。</p>
+<p>提出模型无关的 SID 对齐更新，将刷新后的协同语义 ID 双部图匹配映射回旧词表，实现热启动微调，Recall@500 提升且训练算力降 8-9 倍。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/mviger_multi_view_variational_integration_of_complementary_knowledge_for_ge/">MVIGER: Multi-View Variational Integration of Complementary Knowledge for Generative Recommender</a></strong></dt>
 <dd>
-<p>将异构模板-索引组合视为多视图，用类别隐变量变分整合互补知识，三数据集全库排序显著超越生成式基线。</p>
+<p>将模板-索引组合视为隐变量视图，用可学习先验做变分集成，Full-Ranking 下 H@10 最高提升约 26%。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/next_interest_flow_a_generative_pre_training_paradigm_for_recommender_syste/">Next Interest Flow: A Generative Pre-training Paradigm for Recommender Systems by Modeling All-domain Movelines</a></strong></dt>
 <dd>
-<p>将用户意图建模为隐流形上的连续演化轨迹，用切空间正交与测地平滑约束生成式预训练，并以双向对齐+TSP桥接判别式精排，淘宝线上CTCVR+11.6%。</p>
+<p>将用户意图建模为隐流形上的连续演化轨迹，用切空间正交与测地平滑约束生成式预训练，并以双向对齐+TSP桥接判别式精排，工业级AUC+0.87pt。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/rclrec_reverse_curriculum_learning_for_modeling_sparse_conversions_in_gener/">RCLRec: Reverse Curriculum Learning for Modeling Sparse Conversions in Generative Recommendation</a></strong></dt>
 <dd>
-<p>逆向课程前缀+课程质量感知损失为稀疏转化目标注入实例级中间监督，离线全库排序显著提升并线上A/B +2.09%广告收入。</p>
+<p>以逆向课程前缀为稀疏转化目标注入实例级中间监督，配合课程质量感知损失，离线全库排序全面超越 SOTA，线上广告收入 +2.09%。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/request_only_optimization_for_recommendation_systems/">Request-Only Optimization for Recommendation Systems</a></strong></dt>
 <dd>
-<p>以用户请求为训练样本单元，通过数据/系统/模型协同设计消除请求内特征冗余，训练吞吐提升最高570%，同等算力下模型FLOPs扩展7倍。</p>
+<p>以用户请求为训练样本单元，在数据源头去重用户特征，实现训练吞吐 2-6 倍提升并支撑 HSTU 生成式推荐规模化落地。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/sequential_rec/rote_coarse_to_fine_multi_level_rotary_time_embedding_for_sequential_recomm/">RoTE: Coarse-to-Fine Multi-Level Rotary Time Embedding for Sequential Recommendation</a></strong></dt>
 <dd>
@@ -223,11 +371,19 @@
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/universal_item_tokenization_for_transferable_generative_recommendation/">Universal Item Tokenization for Transferable Generative Recommendation</a></strong></dt>
 <dd>
-<p>基于MLLM与树状码本的通用物品分词器，融合多模态重建与协同对齐，实现跨域可迁移生成式推荐。</p>
+<p>用 MLLM+树状码本构建跨域通用物品分词器，结合内容重建与共现协同对齐，实现可迁移生成式推荐，全库排序下全面超越基线。</p>
 </dd>
 <dt><strong><a href="../../venues/SIGIR/2026/llm_rec/verifiable_reasoning_for_llm_based_generative_recommendation/">Verifiable Reasoning for LLM-based Generative Recommendation</a></strong></dt>
 <dd>
-<p>提出 reason-verify-recommend 范式，用混合验证器+代理偏好预测+单调性正则，在四个数据集上显著提升生成式推荐效果。</p>
+<p>提出 reason-verify-recommend 范式，用混合验证器对隐空间推理逐步审计与修正，四数据集 Recall@10 最高提升约 47%</p>
+</dd>
+<dt><strong><a href="../../venues/SIGIR-AP/2026/generative_rec/what_makes_a_good_semantic_id_for_generative_recommendation_a_reproducibili/">What Makes a Good Semantic ID for Generative Recommendation? A Reproducibility Study</a></strong></dt>
+<dd>
+<p>统一协议下复现11种SID生成式推荐系统，揭示SID设计效果的非单调性：无普适最优设计、码本利用率与排序质量近乎零相关、骨干与码长扩展均非单调。</p>
+</dd>
+<dt><strong><a href="../../venues/WSDM/2026/generative_rec/accelerating_generative_recommendation_via_simple_categorical_user_sequence/">Accelerating Generative Recommendation via Simple Categorical User Sequence Compression</a></strong></dt>
+<dd>
+<p>用物品类别桶压缩长历史序列，在同等算力下较 HSTU 最高提升 39% 精度、最高降低 6 倍计算开销。</p>
 </dd>
 <dt><strong><a href="../../venues/WSDM/2026/generative_rec/continuous_time_discrete_space_diffusion_model_for_recommendation/">Continuous-time Discrete-space Diffusion Model for Recommendation</a></strong></dt>
 <dd>
@@ -245,16 +401,36 @@
 <dd>
 <p>用扩散模型生成跨渠道预算/约束目标轨迹、结合约束执行与实时控制出价，离线与线上 A/B 收益提升 13.57%。</p>
 </dd>
+<dt><strong><a href="../../venues/WWW/2026/generative_rec/beyond_the_flat_sequence_hierarchical_and_preference_aware_generative_recom/">Beyond the Flat Sequence: Hierarchical and Preference-Aware Generative Recommendations</a></strong></dt>
+<dd>
+<p>用会话层次预训练+偏好引导稀疏注意力打破 HSTU 扁平序列假设，APPGallery 全库 AUC 0.8929、线上 eCPM +1.99%</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2026/generative_rec/diffgrm_diffusion_based_generative_recommendation_model/">DiffGRM: Diffusion-based Generative Recommendation Model</a></strong></dt>
+<dd>
+<p>用掩码离散扩散替代自回归解码 SID，配合 OPQ 解耦分词、难度感知相干加噪与置信度并行去噪，NDCG@10 提升 6.9%–15.5%。</p>
+</dd>
 <dt><strong><a href="../../venues/WWW/2026/generative_rec/diffusion_generative_recommendation_with_continuous_tokens/">Diffusion Generative Recommendation with Continuous Tokens</a></strong></dt>
 <dd>
 <p>用 σ-VAE 连续分词器替代量化码本，并以条件扩散+离散散度损失生成用户偏好，四数据集 Full-Ranking 上 HR@10 平均超 TIGER 11.76%。</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2026/generative_rec/dualgr_generative_retrieval_with_long_and_short_term_interests_modeling/">DualGR: Generative Retrieval with Long and Short-Term Interests Modeling</a></strong></dt>
+<dd>
+<p>双分支长短期路由+桶内搜索式SID解码+曝光感知NTP损失，快手双列场景在线HR@1000达19.53%，A/B视频播放+0.527%。</p>
 </dd>
 <dt><strong><a href="../../venues/WWW/2026/ctr_feature_interaction/genci_generative_modeling_of_user_interest_shift_via_cohort_based_intent_le/">GenCI: Generative Modeling of User Interest Shift via Cohort-based Intent Learning for CTR Prediction</a></strong></dt>
 <dd>
 <p>用RQ-VAE语义ID+NTP生成兴趣群组，再以分层候选感知注意力注入精排，弥合召回-排序意图鸿沟，三数据集AUC全面SOTA。</p>
 </dd>
+<dt><strong><a href="../../venues/WWW/2026/generative_rec/rastp_representation_aware_semantic_token_pruning_for_generative_recommenda/">RASTP: Representation-Aware Semantic Token Pruning for Generative Recommendation with Semantic Identifiers</a></strong></dt>
+<dd>
+<p>以表征L1范数与注意力中心性乘积打分，在Transformer中间层动态剪枝SID冗余token，训练提速26.7%且性能持平略升。</p>
+</dd>
 <dt><strong><a href="../../venues/WWW/2026/llm_rec/token_level_collaborative_alignment_for_llm_based_generative_recommendation/">Token-level Collaborative Alignment for LLM-based Generative Recommendation</a></strong></dt>
 <dd>
 <p>将CF物品级logits投影为token级分布并与one-hot融合成软标签，以soft-NTP损失显式对齐LLM生成，即插即用提升多骨干推荐效果。</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2026/generative_rec/towards_context_aware_reasoning_enhanced_generative_searching_in_e_commerce/">Towards Context-aware Reasoning-enhanced Generative Searching in E-commerce</a></strong></dt>
+<dd>
+<p>将电商搜索异构上下文统一为JSON文本与残差K-Means语义ID，用SFT-RL自演化后训练与去偏R-GRPO提升生成式搜索排序，All-100K上HR@10相对提升6.24%。</p>
 </dd>
 </dl>

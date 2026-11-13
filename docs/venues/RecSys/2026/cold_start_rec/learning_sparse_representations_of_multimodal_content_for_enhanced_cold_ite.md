@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-沿用 SEMCo 的内容 LAE 骨架：多模态特征 $\mathbf{x}_1,\dots,\mathbf{x}_M$ 经注意力融合 MLP 得 $\mathbf{y}=f(\cdot)\in\mathbb{R}^d$；本文在 L2 归一化前插入 **PSAF → top-K 稀疏化** 两步，得到稀疏内容嵌入 $\psi(\mathbf{y})$。冷物品打分仍为 $\tilde{P}=R\cdot\psi(Y)\psi(C)^\top$，即用户向量 = 交互物品稀疏嵌入聚合，与冷物品稀疏嵌入做点积。训练目标完全不变（SEMCo 对比损失或 ELSA 重构损失），仅改表征管线，因此可直接套用到现有冷启动训练制度。
+沿用 SEMCo 的内容 LAE 骨架：多模态特征 $\mathbf{x}_1,\dots,\mathbf{x}_M$经注意力融合 MLP 得$\mathbf{y}=f(\cdot)\in\mathbb{R}^d$；本文在 L2 归一化前插入 **PSAF → top-K 稀疏化** 两步，得到稀疏内容嵌入$\psi(\mathbf{y})$。冷物品打分仍为$\tilde{P}=R\cdot\psi(Y)\psi(C)^\top$，即用户向量 = 交互物品稀疏嵌入聚合，与冷物品稀疏嵌入做点积。训练目标完全不变（SEMCo 对比损失或 ELSA 重构损失），仅改表征管线，因此可直接套用到现有冷启动训练制度。
 
 ```mermaid
 flowchart TD
@@ -55,11 +55,11 @@ flowchart TD
 
 1. **Top-K 稀疏化替代稠密嵌入（存储与去噪双收益）**：痛点是不相似物品的稠密点积非零、噪声累积且存储昂贵。做法是按绝对值保留 top-$k$ 维后归一化：
 $$\text{top-}k(\mathbf{y}[i])=\mathbf{y}[i]\ \text{if}\ |\mathbf{y}[i]|\in\text{top-}k(|\mathbf{y}|),\ \text{else}\ 0$$
-直觉：不相似稀疏向量的点积天然趋零，**去噪无需额外非线性**；同时 CSR 存储 + 倒排索引使 $k$ 非零向量点积仅 $O(k)$。训练中用指数剪枝（从全宽衰减到 32 活跃维）避免 dead latents。
+直觉：不相似稀疏向量的点积天然趋零，**去噪无需额外非线性**；同时 CSR 存储 + 倒排索引使 $k$非零向量点积仅$O(k)$。训练中用指数剪枝（从全宽衰减到 32 活跃维）避免 dead latents。
 
 2. **PSAF：α-entmax + 双侧拼接（锐化）**：稀疏化只去噪不锐化，而图 1 显示纯锐化（exp/softmax）也有效。作者借线性注意力"对 query/key 施加 exp 激活提升 spikiness"的思路，但稀疏嵌入活跃维极少、无法承载 exp 核近似所需容量，故改用可插值的 α-entmax：
 $$\alpha\text{-entmax}(\mathbf{y})=\big[(\alpha-1)\mathbf{y}-\eta\mathbf{1}\big]_+^{\frac{1}{\alpha-1}}$$
-$\alpha=1$ 退化为 softmax（全正、仅锐化），$\alpha=2$ 为 sparsemax（含置零、锐化+去噪）。因 α-entmax 会抹掉负神经元，先做反对称拼接 $\text{two-side}(\mathbf{y})=[\mathbf{y};-\mathbf{y}]$ 保留负信号（不增加稀疏化后参数量）。最终 $\psi(\mathbf{y})=\alpha\text{-entmax}(\text{two-side}(\mathbf{y})/\omega)$，$\omega$ 调节锐化强度。
+$\alpha=1$退化为 softmax（全正、仅锐化），$\alpha=2$为 sparsemax（含置零、锐化+去噪）。因 α-entmax 会抹掉负神经元，先做反对称拼接$\text{two-side}(\mathbf{y})=[\mathbf{y};-\mathbf{y}]$保留负信号（不增加稀疏化后参数量）。最终$\psi(\mathbf{y})=\alpha\text{-entmax}(\text{two-side}(\mathbf{y})/\omega)$，$\omega$ 调节锐化强度。
 
 3. **训练目标、负采样与推理效率**：损失沿用 SEMCo 的 batch 内对比目标（或 ELSA 的 MSE 重构），**未引入新损失、未使用显式负采样**。推理为单次稀疏点积，毫秒级；相比 ColdLLM 类方法（约 10 秒/冷物品）具数量级优势。PSAF 带来约 15%–20% 训练开销（H100 上 12.8s → 15.7s/epoch，显存 2.20 → 2.66 GB）。
 
@@ -75,7 +75,7 @@ $\alpha=1$ 退化为 softmax（全正、仅锐化），$\alpha=2$ 为 sparsemax�
 | Microlens | 98,129 | 17,228 | 705,174 | 0.042% | Image (1024), Text (1024), Video (768) |
 
 - **数据划分与防穿越**: **冷启动划分**——随机选 20% 物品为冷物品，再 50-50 分验证/测试；其余热物品交互按 80-10-10 划分以训练监督 CF 模型。作者明确说明未用时间戳切分（冷物品场景下样本量不足）。
-- **排名评测协议**: 冷留出集上计算 **Full-Ranking** 的 Recall@20 与 NDCG@20（$k=20$），5 次运行取均值；显著性用配对 t 检验（$p<0.05$，多数数据集 $p<0.005$）。
+- **排名评测协议**: 冷留出集上计算 **Full-Ranking** 的 Recall@20 与 NDCG@20（$k=20$），5 次运行取均值；显著性用配对 t 检验（$p<0.05$，多数数据集$p<0.005$）。
 - **对比基线与超参**: 稠密基线含 5 个 SOTA（CLCRec、Heater、GAR、GoRec、ALDI，嵌入维 64，监督热模型为 FREEDOM）与稠密 SEMCo/ELSA；稀疏侧活跃维 32（与 64 维稠密存储等价，因需存 value+index），嵌入宽度 1024（双侧则 2048），隐藏维 384。
 
 ## Key Experimental Results (实验关键数据)
@@ -118,10 +118,15 @@ SEMCo 上 PSAF 消融（冷 NDCG@20）：
 2. **增益与用户兴趣多样性严格正相关**：按 KMeans 64 簇统计用户交互簇数（图 4/图 5），单兴趣用户上稀疏与稠密几乎持平，簇数 ≥2 后稀疏方法（尤其 SEMCo/Sparsemax）反超 1024 维稠密 SEMCo；各数据集总体增益幅度与兴趣数分布的右偏程度完全对应（M4A-Onion 偏度最高、增益最大）。
 3. **存储-精度帕累托全面占优**：存储成本 64 的稀疏方法在全部 4 个数据集上即超过 1024 维稠密 SEMCo（16× 存储节省且精度更高）；存储 128 时相对 1024 维稠密提升 5.2%（Clothing）至 29.7%（M4A-Onion）。此外用户侧稀疏化到与物品相同活跃维几乎无损（图 8），可安全压缩。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 GAR/GoRec/ALDI 等生成式方法，本文不生成 CF 嵌入、不需双套用户嵌入，规避了 CF-内容语义鸿沟；相比 SEMCo，本文不改损失只改表征管线，却同时拿到精度、存储、可解释性三重收益；相比 CF 稀疏嵌入工作（如 SLIM/ELSA 系），本文首次把稀疏表征迁移到**严格冷物品 + 多模态内容**场景。
 - **可迁移亮点**: ① "把非线性从相似度侧搬到嵌入侧"以保住点积推理效率，这一 trick 可迁移到任何需要锐化相似度但受限于低延迟召回的模型；② 双侧拼接 + α-entmax 的负信号保留方案，可复用于其他 top-K 稀疏表征学习。
 - **审稿级局限批判**: ① 未做时间戳切分，随机冷物品划分可能高估真实上线收益；② PSAF 在 ELSA（MSE 重构）上表现不稳定、在 Microlens（用户远多于物品、单兴趣为主）上反而掉点，说明超参 $\alpha,\omega$ 对数据分布敏感，缺少自适应选择机制；③ 训练开销增加 15%–20%，且未报告在线检索延迟的实测数据。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

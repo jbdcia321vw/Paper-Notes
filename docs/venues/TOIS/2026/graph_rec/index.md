@@ -4,7 +4,7 @@
 
 > **方向说明**：LightGCN 谱图卷积改进、超图推荐 (Hypergraph)、异构图与知识图谱推理 (KGRec)
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (3)](../../../CIKM/2026/graph_rec/) · [SIGIR 2026 (3)](../../../SIGIR/2026/graph_rec/)
+📌 **同领域跨会议浏览：** [AAAI (RecSys Track) 2026 (1)](../../../AAAI/2026/graph_rec/) · [CIKM 2026 (3)](../../../CIKM/2026/graph_rec/) · [SIGIR 2026 (3)](../../../SIGIR/2026/graph_rec/)
 
 🔥 **高频主题：** TOIS ×2
 

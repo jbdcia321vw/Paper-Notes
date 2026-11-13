@@ -41,7 +41,7 @@ LLM4RS 把 LLM 当作增强器、画像器与推荐器，但 LLM 固有的偏见
 
 ### 1. 整体框架 (Overall Architecture)
 
-EchoTrace 沿 LLM4RS 生命周期串起三阶段闭环：P1 内容生成阶段，Augmenter/Representer 把历史交互转为画像与合成交互，诊断其分布偏斜与幻觉；P2 排序阶段，Recommender 对 LightGCN 召回候选重排或开放式生成，诊断流行度间隙与无效项；P3 反馈回路阶段，把推荐项按 $\alpha$ 比例注入训练集并重训，跨 $N$ 个周期追踪偏见累积、表征分离与注意力自强化。三阶段共享同一套 bias / hallucination 度量，使早期失真可被追溯到后期生态效应。
+EchoTrace 沿 LLM4RS 生命周期串起三阶段闭环：P1 内容生成阶段，Augmenter/Representer 把历史交互转为画像与合成交互，诊断其分布偏斜与幻觉；P2 排序阶段，Recommender 对 LightGCN 召回候选重排或开放式生成，诊断流行度间隙与无效项；P3 反馈回路阶段，把推荐项按 $\alpha$比例注入训练集并重训，跨$N$ 个周期追踪偏见累积、表征分离与注意力自强化。三阶段共享同一套 bias / hallucination 度量，使早期失真可被追溯到后期生态效应。
 
 ```mermaid
 flowchart TD
@@ -55,9 +55,9 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **带混合系数的受控反馈回路（Controlled Feedback-Loop Pipeline）**：传统回路仿真无法区分"LLM 造成"与"用户本来就会消费"，本文用时间戳 $t$ 切出 $\mathcal{D}^{(0)}$ 与 $\mathcal{D}_{gt}$，把 $t$ 后时间轴等分为 $N$ 段，仅对真实活跃用户 $u\in\mathcal{U}_n$ 生成 $K_u$ 条推荐（$K_u$ 对齐其真实消费量以保持活跃度分布），再按 $\alpha$ 注入：
+1. **带混合系数的受控反馈回路（Controlled Feedback-Loop Pipeline）**：传统回路仿真无法区分"LLM 造成"与"用户本来就会消费"，本文用时间戳 $t$切出$\mathcal{D}^{(0)}$与$\mathcal{D}_{gt}$，把$t$后时间轴等分为$N$段，仅对真实活跃用户$u\in\mathcal{U}_n$生成$K_u$条推荐（$K_u$对齐其真实消费量以保持活跃度分布），再按$\alpha$ 注入：
 $$\mathcal{D}^{(n)}=\mathcal{D}^{(n-1)}\cup\{(u,i,\tau_n)\mid u\in\mathcal{U}_n,\ i\in\tilde{\mathcal{R}}_n(u)\cup\tilde{\mathcal{G}}_n(u)\},\quad |\tilde{\mathcal{R}}_n(u)|=\lfloor\alpha K_u\rfloor$$
-$\alpha=1$ 是纯 LLM 驱动的压力测试，$\alpha=0.5$ 模拟人机混合消费。直觉：$\alpha$ 是唯一可调的反事实旋钮，让"LLM 信号占比"成为可控自变量而非混淆项。
+$\alpha=1$是纯 LLM 驱动的压力测试，$\alpha=0.5$模拟人机混合消费。直觉：$\alpha$ 是唯一可调的反事实旋钮，让"LLM 信号占比"成为可控自变量而非混淆项。
 
 2. **双维度幻觉度量（FEF + LC）**：LLM 幻觉在推荐里既表现为"编造不存在的实体"，也表现为"同输入不同输出"，单一指标会漏诊。本文定义事实错误率与逻辑矛盾率：
 $$\text{FEF}=1-\frac{|\mathcal{O}_{LLM}\cap\mathcal{O}_{gt}|}{|\mathcal{O}_{LLM}|},\qquad \text{LC}=\frac{\mathbb{I}[\mathcal{O}^{(1)}_{LLM}\neq\mathcal{O}^{(2)}_{LLM}]}{|\mathcal{O}_{gt}|}$$
@@ -77,9 +77,9 @@ $$\text{FEF}=1-\frac{|\mathcal{O}_{LLM}\cap\mathcal{O}_{gt}|}{|\mathcal{O}_{LLM}
 | A-Books | 34,375 | 25,882 | 473,266 | 473,265 | 仅物品属性（标题/品牌/类目），用户属性稀缺 |
 | Yelp | 12,025 | 11,233 | 80,217 | 52,027 | 商户类目与地理位置，用户属性稀缺 |
 
-- **数据划分与防穿越 (Splitting Strategy)**: 全局时间戳切分——截止时间 $t$ 前为初始训练集 $\mathcal{D}^{(0)}$，$t$ 后为 ground-truth 活动集 $\mathcal{D}_{gt}$；$t$ 后时间轴再等分为 $N=5$ 个周期。ML-1M 用 $t=0.8$（1,143 共同用户），A-Books/Yelp 用 $t=0.5$（31,445 / 9,102 共同用户），以保证跨周期活跃用户充足。
+- **数据划分与防穿越 (Splitting Strategy)**: 全局时间戳切分——截止时间 $t$前为初始训练集$\mathcal{D}^{(0)}$，$t$后为 ground-truth 活动集$\mathcal{D}_{gt}$；$t$后时间轴再等分为$N=5$个周期。ML-1M 用$t=0.8$（1,143 共同用户），A-Books/Yelp 用$t=0.5$（31,445 / 9,102 共同用户），以保证跨周期活跃用户充足。
 - **排名评测协议 (Ranking Protocol)**: 非传统 Top-K 精度评测，而是诊断式度量——流行度间隙（推荐项平均流行度减真实消费项平均流行度）、FEF/LC 率、簇质心欧氏距离、注意力占比。推荐列表长度 $K_u$ 对齐用户真实消费量，属"活跃度保持"的受控设定而非全库排序。
-- **对比基线与超参设置**: 三条基线对应三种角色——Cold-Item Aug（Augmenter，gpt-4o）、LLMRec（Representer，gpt-4o）、A-LLMRec（Recommender，opt-6.7b）；另加 LightGCN 作为传统 CF 对照组以隔离"LLM 特有"效应。主实验 $\alpha=1.0$，扩展实验 $\alpha=0.5$；鲁棒性检验换用 Claude-Haiku-4-5 与 Qwen3-14B。
+- **对比基线与超参设置**: 三条基线对应三种角色——Cold-Item Aug（Augmenter，gpt-4o）、LLMRec（Representer，gpt-4o）、A-LLMRec（Recommender，opt-6.7b）；另加 LightGCN 作为传统 CF 对照组以隔离"LLM 特有"效应。主实验 $\alpha=1.0$，扩展实验$\alpha=0.5$；鲁棒性检验换用 Claude-Haiku-4-5 与 Qwen3-14B。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -116,12 +116,17 @@ $$\text{FEF}=1-\frac{|\mathcal{O}_{LLM}\cap\mathcal{O}_{gt}|}{|\mathcal{O}_{LLM}
 
 1. **幻觉在内容层远比排序层严重，且被"多样性"掩盖**：画像职业 FEF 达 93.16%，而排序层 FEF 仅 4.07%–13.14%；但 A-LLMRec 的流行度间隙反而持平或下降，说明开放式生成用"编造的新物品"制造了虚假多样性——若只看流行度指标会误判为"更公平"。
 2. **LLM4RS 的结构分离无法用传统因素解释**：A-LLMRec 两用户簇交互长度相当、genre 分布几乎重合、head/mid/tail 曝光构成相似，却质心距离从 3.73 涨到 9.29；而 LightGCN 在同样回路下簇间 genre 与流行度构成清晰可分。这证明分离源于对注入信号的递归依赖，而非偏好分化或流行度集中。
-3. **$\alpha$ 是风险与收益的开关**：$\alpha=1$ 时 Recall 五周期退化 6.19%，$\alpha=0.5$ 时反升 23.74%，注意力占比同步从 86%–92% 降至 45%–65%。即保留一半真实交互即可把回路从"自我强化"拉回"人类锚定"，这为工业部署提供了可操作的配比约束。
+3. **$\alpha$是风险与收益的开关**：$\alpha=1$时 Recall 五周期退化 6.19%，$\alpha=0.5$ 时反升 23.74%，注意力占比同步从 86%–92% 降至 45%–65%。即保留一半真实交互即可把回路从"自我强化"拉回"人类锚定"，这为工业部署提供了可操作的配比约束。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 LLMRec、Cold-Item Aug、A-LLMRec 这类"提性能"的 LLM4RS 工作，本文不追求精度而追问长期副作用；相比传统反馈回路研究（如 popularity bias 放大），本文首次把"LLM 幻觉"作为独立注入信号源纳入回路建模，并用注意力占比给出自强化的直接证据而非仅相关性。
 - **可迁移亮点**: (1) 混合系数 $\alpha$ 的反事实注入机制可直接移植到任何"合成数据回灌"场景（如扩散生成推荐、仿真数据增广）做风险压力测试；(2) FEF + LC 双指标组合可低成本嵌入线上监控，尤其 LC 只需双次采样即可量化生成不稳定性。
-- **审稿级局限批判**: (1) 成本随周期线性膨胀，Representer 在 A-Books 单周期即达 \$122.4，$N=5$ 的纵向诊断难以在工业规模复现；(2) 仅覆盖 bias 与 hallucination 两维，prompt 敏感性与 sycophancy 被明确排除，而这两者在对话式推荐中可能更致命；(3) $k=2$ 的聚类选择虽以轮廓系数支撑，但二簇划分可能掩盖更细粒度的多群体极化。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+- **审稿级局限批判**: (1) 成本随周期线性膨胀，Representer 在 A-Books 单周期即达 \$122.4，$N=5$的纵向诊断难以在工业规模复现；(2) 仅覆盖 bias 与 hallucination 两维，prompt 敏感性与 sycophancy 被明确排除，而这两者在对话式推荐中可能更致命；(3)$k=2$ 的聚类选择虽以轮廓系数支撑，但二簇划分可能掩盖更细粒度的多群体极化。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-服务器先用高容量预训练编码器对原始图文生成各模态初始表征 $\{E_m\}_{m=1}^{k}$；每轮通信中客户端用私有数据训练本地模型，仅上传 item embedding $E_I^u$ 与预测函数 $P_u$；服务器聚合全局参数后，以预测函数为「行为指纹」对客户端聚类，为每组学习组级多模态聚合表征 $Q_l$，再经组级预测函数 $P_l$ 投影为偏好空间表征 $E_{M\_l}$ 下发；客户端以 $E_{M\_l}$ 为辅助监督做蒸馏训练。全流程客户端不接触任何原始多模态数据。
+服务器先用高容量预训练编码器对原始图文生成各模态初始表征 $\{E_m\}_{m=1}^{k}$；每轮通信中客户端用私有数据训练本地模型，仅上传 item embedding$E_I^u$与预测函数$P_u$；服务器聚合全局参数后，以预测函数为「行为指纹」对客户端聚类，为每组学习组级多模态聚合表征$Q_l$，再经组级预测函数$P_l$投影为偏好空间表征$E_{M\_l}$下发；客户端以$E_{M\_l}$ 为辅助监督做蒸馏训练。全流程客户端不接触任何原始多模态数据。
 
 ```mermaid
 flowchart TD
@@ -60,17 +60,17 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **组感知多模态聚合（Group-aware Aggregation）**：痛点是不存在能适配所有用户的统一融合表征，而逐用户融合又不稳定。做法是以客户端上传的预测函数（而非原始交互）做 K-Means 聚类得 $\{G_1,\dots,G_g\}$，用可学习组 embedding $E_G\in\mathbb{R}^{g\times d_2}$ 与聚合函数 $S_\phi$ 生成 $Q_l=S_\phi(\{E_m\}_{m=1}^{k},E_G(l))$，并以组内 item embedding 均值 $C_l=\mathrm{AvgPooling}(\{E_I^u\}_{u\in G_l})$ 作监督：
+1. **组感知多模态聚合（Group-aware Aggregation）**：痛点是不存在能适配所有用户的统一融合表征，而逐用户融合又不稳定。做法是以客户端上传的预测函数（而非原始交互）做 K-Means 聚类得 $\{G_1,\dots,G_g\}$，用可学习组 embedding$E_G\in\mathbb{R}^{g\times d_2}$与聚合函数$S_\phi$生成$Q_l=S_\phi(\{E_m\}_{m=1}^{k},E_G(l))$，并以组内 item embedding 均值$C_l=\mathrm{AvgPooling}(\{E_I^u\}_{u\in G_l})$ 作监督：
 $$\min_{E_G,\phi}\ \frac{1}{g}\sum_{l=1}^{g}\big\|Q_l-C_l\big\|_2^2$$
    直觉：$C_l$ 是「这群人实际怎么感知 item」的协同信号，用它回归迫使多模态融合结果落在协同过滤的语义流形上，从而既共享知识又保留组内个性；共享单一聚合模块（而非每组一套）保证跨组泛化。
 
-2. **偏好引导蒸馏（Preference-guided Distillation）**：痛点是基础融合引入冗余噪声、与排序目标错位。做法是把组级多模态表征送入组级预测函数 $P_l=\mathrm{AvgPooling}(\{P_u\}_{u\in G_l})$ 投影到偏好空间 $E_{M\_l}=P_l(Q_l)$，客户端以 KL 散度对齐自身预测 $\hat{R}_u$ 与该偏好表征：
+2. **偏好引导蒸馏（Preference-guided Distillation）**：痛点是基础融合引入冗余噪声、与排序目标错位。做法是把组级多模态表征送入组级预测函数 $P_l=\mathrm{AvgPooling}(\{P_u\}_{u\in G_l})$投影到偏好空间$E_{M\_l}=P_l(Q_l)$，客户端以 KL 散度对齐自身预测$\hat{R}_u$ 与该偏好表征：
 $$\mathcal{L}_{dis}(\theta_u;E_{M\_l})=\mathrm{KL}\big(\hat{R}_u \,\|\, E_{M\_l}\big)$$
    直觉：多模态信息不再作为「特征拼接」而是作为「教师信号」参与优化，天然与推荐目标同向；且下发的是低维偏好向量（隐式反馈任务仅 2 维），通信开销远低于传原始模态。
 
 3. **训练目标、负采样与推理效率**：总目标为
 $$\min_\theta \sum_{u=1}^{N}\alpha_u\big[\mathcal{L}_{rec}(\theta;\mathcal{R}_u)+\lambda\,\mathcal{L}_{dis}(\theta;E_{M\_l})\big]$$
-   其中 $\lambda$ 采用「上轮系数平滑 + 渐进增大」的调度（消融中最优）。$\mathcal{L}_{rec}$ 沿用各骨干原有损失（BPR/CE 类），负采样策略随骨干而定，本文未引入额外负采样器。推理阶段服务器仅需一次前向生成组级偏好向量，客户端每 epoch 训练时间与存储、通信开销均低于全部多模态 FR 基线。
+   其中 $\lambda$采用「上轮系数平滑 + 渐进增大」的调度（消融中最优）。$\mathcal{L}_{rec}$ 沿用各骨干原有损失（BPR/CE 类），负采样策略随骨干而定，本文未引入额外负采样器。推理阶段服务器仅需一次前向生成组级偏好向量，客户端每 epoch 训练时间与存储、通信开销均低于全部多模态 FR 基线。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -88,7 +88,7 @@ $$\min_\theta \sum_{u=1}^{N}\alpha_u\big[\mathcal{L}_{rec}(\theta;\mathcal{R}_u)
 
 - **数据划分与防穿越 (Splitting Strategy)**: 采用 FR 文献标准的 `Leave-One-Out`（每用户最后一条交互为测试、倒数第二条为验证），属用户级时序切分，避免未来交互泄漏。
 - **排名评测协议 (Ranking Protocol)**: 采用无偏 `Full-Ranking`（对全部未交互 item 排序），报告 HR@50 与 NDCG@50，与采样排序相比更严格、更贴近线上。
-- **对比基线与超参设置**: 3 个 ID-based FR 骨干（FedNCF、PFedRec、FedRAP）× 4 个多模态融合插件（FedMMR、AMMFRS、FedMR、FedMLP）构成对比池；本地 epoch $H$ 默认 5 最优，组数 $g$ 数据集敏感，客户端采样率 $\beta$ 影响较小；显著性用双侧 t 检验 $p<0.05$。
+- **对比基线与超参设置**: 3 个 ID-based FR 骨干（FedNCF、PFedRec、FedRAP）× 4 个多模态融合插件（FedMMR、AMMFRS、FedMR、FedMLP）构成对比池；本地 epoch $H$默认 5 最优，组数$g$数据集敏感，客户端采样率$\beta$影响较小；显著性用双侧 t 检验$p<0.05$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -126,12 +126,17 @@ FedNCF 骨干下 GFMFR 同样全面最优（Beauty 0.2067 vs 最佳基线 0.1601
 
 1. **多模态融合的收益高度依赖「怎么用」而非「用不用」**：在 Toys_and_Games / Digital_Music 上，FedMMR、AMMFRS、FedMR 甚至把 PFedRec 从 0.1412/0.1287 拉低到 0.04–0.08 量级，说明客户端侧融合在稀疏数据上引入的噪声远大于语义增益；而 GFMFR 在同场景把 HR@50 推到 0.2979/0.2943，证明「服务器编码 + 偏好空间蒸馏」是稀疏域多模态 FR 的必要条件。
 2. **分组是增益的主要来源，且分组本身会收敛**：RandomGroup 与 SingleGroup 均显著掉点，而图 4 显示 Tools_and_Home 上 100 个采样用户的组归属在前几轮频繁波动、约 20 轮后趋于稳定，说明以预测函数为指纹的聚类确实捕捉到了潜在偏好亲和力，而非随机划分。
-3. **隐私-精度可平滑折中**：接入 LDP（Laplacian 噪声，$\delta\in\{1,\dots,5\}$ 对应 $\epsilon\in\{1.0,\dots,0.2\}$）后，Beauty 的 HR@50 从 0.2024 缓降至 0.1566，Toys_and_Games 仅从 0.2979 降至 0.2775，说明组级低维偏好向量的扰动鲁棒性优于传原始表征，具备实际部署的隐私预算调节空间。
+3. **隐私-精度可平滑折中**：接入 LDP（Laplacian 噪声，$\delta\in\{1,\dots,5\}$对应$\epsilon\in\{1.0,\dots,0.2\}$）后，Beauty 的 HR@50 从 0.2024 缓降至 0.1566，Toys_and_Games 仅从 0.2979 降至 0.2775，说明组级低维偏好向量的扰动鲁棒性优于传原始表征，具备实际部署的隐私预算调节空间。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 AMMFRS/FedMR 的本质区别是「融合发生在服务器而非端侧」，端侧零多模态存算；与 FedMMR 的区别是 FedMMR 只做跨模态对比对齐、目标是「表征好」，GFMFR 把多模态投影进偏好空间并以 KL 蒸馏对齐排序目标，目标是「推荐好」；与纯 ID 的 PFedRec/FedRAP 相比，GFMFR 是即插即用插件而非替代架构。
 - **可迁移亮点**: ① 用「客户端上传的预测函数」作为隐私友好的行为指纹做聚类，可迁移到任何需要用户分群的联邦/多场景任务；② 「组级表征 + 组级预测函数投影 + KL 蒸馏」这一套把任意辅助模态转成教师信号的范式，可直接用于跨域迁移与冷启动增强。
 - **审稿级局限批判**: ① 组数 $g$ 对数据集敏感且需调参，聚类每轮在服务器执行，用户规模极大时的聚类与聚合开销未给出复杂度分析；② 组级偏好向量维度极低（隐式反馈仅 2 维），在 Office_Products 这类极稀疏集上绝对指标仍很低（HR@50 仅 0.0614），且 LDP 噪声下 Office_Products 从 0.0614 崩至 0.0119，隐私-精度折中在该域并不成立；③ 实验全部为离线全库排序，缺少线上 A/B 与真实端侧算力/带宽实测。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

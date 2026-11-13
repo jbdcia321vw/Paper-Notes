@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-离线阶段：对每个 $(u,i)$ 训练对，用六种提示风格（A 检索式复述、B 检索式综合、C 2-shot kNN 检索、D 评论 CoT、E 对抗精炼、F 长度调优 25–33 词）× 两个 Bedrock 商用 LLM（Nova Lite、Claude Haiku）交叉生成 $K$ 个候选（Google Local $K=40$，MovieLens 因无评论数据去掉 C/D/E 后 $K=18$）；每个候选映射为 30 维特征向量并按 $(u,i)$ 缓存。在线阶段：选择器对缓存候选打分取 argmax，LambdaRank 为一次 LightGBM 前向（<1ms），MLP 策略为 4096→256→40 网络前向（<20ms），端到端 p99 < 100ms。
+离线阶段：对每个 $(u,i)$训练对，用六种提示风格（A 检索式复述、B 检索式综合、C 2-shot kNN 检索、D 评论 CoT、E 对抗精炼、F 长度调优 25–33 词）× 两个 Bedrock 商用 LLM（Nova Lite、Claude Haiku）交叉生成$K$个候选（Google Local$K=40$，MovieLens 因无评论数据去掉 C/D/E 后$K=18$）；每个候选映射为 30 维特征向量并按$(u,i)$ 缓存。在线阶段：选择器对缓存候选打分取 argmax，LambdaRank 为一次 LightGBM 前向（<1ms），MLP 策略为 4096→256→40 网络前向（<20ms），端到端 p99 < 100ms。
 
 ```mermaid
 flowchart TD
@@ -59,13 +59,13 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **30 维四组特征化（让选择器"看见"生成来源）**：痛点在于选择器无法区分候选来自哪种风格/模型。四组特征为：参考侧检索 6 维（到训练参考质心与高 F1 范例的余弦、到 top-5 SBERT 邻居的最大余弦及邻居 BERTScore 的均值/最大/标准差）、查询–候选相关性 4 维（到用户/物品画像余弦 + cross-encoder 对模板化 $(u,i)$ 提示的 logits，**唯一直接看到 $(u,i)$ 的特征组**）、语言与来源 10 维（词数、模板开头标志、数字/泛化正词计数、NER 标志、源评论评分与长度、池内检索排名）、溯源 10 维（六种风格与两个生成器的 one-hot + 源评论到用户画像/历史参考的余弦）。溯源 one-hot 使选择器能从数据中学到"某些风格/生成器系统性得分更高"，而非靠人工调提示。
+1. **30 维四组特征化（让选择器"看见"生成来源）**：痛点在于选择器无法区分候选来自哪种风格/模型。四组特征为：参考侧检索 6 维（到训练参考质心与高 F1 范例的余弦、到 top-5 SBERT 邻居的最大余弦及邻居 BERTScore 的均值/最大/标准差）、查询–候选相关性 4 维（到用户/物品画像余弦 + cross-encoder 对模板化 $(u,i)$提示的 logits，**唯一直接看到$(u,i)$ 的特征组**）、语言与来源 10 维（词数、模板开头标志、数字/泛化正词计数、NER 标志、源评论评分与长度、池内检索排名）、溯源 10 维（六种风格与两个生成器的 one-hot + 源评论到用户画像/历史参考的余弦）。溯源 one-hot 使选择器能从数据中学到"某些风格/生成器系统性得分更高"，而非靠人工调提示。
 
 2. **LambdaRank 成对排序（核心增量）**：将每候选 F1 分位分桶为标签，LightGBM `lambdarank` 目标（500 树、31 叶、lr=0.05）在约 130k 候选、5,000 个查询组上训练，推理取组内 argmax。其 $\Delta$NDCG 成对目标直接作用于组内序关系，与部署目标（选 top-1）完全一致，且**每个候选的标签都进入梯度**——这正是单动作 RL 的结构性缺口。
 
-3. **单动作 RL 家族与稠密化尝试**：PPO 将选择建模为单步 MDP，状态 $s\in\mathbb{R}^{1536+64K}$（768 维用户 + 768 维物品 + K 个零填充 64 维候选槽），奖励 $r=\alpha R_{\text{struct}}+(1-\alpha)R_{\text{sem}}$，$\alpha=0.1$，配自适应熵系数（停滞 ×1.5、快学 ×0.7、熵 <0.5 再 ×1.3）。GRPO 去掉价值网络，改用组内 z-score 优势：
+3. **单动作 RL 家族与稠密化尝试**：PPO 将选择建模为单步 MDP，状态 $s\in\mathbb{R}^{1536+64K}$（768 维用户 + 768 维物品 + K 个零填充 64 维候选槽），奖励$r=\alpha R_{\text{struct}}+(1-\alpha)R_{\text{sem}}$，$\alpha=0.1$，配自适应熵系数（停滞 ×1.5、快学 ×0.7、熵 <0.5 再 ×1.3）。GRPO 去掉价值网络，改用组内 z-score 优势：
 $$A(s,a)=\frac{R_{\text{sem}}[i,a]-\mu_a R_{\text{sem}}[i]}{\sigma_a R_{\text{sem}}[i]+\epsilon}$$
-消融证实增益来自归一化而非去掉 value net（+0.01 F1 相同）。DPO 在单步 bandit 上采样至多 80 个满足 $F1(a^+)>F1(a^-)+\delta$（$\delta=2.0$）的偏好对，损失为带 F1 间隔加权的 $-\log\sigma(\beta_{\text{dpo}}[r_\theta(a^+|s)-r_\theta(a^-|s)])$，$\beta_{\text{dpo}}=0.1$。蒸馏 Stage A 用 LambdaRank 教师 softmax 软标签（$T=1.0$）以 KL 散度训练 MLP 学生 200 epoch；Stage A+B 再叠加 500 回合 GRPO 微调。
+消融证实增益来自归一化而非去掉 value net（+0.01 F1 相同）。DPO 在单步 bandit 上采样至多 80 个满足 $F1(a^+)>F1(a^-)+\delta$（$\delta=2.0$）的偏好对，损失为带 F1 间隔加权的$-\log\sigma(\beta_{\text{dpo}}[r_\theta(a^+|s)-r_\theta(a^-|s)])$，$\beta_{\text{dpo}}=0.1$。蒸馏 Stage A 用 LambdaRank 教师 softmax 软标签（$T=1.0$）以 KL 散度训练 MLP 学生 200 epoch；Stage A+B 再叠加 500 回合 GRPO 微调。
 
 4. **训练目标与推理效率**：LambdaRank 无显式负采样——组内全部 K 个候选互为相对负例，监督天然稠密；RL 变体为 on-policy 单样本 rollout。推理侧 LambdaRank 模型仅 ~1.7MB，单核 <1ms，请求路径为 KV 缓存查找 + 一次 GBDT 前向，按公开 Bedrock/EC2 定价估算每查询成本比内联 8B LLM 低约三个数量级。
 
@@ -80,7 +80,7 @@ $$A(s,a)=\frac{R_{\text{sem}}[i,a]-\mu_a R_{\text{sem}}[i]}{\sigma_a R_{\text{se
 
 - **数据划分与防穿越**: Google Local 直接沿用 XRec 发布的 `trn.pkl`/`tst.pkl`，**无重划分**，并逐字节校验测试对 $(uid,iid)$ 与参考解释同 G-Refer 的 `google_pred.jsonl` 一致；MovieLens 为 seed-42 打乱后的位置切分。
 - **排名评测协议**: 非全库排序，而是**组内 K 候选 argmax 选择**（closed-set selection）；指标为 BERTScore-F1（roberta-large、baseline rescale，与 XRec/G-Refer 评测代码逐字节一致）、BARTScore（`facebook/bart-large-cnn` 对数似然）、USR（唯一句比例，检测模板坍缩）。所有方法五种子平均。
-- **对比基线与超参**: 三类共 9 个变体——KG 路径族 3 个（温度偏置随机游走 $\tau=1.5$、Menger 式边不相交枚举、MMR 重排 $\lambda=0.7$ + 双风格生成）、离线池族 6 个（结构启发式、LambdaRank、PPO、GRPO、DPO、蒸馏 A/A+B）；另与 XRec、G-Refer 8B 的发布数值及缓存预测重打分对比。RL 策略约 1.08M 参数，训练 500 回合。
+- **对比基线与超参**: 三类共 9 个变体——KG 路径族 3 个（温度偏置随机游走 $\tau=1.5$、Menger 式边不相交枚举、MMR 重排$\lambda=0.7$ + 双风格生成）、离线池族 6 个（结构启发式、LambdaRank、PPO、GRPO、DPO、蒸馏 A/A+B）；另与 XRec、G-Refer 8B 的发布数值及缓存预测重打分对比。RL 策略约 1.08M 参数，训练 500 回合。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -120,10 +120,15 @@ $$A(s,a)=\frac{R_{\text{sem}}[i,a]-\mu_a R_{\text{sem}}[i]}{\sigma_a R_{\text{se
 2. **五种子协议下 0.002 F1 即可显著**：各 RL 方法跨种子标准差 ≤ 0.0030，GRPO 与 DPO 的 0.0046 差距超过十倍标准差；DPO 换生成器后 −0.006 约 6σ、蒸馏 A 的 −0.004 约 13σ，说明单种子比较在该文献中不可靠。
 3. **KG 路径族的 F1 天花板由图拓扑而非选择器决定**：三个 KG 变体在 Google Local（39k 节点、12+ 实体类型）均落在 0.325–0.327，在 MovieLens（仅 18 个 genre 枢纽节点）跌至 0.262–0.270，约 0.06 的落差归因于可达路径多样性；但其 USR 达 1.000/0.997–1.000，以 F1 换取了输出多样性与图边可溯源。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: XRec 与 G-Refer 均把 LLM 放在请求路径上，本文将其完全移出；与 PGPR 等图 RL 遍历方法不同，本文不做排序遍历而是在预生成池上选择；与标准 RLHF/DPO 应用不同，本文指出在稠密标签单步 bandit 中 pairwise LTR 应作为 RL 之前的必测基线。
 - **可迁移亮点**: ① "冻结候选池 + 轻量 CPU 选择器"可迁移到任何 LLM 生成式重排/文案选择场景，把生成成本摊薄为离线批任务；② 溯源 one-hot 特征让选择器自动学到生成器/提示风格偏好，免去提示工程迭代；③ 五种子 + 跨生成器池的鲁棒性检验范式值得在 LLM4Rec 评测中推广。
 - **审稿级局限批判**: ① MovieLens 仅 300 对测试且参考文本由 Claude-Sonnet-4.5 生成，作者自认只是"文内一致性证据"而非第二基准，泛化性证据偏弱；② 成本与延迟均为离线缓存池上的单进程合成负载测量，未做线上 A/B 或影子流量，三个数量级的成本比来自公开定价推算；③ 候选池需随物品元数据变更刷新，选择器漂移未在生产中验证。
-- **四维评分**: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

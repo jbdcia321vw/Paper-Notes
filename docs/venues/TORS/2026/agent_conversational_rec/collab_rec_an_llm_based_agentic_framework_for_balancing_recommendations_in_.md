@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-给定自然语言查询 $Q$ 与结构化过滤器集 $\mathcal{F}$，三个共享同一 LLM 骨干的专家智能体各自输出长度 $k=10$ 的排序城市列表；Moderator 依据外部知识库（200 城目录）做目录校验、计算三类接地诊断（success / reliability / hallucination），以逆序折扣线性标量化累计城市得分，选出集体提案 $\Phi_t$ 与集体拒绝集 $\Phi'_t$，并把结构化反馈广播给各智能体；智能体在下一轮**只允许替换至多 3 个城市**（保留 $\geq k-3$ 个），循环至理想收敛或耐心停滞即停。智能体之间**不直接通信**，全部协调经由 Moderator 的共享状态完成。
+给定自然语言查询 $Q$与结构化过滤器集$\mathcal{F}$，三个共享同一 LLM 骨干的专家智能体各自输出长度$k=10$的排序城市列表；Moderator 依据外部知识库（200 城目录）做目录校验、计算三类接地诊断（success / reliability / hallucination），以逆序折扣线性标量化累计城市得分，选出集体提案$\Phi_t$与集体拒绝集$\Phi'_t$，并把结构化反馈广播给各智能体；智能体在下一轮**只允许替换至多 3 个城市**（保留$\geq k-3$ 个），循环至理想收敛或耐心停滞即停。智能体之间**不直接通信**，全部协调经由 Moderator 的共享状态完成。
 
 ```mermaid
 flowchart TD
@@ -59,13 +59,13 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **逆序折扣的多目标标量化打分（Rank-discounted Scalarization）**：痛点在于多目标融合若交给 LLM 会不可复现。Moderator 对城市 $c$ 在轮次 $t$ 的增量贡献定义为
+1. **逆序折扣的多目标标量化打分（Rank-discounted Scalarization）**：痛点在于多目标融合若交给 LLM 会不可复现。Moderator 对城市 $c$在轮次$t$ 的增量贡献定义为
 $$\Delta s_{a_i}(c,t)=\frac{1}{\mathrm{rank}_{a_i,t}(c)}\big(\lambda_r r_{a_i,t}+\lambda_d d_{a_i,t}-\lambda_h h_{a_i,t}\big),\quad s(c,t)=s(c,t-1)+\sum_{a_i}\mathbb{I}[c\in L_{a_i,t}]\Delta s_{a_i}(c,t)$$
-其中 $r$ 为角色过滤器满足率、$d$ 为跨轮列表稳定性、$h$ 为越界/被拒比例，$\lambda$ 全部固定为 1 以避免在评测集上调参。直觉：**多智能体、多轮次的重复背书**自然放大长尾候选，而幻觉项直接做减法惩罚，权衡策略完全透明可审计。
+其中 $r$为角色过滤器满足率、$d$为跨轮列表稳定性、$h$为越界/被拒比例，$\lambda$ 全部固定为 1 以避免在评测集上调参。直觉：**多智能体、多轮次的重复背书**自然放大长尾候选，而幻觉项直接做减法惩罚，权衡策略完全透明可审计。
 
-2. **拒绝集与两种投票策略（Aggressive vs. Majority）**：痛点在于 LLM 会反复回吐已被否定的热门城市。对上一轮集体提案中的城市统计"省略票" $v_t(c)=\sum_{a_i}\mathbb{I}[c\notin L_{a_i,t}]$，拒绝集按 $\Phi'_t=\Phi'_{t-1}\cup\{c\in\Phi_{t-1}: v_t(c)\geq\tau\}$ 单调累积，$\tau=1$ 为 Aggressive、$\tau=2$ 为 Majority。拒绝集对智能体与 Moderator 同时生效，形成**硬性探索压力**，这是把推荐质量推向长尾的物理机制。
+2. **拒绝集与两种投票策略（Aggressive vs. Majority）**：痛点在于 LLM 会反复回吐已被否定的热门城市。对上一轮集体提案中的城市统计"省略票" $v_t(c)=\sum_{a_i}\mathbb{I}[c\notin L_{a_i,t}]$，拒绝集按$\Phi'_t=\Phi'_{t-1}\cup\{c\in\Phi_{t-1}: v_t(c)\geq\tau\}$单调累积，$\tau=1$为 Aggressive、$\tau=2$ 为 Majority。拒绝集对智能体与 Moderator 同时生效，形成**硬性探索压力**，这是把推荐质量推向长尾的物理机制。
 
-3. **耐心早停与训练/推理开销**：无训练、无负采样，全部为推理期编排。终止条件为理想收敛 $S(\Phi_t)=1$ 或 $t\geq T_{\min}=3$ 后在窗口 $p=2$ 内提升小于 $\epsilon=0.005$。每轮成本为 $|\mathcal{A}|=3$ 次并行 LLM 调用加一次确定性 Moderator 扫描，墙钟时间约等于最慢智能体调用加 Moderator 开销。
+3. **耐心早停与训练/推理开销**：无训练、无负采样，全部为推理期编排。终止条件为理想收敛 $S(\Phi_t)=1$或$t\geq T_{\min}=3$后在窗口$p=2$内提升小于$\epsilon=0.005$。每轮成本为$|\mathcal{A}|=3$ 次并行 LLM 调用加一次确定性 Moderator 扫描，墙钟时间约等于最慢智能体调用加 Moderator 开销。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -76,8 +76,8 @@ $$\Delta s_{a_i}(c,t)=\frac{1}{\mathrm{rank}_{a_i,t}(c)}\big(\lambda_r r_{a_i,t}
 | SynthTRIPs (分层采样) | 900 | 200 | 预算/月份/活动/可持续性等 | 每查询输出 $k=10$ | 欧洲城市旅行，含流行度与可持续性标注 |
 
 - **数据划分与防穿越 (Splitting Strategy)**: 无训练阶段，故无传统划分；采用**分层采样 + 查询生成模型与评测骨干解耦**（排除 Gemini 生成的查询）来防止风格泄漏。
-- **排名评测协议 (Ranking Protocol)**: 非交互日志场景，采用**目录接地的约束满足率**作为相关性代理——Moderator Success $S(\Phi_t)=\frac{1}{|\Phi_t|}\sum_{c}\frac{|\mathcal{M}(c)\cap\mathcal{F}|}{|\mathcal{F}|}$，辅以 Gini、归一化熵、目录覆盖率与智能体可靠性/幻觉率；显著性用配对 $t$ 检验 + Bonferroni 校正（$m=3$，$\alpha_{\text{corr}}\approx0.017$）。
-- **对比基线与超参设置**: RandRec、TopPop、MILP（结构化输入上界参考）、SASI（单智能体单轮）、MASI（多智能体单轮）；6 个骨干（Claude、Gemini、GPT-OSS-20b、Gemma-12b、Olmo-7b、Gemma-4b），temperature 0.5、top-$p$ 0.95，$k=10$，$T_{\max}=10$。
+- **排名评测协议 (Ranking Protocol)**: 非交互日志场景，采用**目录接地的约束满足率**作为相关性代理——Moderator Success $S(\Phi_t)=\frac{1}{|\Phi_t|}\sum_{c}\frac{|\mathcal{M}(c)\cap\mathcal{F}|}{|\mathcal{F}|}$，辅以 Gini、归一化熵、目录覆盖率与智能体可靠性/幻觉率；显著性用配对$t$检验 + Bonferroni 校正（$m=3$，$\alpha_{\text{corr}}\approx0.017$）。
+- **对比基线与超参设置**: RandRec、TopPop、MILP（结构化输入上界参考）、SASI（单智能体单轮）、MASI（多智能体单轮）；6 个骨干（Claude、Gemini、GPT-OSS-20b、Gemma-12b、Olmo-7b、Gemma-4b），temperature 0.5、top-$p$0.95，$k=10$，$T_{\max}=10$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -115,10 +115,15 @@ Aggressive 拒绝策略下的 Moderator Success（越高越好，加粗为该模
 2. **拒绝策略是"稳定性—多样性"的显式旋钮**：Aggressive 下 M-Early 对 MASI 的胜率赔率高达 4.89–23.05（Gemma-4b 23.05），但 Majority 下 Gemini/GPT-OSS/Gemma 系列的 M-Early vs MASI 未达 Bonferroni 阈值，证明**严格拒绝是多样性增益的必要条件**。
 3. **接地反馈可替代 logit 级约束**：Gemini 的智能体幻觉率从第 1 轮 0.002 降至第 2 轮 0.000093 并最终归零，Gemma-4b 从 0.0017 降至 0.000056——纯靠结构化输出 + Moderator 后验校验即可收敛到零幻觉，无需模型侧约束解码。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 MACRec/MATCHA 等 manager-centric 多智能体，本文的 Moderator **不是 LLM**，从而把"角色分工的收益"与"多一个模型的收益"解耦，可做干净消融；相比 MMR/xQuAD 等后处理重排，本文解决的是**上游可行候选集的生成与修复**，重排只是其下游一环；相比 MILP，本文在自然语言输入下达到其接地成功率的约 90%（0.66 vs. 0.73），但换来显著更低的集中度（Gini 0.64 vs. 0.78）与更高覆盖率（81.5% vs. 48%）。
 - **可迁移亮点**: ① "确定性 Moderator + 单调累积拒绝集"可作为任意 LLM 生成式推荐的**接地与去偏插件**，无需重训；② 逆序折扣的"多智能体重复背书"计分天然偏向长尾，可迁移到内容平台的长尾扶持场景。
 - **审稿级局限批判**: ① **成本与延迟**：本地开源模型 10 轮累计墙钟超 2000 秒（Gemma-4b 2299.6s），且小模型因无效输出更多反而比大模型更慢，工业部署需重估；② **评测效度**：以约束满足率代理相关性、无真实用户日志与在线 A/B，且 MILP 上界未被超越，多样性结论仅在 SynthTRIPs 单一合成基准上成立；③ 打分函数为启发式标量化，$\lambda$ 固定为 1 未做敏感性分析，弱候选可能因所在列表整体较强而获得诊断加成。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

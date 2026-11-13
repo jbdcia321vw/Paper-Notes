@@ -46,7 +46,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入用户时序行为序列，先用 RQ-VAE 将物品标题/描述文本嵌入量化为 3 层、码本 256 的语义ID；Transformer 编码器取最后有效位置隐状态得长期意图 $\mathbf{H}_{LTI}$，解码器以 NTP 目标自回归生成下一物品语义ID（约束 beam search 保证落在语料内），映射回码本即得候选兴趣群组；分层候选感知模块先用群组表征作 query 去 attend 历史隐状态（行为接地），再用目标物品 embedding 作 query 去 attend 多层级群组（目标对齐），得短期意图 $\mathbf{H}_{STI}$；二者与常规特征拼接入 MLP 出 CTR，全模型以 $\mathcal{L}_{CTR}+\mu\mathcal{L}_{NTP}+\eta\mathcal{L}_{SR}$ 端到端联合优化。
+输入用户时序行为序列，先用 RQ-VAE 将物品标题/描述文本嵌入量化为 3 层、码本 256 的语义ID；Transformer 编码器取最后有效位置隐状态得长期意图 $\mathbf{H}_{LTI}$，解码器以 NTP 目标自回归生成下一物品语义ID（约束 beam search 保证落在语料内），映射回码本即得候选兴趣群组；分层候选感知模块先用群组表征作 query 去 attend 历史隐状态（行为接地），再用目标物品 embedding 作 query 去 attend 多层级群组（目标对齐），得短期意图$\mathbf{H}_{STI}$；二者与常规特征拼接入 MLP 出 CTR，全模型以$\mathcal{L}_{CTR}+\mu\mathcal{L}_{NTP}+\eta\mathcal{L}_{SR}$ 端到端联合优化。
 
 ```mermaid
 flowchart TD
@@ -68,11 +68,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **语义兴趣群组生成 (HISC + NTP)**：痛点是不构造独立意图表征。用 RQ-VAE 逐层残差量化 $z_n=\arg\min_k\|\boldsymbol{r}^{(n)}-\boldsymbol{c}^n_k\|_2^2,\ \boldsymbol{r}^{(n+1)}=\boldsymbol{r}^{(n)}-\boldsymbol{c}^n_{z_n}$，同一层同码字的物品即构成一个语义群组，共 $N\times K$ 个多粒度群组；解码器以 $P(Y|X)=\prod_{n=1}^{N}P(c^{t+1}_n|X,c^{t+1}_{<n})$ 生成下一物品的语义ID。直觉：预测目标是结构化码而非原子ID，迫使模型学"抽象意图"而非表层共现，且全库预测带来全局语义一致性，抑制对局部高频特征的过拟合。
+1. **语义兴趣群组生成 (HISC + NTP)**：痛点是不构造独立意图表征。用 RQ-VAE 逐层残差量化 $z_n=\arg\min_k\|\boldsymbol{r}^{(n)}-\boldsymbol{c}^n_k\|_2^2,\ \boldsymbol{r}^{(n+1)}=\boldsymbol{r}^{(n)}-\boldsymbol{c}^n_{z_n}$，同一层同码字的物品即构成一个语义群组，共$N\times K$个多粒度群组；解码器以$P(Y|X)=\prod_{n=1}^{N}P(c^{t+1}_n|X,c^{t+1}_{<n})$ 生成下一物品的语义ID。直觉：预测目标是结构化码而非原子ID，迫使模型学"抽象意图"而非表层共现，且全库预测带来全局语义一致性，抑制对局部高频特征的过拟合。
 
-2. **分层候选感知意图精炼 (HCAIM)**：痛点是生成群组可能仅因粗粒度语义相似而混入行为无关物品。先群组内 mean-pool 得 $\mathbf{E}_C\in\mathbb{R}^{(N-1)\times d}$，再两级交叉注意力：$\mathbf{E}_R=\text{Softmax}\big(\tfrac{(\mathbf{E}_CW_Q)(\mathbf{H}_{enc}W_K)^\top}{\sqrt{d}}\big)(\mathbf{H}_{enc}W_V)$ 用群组查询历史、筛掉无行为证据的物品；$\mathbf{H}_{STI}=\text{Softmax}\big(\tfrac{(\boldsymbol{e}_vW_Q)(\mathbf{E}_RW_K)^\top}{\sqrt{d}}\big)(\mathbf{E}_RW_V)$ 用目标物品查询多层级群组，自适应选择合适语义粒度（大类 vs 细分 niche）。直觉：静态 mean-pool 会得到 target-agnostic 向量，两级 query 分别解决"行为接地"与"目标对齐"。
+2. **分层候选感知意图精炼 (HCAIM)**：痛点是生成群组可能仅因粗粒度语义相似而混入行为无关物品。先群组内 mean-pool 得 $\mathbf{E}_C\in\mathbb{R}^{(N-1)\times d}$，再两级交叉注意力：$\mathbf{E}_R=\text{Softmax}\big(\tfrac{(\mathbf{E}_CW_Q)(\mathbf{H}_{enc}W_K)^\top}{\sqrt{d}}\big)(\mathbf{H}_{enc}W_V)$用群组查询历史、筛掉无行为证据的物品；$\mathbf{H}_{STI}=\text{Softmax}\big(\tfrac{(\boldsymbol{e}_vW_Q)(\mathbf{E}_RW_K)^\top}{\sqrt{d}}\big)(\mathbf{E}_RW_V)$ 用目标物品查询多层级群组，自适应选择合适语义粒度（大类 vs 细分 niche）。直觉：静态 mean-pool 会得到 target-agnostic 向量，两级 query 分别解决"行为接地"与"目标对齐"。
 
-3. **联合优化与自监督正则**：总损失 $\mathcal{L}=\mathcal{L}_{CTR}+\mu\mathcal{L}_{NTP}+\eta\mathcal{L}_{SR}$，其中 $\mathcal{L}_{SR}=-\frac{1}{N}\sum_i L\big(\text{OP}(\mathcal{M}_{base}(\boldsymbol{x}_i)),\text{OP}(\mathcal{M}_{ours}(\boldsymbol{x}_i,\boldsymbol{\phi}_i))\big)$ 用轻量 DeepFM 的 logits 蒸馏正则化全模型输出，缓解训练早期生成意图噪声导致的收敛不稳。NTP 为全库 softmax（免负采样），推理时仅需一次 beam search 生成 + 两次小规模注意力，开销与 DIN 同级。
+3. **联合优化与自监督正则**：总损失 $\mathcal{L}=\mathcal{L}_{CTR}+\mu\mathcal{L}_{NTP}+\eta\mathcal{L}_{SR}$，其中$\mathcal{L}_{SR}=-\frac{1}{N}\sum_i L\big(\text{OP}(\mathcal{M}_{base}(\boldsymbol{x}_i)),\text{OP}(\mathcal{M}_{ours}(\boldsymbol{x}_i,\boldsymbol{\phi}_i))\big)$ 用轻量 DeepFM 的 logits 蒸馏正则化全模型输出，缓解训练早期生成意图噪声导致的收敛不稳。NTP 为全库 softmax（免负采样），推理时仅需一次 beam search 生成 + 两次小规模注意力，开销与 DIN 同级。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -122,10 +122,15 @@ flowchart TD
 2. **NTP 是召回-排序一致性的命门**：w/o NTP 在 Instrument 上 AUC 掉至 0.7146（-0.36pt，全变体最低），且 Fashion 掉 1.19pt，验证"去掉全库生成监督后，群组退化为局部模式匹配，无法对齐召回假设"；而 w/o SR 在 MovieLens 上跌幅最大（-0.41pt），说明自监督正则主要作用是稳定早期训练而非提供额外信息。
 3. **两级注意力优于任何单级聚合**：图 3 显示 Intent-Mean（群组内均值池化）与 Target-Intent（仅目标注意力）均低于完整 HCAIM，印证"先行为接地、再目标对齐"的粗到细精炼缺一不可；图 4 的 t-SNE 进一步显示 ST-Intent 紧簇于目标物品周围、LT-Intent 广泛分布，证明二者成功解耦。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 DIN/DIEN 的本质区别在于后者只做"历史对目标的注意力加权"、不产生独立意图表征，GenCI 用生成式 NTP 主动构造候选无关的意图假设；与 SFG 相比，SFG 是生成特征 embedding 缓解坍缩，GenCI 生成的是**语义ID群组**并跨阶段注入精排上下文；与 TIGER 类生成式召回相比，GenCI 把生成结果作为精排的动态先验而非直接输出推荐列表，首次打通 generate-and-interpret 闭环。
 - **可迁移亮点**: ① 用 RQ-VAE 语义ID的"同层同码字即群组"性质零成本构造多粒度兴趣簇，可迁移到任何需要意图聚类的精排模型；② 用轻量 base 模型 logits 做自监督正则稳定多任务联合训练，是低成本抗早期噪声的通用技巧。
 - **审稿级局限批判**: ① 评估仅用 AUC/LogLoss 的逐点协议，未做全库排序或线上 A/B，且 MovieLens LogLoss 反被 DIN/DIEN 超越，概率校准存疑；② 依赖物品文本经 Sentence-T5 + RQ-VAE 离线量化，文本缺失或多模态场景下语义ID质量与冷启动物品覆盖未讨论；③ $\mu,\eta$ 两个损失权重需网格搜索（图 6/7），且 NTP 引入 T5 骨干使训练成本显著高于纯特征交叉基线。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

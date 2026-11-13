@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入序列由用户画像 $E_U$、行为序列 $E_S$、K 个候选 $E_I$ 组成，经冻结骨干得到初始分数 $S_0$ 与首步推理 token；随后每步把上一步输出的最后 K 个隐状态作为新推理 token 追加进序列，连同固定的 History Queries 一起送入 LoRA 增强的 Transformer，由专用推理头输出残差 $S_r$，累加得 $S_{\text{cum},r}=S_0+\sum_{i\le r}S_i$。训练仅更新 LoRA 与推理头，推理时按步数 $R_{\text{steps}}$ 自回归展开。
+输入序列由用户画像 $E_U$、行为序列$E_S$、K 个候选$E_I$组成，经冻结骨干得到初始分数$S_0$与首步推理 token；随后每步把上一步输出的最后 K 个隐状态作为新推理 token 追加进序列，连同固定的 History Queries 一起送入 LoRA 增强的 Transformer，由专用推理头输出残差$S_r$，累加得$S_{\text{cum},r}=S_0+\sum_{i\le r}S_i$。训练仅更新 LoRA 与推理头，推理时按步数$R_{\text{steps}}$ 自回归展开。
 
 ```mermaid
 flowchart TD
@@ -63,9 +63,9 @@ flowchart TD
 $$\mathcal{L}_{\text{reasoning}}=\sum_{r=1}^{R_{\text{steps}}}\frac{1}{KT}\sum_{i,j}\left(S_{\text{cum},r,i,j}-L_{i,j}\right)^2$$
 直觉上每步只需拟合"剩余误差"，天然形成由粗到细的课程式优化，且与排序目标（分数序）直接对齐，而非 BCE 式的独立重分类。
 
-2. **History Queries（历史查询）**：痛点是候选专属推理 token 只能看到自身候选与用户侧信息，缺乏对全局兴趣的"压缩摘要"。作者从初始序列 $H_0=T(X_0,M_0)$ 中取行为序列段末 $N_{HQ}$ 个位置的隐状态作为固定查询 $E_{HQ}$，在所有推理步复用；掩码上 $E_{HQ}$ 段内部保持因果掩码、对外可见全部用户历史。这样以极少量 token（$N_{HQ}=2\sim4$）为每个候选的推理注入全局上下文，且不引入候选间信息泄漏。
+2. **History Queries（历史查询）**：痛点是候选专属推理 token 只能看到自身候选与用户侧信息，缺乏对全局兴趣的"压缩摘要"。作者从初始序列 $H_0=T(X_0,M_0)$中取行为序列段末$N_{HQ}$个位置的隐状态作为固定查询$E_{HQ}$，在所有推理步复用；掩码上$E_{HQ}$段内部保持因果掩码、对外可见全部用户历史。这样以极少量 token（$N_{HQ}=2\sim4$）为每个候选的推理注入全局上下文，且不引入候选间信息泄漏。
 
-3. **参数高效微调与推理掩码**：冻结 $E_{\text{pretrain}},T_{\text{pretrain}},P_{\text{pretrain}}$，仅在 Transformer 中插入 LoRA（rank $r\in\{32,64,128\}$，$\alpha\in\{64,128,256\}$）并新增推理头 $P_{\text{reasoning}}$；扩展候选掩码保证第 $r$ 步推理 token 只能访问用户侧信息、自身候选及同候选的历史推理 token（图 1）。训练负采样沿用"每正样本配 1 个随机负样本"（$K=2$），推理开销随步数线性增长，实测 1–2 步即达性价比拐点。
+3. **参数高效微调与推理掩码**：冻结 $E_{\text{pretrain}},T_{\text{pretrain}},P_{\text{pretrain}}$，仅在 Transformer 中插入 LoRA（rank$r\in\{32,64,128\}$，$\alpha\in\{64,128,256\}$）并新增推理头$P_{\text{reasoning}}$；扩展候选掩码保证第$r$步推理 token 只能访问用户侧信息、自身候选及同候选的历史推理 token（图 1）。训练负采样沿用"每正样本配 1 个随机负样本"（$K=2$），推理开销随步数线性增长，实测 1–2 步即达性价比拐点。
 
 <figure class="paper-figure" markdown="span">
   ![图 1：Refiner 中扩展的候选掩码，用于防止推理过程中的信息泄漏。History Queries 被设计为关注所有 User History 信息，同时在查询片段内部保持因果掩码。然而，新引入的 Reasoning Tokens 被限制只能访问其对应的 Candidate Item、来自先前步骤的前置 Reasoning Tokens，以及包括 User History 和 History Queries 在内的所有用户侧信息。](../../../../assets/papers/2610.36890v1/figure_1.png)<figcaption>图 1：Refiner 中扩展的候选掩码，用于防止推理过程中的信息泄漏。History Queries 被设计为关注所有 User History 信息，同时在查询片段内部保持因果掩码。然而，新引入的 Reasoning Tokens 被限制只能访问其对应的 Candidate Item、来自先前步骤的前置 Reasoning Tokens，以及包括 User History 和 History Queries 在内的所有用户侧信息。</figcaption>
@@ -120,10 +120,15 @@ $$\mathcal{L}_{\text{reasoning}}=\sum_{r=1}^{R_{\text{steps}}}\frac{1}{KT}\sum_{
 2. **冷门物品与长序列用户获益最大**：分组实验中 Refiner 在最低流行度物品组增益最显著，在最长序列用户组仍稳定为正——基模型表征越不可靠（冷启动物品）或行为越复杂（长序列），可精化空间越大；热门物品因协同信号充分，增益自然收窄。
 3. **步数与查询数存在明显性价比拐点**：$N_{HQ}=2\sim4$ 时性能最佳且相对推理延迟 RIL < 1.1；推理步数 1–2 步即取得主要增益，第 3–4 步残差幅度 ARR 快速衰减、增量收益 IRS 趋零而延迟线性上升，故线上仅启用 1 步即换来 PV-CTR +0.75%。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 ReaRec/CaLR 这类"精化用户表征做 next-item 召回"的隐推理，Refiner 把推理直接落在**候选分数空间**并保持候选隔离；相比 OnePiece 的 set-wise 端到端训练（需候选间交互与业务上下文输入），Refiner 不改动骨干、只训轻量模块，工程可落地性显著更强；相比 LLM 文本 CoT，无文本生成开销。
 - **可迁移亮点**: ① "冻结骨干 + 残差头 + 累积 MSE"可作为任意已上线精排模型的通用增益插件；② History Queries 用少量隐状态 token 为逐候选计算注入全局上下文，可迁移到多候选并行的重排/生成式检索场景。
 - **审稿级局限批判**: ① 公开集采用 1:1 采样排序（$K=2$），与真实全库/大候选集排序分布差距较大，AUC 增益的绝对量级可能被高估；② 推理延迟仅报告未做 serving 优化的 RIL，多步自回归在严格时延约束的线上场景扩展性存疑，且缺少与 OnePiece 的直接对比（作者自述受骨干接口限制）。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

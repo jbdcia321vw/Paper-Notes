@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-给定基座模型 $\theta_{base}$ 与 $N$ 个目标专家 $\theta_i$，任务向量 $\tau_i = \text{vec}(\theta_i) - \text{vec}(\theta_{base})$。阶段一：对任务向量矩阵 $\mathbf{T}\in\mathbb{R}^{N\times D}$ 逐行剪枝得 $\tilde{\mathbf{T}}$，滤除冲突/冗余更新。阶段二：轻量门控 $f_\phi$ 将偏好 $\boldsymbol{\mu}\in\Delta^{N-1}$ 映射为合并系数 $\boldsymbol{\lambda}=f_\phi(\boldsymbol{\mu})$，合并模型 $\bar\theta(\boldsymbol{\mu})=\theta_{base}+\sum_i \lambda_i\tilde{\mathbf{T}}_{i,:}$ 直接产出推荐列表。训练时仅更新门控参数 $\phi$，专家与基座全冻结；推理时单次前向即得系数，无需重训或生成模块。
+给定基座模型 $\theta_{base}$与$N$个目标专家$\theta_i$，任务向量$\tau_i = \text{vec}(\theta_i) - \text{vec}(\theta_{base})$。阶段一：对任务向量矩阵$\mathbf{T}\in\mathbb{R}^{N\times D}$逐行剪枝得$\tilde{\mathbf{T}}$，滤除冲突/冗余更新。阶段二：轻量门控$f_\phi$将偏好$\boldsymbol{\mu}\in\Delta^{N-1}$映射为合并系数$\boldsymbol{\lambda}=f_\phi(\boldsymbol{\mu})$，合并模型$\bar\theta(\boldsymbol{\mu})=\theta_{base}+\sum_i \lambda_i\tilde{\mathbf{T}}_{i,:}$直接产出推荐列表。训练时仅更新门控参数$\phi$，专家与基座全冻结；推理时单次前向即得系数，无需重训或生成模块。
 
 ```mermaid
 flowchart TD
@@ -61,11 +61,11 @@ flowchart TD
 
 1. **联合重要性剪枝（Conflict Mitigation via Pruning）**：痛点在于稠密任务向量跨目标重叠严重、直接合并会互相压制。对每个参数位置 $j$ 定义组合得分
 $$S_{i,j}=\beta\frac{T_{i,j}^2}{\|\mathbf{T}_{i,:}\|_2^2}+(1-\beta)\big|T_{i,j}\cdot\bar{T}_{i,j}\big|,\quad \bar{T}_{i,j}=\tfrac{1}{N-1}\textstyle\sum_{k\neq i}T_{k,j}$$
-其中第一项为目标特异性重要性，第二项为跨目标相关性。关键细节：跨目标项取**绝对值**而非符号对齐，因为准确率与多样性的更新方向天然冲突，取模长只度量耦合强度、避免因符号冲突误删对多目标都关键的参数。剪枝量由范数保留率 $\rho$ 动态决定（保留 top-$k_i$ 使自重要性累计占比 $\geq\rho$），而非固定比例。
+其中第一项为目标特异性重要性，第二项为跨目标相关性。关键细节：跨目标项取**绝对值**而非符号对齐，因为准确率与多样性的更新方向天然冲突，取模长只度量耦合强度、避免因符号冲突误删对多目标都关键的参数。剪枝量由范数保留率 $\rho$动态决定（保留 top-$k_i$使自重要性累计占比$\geq\rho$），而非固定比例。
 
-2. **自适应合并与可学习系数（Adaptive Model Merging）**：痛点在于线性区制失效，直接用 $\boldsymbol{\mu}$ 当系数无法刻画非线性交互。RecSoup 用单层线性路由 $f_\phi$ 学习 $\boldsymbol{\lambda}=f_\phi(\boldsymbol{\mu})$，允许系数放大或抑制某目标、突破输入偏好值的线性约束。与 PWE-MoE 的本质区别在于**基底构造**：门控在剪枝后的纯净子空间上导航，只需学 Pareto 流形坐标，无需同时补偿稠密向量的噪声干扰。
+2. **自适应合并与可学习系数（Adaptive Model Merging）**：痛点在于线性区制失效，直接用 $\boldsymbol{\mu}$当系数无法刻画非线性交互。RecSoup 用单层线性路由$f_\phi$学习$\boldsymbol{\lambda}=f_\phi(\boldsymbol{\mu})$，允许系数放大或抑制某目标、突破输入偏好值的线性约束。与 PWE-MoE 的本质区别在于**基底构造**：门控在剪枝后的纯净子空间上导航，只需学 Pareto 流形坐标，无需同时补偿稠密向量的噪声干扰。
 
-3. **训练目标、负采样与推理效率**：损失为偏好加权多目标损失 $\mathcal{L}(\theta_{merged},\boldsymbol{\mu})=\sum_i \mu_i\mathcal{L}_i(\theta_{merged})$，仅在小批子集上评估以省算力；准确率专家用 BPR 损失，多样性专家用可微 $\alpha$-NDCG 代理损失。训练负采样 9 个、评估 99 个。推理复杂度：adapter 设定 $O(Nd^2)$、全参数 $O(NP)$，相较超网络的 $O(P\cdot H)$ 与扩散的 $O(T\cdot P\cdot d)$ 消除了对 $d$ 的三次依赖。
+3. **训练目标、负采样与推理效率**：损失为偏好加权多目标损失 $\mathcal{L}(\theta_{merged},\boldsymbol{\mu})=\sum_i \mu_i\mathcal{L}_i(\theta_{merged})$，仅在小批子集上评估以省算力；准确率专家用 BPR 损失，多样性专家用可微$\alpha$-NDCG 代理损失。训练负采样 9 个、评估 99 个。推理复杂度：adapter 设定$O(Nd^2)$、全参数$O(NP)$，相较超网络的$O(P\cdot H)$与扩散的$O(T\cdot P\cdot d)$消除了对$d$ 的三次依赖。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -79,7 +79,7 @@ $$S_{i,j}=\beta\frac{T_{i,j}^2}{\|\mathbf{T}_{i,:}\|_2^2}+(1-\beta)\big|T_{i,j}\
 
 - **数据划分与防穿越**: 序列推荐标准设定，按用户历史序列组织训练/验证/测试（沿用 Paragon 流程）。
 - **排名评测协议**: `Sampled Ranking`，训练 9 负样本、评估 99 负样本；指标为 HR@5、NDCG@5、$\alpha$-NDCG@5（多样性）。
-- **对比基线与超参设置**: 基线含 Retrain（oracle）、MMR（后处理）、CMR/Paragon（参数生成）、Soup/TATR/TIES/DARE/CABS/LwPTV（模型合并）。Embedding 与隐状态维度 $d=64$，Adam 学习率 $10^{-3}$，$\beta=0.5$，$\rho\in[0.9,0.95]$（实际保留率 0.4–0.7）。核心指标：Hypervolume (HV)、Pareto 前沿长度 (LF)、可控性 Contro.（偏好序与指标序的 Kendall 式一致率）。
+- **对比基线与超参设置**: 基线含 Retrain（oracle）、MMR（后处理）、CMR/Paragon（参数生成）、Soup/TATR/TIES/DARE/CABS/LwPTV（模型合并）。Embedding 与隐状态维度 $d=64$，Adam 学习率$10^{-3}$，$\beta=0.5$，$\rho\in[0.9,0.95]$（实际保留率 0.4–0.7）。核心指标：Hypervolume (HV)、Pareto 前沿长度 (LF)、可控性 Contro.（偏好序与指标序的 Kendall 式一致率）。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -115,10 +115,15 @@ RecSoup 在 ML-1M 上较 Soup 提升 **+8.5%**、较 TATR 提升 **+13.9%**；Ti
 2. **可学习系数不可替代**：去掉 MLP 后 ML-1M(SASRec) HV 掉 5.9%、TiSASRec 掉 11.2%，证明线性区制失效下「偏好直接当系数」无法刻画非线性权衡。
 3. **效率与可控性双赢**：推理参数构建延迟 0.041–0.045 ms，较超网络（7.5–9.4 ms）快 **165–228 倍**，较扩散（~87.79 s）快三个数量级；同时三目标（Acc+Div+Fair）设定下 HV 0.6148 仍为最优，验证可扩展性。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相较 Paragon/CMR 的参数生成，RecSoup 不做参数合成而做参数复用，规避 Lipschitz 平滑约束（定理 5.1 证明 $L<L_0$ 时生成映射无法覆盖完整 Pareto 集）；相较 Soup/TATR 的线性/正交合并，RecSoup 用跨目标相关性剪枝 + 非线性门控突破线性区制失效；相较 TIES 仅用自重要性剪枝，额外引入跨目标耦合项。
 - **可迁移亮点**: ① 跨目标相关性取绝对值的剪枝准则可迁移到任何多任务/多场景模型合并；② 「先净化基底、再学系数」的解耦思路可复用于 LoRA 多适配器融合与多场景 STAR 类模型。
 - **审稿级局限批判**: ① 剪枝收益条件性明显，在任务向量本就兼容时反而掉点，缺乏自适应判断「何时该剪」的机制；② 实验仅在 64 维小模型与采样排序协议下验证，未报告全库 Full-Ranking 与工业级大模型（含大规模 item embedding）下的延迟表现，全参数合并时 $|I|\gg d^2$ 可能主导开销。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

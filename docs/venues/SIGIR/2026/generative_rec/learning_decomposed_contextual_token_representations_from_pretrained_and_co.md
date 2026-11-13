@@ -62,7 +62,7 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **分解嵌入融合 DEF（保住预训练语义）**：痛点是分词后码本向量被丢弃、token 嵌入从零学起。做法是把第 $i$ 层码本 $C_i\in\mathbb{R}^{K\times d}$ 整体冻结为语义通道 $E_{\text{pre}}$，另设同形状可学协同通道 $E_{\text{collab}}$，各自线性投影 + LayerNorm 后拼接融合：
+1. **分解嵌入融合 DEF（保住预训练语义）**：痛点是分词后码本向量被丢弃、token 嵌入从零学起。做法是把第 $i$层码本$C_i\in\mathbb{R}^{K\times d}$整体冻结为语义通道$E_{\text{pre}}$，另设同形状可学协同通道$E_{\text{collab}}$，各自线性投影 + LayerNorm 后拼接融合：
 
 $$e_{\text{fused}}=W_{\text{fuse}}\big[\mathrm{LN}(W_{\text{pre}}e_{\text{pre}})\;\|\;\mathrm{LN}(W_{\text{collab}}e_{\text{collab}})\big]$$
 
@@ -72,9 +72,9 @@ $$e_{\text{fused}}=W_{\text{fuse}}\big[\mathrm{LN}(W_{\text{pre}}e_{\text{pre}})
 
 $$\tilde e_c=\sum_{c'\in\mathcal{N}(c)}\frac{\exp(\langle W_q u_c, W_k e_{c'}\rangle)}{\sum_{c''}\exp(\langle W_q u_c, W_k e_{c''}\rangle)}\,e_{c'},\qquad e_{\text{final}}=\alpha\tilde e_c+(1-\alpha)e_c^{\text{static}}$$
 
-直觉：候选集取整层码本，等价于允许模型"借用"预训练中未被激活的码本容量，把死码本变成可插值的语义基；$\alpha$ 控制语境改写强度，$\alpha$ 过大（0.7）会因单 token 欠训练而崩溃。
+直觉：候选集取整层码本，等价于允许模型"借用"预训练中未被激活的码本容量，把死码本变成可插值的语义基；$\alpha$控制语境改写强度，$\alpha$ 过大（0.7）会因单 token 欠训练而崩溃。
 
-3. **可学 BOS 查询 + 训练目标**：首 token 承载粗粒度类别语义，错则全序列错。用 $N$ 个可学查询 $Q_{\text{BOS}}\in\mathbb{R}^{N\times d}$ 以同一组合算子生成上下文相关的 BOS 嵌入，替代零向量。总损失即标准自回归下一 token 交叉熵 $\mathcal{L}=-\sum_l \log p(c_{i_t,l}\mid X_u,c_{<l})$，**无需负采样**（全库 softmax 由生成式解码隐式完成）；额外开销为每物品 $O(d^2)$ 融合 + $O(Ld^2)$ 上下文池化 + 每 token $O(Kd^2)$ 组合，均与 $L$ 线性、远低于骨干自注意力的 $O(L^2d)$。
+3. **可学 BOS 查询 + 训练目标**：首 token 承载粗粒度类别语义，错则全序列错。用 $N$个可学查询$Q_{\text{BOS}}\in\mathbb{R}^{N\times d}$以同一组合算子生成上下文相关的 BOS 嵌入，替代零向量。总损失即标准自回归下一 token 交叉熵$\mathcal{L}=-\sum_l \log p(c_{i_t,l}\mid X_u,c_{<l})$，**无需负采样**（全库 softmax 由生成式解码隐式完成）；额外开销为每物品$O(d^2)$融合 +$O(Ld^2)$上下文池化 + 每 token$O(Kd^2)$组合，均与$L$线性、远低于骨干自注意力的$O(L^2d)$。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -122,10 +122,15 @@ $$\tilde e_c=\sum_{c'\in\mathcal{N}(c)}\frac{\exp(\langle W_q u_c, W_k e_{c'}\ra
 2. **死码本被激活，且激活量随数据量自适应**：TIGER 第一层码本仅 25.67%–27.97% 条目被训练使用，DECOR 通过组合把 Instrument/Game 提升到 100%、Scientific 提升到 51.06%——交互量少 20%–50% 的 Scientific 只按需激活，说明组合机制是"按语境取用容量"而非无差别铺满。
 3. **稳定性优于端到端联合训练**：DECOR 在 101 个 epoch 达到峰值 95% Recall，ETEGRec 需 124 个 epoch，且 ETEGRec 在 75–110 epoch 出现明显学习停滞；同时 DECOR 在 batch=128 下每样本仅增 0.85ms（3.85→4.70ms），保留约 82% 吞吐，精度换 5%–14% 提升的性价比极高。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 TIGER 的本质区别是 token 嵌入从"静态查表"变为"冻结语义 + 可学协同 + 上下文组合"的三重动态解释；与 ETEGRec 的区别是不动语义 ID、不重分词，用嵌入层组合替代分词器联合优化，因而避开训练震荡；与 LETTER/CoST 的区别是它们只在预训练阶段改良分词，DECOR 在推荐阶段持续保留并使用预训练语义。
 - **可迁移亮点**: (i) "冻结预训练码本 + 可学协同嵌入 + 轻量融合"的双通道范式可平移到任何 VQ/RQ 离散 ID 的生成式召回；(ii) 同层码本内软组合相当于把未激活码本当作可插值语义基，这一"激活死码本"技巧对码本利用率低的量化推荐普遍适用。
-- **审稿级局限批判**: (i) 组合候选集取整层码本（$K=256$），每 token 需 $O(Kd^2)$ 注意力，若扩到多层联合候选或更大码本，延迟优势可能收窄，论文仅报告了 $K=256$ 的单一配置；(ii) 评估仅限 Amazon 三个 5-core 子集与离线 Full-Ranking，缺少冷启动分桶与线上 A/B，且 $\alpha$ 在 0.7 时性能崩溃，说明对超参虽不极端敏感但存在明显失效边界。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+- **审稿级局限批判**: (i) 组合候选集取整层码本（$K=256$），每 token 需$O(Kd^2)$注意力，若扩到多层联合候选或更大码本，延迟优势可能收窄，论文仅报告了$K=256$的单一配置；(ii) 评估仅限 Amazon 三个 5-core 子集与离线 Full-Ranking，缺少冷启动分桶与线上 A/B，且$\alpha$ 在 0.7 时性能崩溃，说明对超参虽不极端敏感但存在明显失效边界。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

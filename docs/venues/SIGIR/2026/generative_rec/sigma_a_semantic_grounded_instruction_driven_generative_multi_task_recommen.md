@@ -66,7 +66,7 @@ $$\mathcal{L}_{CL}=-\frac{1}{2B}\sum_{i=1}^{2B}\log\frac{e^{\cos(\boldsymbol{v}^
 
 再用 KL 蒸馏把线上排序模型 ID 嵌入的批内相似度分布迁移给文本表征：$\mathcal{L}_{KD}=-\frac{1}{2B}\sum_{i,j}\mathcal{P}(\boldsymbol{v}^{ID})\log\frac{\mathcal{P}(\boldsymbol{v}^{ID})}{\mathcal{P}(\boldsymbol{v}^{text})}$。直觉：让"文本说得像"与"行为买得近"在同一空间重合，LLM 才既懂世界知识又懂平台偏好。
 
-2. **混合物品分词（Hybrid Item Tokenization）**：纯 SID 量化存在信息损失，同前缀物品无法区分；纯 ID token 又丢失层次结构、生成空间过大。本文用 RQ-VAE 将 $\boldsymbol{v}^{text}_i$ 量化为 $\{c_1,\dots,c_L\}$，但只保留长度 $\ell$ 的前缀参与生成，并追加唯一 ID token $id_i$，物品表示为 $[E(c_1),\dots,E(c_\ell),\text{UpProj}(\text{MLP}(\boldsymbol{v}^{ID}_i,\boldsymbol{v}^{text}_i,\boldsymbol{v}^{img}_i))]$。直觉：SID 前缀负责"粗定位 + 可生成"，ID token 负责"精区分 + 多模态融合"，二者互补。
+2. **混合物品分词（Hybrid Item Tokenization）**：纯 SID 量化存在信息损失，同前缀物品无法区分；纯 ID token 又丢失层次结构、生成空间过大。本文用 RQ-VAE 将 $\boldsymbol{v}^{text}_i$量化为$\{c_1,\dots,c_L\}$，但只保留长度$\ell$的前缀参与生成，并追加唯一 ID token$id_i$，物品表示为$[E(c_1),\dots,E(c_\ell),\text{UpProj}(\text{MLP}(\boldsymbol{v}^{ID}_i,\boldsymbol{v}^{text}_i,\boldsymbol{v}^{img}_i))]$。直觉：SID 前缀负责"粗定位 + 可生成"，ID token 负责"精区分 + 多模态融合"，二者互补。
 
 3. **训练目标、负采样与推理效率**：总损失为 $\mathcal{L}=\mathcal{L}_{NTP}+\mathcal{L}_{InfoNCE}$，其中 NTP 只在 SID 前缀上计算，目标物品 ID 用 InfoNCE 优化以规避超大词表 softmax；负采样采用**同 SID 前缀的批内共享 hard negative**（10 万条），迫使模型在同语义子空间内做细粒度判别。推理侧采用 nearline 异步增量推理 + KV cache 复用，候选写入 U2I 索引供实时服务，规避自回归在线延迟。
 
@@ -115,10 +115,15 @@ $$\mathcal{L}_{CL}=-\frac{1}{2B}\sum_{i=1}^{2B}\log\frac{e^{\cos(\boldsymbol{v}^
 2. **生成粒度存在"精度天花板"而非越长越好**：SID4ID→SID2ID 因两 token 前缀生成准确率仅 29%（单 token 为 63%）导致 HR@10 反降至 28.43%；而 SID4ID→SID1ID 相对 SID1ID→SID1ID 仅带来边际增益却显著拉长序列，故最终选 SID1ID→SID1ID——**前缀长度应由生成准确率而非信息量决定**。
 3. **APF 与 hard negative 分别贡献"分布形状"与"判别粒度"**：去掉 APF 后 HR@20 从 43.05% 掉到 37.73%（−5.32 pt），说明按任务自适应调节分布锐度对探索类任务至关重要；同前缀 hard negative 从 100K 降到 10K 即损失 2.19 pt HR@20，验证了"同语义子空间内难负例"是 ID token 精确判别的关键。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相较 TIGER/GR(SID) 的纯层次 SID 生成，SIGMA 用 ID token 补足量化信息损失并支持多模态嵌入注入；相较 GR(ID) 的纯 ID 分词，它保留了 SID 前缀带来的可生成结构与 ANN 子集检索效率；相较传统多任务多塔模型，它用一条指令统一 7 类需求，无需为每个业务场景单独建模。
-- **可迁移亮点**: ① "SID 前缀 + 唯一 ID token"的混合分词可直接迁移到任何需要"结构化生成 + 细粒度区分"的生成式召回场景；② 用 beam score 的标准差 $\sigma$ 作为分布锐度调节因子（约束任务 $\sigma$ 大→锐化保精度，探索任务 $\sigma$ 小→平坦促多样）是一个极轻量、无需额外训练的任务自适应技巧。
+- **可迁移亮点**: ① "SID 前缀 + 唯一 ID token"的混合分词可直接迁移到任何需要"结构化生成 + 细粒度区分"的生成式召回场景；② 用 beam score 的标准差 $\sigma$作为分布锐度调节因子（约束任务$\sigma$大→锐化保精度，探索任务$\sigma$ 小→平坦促多样）是一个极轻量、无需额外训练的任务自适应技巧。
 - **审稿级局限批判**: ① 评测仅报告 SID 级 HR，未给出 NDCG/MRR 等位置敏感指标，也未说明各任务 HR 是简单平均还是按样本量加权，任务间不均衡可能掩盖短板；② 线上架构依赖 nearline 异步推理 + KV cache，分钟级行为聚合意味着对秒级热点仍存在延迟，且论文未披露推理 QPS、显存占用与 4B 模型的实际服务成本；③ 7 任务的指令模板与数据配比未做敏感性分析，任务间负迁移风险未被讨论。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

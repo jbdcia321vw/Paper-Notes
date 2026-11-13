@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-每个区域节点先用本地 LightGCN 得到用户/物品协同 embedding，经**双流 RQ-VAE**（用户流与物品流独立）做两级量化：第 0 级在联邦码本 $\mathcal{C}^{U}_{fed}$ 中检索，第 1 级在本地码本 $\mathcal{C}^{U}_{local}$ 中检索残差，两级码字相加得量化向量并解码重构。联邦阶段仅上传经 LDP 加噪的联邦码本，服务器按索引对齐聚合后广播；客户端先做 $E_{adapt}$ 轮本地码本对齐再继续本地训练。收敛后冻结码本，对全量协同 embedding 做一次前向量化生成 token 对 $(id_{fed}, id_{local})$，作为两个新增离散特征域拼入原始 CTR 特征送入 DNN/DeepFM/DCN。
+每个区域节点先用本地 LightGCN 得到用户/物品协同 embedding，经**双流 RQ-VAE**（用户流与物品流独立）做两级量化：第 0 级在联邦码本 $\mathcal{C}^{U}_{fed}$中检索，第 1 级在本地码本$\mathcal{C}^{U}_{local}$中检索残差，两级码字相加得量化向量并解码重构。联邦阶段仅上传经 LDP 加噪的联邦码本，服务器按索引对齐聚合后广播；客户端先做$E_{adapt}$轮本地码本对齐再继续本地训练。收敛后冻结码本，对全量协同 embedding 做一次前向量化生成 token 对$(id_{fed}, id_{local})$，作为两个新增离散特征域拼入原始 CTR 特征送入 DNN/DeepFM/DCN。
 
 ```mermaid
 flowchart TD
@@ -68,7 +68,7 @@ $$P(\mathbf{c}^0_j|\mathbf{r}^0_u)=\frac{e^{\mathrm{sim}(\mathbf{r}^0_u,\mathbf{
 $$\mathcal{L}_{al}=-\log\frac{e^{\mathrm{sim}(\mathbf{z}^q_u,\mathbf{e}_u)/\tau}}{\sum_{j=1}^{B}e^{\mathrm{sim}(\mathbf{z}^q_u,\mathbf{e}_{u,j})/\tau}}$$
 该 in-batch 对比式锚定防止量化后语义漂移与 mode collapse，是双层结构能稳定训练的关键。
 
-3. **训练目标、聚合等价性与推理开销**：本地总损失 $\mathcal{L}_{total}=\mathcal{L}_{rec}+\lambda(\mathcal{L}_{code}+\mathcal{L}_{al})$，其中 $\mathcal{L}_{rec}$ 为重构 embedding 内积的 BCE，$\lambda=1$。**免负采样**（重构式训练）。理论侧给出 Theorem 1：因量化损失对码字的梯度满足 $\nabla_{\mathbf{c}_j}\mathcal{L}_{global}=\sum_k \nabla_{\mathbf{c}_j}\mathcal{L}^k_{local}$，索引对齐的码本平均**等价于在全体数据并集上更新码本**——这是「码本可聚合」的合法性根基。推理阶段码本冻结，token 生成仅需一次前向量化，CTR 侧只多两个 embedding 查表，开销可忽略。
+3. **训练目标、聚合等价性与推理开销**：本地总损失 $\mathcal{L}_{total}=\mathcal{L}_{rec}+\lambda(\mathcal{L}_{code}+\mathcal{L}_{al})$，其中$\mathcal{L}_{rec}$为重构 embedding 内积的 BCE，$\lambda=1$。**免负采样**（重构式训练）。理论侧给出 Theorem 1：因量化损失对码字的梯度满足$\nabla_{\mathbf{c}_j}\mathcal{L}_{global}=\sum_k \nabla_{\mathbf{c}_j}\mathcal{L}^k_{local}$，索引对齐的码本平均**等价于在全体数据并集上更新码本**——这是「码本可聚合」的合法性根基。推理阶段码本冻结，token 生成仅需一次前向量化，CTR 侧只多两个 embedding 查表，开销可忽略。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -82,7 +82,7 @@ $$\mathcal{L}_{al}=-\log\frac{e^{\mathrm{sim}(\mathbf{z}^q_u,\mathbf{e}_u)/\tau}
 
 - **数据划分与防穿越 (Splitting Strategy)**: CF 预训练用 `Leave-One-Out`；CTR 任务按 `8:1:1` 比例划分训练/验证/测试。
 - **排名评测协议 (Ranking Protocol)**: 采用 CTR 场景标准的 **AUC**（非 Full-Ranking 召回评测），原文以 AUC 提升 >0.1% 视为显著，并做双样本 t 检验（$p\le0.05$）。
-- **对比基线与超参设置**: 三类基线——单市场 Local（DNN/DeepFM/DCN）、FL 方法（FedAvg/FedPer/FedProx/pFedPara）、集中式 MMR（MAML/FOREC/MA）。Embedding 维度 $d=16$，MLP 隐层 $[512,256,128]$，Adam，学习率 $\{1e\text{-}5\sim5e\text{-}3\}$ 网格搜索，LDP 噪声 $\mathrm{Laplace}(0,0.001)$，码本大小 $T=256$。
+- **对比基线与超参设置**: 三类基线——单市场 Local（DNN/DeepFM/DCN）、FL 方法（FedAvg/FedPer/FedProx/pFedPara）、集中式 MMR（MAML/FOREC/MA）。Embedding 维度 $d=16$，MLP 隐层$[512,256,128]$，Adam，学习率$\{1e\text{-}5\sim5e\text{-}3\}$网格搜索，LDP 噪声$\mathrm{Laplace}(0,0.001)$，码本大小$T=256$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -120,12 +120,17 @@ Overall AUC（各市场按交互量加权/平均后的总体值）：
 
 1. **负迁移被实证且被 FedMM 逆转**：4-Market 下 FedAvg(DNN) 0.8964 比 Local 0.9022 低 0.58 个点，说明稠密参数聚合在强异构下有害；FedMM 反而比 Local 高 0.48 个点，证明「以协同信号作补充特征」而非「以全局模型替代本地模型」是正确姿势。
 2. **全局层与本地层缺一不可，且全局层贡献更大**：4-Market DNN 上移除本地码本掉 0.31 点、移除全局码本掉 0.41 点，而随机码本掉 0.89 点——说明增益来自**学到的语义原型**而非 RQ-VAE 结构本身带来的正则化。
-3. **隐私-效用与通信双优**：噪声尺度 $b$ 从 0.001 增至 0.5 时 AUC 仅温和下降，仍保持竞争力；码本大小 $T$ 在 256 处达峰、512 时因码本坍缩/过拟合回落；每轮传输参数量较模型共享式 FL 低 **20× 以上**，且与骨干深度宽度完全解耦。
+3. **隐私-效用与通信双优**：噪声尺度 $b$从 0.001 增至 0.5 时 AUC 仅温和下降，仍保持竞争力；码本大小$T$ 在 256 处达峰、512 时因码本坍缩/过拟合回落；每轮传输参数量较模型共享式 FL 低 **20× 以上**，且与骨干深度宽度完全解耦。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 FOREC/MA 等集中式 MMR 的本质区别是**不触碰原始数据**，却达到甚至超过其性能；与 FedPer/pFedPara 等个性化 FL 的区别是**交换语义原型而非模型参数**，从根本上绕开 ID 空间不相交导致的对齐失败；与 CAT-SR 的区别是**支持 K 市场同时联邦**，无需「富源市场 + 成对蒸馏」假设。
 - **可迁移亮点**: ① 「码本即通信介质」可迁移到跨 App/跨业务线的隐私合规联合建模；② 双层码本 + 语义锚定损失的组合，可直接复用到生成式推荐的 semantic ID 构造中，作为跨域共享码本的正则手段。
 - **审稿级局限批判**: ① 评测仅用 AUC，缺少 GAUC/业务指标与 Full-Ranking 召回视角，且 3-Market 上未稳定超越 FOREC，收益幅度（0.1% 量级）对工业噪声较敏感；② 依赖 LightGCN 预训练 embedding 质量，冷启动市场（如 jp 仅 5k 用户）的码本利用率与坍缩风险未做分市场分析；③ LDP 仅用固定 Laplace 噪声，未给出形式化 $(\epsilon,\delta)$ 隐私预算核算。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

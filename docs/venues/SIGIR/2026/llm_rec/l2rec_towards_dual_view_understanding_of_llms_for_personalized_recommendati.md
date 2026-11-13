@@ -41,7 +41,7 @@ LLM4Rec 中行为信号（ID 序列）与语义信号（文本）的融合长期
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入侧对用户交互序列 $\{(i_1,c_1),\dots,(i_L,c_L)\}$ 构造两个粒度互补的视图：语义视图把全部物品描述拼成 token 序列 $\mathbf{E}^S_u\in\mathbb{R}^{T\times d}$ 保留细粒度文本；行为视图对每个物品的 token embedding 做池化压成单向量再经投影 $P_U$ 得到 $\mathbf{E}^B_u\in\mathbb{R}^{L\times d}$，对齐 SASRec 式的物品级序列动力学。两视图分别送入冻结主干的 SPMoE 与 BPMoE 分支，得到 $\mathbf{h}^S_u,\mathbf{h}^B_u$；ACF 模块用残差投影 + 动态门控把二者融成统一偏好 $\mathbf{h}^F_u$，与同样流程编码的物品向量做内积排序。训练时主干全程冻结，只更新 DPMoE 与 ACF（约 32M 参数，占主干 5%）。
+输入侧对用户交互序列 $\{(i_1,c_1),\dots,(i_L,c_L)\}$构造两个粒度互补的视图：语义视图把全部物品描述拼成 token 序列$\mathbf{E}^S_u\in\mathbb{R}^{T\times d}$保留细粒度文本；行为视图对每个物品的 token embedding 做池化压成单向量再经投影$P_U$得到$\mathbf{E}^B_u\in\mathbb{R}^{L\times d}$，对齐 SASRec 式的物品级序列动力学。两视图分别送入冻结主干的 SPMoE 与 BPMoE 分支，得到$\mathbf{h}^S_u,\mathbf{h}^B_u$；ACF 模块用残差投影 + 动态门控把二者融成统一偏好$\mathbf{h}^F_u$，与同样流程编码的物品向量做内积排序。训练时主干全程冻结，只更新 DPMoE 与 ACF（约 32M 参数，占主干 5%）。
 
 ```mermaid
 flowchart TD
@@ -60,15 +60,15 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **双视图个性化 MoE（DPMoE）**：单一 LoRA 适配器对所有用户施加同一扰动，抹平了偏好差异。DPMoE 把专家池拆成**始终激活的共享专家** $\mathcal{E}_{sh}$（承载跨视图共性，如"科幻"既体现在点击也在描述里）与**稀疏激活的视图专属专家** $\mathcal{E}_v$，第 $j$ 个参数矩阵的扰动为
+1. **双视图个性化 MoE（DPMoE）**：单一 LoRA 适配器对所有用户施加同一扰动，抹平了偏好差异。DPMoE 把专家池拆成**始终激活的共享专家** $\mathcal{E}_{sh}$（承载跨视图共性，如"科幻"既体现在点击也在描述里）与**稀疏激活的视图专属专家**$\mathcal{E}_v$，第$j$ 个参数矩阵的扰动为
 $$\Delta W_j=\sum_{i\in\mathcal{E}_{sh}}B_{j,i}A_{j,i}+\sum_{i\in\mathcal{E}_v}g_{j,i}B_{j,i}A_{j,i},\quad r\ll d$$
 共享项提供稳定底座、专属项负责个性化特化，避免 MoE 在推荐场景下退化为纯输入路由。
 
-2. **三信号个性化路由器**：标准 MoE 路由只看当前输入 $x_j$，对所有用户一视同仁。本文并行构造上下文 $z^c_j=x_j$、用户 $z^u_j=u$、交互 $z^f_j=[u;x_j]$ 三路打分，再做加乘融合与 Top-$N$ 稀疏化：
+2. **三信号个性化路由器**：标准 MoE 路由只看当前输入 $x_j$，对所有用户一视同仁。本文并行构造上下文$z^c_j=x_j$、用户$z^u_j=u$、交互$z^f_j=[u;x_j]$三路打分，再做加乘融合与 Top-$N$ 稀疏化：
 $$\hat{g}_j=g^c_j+(g^u_j+g^f_j)\odot g^c_j,\qquad g_{j,i}=\hat{g}_{j,i}\cdot\mathbb{1}[\hat{g}_{j,i}\in\text{Top-}N(\hat{g}_j)]$$
 物理直觉很清晰：上下文是主路由信号，用户偏好只作**乘性修正**，防止个性化信号喧宾夺主导致路由漂移。
 
-3. **训练目标、负采样与推理效率**：总损失 $\mathcal{L}=\mathcal{L}_{Rec}+\gamma\mathcal{L}_{BPC}+\beta\mathcal{L}_{LB}$。$\mathcal{L}_{Rec}$ 为批内负采样对比损失（每正样本配 10 个随机负例，温度 $\tau$）；$\mathcal{L}_{BPC}$ 做双向偏好对比（$\tilde{h}^B_u\!\to\!\tilde{h}^S_u$ 与反向各一次）并加 $\lambda\|\tilde{h}^B_u-\tilde{h}^S_u\|_2^2$ 的 L2 项，抑制异构输入与专家特化带来的表征漂移；$\mathcal{L}_{LB}$ 为负载均衡损失防路由坍缩。推理时物品侧走同一双视图管线离线编码，在线仅需内积检索，主干冻结使训练成本可控。
+3. **训练目标、负采样与推理效率**：总损失 $\mathcal{L}=\mathcal{L}_{Rec}+\gamma\mathcal{L}_{BPC}+\beta\mathcal{L}_{LB}$。$\mathcal{L}_{Rec}$为批内负采样对比损失（每正样本配 10 个随机负例，温度$\tau$）；$\mathcal{L}_{BPC}$做双向偏好对比（$\tilde{h}^B_u\!\to\!\tilde{h}^S_u$与反向各一次）并加$\lambda\|\tilde{h}^B_u-\tilde{h}^S_u\|_2^2$的 L2 项，抑制异构输入与专家特化带来的表征漂移；$\mathcal{L}_{LB}$ 为负载均衡损失防路由坍缩。推理时物品侧走同一双视图管线离线编码，在线仅需内积检索，主干冻结使训练成本可控。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -83,7 +83,7 @@ $$\hat{g}_j=g^c_j+(g^u_j+g^f_j)\odot g^c_j,\qquad g_{j,i}=\hat{g}_{j,i}\cdot\mat
 
 - **数据划分与防穿越 (Splitting Strategy)**: Amazon 用 `Leave-One-Out`（末位交互作测试）；工业集用**全局时间戳切分**（前 3 月预训练 / 后 1 月微调），天然防穿越。
 - **排名评测协议 (Ranking Protocol)**: 采用无偏 `Full-Ranking`（全库未交互物品排序），报告 R@10 与 N@10；训练阶段用 10 个随机负例的批内对比损失。
-- **对比基线与超参设置**: 7 个基线分三组——ID 类（SASRec、BERT4Rec）、文本增强类（S³-Rec、UniSRec、RecFormer）、LLM 类（LLaRA/Llama2-7B、LEARN/Baichuan2-7B）。主干 Qwen3-0.6B，9 个专家（1 共享 + 8 专属），LoRA $r=8,\alpha=16$，每视图 Top-2 激活；序列长 $L=80,T=2048$（工业）/ $L=50,T=1024$（Amazon）；AdamW，预训练 2e-4、微调 1e-4。为控制主干差异，额外把 L2Rec 实例化到 Llama2-7B / Baichuan2-7B / Qwen3-8B 上做同主干对比。
+- **对比基线与超参设置**: 7 个基线分三组——ID 类（SASRec、BERT4Rec）、文本增强类（S³-Rec、UniSRec、RecFormer）、LLM 类（LLaRA/Llama2-7B、LEARN/Baichuan2-7B）。主干 Qwen3-0.6B，9 个专家（1 共享 + 8 专属），LoRA $r=8,\alpha=16$，每视图 Top-2 激活；序列长$L=80,T=2048$（工业）/$L=50,T=1024$（Amazon）；AdamW，预训练 2e-4、微调 1e-4。为控制主干差异，额外把 L2Rec 实例化到 Llama2-7B / Baichuan2-7B / Qwen3-8B 上做同主干对比。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -120,10 +120,15 @@ $$\hat{g}_j=g^c_j+(g^u_j+g^f_j)\odot g^c_j,\qquad g_{j,i}=\hat{g}_{j,i}\cdot\mat
 2. **两视图互补且不可替代，语义侧更"贵"**：去掉语义视图在工业集掉 17.9%、科学集掉 11.7%，去掉行为视图分别掉 11.9% 与 7.2%——语义视图贡献更大但两者缺一即显著退化，印证"物品是什么"与"兴趣如何演化"是正交信号。
 3. **数据稀缺时参数级适配的样本效率优势被放大**：Scientific 上 L2Rec 仅用 10% 数据（0.1071）即超过 LEARN 用满 100% 数据（0.1060）；Instruments 上 1% 数据即领先 LEARN +17.3%（0.0602 vs 0.0513），说明视图专属低秩扰动比单通路适配更充分地榨取了冻结主干的先验。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 LLaRA/LEARN 这类输入级方法相比，L2Rec 不在 token 空间硬拼异构 embedding，而是让同一主干被两套低秩扰动"分色"，从根上绕开梯度冲突；与 RecFormer 这类输出级两阶段方法相比，它恢复了端到端任务监督，同时只更新 5% 参数。相较标准 MoE-LoRA，其增量在于路由信号从"仅上下文"扩展为"上下文 × 用户"的加乘融合。
 - **可迁移亮点**: ① 三信号加乘路由（上下文为主、用户为乘性修正）可直接移植到任何用户条件化的 MoE 精排/召回模型；② 双向偏好对比 + L2 一致性项是抑制多分支表征漂移的通用轻量正则，适用于多场景/多模态多塔结构。
 - **审稿级局限批判**: ① 双视图意味着用户与物品都要跑两遍前向，尽管主干冻结，在线物品编码成本翻倍，论文未给出延迟/吞吐数据；② 主实验各基线沿用各自原始主干（0.6B vs 7B 混比），虽用同主干消融补救，但主表对比的公平性仍可质疑；③ 路由超参（Top-N、专家数、$r$）在工业集上呈饱和趋势但未给出最优性价比点的显式推荐，跨域迁移时需重新调参。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

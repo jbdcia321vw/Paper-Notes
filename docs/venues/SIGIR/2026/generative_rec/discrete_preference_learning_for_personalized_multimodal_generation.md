@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入是用户多模态交互二部图，按模态拆成 $\mathcal{G}^v,\mathcal{G}^t$。第一阶段：物品文本经下游 LLM 末层注意力加权平均、图像经与扩散模型同源的 CLIP 编码得到初始节点特征，用户节点由物品特征均值/方差采样初始化；随后各模态独立跑 LightGCN 聚合协同信号，再用模态专属 RQ-VAE 把用户/物品表示逐层残差量化成 $L$ 位码字（偏好token）。第二阶段：在提示中插入可学习占位符 $U^*,I^*$，用码本 Lookup 出的码向量替换其嵌入，分别喂入冻结的 LLaMA3-8B 与 SD v1.5；最后用跨模态一致性+个性化奖励只微调码本相关参数。
+输入是用户多模态交互二部图，按模态拆成 $\mathcal{G}^v,\mathcal{G}^t$。第一阶段：物品文本经下游 LLM 末层注意力加权平均、图像经与扩散模型同源的 CLIP 编码得到初始节点特征，用户节点由物品特征均值/方差采样初始化；随后各模态独立跑 LightGCN 聚合协同信号，再用模态专属 RQ-VAE 把用户/物品表示逐层残差量化成$L$位码字（偏好token）。第二阶段：在提示中插入可学习占位符$U^*,I^*$，用码本 Lookup 出的码向量替换其嵌入，分别喂入冻结的 LLaMA3-8B 与 SD v1.5；最后用跨模态一致性+个性化奖励只微调码本相关参数。
 
 ```mermaid
 flowchart TD
@@ -58,9 +58,9 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **模态专属协同偏好量化 (RQ-VAE over LightGCN)**：痛点是连续嵌入无法进入离散生成器。对表示 $z_u$ 逐层量化 $c^l_u=\arg\min_k\|r^l_u-e^l_k\|^2,\ r^{l+1}_u=r^l_u-\text{Lookup}(c^l_u,\mathcal{B}^l)$，得到 $(c^1_u,\dots,c^L_u)$。RQ 的由粗到细层次结构天然对应"高层粗粒度属性、低层细粒度风格"，且共享前缀即隐含 CF 相似性（案例中两位都看过 Spider-Man/Batman 的用户共享前两位token）。
-2. **偏好导向 + 跨模态对齐的双任务约束**：仅重构损失不足以让token承载偏好。边级用拼接图文token后的 BPR 损失 $\mathcal{L}_{BPR}=-\ln\sigma(\hat z_u\hat z_i^\top-\hat z_u\hat z_{i'}^\top)$ 保证正交互得分更高；节点级用跨模态对比损失 $\mathcal{L}_{cm}$ 拉近同一物品图文表示、推远负样本，使token同时编码协同与跨模态语义。
-3. **跨模态一致个性化奖励与训练效率**：总损失 $\mathcal{L}=\mathcal{L}_{BPR}+\mathcal{L}_{mm\text{-}rqvae}+\beta\mathcal{L}_{cm}$（第一阶段），第二阶段 $\mathcal{L}=\mathcal{L}_t+\mathcal{L}_v$，其中 $\mathcal{L}_v=(R^v_p+\gamma R_{crs})\cdot\mathbb{E}\|\epsilon-\epsilon_\theta\|^2$，$R_{crs}=\text{CLIPSim}(V_g,T_g)$、$R^v_p$ 为生成图与历史图的平均 CLIP 相似度。冻结生成器、仅训码本，可训练参数占比仅 0.154%（图）/0.448%（文），单样本推理约 4 秒；负样本为随机采样（非难负样本）。
+1. **模态专属协同偏好量化 (RQ-VAE over LightGCN)**：痛点是连续嵌入无法进入离散生成器。对表示 $z_u$逐层量化$c^l_u=\arg\min_k\|r^l_u-e^l_k\|^2,\ r^{l+1}_u=r^l_u-\text{Lookup}(c^l_u,\mathcal{B}^l)$，得到$(c^1_u,\dots,c^L_u)$。RQ 的由粗到细层次结构天然对应"高层粗粒度属性、低层细粒度风格"，且共享前缀即隐含 CF 相似性（案例中两位都看过 Spider-Man/Batman 的用户共享前两位token）。
+2. **偏好导向 + 跨模态对齐的双任务约束**：仅重构损失不足以让token承载偏好。边级用拼接图文token后的 BPR 损失 $\mathcal{L}_{BPR}=-\ln\sigma(\hat z_u\hat z_i^\top-\hat z_u\hat z_{i'}^\top)$保证正交互得分更高；节点级用跨模态对比损失$\mathcal{L}_{cm}$ 拉近同一物品图文表示、推远负样本，使token同时编码协同与跨模态语义。
+3. **跨模态一致个性化奖励与训练效率**：总损失 $\mathcal{L}=\mathcal{L}_{BPR}+\mathcal{L}_{mm\text{-}rqvae}+\beta\mathcal{L}_{cm}$（第一阶段），第二阶段$\mathcal{L}=\mathcal{L}_t+\mathcal{L}_v$，其中$\mathcal{L}_v=(R^v_p+\gamma R_{crs})\cdot\mathbb{E}\|\epsilon-\epsilon_\theta\|^2$，$R_{crs}=\text{CLIPSim}(V_g,T_g)$、$R^v_p$ 为生成图与历史图的平均 CLIP 相似度。冻结生成器、仅训码本，可训练参数占比仅 0.154%（图）/0.448%（文），单样本推理约 4 秒；负样本为随机采样（非难负样本）。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -115,12 +115,17 @@ MovieLens 上逐组件拆解（P-CIS / A-CS / P-ROUGE-L / A-ROUGE-L / CCS）：
 
 1. **离散token是主要增益来源**：仅加偏好token即把 P-CIS 从 32.07 提到 33.89、P-ROUGE-L 从 10.95 提到 11.41，说明 RQ-VAE 量化后的协同信号确实能被冻结生成器"读懂"；而单模态奖励把个性化推到峰值 35.71/12.02，却让 CCS 掉到 19.01，跨模态奖励则把 CCS 拉到 22.43 但个性化回落——完整模型在两者间取得 35.64/21.32 的折中，验证了奖励设计的必要性。
 2. **多模态联合建模优于单模态**：拆成 image-only / text-only 后个性化指标双双下滑（图4），印证用户交互由多模态共同驱动，单模态token无法覆盖完整偏好。
-3. **码本容量存在甜点**：$L$ 从 1→5、$K$ 从 24→192 均呈先升后降，图像最优 $L=4$、文本最优 $L=3$（图像特征更复杂需更深残差），$K=96$ 时两任务同时最优，过大则因 EMA 训练不稳而退化；此外 token 学习可即插即用地提升 BM25/RSPG 与 SDXL/Qwen-VL 主干（图3），人类评测中 62.3% 偏好生成图、68.1% 认为跨模态更一致。
+3. **码本容量存在甜点**：$L$从 1→5、$K$从 24→192 均呈先升后降，图像最优$L=4$、文本最优$L=3$（图像特征更复杂需更深残差），$K=96$ 时两任务同时最优，过大则因 EMA 训练不稳而退化；此外 token 学习可即插即用地提升 BM25/RSPG 与 SDXL/Qwen-VL 主干（图3），人类评测中 62.3% 偏好生成图、68.1% 认为跨模态更一致。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 PMG/Pigeon 把历史图像"翻译成文本关键词"再条件化（丢失视觉细节、无CF结构），DPPMG 首次引入**专属协同偏好模型 + 向量量化**，让偏好以生成器原生离散形式注入；相比 TI/DreamBooth 只对齐显式指令，本文从隐式交互中推断偏好；相比单模态个性化生成，本文显式优化跨模态一致性奖励。
 - **可迁移亮点**: ①"GNN 连续表示 → RQ-VAE 离散token → 冻结生成器占位符注入"是通用的偏好-生成器桥接范式，可直接迁移到生成式推荐的语义ID构建；②用 CLIP 相似度构造"个性化+一致性"双奖励、只训码本，是低成本对齐生成模型与用户偏好的实用技巧。
 - **审稿级局限批判**: ①评测以 CLIP/DINO 相似度与 BLEU/ROUGE 为主，缺乏真实点击/转化等在线业务指标，且数据集规模较小（598/1921 用户），泛化性存疑；②两阶段分离训练、奖励权重 $\gamma$ 与码本超参敏感，且推理需同时跑 LLM+扩散模型（约 4s/样本），工业级高并发场景的延迟与成本未讨论。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

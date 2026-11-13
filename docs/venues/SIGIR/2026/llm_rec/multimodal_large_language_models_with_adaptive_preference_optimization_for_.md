@@ -28,7 +28,7 @@ categories:
 
 ## TL;DR (1分钟核心速览)
 
-MLLM 序列推荐普遍采用「SFT + DPO」范式，但存在两大痛点：(1) 随机负采样导致样本难度严重失衡，模型在易分样本上过拟合、难分样本欠训练；(2) DPO 中固定的参考模型使策略模型无法纠正标题-图像跨模态错配，长序列下呈现「弱者愈弱」的表征退化。本文提出 HaNoRec：用难度感知重加权策略（HaRS）按数据难度 $\lambda$ 与模型实时响应度 $\eta$ 动态缩放 DPO 权重 $\beta'$，并用噪声正则分布优化（NoDO）在 LoRA 增量上注入高斯扰动、配合自适应 KL 拉近标题-图像语义。在 Microlens/Netflix/Movielens 上，NDCG@3 相对最强基线 MLLM-MSR 提升 **11.02% / 7.59% / 7.39%**。
+MLLM 序列推荐普遍采用「SFT + DPO」范式，但存在两大痛点：(1) 随机负采样导致样本难度严重失衡，模型在易分样本上过拟合、难分样本欠训练；(2) DPO 中固定的参考模型使策略模型无法纠正标题-图像跨模态错配，长序列下呈现「弱者愈弱」的表征退化。本文提出 HaNoRec：用难度感知重加权策略（HaRS）按数据难度 $\lambda$与模型实时响应度$\eta$动态缩放 DPO 权重$\beta'$，并用噪声正则分布优化（NoDO）在 LoRA 增量上注入高斯扰动、配合自适应 KL 拉近标题-图像语义。在 Microlens/Netflix/Movielens 上，NDCG@3 相对最强基线 MLLM-MSR 提升 **11.02% / 7.59% / 7.39%**。
 
 ## Background & Motivation (背景与核心矛盾)
 
@@ -42,7 +42,7 @@ MLLM 序列推荐普遍采用「SFT + DPO」范式，但存在两大痛点：(1)
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入为用户最近 6 条交互的图文 Prompt（历史物品图像 + 候选集图像 + 标题文本）。先用预训练 MLLM 将全部物品标题与海报编码为共享维度的文本嵌入 $\mathbf{H}$ 与视觉嵌入 $\mathbf{X}$，离线构建难度信号；训练时 HaRS 模块基于 Top-K 近邻簇计算数据难度 $\lambda$、基于隐式 reward gap 计算模型响应度 $\eta$，二者相乘得到样本级 $\beta'$；NoDO 模块在前向传播时对 LoRA 增量 $A,B$ 注入高斯噪声得到平滑分布 $\tilde{\pi}_\theta$，与 $\pi_{\text{ref}}$ 计算自适应 KL。最终以加权 DPO 损失更新策略模型，推理阶段与标准 MLLM 完全一致、无额外开销。
+输入为用户最近 6 条交互的图文 Prompt（历史物品图像 + 候选集图像 + 标题文本）。先用预训练 MLLM 将全部物品标题与海报编码为共享维度的文本嵌入 $\mathbf{H}$与视觉嵌入$\mathbf{X}$，离线构建难度信号；训练时 HaRS 模块基于 Top-K 近邻簇计算数据难度$\lambda$、基于隐式 reward gap 计算模型响应度$\eta$，二者相乘得到样本级$\beta'$；NoDO 模块在前向传播时对 LoRA 增量$A,B$注入高斯噪声得到平滑分布$\tilde{\pi}_\theta$，与$\pi_{\text{ref}}$ 计算自适应 KL。最终以加权 DPO 损失更新策略模型，推理阶段与标准 MLLM 完全一致、无额外开销。
 
 ```mermaid
 flowchart TD
@@ -61,9 +61,9 @@ flowchart TD
 
 1. **难度感知重加权策略 HaRS（解决样本难度失衡）**：以 chosen/rejected 物品为锚，在 $\mathbf{h}_j+\mathbf{x}_j$ 联合语义空间中检索 Top-K 近邻形成正/负簇，Softmax 归一化后取概率差作为数据难度：
 $$\Delta=\big|Z_{w,k}-Z_{l,k}\big|^K_{k=1},\quad \lambda=\sigma(\Delta)/\sigma(\bar{\Delta})$$
-同时用 DPO 隐式 reward gap $R_i$ 的均值归一化（剔除最大最小两个离群值）估计模型响应度 $\eta$。最终 $\beta'_{\mathcal{B}}=\bar{\eta}_{\mathcal{B}}\cdot\lambda_{\mathcal{B}}\cdot\beta_0$。直觉：$\lambda$ 大表示易分样本 → 权重小、约束强；$\lambda$ 小表示难分样本 → 权重小、KL 放松、优化力度大，从而把学习容量导向边界样本。
+同时用 DPO 隐式 reward gap $R_i$的均值归一化（剔除最大最小两个离群值）估计模型响应度$\eta$。最终$\beta'_{\mathcal{B}}=\bar{\eta}_{\mathcal{B}}\cdot\lambda_{\mathcal{B}}\cdot\beta_0$。直觉：$\lambda$大表示易分样本 → 权重小、约束强；$\lambda$ 小表示难分样本 → 权重小、KL 放松、优化力度大，从而把学习容量导向边界样本。
 
-2. **噪声正则分布优化 NoDO（解决跨模态语义偏差）**：在 LoRA 参数上做随机平滑 $A'=A+\sigma_n\epsilon_A,\ B'=B+\sigma_n\epsilon_B$，得 $\tilde{\pi}_\theta(y|x,I)=\mathbb{E}_{\epsilon}[\pi_\theta(y|x,I;z+\epsilon\odot z)]$。理论依据是 DPO 梯度 $\nabla L=-\mathbb{E}[\sigma(-\beta\Delta_\theta)\nabla\Delta_\theta]$ 在 $|\Delta_\theta|$ 大时饱和趋零，加噪后 $\mathbb{E}[\sigma(-\beta\Delta_\theta+\delta)]>\sigma(-\beta\Delta_\theta)$，把概率质量重新分配到非饱和区，恢复弱语义样本的有效梯度。
+2. **噪声正则分布优化 NoDO（解决跨模态语义偏差）**：在 LoRA 参数上做随机平滑 $A'=A+\sigma_n\epsilon_A,\ B'=B+\sigma_n\epsilon_B$，得$\tilde{\pi}_\theta(y|x,I)=\mathbb{E}_{\epsilon}[\pi_\theta(y|x,I;z+\epsilon\odot z)]$。理论依据是 DPO 梯度$\nabla L=-\mathbb{E}[\sigma(-\beta\Delta_\theta)\nabla\Delta_\theta]$在$|\Delta_\theta|$大时饱和趋零，加噪后$\mathbb{E}[\sigma(-\beta\Delta_\theta+\delta)]>\sigma(-\beta\Delta_\theta)$，把概率质量重新分配到非饱和区，恢复弱语义样本的有效梯度。
 
 3. **训练目标与推理效率**：总损失为
 $$\mathcal{L}_{\text{HaNo}}=-\mathbb{E}\Big[\log\sigma\Big(\beta'\log\tfrac{\tilde{\pi}_\theta(y_w|I,x)}{\pi_{\text{ref}}(y_w|I,x)}-\beta'\log\tfrac{\tilde{\pi}_\theta(y_l|I,x)}{\pi_{\text{ref}}(y_l|I,x)}\Big)\Big]$$
@@ -116,12 +116,17 @@ $$\mathcal{L}_{\text{HaNo}}=-\mathbb{E}\Big[\log\sigma\Big(\beta'\log\tfrac{\til
 
 1. **HaRS 是增益主引擎，NoDO 是稳定器**：移除 HaRS 后性能几乎回落到 SFT+DPO 基线（Microlens NDCG@3 从 0.5673 跌回 0.5110 量级），而移除 NoDO 仅小幅下降——说明样本难度失衡是当前 MLLM-SR 的首要瓶颈，模态偏差是次级但不可忽略的修正项。
 2. **稀疏场景收益更大**：Microlens（密度 2.1e-4）上 NDCG@3 相对提升 11.02%，显著高于稠密 Movielens 的 7.39%；同时传统方法 CL4SRec 在三个数据集上 AUC 落后 SPRec 约 1.8%/8.2%/1.9%，印证稀疏交互下语义先验（图文）比 ID 共现更可靠。
-3. **超参存在明确最优区间**：Top-K 取 10–20 最佳，K=1 无法刻画多维偏好、K=50 引入噪声使正负簇边界模糊；$\beta_0=0.5$ 时性能显著崩塌（DPO 权重过大破坏 SFT 已建立的响应模式），$\sigma_n$ 在 0.05–0.1 间对结果不敏感，说明方法对噪声强度鲁棒但对权重尺度敏感。
+3. **超参存在明确最优区间**：Top-K 取 10–20 最佳，K=1 无法刻画多维偏好、K=50 引入噪声使正负簇边界模糊；$\beta_0=0.5$时性能显著崩塌（DPO 权重过大破坏 SFT 已建立的响应模式），$\sigma_n$ 在 0.05–0.1 间对结果不敏感，说明方法对噪声强度鲁棒但对权重尺度敏感。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 MLLM-MSR（AAAI'25，两阶段图像摘要 + 序列微调），本文不改数据构造而改**优化目标本身**；相比 DAMO（从数据与模型双视角调 DPO），本文额外引入**分布级高斯平滑**处理多模态饱和梯度；相比 RosePO 等纯文本偏好优化，本文首次把难度重加权与跨模态 KL 正则耦合进 MLLM-SR。
 - **可迁移亮点**: (1) 用「离线 Top-K 近邻簇 + 在线 reward gap」双信号定义样本难度，可低成本迁移到任意 DPO 式推荐的负采样加权；(2) LoRA 增量加噪实现分布平滑，几乎零额外算力，适合大模型对齐阶段的通用 trick。
 - **审稿级局限批判**: (1) 评测采用 1:9 采样候选集而非 Full-Ranking，且负样本为随机未交互物品，未验证 hard negative 或全库排序下的增益是否保持；(2) 难度估计依赖离线预计算嵌入，序列演化后难度信号可能滞后，且 Top-K、$\beta_0$ 需逐数据集调参，跨域迁移成本未量化。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

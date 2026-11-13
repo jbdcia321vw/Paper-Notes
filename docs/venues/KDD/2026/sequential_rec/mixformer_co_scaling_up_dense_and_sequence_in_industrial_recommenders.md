@@ -41,7 +41,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入层将非序列特征（用户/物品/上下文）拼接为 $\bm{e}_{ns}$ 后均匀切分为 $N$ 个头并线性投影为查询 $\bm{X}\in\mathbb{R}^{N\times D}$；行为序列 $\bm{S}=[\bm{s}_1,\dots,\bm{s}_T]$ 经逐层 SwiGLU-FFN 投影为 KV。堆叠 $L$ 个 MixFormer Block，每块依次执行 Query Mixer（头间混合 + per-head FFN，替代自注意力）、Cross Attention（多头查询聚合序列）、Output Fusion（per-head FFN 深度融合），最后接多任务头输出 CTR 等目标。UI-MixFormer 变体在此基础上按用户/物品切分头并加单向掩码，使用户侧计算可在请求级复用。
+输入层将非序列特征（用户/物品/上下文）拼接为 $\boldsymbol{e}_{ns}$后均匀切分为$N$个头并线性投影为查询$\boldsymbol{X}\in\mathbb{R}^{N\times D}$；行为序列$\boldsymbol{S}=[\boldsymbol{s}_1,\dots,\boldsymbol{s}_T]$经逐层 SwiGLU-FFN 投影为 KV。堆叠$L$ 个 MixFormer Block，每块依次执行 Query Mixer（头间混合 + per-head FFN，替代自注意力）、Cross Attention（多头查询聚合序列）、Output Fusion（per-head FFN 深度融合），最后接多任务头输出 CTR 等目标。UI-MixFormer 变体在此基础上按用户/物品切分头并加单向掩码，使用户侧计算可在请求级复用。
 
 ```mermaid
 flowchart TD
@@ -61,17 +61,17 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **Query Mixer：用零参数 HeadMixing 替代自注意力**：推荐侧查询来自用户属性、物品 ID、上下文等异质语义空间，内积相似度不可靠且自注意力开销大。做法是将 $\bm{X}\in\mathbb{R}^{N\times D}$ reshape 为 $\mathbb{R}^{N\times N\times D/N}$ 后转置再展平，实现**无参数**的跨头信息交换，再对每个头独立施加 SwiGLU-FFN：
-$$\bm{P}=\text{HeadMixing}(\text{Norm}(\bm{X}))+\bm{X},\quad \bm{q}_i=\text{SwiGLUFFN}_i(\text{Norm}(\bm{p}_i))+\bm{p}_i$$
+1. **Query Mixer：用零参数 HeadMixing 替代自注意力**：推荐侧查询来自用户属性、物品 ID、上下文等异质语义空间，内积相似度不可靠且自注意力开销大。做法是将 $\boldsymbol{X}\in\mathbb{R}^{N\times D}$reshape 为$\mathbb{R}^{N\times N\times D/N}$ 后转置再展平，实现**无参数**的跨头信息交换，再对每个头独立施加 SwiGLU-FFN：
+$$\boldsymbol{P}=\text{HeadMixing}(\text{Norm}(\boldsymbol{X}))+\boldsymbol{X},\quad \boldsymbol{q}_i=\text{SwiGLUFFN}_i(\text{Norm}(\boldsymbol{p}_i))+\boldsymbol{p}_i$$
 直觉：异质特征需要的是"重排式"信息流通而非相似度加权，per-head FFN 保留各特征域的独立性。
 
-2. **Cross Attention + Output Fusion：让稠密语义反向指导序列聚合**：Query Mixer 输出的 $N$ 个头直接充当 $N$ 个 cross-attention 头，无需额外 Q 投影，避免头坍缩；序列侧每层用独立 SwiGLU-FFN 精炼 $\bm{s}_t$ 后投影为 K/V：
-$$\bm{z}_i=\sum_{t=1}^{T}\text{softmax}\!\left(\frac{\bm{q}_i^\top \bm{k}^i_t}{\sqrt{D}}\right)\bm{v}^i_t+\bm{q}_i$$
-随后 Output Fusion 对每个 $\bm{z}_i$ 施加 per-head SwiGLU-FFN 完成非线性融合。关键点：Query Mixer 与 Output Fusion 的 per-head FFN **同时服务序列与非序列特征**，这正是"统一参数化"的落点——参数不再需要在两个模块间做零和分配。
+2. **Cross Attention + Output Fusion：让稠密语义反向指导序列聚合**：Query Mixer 输出的 $N$个头直接充当$N$个 cross-attention 头，无需额外 Q 投影，避免头坍缩；序列侧每层用独立 SwiGLU-FFN 精炼$\boldsymbol{s}_t$ 后投影为 K/V：
+$$\boldsymbol{z}_i=\sum_{t=1}^{T}\text{softmax}\!\left(\frac{\boldsymbol{q}_i^\top \boldsymbol{k}^i_t}{\sqrt{D}}\right)\boldsymbol{v}^i_t+\boldsymbol{q}_i$$
+随后 Output Fusion 对每个 $\boldsymbol{z}_i$ 施加 per-head SwiGLU-FFN 完成非线性融合。关键点：Query Mixer 与 Output Fusion 的 per-head FFN **同时服务序列与非序列特征**，这正是"统一参数化"的落点——参数不再需要在两个模块间做零和分配。
 
-3. **用户-物品解耦与请求级复用**：原始统一结构混合了用户/物品计算，无法套用 Request Level Batching。UI-MixFormer 按嵌入维度把头分为 $N_U$ 与 $N_G$（实践中 1:1），并在 HeadMixing 输出上施加单向掩码：
+3. **用户-物品解耦与请求级复用**：原始统一结构混合了用户/物品计算，无法套用 Request Level Batching。UI-MixFormer 按嵌入维度把头分为 $N_U$与$N_G$（实践中 1:1），并在 HeadMixing 输出上施加单向掩码：
 $$\mathcal{M}[i,j]=\begin{cases}0, & i<N_U \ \text{and}\ j\ge N_U\cdot D/N\\ 1, & \text{otherwise}\end{cases},\quad \text{HeadMixing}_{dec}=\mathcal{M}\odot\text{HeadMixing}(\cdot)$$
-即用户侧头不可见物品侧信号，从而可在一次请求内跨候选复用；同时保留用户→物品的单向传播，优于双塔的完全隔离。训练用 RMSProp(lr=0.01, 稠密) + Adagrad(稀疏)，batch=1500，$N=16,L=4$，small/medium 的 $D$ 分别为 386/768。
+即用户侧头不可见物品侧信号，从而可在一次请求内跨候选复用；同时保留用户→物品的单向传播，优于双塔的完全隔离。训练用 RMSProp(lr=0.01, 稠密) + Adagrad(稀疏)，batch=1500，$N=16,L=4$，small/medium 的$D$ 分别为 386/768。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -120,10 +120,15 @@ $$\mathcal{M}[i,j]=\begin{cases}0, & i<N_U \ \text{and}\ j\ge N_U\cdot D/N\\ 1, 
 2. **解耦几乎零代价**：UI-MixFormer 与 MixFormer-medium 四项指标完全一致，FLOPs 从 3503 降至 2242（−36%），线上服务在候选数 400→650 时延迟从 74.2ms 降至 49.0ms，加速比从 30.0% 升至 34.0%。
 3. **协同缩放双向占优**：固定序列长度 512 时，MixFormer 在 FLOPs-AUC 曲线上截距更高且斜率不劣；序列从 512 扩到 10000 时，其斜率与最强序列模型 STCA 相当，而堆叠/并行基线必须在"稠密高效"与"长序列收益"间二选一。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 RankMixer（仅稠密交叉）与 STCA（仅序列），MixFormer 用一套参数同时覆盖两者；相比 OneTrans 的异构 token 统一方案，本文以 HeadMixing 替代二次复杂度自注意力，FLOPs 仅为其约 1/10（3503 vs 23371）且精度更高。
 - **可迁移亮点**: ① HeadMixing 的 reshape-transpose-flatten 零参数跨头混合可直接替换推荐模型中昂贵的自注意力；② 单向掩码实现"请求级可复用 + 保留用户→物品传播"，是双塔与全交互之间的实用折中。
 - **审稿级局限批判**: ① 仅在一个内部数据集上验证，缺少公开基准（如 Taobao/Amazon）与统计显著性检验；② 消融仅以柱状图给出相对增益，未报告绝对数值与方差；③ 统一参数化使模型难以按模块独立调试或热更新，工程侧灵活性下降。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

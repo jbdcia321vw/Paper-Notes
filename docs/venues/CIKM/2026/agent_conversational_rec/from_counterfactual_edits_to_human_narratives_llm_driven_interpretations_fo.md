@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-四阶段流水线：① 用现有 CFX 方法（Jaccard/Cosine/LIME-RS/SHAP/ACCENT/LXR/SPINRec）在 VAE 推荐器上生成"将原 top-1 物品挤出 top-5"的交互编辑集 $C_u$；② 从 $C_u$ 与其余历史 $\bar{C}_u=H_u\setminus C_u$ 各均匀采样 $k_{gen}=20$ 条，映射为元数据 $\phi(\cdot)$（仅年份+类型，**刻意隐去片名**以防 LLM 依赖内部知识）；③ LLM 条件生成 NLE；④ 人类校准指标评估 + 可选 DPO 偏好优化。
+四阶段流水线：① 用现有 CFX 方法（Jaccard/Cosine/LIME-RS/SHAP/ACCENT/LXR/SPINRec）在 VAE 推荐器上生成"将原 top-1 物品挤出 top-5"的交互编辑集 $C_u$；② 从$C_u$与其余历史$\bar{C}_u=H_u\setminus C_u$各均匀采样$k_{gen}=20$条，映射为元数据$\phi(\cdot)$（仅年份+类型，**刻意隐去片名**以防 LLM 依赖内部知识）；③ LLM 条件生成 NLE；④ 人类校准指标评估 + 可选 DPO 偏好优化。
 
 ```mermaid
 flowchart TD
@@ -79,7 +79,7 @@ flowchart TD
 | ML-1M | 6,040 | 3,706 | ~1,000,209 | 密度 ≈4.5% | 电影；仅用年份+类型元数据 |
 
 - **数据划分与防穿越**: 推荐器在**独立用户训练集**上训练，CFX 与解释在其余用户上生成；DPO 偏好对在验证用户上构造，最终 DPO 变体由留出验证用户的人类校准表现选定，测试用户完全隔离。
-- **排名评测协议**: 非传统 Top-N 排序评测，而是**解释级评估**——CFX 成功定义为"原 top-1 被挤出 top-5"；$|C_u|>50$ 记为失败（CFX Success Rate），$|C_u|<3$ 记为 Simple CFX Rate（可直接陈述、无需摘要）。
+- **排名评测协议**: 非传统 Top-N 排序评测，而是**解释级评估**——CFX 成功定义为"原 top-1 被挤出 top-5"；$|C_u|>50$记为失败（CFX Success Rate），$|C_u|<3$ 记为 Simple CFX Rate（可直接陈述、无需摘要）。
 - **对比基线与超参**: 7 个 CFX 生成器 × 3 个 LLM（Ministral 8B / Gemma 3 12B / Qwen 3 8B）× {Vanilla, DPO}；$k_{gen}=k_{eval}=20$；分类器准确率 0.91（语言质量）/0.92（匹配）。
 
 ## Key Experimental Results (实验关键数据)
@@ -114,10 +114,15 @@ ML-1M 上人类校准评估（节选代表性组合，均值±std）：
 2. **DPO 几乎全面改善语义但会牺牲语言质量**：21 组中 20 组正确性提升，但 Ministral 8B 的语言质量从 0.91 掉到 0.78、LIME-RS 组合从 0.86 掉到 0.59，说明三目标存在张力，需在优化指标设计上做权衡。
 3. **LLM judge 与人类校准存在系统性偏差**：表 2 中"drama films from 1960s to 1990s"LLM judge 给 LQ 0.89，人类校准却判 0.00；而"comedy and drama from 1990s"人类校准 LQ=1.00——证明用 LLM 自评作最终指标不可靠，人类校准层是必要设计。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 相比 CAVIAR（描述推荐物品图像扰动）与 FIRE（基于归因信号引导 LLM），本文起点是**因果反事实编辑**而非相关性归因，语义忠实性更强；相比 ACCENT/SPINRec 原论文只报编辑数与成功率，本文补上了"人能否读懂"这一环。
 - **可迁移亮点**: ① "对比集 + 目标集"双路提示是让 LLM 输出**区分性**而非泛化解释的通用技巧，可迁移到任何特征归因摘要；② 训练用 LLM judge、评测用人类校准分类器的两段式协议，可直接复用到所有 LLM 生成式评估场景。
 - **审稿级局限批判**: ① **单数据集单推荐器**（仅 ML-1M + VAE），且元数据被裁剪到年份+类型，结论对新闻/短视频等富文本场景的外推性未知；② 解释质量高度依赖 CFX 生成器，而 CFX 本身计算昂贵（需反复扰动重排），端到端延迟与在线可行性未讨论；③ 语言质量在 DPO 后普遍下滑，缺少多目标 Pareto 权衡分析。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

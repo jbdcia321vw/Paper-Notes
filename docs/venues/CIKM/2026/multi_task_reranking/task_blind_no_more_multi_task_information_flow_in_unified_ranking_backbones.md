@@ -42,7 +42,7 @@ categories:
 
 ### 1. 整体框架 (Overall Architecture)
 
-输入分为多行为序列 token $\mathbf{S}$ 与非序列 token $\mathbf{F}$（用户画像、候选属性、上下文）。由二者池化投影切分出 $K$ 个 Shared Anchor 与 $T$ 个 Private Anchor，作为跨层持久的多任务信息载体。堆叠 $L$ 个 MORE Block，每块依次执行：任务感知序列读取（Anchor 以 cross-attention 查询序列记忆）→ 选择性语义混合（Anchor 与 $\mathbf{F}$ 做 MLP-Mixer 式 token 混合，并施加任务边界掩码）→ 任务增强（FiLM 式仿射把 $\mathbf{F}$ 的判别信息注入各 Private Anchor）。末端每个任务塔接收对应 Private Anchor 与共享语义输出打分。训练用加权 BCE，推理采用 request-level 共享计算。
+输入分为多行为序列 token $\mathbf{S}$与非序列 token$\mathbf{F}$（用户画像、候选属性、上下文）。由二者池化投影切分出$K$个 Shared Anchor 与$T$个 Private Anchor，作为跨层持久的多任务信息载体。堆叠$L$个 MORE Block，每块依次执行：任务感知序列读取（Anchor 以 cross-attention 查询序列记忆）→ 选择性语义混合（Anchor 与$\mathbf{F}$做 MLP-Mixer 式 token 混合，并施加任务边界掩码）→ 任务增强（FiLM 式仿射把$\mathbf{F}$ 的判别信息注入各 Private Anchor）。末端每个任务塔接收对应 Private Anchor 与共享语义输出打分。训练用加权 BCE，推理采用 request-level 共享计算。
 
 ```mermaid
 flowchart TD
@@ -60,13 +60,13 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **Anchor Token 构建与笛卡尔行为编码**：若只编码物品位置而不区分行为类型，后续层的任务结构会被削弱。本文将每个物品的行为组合表示为长度 $T$ 的 0/1 指示向量并映射为唯一 action-combination ID，序列 token 为 $\mathbf{s}_n=\mathbf{e}_{item}(i_n)+\mathbf{e}_{action}(cid_n)+\mathbf{e}_{time}$；Anchor 由 $\mathbf{h}=\mathrm{Concat}(\mathrm{MeanPool}(\mathbf{S}),\mathrm{Flatten}(\mathbf{F}))$ 经 MLP 切分得到，并给第 $t$ 个 Private Anchor 加可学习任务先验 $\mathbf{A}_p^{(t)}\!+\!\boldsymbol{\pi}_t$。直觉：在输入层就把"同一物品的不同行为语义"拆开，等于提前缓解跨任务梯度冲突。
+1. **Anchor Token 构建与笛卡尔行为编码**：若只编码物品位置而不区分行为类型，后续层的任务结构会被削弱。本文将每个物品的行为组合表示为长度 $T$的 0/1 指示向量并映射为唯一 action-combination ID，序列 token 为$\mathbf{s}_n=\mathbf{e}_{item}(i_n)+\mathbf{e}_{action}(cid_n)+\mathbf{e}_{time}$；Anchor 由$\mathbf{h}=\mathrm{Concat}(\mathrm{MeanPool}(\mathbf{S}),\mathrm{Flatten}(\mathbf{F}))$经 MLP 切分得到，并给第$t$个 Private Anchor 加可学习任务先验$\mathbf{A}_p^{(t)}\!+\!\boldsymbol{\pi}_t$。直觉：在输入层就把"同一物品的不同行为语义"拆开，等于提前缓解跨任务梯度冲突。
 
-2. **任务边界掩码的选择性语义混合**：无差别融合会让不同 Private Anchor 互相稀释。将 $\mathbf{G}=(\mathbf{F};\hat{\mathbf{A}}_s;\hat{\mathbf{A}}_p^{(1..T)})$ 切为 $H$ 头并转置，每头经 MLP 门控得 $m_i\in\mathbb{R}^H$，再与掩码逐元素相乘：
+2. **任务边界掩码的选择性语义混合**：无差别融合会让不同 Private Anchor 互相稀释。将 $\mathbf{G}=(\mathbf{F};\hat{\mathbf{A}}_s;\hat{\mathbf{A}}_p^{(1..T)})$切为$H$头并转置，每头经 MLP 门控得$m_i\in\mathbb{R}^H$，再与掩码逐元素相乘：
 $$\hat{\mathbf{g}}_i=\tilde{\mathbf{g}}_i\odot(m_i\odot \mathbf{M}_{i,:}),\quad \mathbf{M}\in\{0,1\}^{H\times H}$$
 其中 $\mathbf{F}$ 与 Shared Anchor 对所有 token 可见，每个 Private Anchor 仅对自身可见。物理直觉：保留全局语义流动的同时切断任务间污染路径，防止高频任务（点击）的梯度主导共享混合权重。
 
-3. **序列寄存器与任务增强、训练/推理效率**：跨块维护零初始化寄存器 $\boldsymbol{\eta}\leftarrow\mathrm{LN}(\boldsymbol{\eta}+\mathrm{MLP}(\mathrm{Pool}(\tilde{\mathbf{S}})))$，各 Anchor 经独立 SwiGLU 门控吸收，使不同位置对同一序列摘要作差异化解读；Task Enhancing 用 $(\boldsymbol{\lambda}_t,\boldsymbol{\gamma}_t)=\mathrm{Split}(\mathrm{MLP}_t(\mathrm{Concat}(\mathbf{F})))$ 做 $\mathbf{A}_p^{(t)}=\mathrm{Norm}((\bar{\mathbf{A}}_p^{(t)}\odot\boldsymbol{\lambda}_t+\boldsymbol{\gamma}_t)+\bar{\mathbf{A}}_p^{(t)})$。总损失 $\mathcal{L}=\sum_t \lambda_t \mathcal{L}_{BCE}(\hat{y}_t,y_t)$，无额外负采样设计（精排点式 BCE）。推理侧因 $\mathbf{S}$ 为用户级状态、不依赖候选，可将一次请求的 $C$ 个候选聚合为单样本共享用户侧计算，无需改模型即降延迟。
+3. **序列寄存器与任务增强、训练/推理效率**：跨块维护零初始化寄存器 $\boldsymbol{\eta}\leftarrow\mathrm{LN}(\boldsymbol{\eta}+\mathrm{MLP}(\mathrm{Pool}(\tilde{\mathbf{S}})))$，各 Anchor 经独立 SwiGLU 门控吸收，使不同位置对同一序列摘要作差异化解读；Task Enhancing 用$(\boldsymbol{\lambda}_t,\boldsymbol{\gamma}_t)=\mathrm{Split}(\mathrm{MLP}_t(\mathrm{Concat}(\mathbf{F})))$做$\mathbf{A}_p^{(t)}=\mathrm{Norm}((\bar{\mathbf{A}}_p^{(t)}\odot\boldsymbol{\lambda}_t+\boldsymbol{\gamma}_t)+\bar{\mathbf{A}}_p^{(t)})$。总损失$\mathcal{L}=\sum_t \lambda_t \mathcal{L}_{BCE}(\hat{y}_t,y_t)$，无额外负采样设计（精排点式 BCE）。推理侧因$\mathbf{S}$为用户级状态、不依赖候选，可将一次请求的$C$ 个候选聚合为单样本共享用户侧计算，无需改模型即降延迟。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -78,7 +78,7 @@ $$\hat{\mathbf{g}}_i=\tilde{\mathbf{g}}_i\odot(m_i\odot \mathbf{M}_{i,:}),\quad 
 
 - **数据划分与防穿越 (Splitting Strategy)**: 全局时间戳切分（前 90 天训练，第 91 天测试），天然避免未来信息穿越。
 - **排名评测协议 (Ranking Protocol)**: 以 GAUC 为主指标（按用户算 AUC 再平均），属全量曝光日志上的用户内排序评估；未采用负采样排序。
-- **对比基线与超参设置**: 两阶段类（Transformer+RankMixer 为参照、+Wukong、HSTU+RankMixer、+DCN-v2、STCA）与统一主干类（MixFormer、HyFormer、OneTrans），全部在同一框架、同数据、同调度、同评测协议与同超参预算下复现。默认 $L_{block}=2$、$d=256$、$M=15$ 个非序列 token、17 个 Anchor（8 Shared + 9 Private），Adam、batch 1024；scaling 实验将参数从约 0.1B 扩至约 0.9B、单样本前向 FLOPs 从约 1.4G 扩至约 11G。线上 A/B 为两周均衡分流，显著性 $p<0.05$。
+- **对比基线与超参设置**: 两阶段类（Transformer+RankMixer 为参照、+Wukong、HSTU+RankMixer、+DCN-v2、STCA）与统一主干类（MixFormer、HyFormer、OneTrans），全部在同一框架、同数据、同调度、同评测协议与同超参预算下复现。默认 $L_{block}=2$、$d=256$、$M=15$个非序列 token、17 个 Anchor（8 Shared + 9 Private），Adam、batch 1024；scaling 实验将参数从约 0.1B 扩至约 0.9B、单样本前向 FLOPs 从约 1.4G 扩至约 11G。线上 A/B 为两周均衡分流，显著性$p<0.05$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -117,10 +117,15 @@ $$\hat{\mathbf{g}}_i=\tilde{\mathbf{g}}_i\odot(m_i\odot \mathbf{M}_{i,:}),\quad 
 2. **统一主干只解决"序列-特征分离"，不解决"任务分离"**：MixFormer/HyFormer/OneTrans 虽全任务为正，但提升模式高度相似（Greet 约 +1.25%~+1.44%），而 MORE 在社交深链任务上进一步拉开（Greet +1.58%、Deep Chat +0.33% vs. OneTrans +0.11%），印证任务盲主干的天花板。
 3. **精度-效率并非权衡而是双赢**：MORE 参数 132M 低于 HyFormer 153M，单样本 FLOPs 1.85G 低于参照基线 1.92G 与 MixFormer 4.65G；scaling 曲线显示从 0.1B 到 0.9B 参数、1.4G 到 11G FLOPs，MORE 相对任务无关主干的 GAUC 差距随容量增大而扩大，说明任务感知容量在每个规模上都被有效利用。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 HyFormer/OneTrans 的本质区别在于任务信号进入主干的时机——前者仅在预测头分化，MORE 让 Anchor Token 在每层参与序列读取与语义混合；与 PLE/MMoE 的区别在于后者对已压缩的共享表征做浅层路由，MORE 在表征形成过程中就施加任务边界；与 STCA 的区别在于 STCA 虽统一序列与特征交叉流水线，主干仍任务无关，深链社交任务几乎零增益。
 - **可迁移亮点**: ① 笛卡尔行为组合编码可低成本移植到任意多行为序列推荐，缓解位置级梯度冲突；② request-level 共享计算利用"用户级序列状态与候选解耦"的架构性质，无需改模型即摊薄每候选成本，对高并发精排极具工程价值。
 - **审稿级局限批判**: ① 实验仅覆盖陌陌单一社交发现场景，且数据集统计量、13 任务中仅 7 个入表，外部可复现性与泛化性证据偏弱；② 任务边界掩码使 Private Anchor 间完全不可见，当任务间存在强正迁移（如 Like→Comment）时可能损失协同收益，且掩码结构随任务数 $T$ 线性增长，动态任务配置下的扩展性未验证。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

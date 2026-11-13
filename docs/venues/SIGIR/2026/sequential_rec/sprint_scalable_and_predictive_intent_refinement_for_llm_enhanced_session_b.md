@@ -1,14 +1,14 @@
 ---
 title: "[Paper Note] SPRINT: Scalable and Predictive Intent Refinement for LLM-Enhanced Session-based Recommendation"
-description: "[SIGIR 2026][序列与会话推荐] 用全局意图池约束LLM生成、以推荐效用验证意图，并蒸馏为轻量意图预测器，实现免LLM推理的会话推荐。"
+description: "[SIGIR 2026][序列与会话推荐] 用全局意图池约束 LLM 生成、以预测-纠错回路校验意图，并蒸馏为轻量意图预测器，实现训练选择性调用 LLM、推理零 LLM 依赖的会话推荐。"
 tags:
   - SIGIR 2026
   - 序列与会话推荐
   - 召回
-  - LLM增强会话推荐
-  - 意图蒸馏与自训练
-  - 不确定性感知LLM调用
-date: 2026-11-12
+  - LLM 意图画像
+  - 不确定性采样
+  - 自训练伪标签
+date: 2026-11-13
 venue: SIGIR
 year: 2026
 paper_url: "https://arxiv.org/abs/2508.00570v3"
@@ -18,158 +18,119 @@ categories:
   - llm_rec
 ---
 
-# SPRINT: Scalable and Predictive Intent Refinement for LLM-Enhanced Session-based Recommendation (面向LLM增强会话推荐的可扩展预测性意图精炼)
+# SPRINT: Scalable and Predictive Intent Refinement for LLM-Enhanced Session-based Recommendation (面向 LLM 增强会话推荐的可扩展预测式意图精炼)
 
-- **会议/期刊**: SIGIR 2026 (第49届国际ACM SIGIR会议，2026年7月20–24日，墨尔本)
-- **推荐链路定位**: 召回 (Retrieval) — 会话级 Next-Item 预测，作为 SBR 模型增强模块
-- **研究方向**: 序列与会话推荐 (主) / 大语言模型推荐 LLM4Rec (次)
+- **会议/期刊**: SIGIR 2026
+- **作者与机构**: Gyuseok Lee, Wonbin Kweon, Zhenrui Yue, Yaokun Liu, Yifan Liu, Susik Yoon, Dong Wang, SeongKu Kang（UIUC / Korea University）
+- **推荐链路定位**: 召回（会话级 Next-Item 预测）
+- **研究方向**: 序列与会话推荐 / 大语言模型推荐
 - **论文原文**: [https://arxiv.org/abs/2508.00570v3](https://arxiv.org/abs/2508.00570v3)
 - **开源代码**: [https://github.com/Gyu-Seok0/SPRINT_SIGIR26](https://github.com/Gyu-Seok0/SPRINT_SIGIR26)
 
-## TL;DR (核心速览)
+## TL;DR (1分钟核心速览)
 
-针对会话推荐 (SBR) 中会话上下文极度稀缺 (C1) 与 LLM 逐会话调用不可扩展 (C2) 两大痛点，SPRINT 提出两阶段框架：训练阶段仅对"高不确定性"会话选择性调用 LLM，并以**全局意图池 (GIP)** 约束生成、以**推荐效用 (留出末项预测是否命中)** 验证意图可靠性 (Predict-and-Correct 循环)；随后将 LLM 意图蒸馏进一个**轻量意图预测器**，通过自训练 + 协同意图增强泛化到全部会话，**推理阶段完全免 LLM 调用**。在 Beauty/Yelp/Book 三个真实数据集上，SPRINT 在 Recall@20/NDCG@20 上一致超越 SOTA，同时大幅降低训练与推理时间。
+会话推荐（SBR）的会话短且匿名，直接把 LLM 用户画像搬过来会撞上两堵墙：上下文稀缺导致画像空洞/幻觉（C1），以及海量孤立会话使训练与推理的 LLM 调用成本爆炸（C2）。SPRINT 把意图生成改写成「在可扩展全局意图池上做意图识别」，用「预测-纠错」回路以推荐效用为唯一验收标准；训练时只对不确定性最高的 10% 会话调用 LLM，再自训练出轻量意图预测器覆盖全量会话，推理阶段完全不调 LLM。在 Beauty/Yelp/Book 三个数据集、SASRec 与 BERT4Rec 双骨干、全库排序协议下，Beauty 上 H@20 相对最强基线提升约 18.6%，而推理延迟从分钟级降到 0.12 秒。
 
-## Background & Motivation (背景与动机)
+## Background & Motivation (背景与核心矛盾)
 
-- **领域背景与主流范式**: SBR 面向匿名、短会话场景（未登录浏览），主流范式从 RNN (GRU4Rec) → GNN (TAGNN/SR-GNN) → Transformer (SASRec/BERT4Rec) 演进。近年 LLM 通过 **user profiling**（生成用户画像/persona/intent 文本）增强传统推荐模型 (CRM)，代表路线包括 embedding transfer、语义特征增强、辅助监督，以及本文关注的 **LLM-enhanced SBR**（EGRec、LLM4SBR）与 **LLM-as-SBR**（PO4ISR、Re2LLM）。
-- **现有方法局限 (Limitations of Prior Work)**:
-  1. **上下文稀缺导致画像无效 (C1)**: 会话平均长度极短（Yelp 平均 3.63），且匿名无用户 ID，无法利用长期历史；自由形式 LLM 生成易产生噪声与幻觉，且同一概念表述不一致（"eco-friendly" vs "environmentally friendly"）。已有 self-reflection 方法（如 [38]）只保证逻辑自洽，**不保证推荐效用**。
-  2. **可扩展性差 (C2)**: 训练阶段需为海量孤立会话逐一调用 LLM，离线成本极高；推理阶段因匿名性必须**在线实时调用 LLM**，叠加迭代反思/记忆反思/提示优化后训练与推理时间可翻倍以上，难以落地。
-  3. **LLM-as-SBR 范式**（PO4ISR/Re2LLM）虽有效，但推理开销巨大；**LLM-enhanced 范式**中 EGRec 需昂贵微调且可能损害预训练知识，LLM4SBR 将意图退化为简单 item title，表达力受限，且二者均未针对推荐性能显式优化 LLM 输出。
-- **核心挑战 (Key Challenge)**: 为什么简单拼接 LLM 文本嵌入不行？因为 (1) 测试会话无预生成意图，仍需在线 LLM 调用；(2) 静态文本嵌入无法反映一个会话内**多个意图的不同重要性**；(3) 无约束生成在短上下文下幻觉严重。
-- **核心洞察与切入点 (Key Insight)**: 作者将意图生成从"自由文本生成"重构为**受限意图空间上的意图识别问题**——用可扩展的全局意图池约束输出空间；并用"能否正确预测被留出的末项"作为意图是否**有信息量 (informativeness)** 的客观判据，形成 predict-and-correct 闭环。同时观察到：只有**高不确定性会话**才真正需要 LLM 推理，其余会话可由轻量预测器从行为模式中推断意图。
+- **主流范式**: LLM 增强推荐的主流做法是「LLM 生成画像/意图 → 注入传统推荐模型」，如 LLM4SBR 从标题抽长短意图、RLMRec 做语义-协同双视图对齐、ProfileRec 用自反思生成双画像。
+- **前人局限**: 其一，SBR 会话平均长度仅 3.6–7.0，且无用户 ID，LLM 在贫信息输入下产出宽泛（"summer necessities"）甚至幻觉的画像；其二，ProfileRec 类方法的自反思/记忆反思会让训练与推理时间翻倍以上，而匿名性又迫使推理时逐会话实时调用 LLM，工业上不可行。
+- **核心洞察 (Key Insight)**: 画像「看起来合理」不等于「对推荐有用」——现有方法的校验目标是逻辑自洽（self-reflection），而非推荐效用；同时，真正需要 LLM 推理的只是那些从原始交互中看不出模式的「难会话」。
+- **本文切入点**: 把意图生成约束进共享意图池 + 以留出物品预测正确与否作为意图验收信号，并把 LLM 的推理能力蒸馏进一个无 LLM 依赖的轻量预测器。
 
-<figure class="paper-figure" markdown="span">
-  ![图 1](../../../../assets/papers/2508.00570v3/figure_1.png)<figcaption>图 1</figcaption>
-</figure>
+## Method (核心方法设计)
 
-## Problem Formulation & Method (问题定义与方法架构)
+### 1. 整体框架 (Overall Architecture)
 
-### 1. 符号定义与输入表征 (Notations & Input Representations)
-
-- 物品集 $\mathcal{I}$；会话 $S=[i_1,i_2,\dots,i_N]$，目标为预测下一物品 $i_{\text{next}}$。
-- 全部会话集 $\mathcal{S}$ 划分为不相交的 $\mathcal{S}_{\text{train}}$ 与 $\mathcal{S}_{\text{test}}$。
-- 特征字段集 $\mathcal{F}$（title、description、categories、reviews 等），物品特征元组 $x_i=(x_f)_{f\in\mathcal{F}}$，会话特征矩阵 $X_S=[x_1,x_2,\dots,x_N]$。
-- 传统 SBR 模型 $\text{SBR}(\cdot)$ 参数 $\theta$，会话表征 $h_S\in\mathbb{R}^d$，物品嵌入 $e_i\in\mathbb{R}^d$；LLM 输出意图集 $Z_S=\text{LLM}(X_S)$。
-- 增强形式：$P_\theta(i_{\text{next}}\mid S)\leftarrow \text{SBR}(S, X_S, Z_S)$。
-
-### 2. 整体流水线 (Overall Architecture)
-
-两阶段：**Stage 1** 用基础 SBR 模型（仅训练会话预热）计算不确定性，选出 top-$r\%$ 难会话 $\mathcal{S}_{\text{hard}}$，仅对这些会话调用 LLM，在全局意图池 GIP 约束下执行 Predict-and-Correct 循环，产出可靠意图集 $\mathcal{C}^{\text{LLM}}_S$ 并扩充 GIP；**Stage 2** 训练轻量意图预测器（多意图预测 + 协同意图增强 + 意图融合），以 LLM 意图为初始监督、以无 LLM 意图会话的高置信预测为伪标签自训练，最终推理时**零 LLM 调用**。
-
-<figure class="paper-figure" markdown="span">
-  ![图 2](../../../../assets/papers/2508.00570v3/figure_2.png)<figcaption>图 2</figcaption>
-</figure>
+SPRINT 分两阶段。Stage 1：先用热身好的 SBR 模型给全部训练会话打不确定性分，取 top-10% 难会话调用 LLM；LLM 在全局意图池 $\mathcal{G}$ 内做「识别而非自由生成」，并通过「预测-纠错」回路反复校验意图是否真能预测留出物品，通过者入池。Stage 2：以 LLM 意图为初始标签训练轻量意图预测器（QKV 结构 + sigmoid 多标签），再用自预测与近邻聚合做标签富化，最后按相关性阈值把意图 value 向量融进会话表示，端到端训练 SBR。推理时只跑预测器与 SBR，零 LLM 调用。
 
 ```mermaid
 flowchart TD
-    A["输入层: 匿名会话 S=[i1..iN] + 物品特征 X_S (title/desc/category/review)"] --> B["基础 SBR 预热模型 (GRU4Rec / SASRec / TAGNN)"]
-    B --> C["不确定性打分 U(S) = RRF(H_sess, H_pred)"]
-    C -->|"top-r% 难会话 S_hard"| D["Stage 1: LLM + 全局意图池 GIP + Predict-and-Correct 循环"]
-    C -->|"其余易会话"| G["Stage 2: 轻量意图预测器 (多意图 + 协同增强)"]
-    D -->|"LLM 意图 C_LLM (初始监督)"| G
-    G -->|"自训练伪标签 + 意图融合"| E["增强 SBR 模型打分 P(i_next | S, X_S, Z_S)"]
-    E --> F["输出: Next-Item 排序 (推理阶段免 LLM)"]
+    A["会话序列 S + 物品特征 X_S"] --> B["热身 SBR 计算不确定性 U(S)"]
+    B --> C["Top-10% 难会话 → LLM 在全局意图池 G 内识别意图"]
+    C --> D["预测-纠错回路: 留出物品预测校验"]
+    D --> E["意图预测器 (QKV + Sigmoid 多标签)"]
+    E --> F["协同意图富化: 自预测 + 近邻聚合伪标签"]
+    F --> G["意图门控融合 → 下一物品打分"]
 ```
 
-### 3. 核心模块设计与数学原理 (Key Designs & Formulations)
+### 2. 关键设计拆解 (Key Designs)
 
-**(1) 不确定性感知难会话选择 (Uncertainty-aware Hard Session Selection)**
+1. **不确定性感知的难会话选择**：若对所有会话调 LLM 则成本不可承受，而随机采样又会把算力浪费在简单会话上。本文用会话熵与预测难度两个互补信号，经倒数排名融合（RRF）合成统一分数：
+$U(S)=\frac{1}{k+r_{\text{sess}}(S)}+\frac{1}{k+r_{\text{pred}}(S)},\quad k=60$其中$H_{\text{sess}}$刻画会话内部兴趣发散度，$H_{\text{pred}}=-\log P_\theta(i_N|S_{1:N-1})$ 刻画模型对末位物品的置信缺失。RRF 的好处是尺度无关，避免两个熵量纲不一致时的权重调参。
 
-对每个训练会话计算两个互补不确定性：
+2. **全局意图池 + 预测-纠错回路**：自由生成的两个病根是幻觉与同义异形（"eco-friendly" vs "environmentally friendly"）。GIP 先由领域提示初始化一个紧凑意图集（最终 Beauty/Yelp/Book 分别仅 120/135/118 个意图），LLM 优先从池中识别，仅在无匹配时才新建概念。验收标准被定义为推荐效用：构造候选集 $I_S=\{i_N,i^{\text{out}}_1,\dots,i^{\text{out}}_M\}$（$M=5$），令 LLM 依据意图预测留出物品，
+$\mathcal{C}^{(0)}_S,\hat{i}\leftarrow\text{LLM}(P_{P\&C}(V^{(0)}_S))$若$\hat{i}=i_N$则接受意图并入库，否则回灌语言反馈$V^{(t+1)}_S=(V^{(t)}_S,R^{(t)}_S)$重试，最多$T=3$ 轮。直觉是：只有能真正区分「本会话末位物品 vs 域内外物品」的意图才被保留，从源头掐断宽泛无效概念。
 
-$$H_{\text{sess}}(S)=-\sum_{i\in S}P_\theta(i\mid S)\log P_\theta(i\mid S),\qquad H_{\text{pred}}(S)=-\log P_\theta(i_N\mid S_{1:N-1})$$
-
-其中 $P_\theta(i\mid S)=\dfrac{\exp(h_S^\top e_i)}{\sum_{j\in\mathcal{I}}\exp(h_S^\top e_j)}$。$H_{\text{sess}}$ 刻画会话内部兴趣不一致性（交互多样），$H_{\text{pred}}$ 刻画模型对末项预测的置信缺失。二者用 **Reciprocal Rank Fusion** 融合（尺度无关）：
-
-$$U(S)=\frac{1}{k+r_{\text{sess}}(S)}+\frac{1}{k+r_{\text{pred}}(S)},\quad k=60$$
-
-取 $U(S)$ 最高的 top-$r\%$（$r=10$）为 $\mathcal{S}_{\text{hard}}$。**物理直觉**：只有原始交互难以辨别模式的会话才最需要 LLM 的语义推理，其余会话的 LLM 调用是冗余的。
-
-**(2) 全局意图池 GIP 与 Predict-and-Correct 循环 (Predictive Intent Refinement)**
-
-GIP 初始化：$\mathcal{G}=\text{LLM}(P_{\text{GIP}}(D))$，提示词要求"为领域 $D$ 生成从通用到领域特定的最小意图集合"。对每个 $S\in\mathcal{S}_{\text{hard}}$，构造**意图验证任务**：留出末项 $i_N$，候选集 $I_S=\{i_N,i_{\text{out}_1},\dots,i_{\text{out}_M}\}$（$M=5$ 个会话外随机物品）。LLM 联合执行"从 $\mathcal{G}$ 识别/必要时新增意图"与"基于意图预测留出项"：
-
-$$\mathcal{C}^{(0)}_S,\ \hat{i}\leftarrow\text{LLM}(P_{P\&C}(V^{(0)}_S)),\quad V^{(0)}_S=(X_S, X_{I_S}, \mathcal{G})$$
-
-若 $\hat{i}=i_N$ 则接受 $\mathcal{C}^{\text{LLM}}_S=\mathcal{C}^{(0)}_S$ 并终止；否则追加语言反馈 $R^{(t)}_S$（"预测失败，请修正意图并重试"）更新输入 $V^{(t+1)}_S=(V^{(t)}_S, R^{(t)}_S)$，最多 $T=3$ 轮。**新意图仅在通过验证后才并入** $\mathcal{G}\leftarrow\mathcal{G}\cup\mathcal{C}^{\text{LLM}}_S$。**物理直觉**：以推荐效用（而非语言流畅性或逻辑自洽）作为意图有效性的唯一判据，直接对齐下游任务；受限意图空间同时抑制幻觉与表述漂移。最终意图池规模：Beauty 120、Yelp 135、Book 118。
-
-**(3) 轻量意图预测器 + 协同意图增强 + 意图融合 (Intent Predictor & Collaborative Enrichment)**
-
-意图预测器为轻量模块，输入会话表征，输出**多意图**分布（一个会话可对应多个动机），可灵活挂接任意 SBR 模型。训练采用**自训练**：LLM 意图作为初始监督；对无 LLM 意图的会话，按交互模式的高置信预测迭代纳入伪标签。进一步设计**协同意图增强**：预测器借助行为模式相似的**邻居会话**精炼自身意图预测，弥补单会话上下文不足。最后通过**意图融合机制**将多面意图注入 SBR 表征（替代简单文本嵌入拼接，从而体现多意图的不同重要性）。
-
-### 4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling & Complexity)
-
-- **损失函数**: 原文正文（截取部分）未完整给出总损失 $\mathcal{L}$ 的显式公式与各分项权重/温度系数 $\tau$，仅说明由"意图预测监督（LLM 意图 + 自训练伪标签）"与"下一物品推荐损失"联合优化；**具体公式原文未在可见文本中报告**。
-- **训练负采样策略**: 意图验证阶段使用 $M=5$ 个**会话外随机物品**作为候选负例（Uniform 随机采样）；SBR 主任务的负采样细节原文未在可见部分明确报告。
-- **时间与空间复杂度**: 训练侧 LLM 调用量从"全部会话"降至"top-10% 难会话 × 最多 3 轮 P&C"；推理侧**完全免 LLM**，仅需轻量意图预测器前向。图 3 与表 4 给出定量对比（见下）。
+3. **意图预测器、协同富化与训练目标**：为摆脱推理期 LLM 依赖，用 QKV 匹配会话与意图，$\hat{y}_{Sc}=\sigma(\mathbf{q}_S^\top\mathbf{k}_c)$，此处刻意用 sigmoid 而非 softmax——一个会话可同时对应多个非互斥意图。标签从 LLM 硬标签出发，按 epoch 用$\mathbf{y}^{(t)}_S=\frac{1}{2}(\hat{\mathbf{y}}_S+\hat{\mathbf{y}}^{\text{nbr}}_S)$富化，其中近邻项由 mini-batch 内 top-$K$余弦相似会话加权聚合，既补全无 LLM 标签的会话，又把二值标签软化为重要性概率。融合侧用阈值$\tau=0.5$门控：$\tilde{\mathbf{h}}_S=\mathbf{h}_S+\text{Dropout}(\text{LN}(\mathbf{h}_S+\sum_c\phi(\hat{y}_{Sc})\mathbf{v}_c))$。总损失为
+$\mathcal{L}=\mathcal{L}_{\text{Rec}}+\lambda_{\text{intent}}\mathcal{L}_{\text{intent}}+\lambda_{\text{ortho}}\mathcal{L}_{\text{ortho}}$
+负采样采用「1 随机 + 1 来自 P&C 回路误判物品的硬负例」，意图正交损失拉开意图嵌入的语义区分度。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
-- **数据集统计与预处理**: 使用 Beauty、Yelp、Book 三个真实数据集（Diginetica 风格 SBR 基准体系）。
+- **数据集与预处理**: 三个真实数据集，均做 `5-core` 过滤：
 
-<figure class="paper-figure" markdown="span">
-  ![表 1](../../../../assets/papers/2508.00570v3/table_1.png)<figcaption>表 1</figcaption>
-</figure>
+| 数据集 | #Sessions | #Items | #Interactions | 平均长度 | 特征/场景说明 |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| Beauty | 7,524 | 2,351 | 31,538 | 4.19 | 标题/类目/评论/价格，美妆电商 |
+| Yelp | 41,892 | 8,701 | 152,818 | 3.65 | 商户名/星级/类目/文本，本地生活 |
+| Book | 20,102 | 9,578 | 141,510 | 7.03 | 同 Beauty 字段，图书电商 |
 
-> 注：原文可见文本未展开表 1 的具体数值（用户/物品/交互数、过滤规则如 5-core 等），**具体统计量原文表格未在提取文本中呈现**，此处不做臆造。
+- **数据划分与防穿越 (Splitting Strategy)**: 按每个会话末位事件的时间戳排序，取第 80/90 百分位为切点，做 8:1:1 的**全局时间戳切分**，训练/验证/测试会话互斥。
+- **排名评测协议 (Ranking Protocol)**: 主实验为**全库排序（Full-Ranking）**，指标 Hit@$\{5,10,20\}$与 NDCG@$\{5,10,20\}$，五次随机种子取均值；与 LLM-as-SBR 的对比（表 4）则采用 20 候选（1 正 + 19 个 SASRec 预训练负例）的采样排序协议。
+- **对比基线与超参设置**: 基线覆盖隐式意图（ELCRec、MiaSRec）、显式意图（FAPAT、CaFe）、LLM 增强（LLM4SBR、LLM-ESR、RLMRec-Con/Gen、ProfileRec）三类；骨干为 SASRec 与 BERT4Rec，2 层 2 头、$d=64$；LLM 默认 GPT-3.5-turbo，另用 Llama-3.3-70B-Instruct 复验；显著性用配对 t 检验（$p<0.05$）。
 
-- **数据划分方式 (Splitting Strategy)**: 会话级划分，$\mathcal{S}_{\text{train}}\cap\mathcal{S}_{\text{test}}=\varnothing$；每个会话以**末项作为留出目标** $i_N$（即 Leave-One-Out 式的会话内 next-item 预测），前 $N-1$ 项为输入。属于标准 SBR 的 LOO 会话切分，未见全局时间戳切分描述。
-- **排名评测协议 (Ranking Protocol)**: 采用 SBR 领域标准的 **Full-Ranking（全物品库排序）** 协议（由 $P_\theta(i\mid S)$ 对全库 $\mathcal{I}$ 归一化打分可推知），未使用 1:99 负采样排序。
-- **评价指标与显著性检验**: Recall@20、NDCG@20（主表口径）；效率侧报告总推理时间与训练时间。**是否进行配对显著性检验原文可见文本未报告**。
-
-## Key Experimental Results (核心实验结果)
+## Key Experimental Results (实验关键数据)
 
 ### 1. 主实验对比 (Main Results)
 
-原文主表（Beauty/Yelp/Book 上的 Recall@20、NDCG@20 对比 GRU4Rec、SASRec、TAGNN、EGRec、LLM4SBR、PO4ISR 等）在提取文本中未给出完整数值表，故此处**不填造数值**。可确认的结论为：SPRINT 在三个数据集上**一致优于所有 SOTA 基线**，且提供更具可解释性的推荐。
+Beauty 与 Book（SASRec 骨干，Full-Ranking，节选）：
 
-<figure class="paper-figure" markdown="span">
-  ![表 3](../../../../assets/papers/2508.00570v3/table_3.png)<figcaption>表 3</figcaption>
-</figure>
+| 数据集 | 方法 | H@5 | N@5 | H@10 | N@10 | H@20 | N@20 |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| Beauty | SASRec (骨干) | 0.0198 | 0.0132 | 0.0297 | 0.0164 | 0.0456 | 0.0203 |
+| Beauty | ELCRec | 0.0267 | 0.0170 | 0.0357 | 0.0199 | 0.0590 | 0.0258 |
+| Beauty | FAPAT | 0.0250 | 0.0159 | 0.0383 | 0.0201 | 0.0594 | 0.0254 |
+| Beauty | LLM-ESR | 0.0168 | 0.0104 | 0.0323 | 0.0154 | 0.0503 | 0.0199 |
+| Beauty | RLMRec-Con | 0.0215 | 0.0139 | 0.0349 | 0.0180 | 0.0624 | 0.0249 |
+| Beauty | ProfileRec | 0.0224 | 0.0146 | 0.0357 | 0.0188 | 0.0598 | 0.0250 |
+| Beauty | **SPRINT** | **0.0331** | **0.0201** | **0.0503** | **0.0256** | **0.0740** | **0.0316** |
+| Beauty | Improv.% vs 最优基线 | +23.9% | +18.2% | +31.7% | +28.6% | +18.6% | +26.4% |
+| Book | ProfileRec | 0.0293 | 0.0183 | 0.0503 | 0.0250 | 0.0763 | 0.0315 |
+| Book | **SPRINT** | **0.0341** | **0.0224** | **0.0548** | **0.0290** | **0.0796** | **0.0352** |
+| Book | Improv.% vs 最优基线 | +16.4% | +22.4% | +8.9% | +16.0% | +4.3% | +11.7% |
 
-表 3 显示：在统一使用 Llama-3.3-70B-Instruct 的受控设置下，SPRINT 作为 LLM-enhanced CRM 在 Beauty 上取得最优性能（具体数值见原文表 3）。
+Yelp 上 SPRINT 同样全面领先（H@5 0.0495 vs ProfileRec 0.0451，+9.8%）；BERT4Rec 骨干下 Beauty 的 H@20 由 0.0538 升至 0.0680（+26.4%）。
 
-### 2. 消融实验与控制变量分析 (Ablation Study)
+### 2. 消融实验 (Ablation Study)
 
-原文对每个提出组件（不确定性选择、GIP 约束、P&C 循环、意图预测器、协同意图增强、自训练）进行了深入分析。可见文本中明确报告的关键结论包括：$r$ 取不同值时性能**鲁棒**且训练时间显著下降（$r=10$ 为默认）；P&C 循环的验证机制对意图可靠性至关重要。**各模块移除后的具体下降幅度数值原文可见文本未完整呈现**。
+Beauty 数据集（SASRec 骨干）：
 
-### 3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets & Hyperparameters)
+| 配置 | H@5 | N@5 | H@20 | N@20 |
+| :--- | :---: | :---: | :---: | :---: |
+| 全关（纯骨干） | 0.0198 | 0.0132 | 0.0456 | 0.0203 |
+| + (A) LLM 意图 | 0.0271 | 0.0164 | 0.0585 | 0.0257 |
+| + (B) P&C 回路与 GIP | 0.0310 | 0.0192 | 0.0619 | 0.0280 |
+| + (C) 自预测富化 | 0.0323 | 0.0195 | 0.0632 | 0.0282 |
+| + (D) 近邻富化 | 0.0327 | 0.0197 | 0.0675 | 0.0295 |
+| 全部组件 | **0.0331** | **0.0201** | **0.0740** | **0.0316** |
 
-- **难/易会话分桶**: 核心设计即按不确定性分桶——仅 top-$r\%$ 难会话走 LLM，其余走轻量预测器；实验表明该策略在 $r$ 变化下性能稳健。
-- **关键超参数**: 难会话比例 $r=10$、P&C 最大迭代 $T=3$、候选集大小 $M=5$、RRF 阻尼常数 $k=60$；意图池最终规模 120/135/118（Beauty/Yelp/Book）。
-- **效率对比 (核心卖点)**:
+### 3. 关键实验发现 (Key Findings)
 
-<figure class="paper-figure" markdown="span">
-  ![表 4](../../../../assets/papers/2508.00570v3/table_4.png)<figcaption>表 4</figcaption>
-</figure>
+1. **P&C 回路是最大单点增益来源**：仅加 LLM 意图（A）把 H@20 从 0.0456 提到 0.0585，而叠加 GIP+P&C（B）再涨到 0.0619，说明「以推荐效用验收意图」比「有意图」本身更关键；近邻富化（D）单独贡献 H@20 +0.0043，验证协同信号对稀疏会话的补全价值。
+2. **效率与精度可同时占优**：Beauty 上 SPRINT 训练耗时 36.69 分钟、推理 0.27 秒，而 ProfileRec 为 362.03 分钟 / 1520.70 秒，LLM4SBR 为 162.16 分钟 / 697.78 秒；相对 LLM-as-SBR 的 PO4ISR，Yelp 推理从 371.5 分钟压到 0.23 秒，H@5 反而从 0.2764 升到 0.6015。
+3. **意图监督比例极具鲁棒性**：仅用 10% 会话的 LLM 意图即可逼近 100% 监督的效果，且显著优于 0% 设置；近邻数 $K=0$时性能骤降、$K=5$ 达峰，说明小规模行为近邻已足够，无需大邻域开销。
 
-<figure class="paper-figure" markdown="span">
-  ![图 3](../../../../assets/papers/2508.00570v3/figure_3.png)<figcaption>图 3</figcaption>
-</figure>
+## Highlights & Limitations (亮点、对比与审稿批判)
 
-表 4 与图 3 共同表明：相比 LLM-as-SBR 的 PO4ISR，SPRINT 在**精度更高**的同时，**总推理时间大幅缩短**（因推理阶段零 LLM 调用），训练时间亦因选择性调用而显著降低。
-
-- **线上 A/B 测试**: 原文仅包含离线实验，**未报告线上 A/B 结果**。
-
-## Highlights, Limitations & Critiques (亮点、局限与审稿级批判)
-
-- **核心亮点与可迁移性**:
-  1. **"以推荐效用验证 LLM 输出"** 的 P&C 闭环极具普适性，可迁移到任意 LLM 生成辅助信号的推荐任务（如用户画像、解释生成、查询改写）。
-  2. **受限意图空间 (GIP)** 将开放式生成转为闭集识别，是抑制短上下文幻觉的通用工程范式。
-  3. **不确定性感知的选择性 LLM 调用 + 轻量蒸馏** 是 LLM4Rec 落地的关键折中，推理零 LLM 依赖对工业实时系统价值高。
-  4. 多意图建模 + 协同邻居增强，兼顾了会话内多动机与跨会话协同信号。
-- **局限性与审稿视角批判 (Critical Limitations)**:
-  1. **评估协议细节披露不足**: 提取文本未完整给出数据集统计、负采样细节、显著性检验与主表全量数值，复现与横向比较需依赖附录/代码。
-  2. **意图池的领域依赖**: GIP 初始化依赖领域提示词 $D$，跨域迁移时意图池需重建；意图池规模（~120）是否对长尾/多品类领域足够，缺乏敏感性分析。
-  3. **不确定性选择的偏差风险**: 仅对高熵会话调用 LLM，可能系统性忽略"低熵但被模型自信误判"的会话（confidently wrong），存在覆盖盲区。
-  4. **P&C 验证信号较弱**: 以单个留出末项 + 5 个随机负例的 1-of-6 命中作为意图有效性判据，信号噪声较大，随机负例难度低可能高估意图质量。
-  5. **效率对比口径**: 表 4 的总推理时间为全测试集累计时间，缺少单请求延迟 (ms/request) 与峰值显存报告，工业实时性论证仍不充分。
+- **与代表作对比 (vs. Prior Work)**: 相比 LLM4SBR 把意图退化为物品标题、EGRec 需微调 LLM 且有损预训练知识，SPRINT 用意图池 + 效用验收保证意图质量；相比 ProfileRec 的自反思画像，SPRINT 把反思目标从「逻辑自洽」换成「能否预测留出物品」，并把 LLM 能力蒸馏到推理期零调用，这是效率差距（0.27s vs 1520s）的根源。
+- **可迁移亮点**: ①「以留出物品预测正确性作为 LLM 生成信号的验收器」可平移到跨域标签生成、查询改写等任意无监督信号场景；②「不确定性采样 + 自训练伪标签 + 近邻聚合」的三段式蒸馏范式，适合任何需要 LLM 但受延迟约束的在线系统。
+- **审稿级局限批判**: ① P&C 回路的候选集仅 1 正 + 5 随机负例，验收信号偏弱，且随机负例可能让「宽泛意图」侥幸通过，缺少对难负例的鲁棒性分析；② 意图池规模（120/135/118）与领域提示强绑定，跨域迁移时需重新初始化，且论文未报告池规模膨胀对预测器 softmax-free 多标签头的长尾影响；③ SPRINT+LE 在 Llama 嵌入下性能崩塌（Beauty H@5 仅 0.0076），暴露高维语义嵌入与 64 维会话空间的维度失配问题，作者仅归因于「需更好的对齐」，未给出解法。
 
 ## Rating (四维评分)
 
-- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （受限意图池 + 效用验证 + 选择性蒸馏的组合设计新颖且自洽）
-- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐☆ （三数据集 + 效率分析充分，但统计显著性与部分表格细节披露不足）
-- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题刻画清晰、算法伪代码完整，损失函数细节略欠）
-- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （推理零 LLM 调用、训练选择性调用，直接契合实时 SBR 部署需求，且已开源）
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （把意图生成重构为受限池上的识别问题，并以推荐效用替代逻辑自洽作为验收标准，思路干净且有别于现有 LLM 画像范式）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 × 双骨干 × 全库排序 + 配对 t 检验 + 完整消融与效率分析，但 P&C 候选集构造偏弱、缺少难负例压力测试）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （两阶段流程与公式定义清晰，RRF、sigmoid 多标签、门控融合的动机均有交代，复杂度分析略简）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （推理零 LLM 调用、延迟与纯 SASRec 同量级，代码已开源，训练侧仅 10% 会话调 LLM，具备直接上线条件）
+

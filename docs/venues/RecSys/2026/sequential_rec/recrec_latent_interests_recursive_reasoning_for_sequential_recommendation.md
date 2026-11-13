@@ -28,20 +28,20 @@ categories:
 
 ## TL;DR (1分钟核心速览)
 
-现有推理增强序列推荐（ReaRec、LARES）把"推理空间"与"预测空间"耦合在同一 $d$ 维状态上，推理深度受限且需 RL 多阶段训练。RecRec 借鉴 TRM 的双状态递归范式：Context Compressor 用 $R$ 个可学习 query 把骨干隐状态蒸馏为 $R$ 个潜在兴趣 $\mathbf{M}$，Recursive Reasoner 在独立的推理态 $\mathbf{S}$ 上"先想后写"地迭代精炼 $\mathbf{M}$，两阶段纯监督训练 + 深监督使推理深度可在推理时自由外推。四个数据集 Full-Ranking 下 NDCG@10 相对最优推理基线最高提升 14.8%（Steam），且三个数据集上增益可延伸至训练深度之外。
+现有推理增强序列推荐（ReaRec、LARES）把"推理空间"与"预测空间"耦合在同一 $d$维状态上，推理深度受限且需 RL 多阶段训练。RecRec 借鉴 TRM 的双状态递归范式：Context Compressor 用$R$个可学习 query 把骨干隐状态蒸馏为$R$个潜在兴趣$\mathbf{M}$，Recursive Reasoner 在独立的推理态$\mathbf{S}$上"先想后写"地迭代精炼$\mathbf{M}$，两阶段纯监督训练 + 深监督使推理深度可在推理时自由外推。四个数据集 Full-Ranking 下 NDCG@10 相对最优推理基线最高提升 14.8%（Steam），且三个数据集上增益可延伸至训练深度之外。
 
 ## Background & Motivation (背景与核心矛盾)
 
 - **主流范式**: SASRec/BERT4Rec 单次前向编码历史、从末位隐状态一次性出分；ReaRec 把推理 token 拼进输入序列反复前向，LARES 用共享 block 迭代全部 $L$ 个隐状态并配 GRPO 强化学习后训练。
 - **前人局限**: ① 三者最终预测都坍缩为单个 $d$ 维向量，推理算力再大也无法扩展预测态容量；② 推理态即预测态，中间计算直接扰动用于打分的表征；③ ReaRec 的推理位置编码固定步数，LARES 要突破训练深度必须引入 RL 阶段，训练链路重。
 - **核心洞察 (Key Insight)**: 推理与预测应是两个空间——TRM 在组合任务上证明"共享权重 block + 双状态（scratchpad/answer）+ 逐步 detached 深监督"可让每步学会"改进任意输入"，从而外推到更多步数；该范式尚未被引入推荐。
-- **本文切入点**: 把"答案态"换成 $R$ 个潜在兴趣（多向量预测态），"草稿态"换成专用推理态 $\mathbf{S}$，用注意力路由替代 TRM 的拼接 MLP，纯监督两阶段替代 RL。
+- **本文切入点**: 把"答案态"换成 $R$个潜在兴趣（多向量预测态），"草稿态"换成专用推理态$\mathbf{S}$，用注意力路由替代 TRM 的拼接 MLP，纯监督两阶段替代 RL。
 
 ## Method (核心方法设计)
 
 ### 1. 整体框架 (Overall Architecture)
 
-骨干（SASRec/BERT4Rec）编码历史得 $\mathbf{H}\in\mathbb{R}^{L\times d}$；Context Compressor 以 $R$ 个无位置编码的可学习 query 经 cross-attn→self-attn→FFN 蒸馏出初始潜在兴趣 $\mathbf{M}^0\in\mathbb{R}^{R\times d}$。Recursive Reasoner 以单个共享权重 Transformer block 交替更新两个同形状状态：推理态 $\mathbf{S}$（只做中间计算、永不直接解码）与兴趣态 $\mathbf{M}$（唯一用于打分）。每个 reasoning step 先做 $n$ 次 $\mathbf{S}$ 内层传递（关注 $[\mathbf{H};\mathbf{M}]$），再经 GRU 门把候选更新写入 $\mathbf{M}$。训练分两阶段：阶段 1 联合训练骨干+Compressor（含 IDR）；阶段 2 冻结前两者、只训 Reasoner，采用 $K$ 轮深监督、每轮 $T$ 步、仅末步反传（1-step BPTT），训练总深度 $N=K\times T=9$。推理时 $N$ 可任意设定。
+骨干（SASRec/BERT4Rec）编码历史得 $\mathbf{H}\in\mathbb{R}^{L\times d}$；Context Compressor 以$R$个无位置编码的可学习 query 经 cross-attn→self-attn→FFN 蒸馏出初始潜在兴趣$\mathbf{M}^0\in\mathbb{R}^{R\times d}$。Recursive Reasoner 以单个共享权重 Transformer block 交替更新两个同形状状态：推理态$\mathbf{S}$（只做中间计算、永不直接解码）与兴趣态$\mathbf{M}$（唯一用于打分）。每个 reasoning step 先做$n$次$\mathbf{S}$内层传递（关注$[\mathbf{H};\mathbf{M}]$），再经 GRU 门把候选更新写入$\mathbf{M}$。训练分两阶段：阶段 1 联合训练骨干+Compressor（含 IDR）；阶段 2 冻结前两者、只训 Reasoner，采用$K$轮深监督、每轮$T$步、仅末步反传（1-step BPTT），训练总深度$N=K\times T=9$。推理时$N$ 可任意设定。
 
 ```mermaid
 flowchart TD
@@ -59,13 +59,13 @@ flowchart TD
 
 1. **双状态解耦 + 注意力路由的 Reasoner（打破单 $d$ 维瓶颈）**：痛点是推理态与预测态共享表征、互相掣肘。核心算子为
 $$\mathbf{S}\leftarrow\text{Reasoner}(\mathbf{S},[\mathbf{H};\mathbf{M}])\ \text{重复 } n \text{ 次};\quad \hat{\mathbf{M}}=\text{Reasoner}(\mathbf{M},\mathbf{S}),\ \mathbf{M}\leftarrow\text{GRU}(\hat{\mathbf{M}},\mathbf{M}_{\text{prev}})$$
-其中 Q 与外部 KV 使用独立 LayerNorm，注意力输出投影与 FFN 输出零初始化使 Reasoner 起步为恒等映射。直觉：$\mathbf{S}$ 不参与打分，故其表征幅度可自由演化以承载"深度思考"，而 $\mathbf{M}$ 必须与 item embedding 保持点积兼容；GRU 门（借鉴 Slot Attention）控制每步承诺多少推理成果，避免大步跳跃。$\mathbf{S}^0$ 取固定截断正态随机张量而非可学习参数——因为每轮前 $T-1$ 步无梯度，可学习初值永远拿不到更新信号。
+其中 Q 与外部 KV 使用独立 LayerNorm，注意力输出投影与 FFN 输出零初始化使 Reasoner 起步为恒等映射。直觉：$\mathbf{S}$不参与打分，故其表征幅度可自由演化以承载"深度思考"，而$\mathbf{M}$必须与 item embedding 保持点积兼容；GRU 门（借鉴 Slot Attention）控制每步承诺多少推理成果，避免大步跳跃。$\mathbf{S}^0$取固定截断正态随机张量而非可学习参数——因为每轮前$T-1$ 步无梯度，可学习初值永远拿不到更新信号。
 
-2. **Interest Diversity Regularizer (IDR)（防止多兴趣坍缩）**：所有 query 关注同一 $\mathbf{H}$，无约束时互相余弦相似度实测达 0.82–0.90，$R$ 个兴趣退化为同一方向。IDR 最小化 $\mathbf{M}^0$ 兴趣间平均非对角余弦：
+2. **Interest Diversity Regularizer (IDR)（防止多兴趣坍缩）**：所有 query 关注同一 $\mathbf{H}$，无约束时互相余弦相似度实测达 0.82–0.90，$R$个兴趣退化为同一方向。IDR 最小化$\mathbf{M}^0$ 兴趣间平均非对角余弦：
 $$\mathcal{L}_{\text{IDR}}=\frac{1}{R(R-1)}\sum_{r\neq r'}\hat{\mathbf{m}}_r^\top\hat{\mathbf{m}}_{r'}$$
 启用后相似度降至 0.14–0.75，Reasoner 才有"可分辨的多个兴趣"可精炼。
 
-3. **Log-Mean-Exp 池化与训练目标**：$R$ 个兴趣各自与 item embedding 内积除以温度 $\tau=0.07$ 得 $s_r(v)$，用 $s(v)=\log\frac{1}{R}\sum_r\exp(s_r(v))$ 聚合——软最大值让最相关兴趣主导排序，同时梯度仍流向全部 $R$ 个兴趣（对比 max 池化会饿死其余槽位）。总损失 $\mathcal{L}^{(k)}_2=-\log\hat{y}_{v^+}(\mathbf{M}^{(k)})+\lambda_{\text{IDR}}\mathcal{L}_{\text{IDR}}$，阶段 1 同式作用于 $\mathbf{M}^0$。**负采样**：全库 softmax 交叉熵，无显式负采样；**推理开销**：每步仅 1 层 block、$n=3$ 次内层传递，$N$ 可调，$N=0$ 即退化为阶段 1 基线。
+3. **Log-Mean-Exp 池化与训练目标**：$R$个兴趣各自与 item embedding 内积除以温度$\tau=0.07$得$s_r(v)$，用$s(v)=\log\frac{1}{R}\sum_r\exp(s_r(v))$聚合——软最大值让最相关兴趣主导排序，同时梯度仍流向全部$R$个兴趣（对比 max 池化会饿死其余槽位）。总损失$\mathcal{L}^{(k)}_2=-\log\hat{y}_{v^+}(\mathbf{M}^{(k)})+\lambda_{\text{IDR}}\mathcal{L}_{\text{IDR}}$，阶段 1 同式作用于$\mathbf{M}^0$。**负采样**：全库 softmax 交叉熵，无显式负采样；**推理开销**：每步仅 1 层 block、$n=3$次内层传递，$N$可调，$N=0$ 即退化为阶段 1 基线。
 
 ## Experimental Setup & Evaluation Protocol (实验设置与评估协议)
 
@@ -80,7 +80,7 @@ $$\mathcal{L}_{\text{IDR}}=\frac{1}{R(R-1)}\sum_{r\neq r'}\hat{\mathbf{m}}_r^\to
 
 - **数据划分与防穿越**: S-Shop/V-Shop 用官方**全局时间戳切分**；MicroLens/Steam 无绝对时间戳，采用每用户序列 80%/90% 位置的**相对时间比例切分**。
 - **排名评测协议**: 无偏 **Full-Ranking**（全库未交互物品排序），报告 NDCG@{10,20} 与 Recall@{10,20}。
-- **对比基线与超参**: 非推理基线 SASRec、BERT4Rec；推理增强基线 ERL(B/S)、PRL(B/S)（ReaRec 两变体）、LARES。统一 $d=256$、batch 2048、AdamW lr $10^{-3}$、patience 10、$\tau=0.07$；RecRec 取 $R=8$、Compressor/Reasoner 各 1 层 2 头、FFN 512、$T=3,K=3,n=3$；显著性用 paired $t$-test $p<0.05$。
+- **对比基线与超参**: 非推理基线 SASRec、BERT4Rec；推理增强基线 ERL(B/S)、PRL(B/S)（ReaRec 两变体）、LARES。统一 $d=256$、batch 2048、AdamW lr$10^{-3}$、patience 10、$\tau=0.07$；RecRec 取$R=8$、Compressor/Reasoner 各 1 层 2 头、FFN 512、$T=3,K=3,n=3$；显著性用 paired$t$-test$p<0.05$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -110,18 +110,23 @@ $$\mathcal{L}_{\text{IDR}}=\frac{1}{R(R-1)}\sum_{r\neq r'}\hat{\mathbf{m}}_r^\to
 | w/o GRU gate | 0.1033 | **0.2483** | 0.0603 | 0.1513 |
 | 原始 SASRec 骨干 | 0.0952 | 0.2399 | 0.0454 | 0.1126 |
 
-$R$ 扫描（N@20）：$R=1$ 在四数据集全面垫底（S-Shop 0.0990 / Steam 0.0520）；最优 $R$ 依数据集而异（V-Shop、MicroLens 取 4，Steam 取 8，S-Shop 取 16 得 0.1095），默认 $R=8$ 距各数据集最优在 5% 以内。
+$R$扫描（N@20）：$R=1$在四数据集全面垫底（S-Shop 0.0990 / Steam 0.0520）；最优$R$依数据集而异（V-Shop、MicroLens 取 4，Steam 取 8，S-Shop 取 16 得 0.1095），默认$R=8$ 距各数据集最优在 5% 以内。
 
 ### 3. 关键实验发现 (Key Findings)
 
-1. **推理态解耦是主要增益来源，而非"多算几步"**：Steam 上 w/o Reasoner 仅 0.0496，Full 达 0.0621（+25%），而 Frozen S 已能拿回 0.0581——说明让 $\mathbf{S}$ 真正迭代演化（而非仅靠 $\mathbf{M}$ 自身更新）贡献了大部分收益；GRU 门只调节吸收幅度，去掉后 Steam 仅掉 0.0018。
+1. **推理态解耦是主要增益来源，而非"多算几步"**：Steam 上 w/o Reasoner 仅 0.0496，Full 达 0.0621（+25%），而 Frozen S 已能拿回 0.0581——说明让 $\mathbf{S}$真正迭代演化（而非仅靠$\mathbf{M}$ 自身更新）贡献了大部分收益；GRU 门只调节吸收幅度，去掉后 Steam 仅掉 0.0018。
 2. **IDR 是"多兴趣"生效的前提条件**：去掉 IDR 后 Steam N@20 从 0.0621 跌至 0.0538（−13%），兴趣间余弦进入 >0.8 坍缩区；图 5 显示 NDCG 增益与余弦下降幅度同步，即 Reasoner 的收益依赖"有可分辨的兴趣可精炼"。
-3. **深监督带来推理深度外推，但收益呈强边际递减**：$N$ 从 0→1 一步即拿下主要增益（S-Shop 0.0966→0.103，Steam 0.0496→0.058）；S-Shop/V-Shop/Steam 的最优 $N$ 分别为 15/12/16，均超过训练深度 9（如 Steam 0.0621→0.0622），而 MicroLens 在 $N\approx4$ 饱和后回落，说明短序列场景（Avg.L=5.12）过度推理反而引入噪声。
+3. **深监督带来推理深度外推，但收益呈强边际递减**：$N$从 0→1 一步即拿下主要增益（S-Shop 0.0966→0.103，Steam 0.0496→0.058）；S-Shop/V-Shop/Steam 的最优$N$分别为 15/12/16，均超过训练深度 9（如 Steam 0.0621→0.0622），而 MicroLens 在$N\approx4$ 饱和后回落，说明短序列场景（Avg.L=5.12）过度推理反而引入噪声。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
-- **与代表作对比 (vs. Prior Work)**: 与 ReaRec 的本质区别是推理不再寄生在输入序列上（避免推理 token 累积导致注意力开销增长、且位置编码锁死步数）；与 LARES 的区别是推理只作用于 $R$ 个压缩兴趣而非全部 $L$ 个隐状态，且完全免去 GRPO 强化学习阶段；与多兴趣推荐（ComiRec 类）的区别是兴趣由递归推理动态精炼而非静态聚类产出。
+- **与代表作对比 (vs. Prior Work)**: 与 ReaRec 的本质区别是推理不再寄生在输入序列上（避免推理 token 累积导致注意力开销增长、且位置编码锁死步数）；与 LARES 的区别是推理只作用于 $R$个压缩兴趣而非全部$L$ 个隐状态，且完全免去 GRPO 强化学习阶段；与多兴趣推荐（ComiRec 类）的区别是兴趣由递归推理动态精炼而非静态聚类产出。
 - **可迁移亮点**: ① "零初始化 + 恒等起步"的 Reasoner block 可直接插入任何序列骨干做即插即用增强；② Log-Mean-Exp 池化兼顾"软最大主导 + 全槽位梯度"的技巧可迁移到任意多向量召回/打分场景。
-- **审稿级局限批判**: ① 推理时 $N$ 需人工扫描（图 3 显示最优 $N$ 数据集相关，MicroLens 还会退化），缺少 halting 机制，线上需为每场景调参；② 阶段 2 冻结骨干与 Compressor，Reasoner 无法反向影响历史编码，且 $R$ 的最优值随数据集漂移（4/8/16），默认 $R=8$ 在 S-Shop 上损失约 3.4% NDCG，泛化到新场景需额外搜索。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+- **审稿级局限批判**: ① 推理时 $N$需人工扫描（图 3 显示最优$N$数据集相关，MicroLens 还会退化），缺少 halting 机制，线上需为每场景调参；② 阶段 2 冻结骨干与 Compressor，Reasoner 无法反向影响历史编码，且$R$的最优值随数据集漂移（4/8/16），默认$R=8$ 在 S-Shop 上损失约 3.4% NDCG，泛化到新场景需额外搜索。
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）

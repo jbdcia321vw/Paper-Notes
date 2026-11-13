@@ -65,11 +65,11 @@ flowchart TD
 
 ### 2. 关键设计拆解 (Key Designs)
 
-1. **组件级嫁接源模型 (Grafting Sources)**：痛点是不知误差来自嵌入还是编码器 $\to$ 用共享投影 $W_{up}\in\mathbb{R}^{d_S\times d_T}$、$W_{down}\in\mathbb{R}^{d_T\times d_S}$ 对齐维度，生成四路表征
+1. **组件级嫁接源模型 (Grafting Sources)**：痛点是不知误差来自嵌入还是编码器 $\to$用共享投影$W_{up}\in\mathbb{R}^{d_S\times d_T}$、$W_{down}\in\mathbb{R}^{d_T\times d_S}$ 对齐维度，生成四路表征
    $$h^{(T,T)}=f^T(e^T)W_{down},\ h^{(S,T)}=f^T(e^S W_{up})W_{down},\ h^{(T,S)}=f^S(e^T W_{down}),\ h^{(S,S)}=f^S(e^S)$$
    由于嫁接组件与学生共享参数，KD 正则反向精炼源模型，形成**自适应监督闭环**（类似双向 KD 但教师始终冻结）。直觉：学生嵌入在教师编码器下被检验，学生编码器在教师嵌入下被检验，误差不再纠缠。
 
-2. **Grafted Encoding (GE) 师生互注意力**：训练早期学生组件未优化，混合源表征不稳定 $\to$ 将两侧嵌入拼接为长度 $2N$ 序列送入共享编码器，并用全 1 块掩码
+2. **Grafted Encoding (GE) 师生互注意力**：训练早期学生组件未优化，混合源表征不稳定 $\to$将两侧嵌入拼接为长度$2N$ 序列送入共享编码器，并用全 1 块掩码
    $$A_{GE}=\begin{bmatrix}A_{causal} & A_{causal}\\ A_{causal} & A_{causal}\end{bmatrix}\in\{0,1\}^{2N\times 2N}$$
    使教师侧 token 早期为学生侧提供稳定上下文，学生侧后期反向精炼教师条件表征。代价是注意力计算约翻倍（$O(4N^2d_T+4N^2d_S)$），但仅训练期存在。
 
@@ -89,7 +89,7 @@ flowchart TD
 
 - **数据划分与防穿越**: `Leave-One-Out`——每序列最后一项测试、倒数第二项验证、其余训练。
 - **排名评测协议**: 无偏 `Full-Ranking`（全库未交互物品排序，不做负采样），指标 HR@{10,20}、NDCG@{10,20}。
-- **对比基线与超参**: 骨干为 GRU4Rec / FMLPRec / SASRec（GE 仅用于 SASRec）；基线含通用 KD（RD、CD、DE、RRD、HTD、BD）与序列定制 KD（AdaRec、MSKDIK、EMKD），自蒸馏场景另比 CL4SRec/MCLRec/CT4Rec/DuoRec/RCL。默认 $d_S=16$、$d_T=64$、2 层编码器、dropout 0.5、$N=50$、SASRec 2 头；$\lambda\in\{10^{-4},\dots,10^0\}$、$\tau\in\{1,5,10,20\}$；Adam lr=0.001、batch=256、patience=30，5 次独立运行 + 配对 $t$ 检验 $p<0.05$。
+- **对比基线与超参**: 骨干为 GRU4Rec / FMLPRec / SASRec（GE 仅用于 SASRec）；基线含通用 KD（RD、CD、DE、RRD、HTD、BD）与序列定制 KD（AdaRec、MSKDIK、EMKD），自蒸馏场景另比 CL4SRec/MCLRec/CT4Rec/DuoRec/RCL。默认 $d_S=16$、$d_T=64$、2 层编码器、dropout 0.5、$N=50$、SASRec 2 头；$\lambda\in\{10^{-4},\dots,10^0\}$、$\tau\in\{1,5,10,20\}$；Adam lr=0.001、batch=256、patience=30，5 次独立运行 + 配对$t$检验$p<0.05$。
 
 ## Key Experimental Results (实验关键数据)
 
@@ -134,10 +134,15 @@ flowchart TD
 2. **两个嫁接源互补且不可替代**：去掉任一嫁接源（0.0474→0.0451/0.0448）均下降，但仅保留非嫁接教师 (T,T) 时跌幅最大（0.0474→0.0410，−13.5%），说明稳定锚点与组件级视图缺一不可；GCL 中「可学习配对权重」反而最差（0.0427），证明相似度驱动的自适应预算分配比自由学习更可靠。
 3. **效率与鲁棒性双赢**：GOD 每 epoch 10.06s / 0.9GB，低于 BD（12.98s / 1.0GB）与 EMKD（15.57s / 1.1GB），且因监督更直接，达到最佳验证点仅需 15.26 分钟（学生自身需 24.03 分钟）；在 25%–100% 教师质量、$d_S\in\{8,16,32\}$、$d_T\in\{64,128\}$ 及最高噪声注入比例下均保持最优，学生越小增益越大。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 与 DE/RRD/HTD 等「独立路径 + 表征/输出对齐」不同，GOD 让学生在教师条件路径内被评估，把监督粒度从路径级细化到组件级；与 BD 的双向蒸馏相比，GOD 教师始终冻结却取得更优结果，且无需显式更新教师；与 NetGraft/GrafT 等视觉/少样本嫁接不同，GOD 首次将嫁接用于序列推荐的嵌入表与编码器替换。
 - **可迁移亮点**: ①「冻结大模型 + 嫁接小模型组件」的组件级诊断范式可迁移到双塔召回、跨域迁移中的模块归因；②用 CKA 对角线模式作为「过程对齐 vs 输出模仿」的量化诊断工具，成本低、解释性强。
 - **审稿级局限批判**: ①GE 使训练期注意力计算约翻倍，且需教师/学生共享同构编码器，异构师生架构（作者自述未来工作）暂不支持；②仅在 3 个 ID-based 公开数据集离线验证，无线上 A/B；稠密数据上 $\lambda$ 过大易过正则（ML-1M 出现退化），超参仍需按数据集调。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
+## Rating (四维评分)
+
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）
