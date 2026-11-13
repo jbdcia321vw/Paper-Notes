@@ -4,7 +4,7 @@
 
 > **方向说明**：显式/隐式高阶特征交叉网络 (DCN/EulerNet)、转化率延迟反馈 (Delayed Feedback) 与概率校准
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (4)](../../../CIKM/2026/ctr_feature_interaction/) · [SIGIR 2026 (6)](../../../SIGIR/2026/ctr_feature_interaction/) · [WWW (TheWebConf) 2026 (2)](../../../WWW/2026/ctr_feature_interaction/)
+📌 **同领域跨会议浏览：** [CIKM 2026 (4)](../../../CIKM/2026/ctr_feature_interaction/) · [RecSys 2026 (1)](../../../RecSys/2026/ctr_feature_interaction/) · [SIGIR 2026 (10)](../../../SIGIR/2026/ctr_feature_interaction/) · [WWW (TheWebConf) 2026 (2)](../../../WWW/2026/ctr_feature_interaction/)
 
 🔥 **高频主题：** CTR预估与特征交叉 ×3 · 精排 ×2
 

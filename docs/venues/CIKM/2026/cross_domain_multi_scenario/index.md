@@ -4,7 +4,7 @@
 
 > **方向说明**：跨域知识迁移 (CDR)、重叠/非重叠用户对齐、多业务场景联合建模 (STAR/PEPNet 等)
 
-📌 **同领域跨会议浏览：** [KDD 2026 (1)](../../../KDD/2026/cross_domain_multi_scenario/) · [SIGIR 2026 (3)](../../../SIGIR/2026/cross_domain_multi_scenario/) · [WSDM 2026 (1)](../../../WSDM/2026/cross_domain_multi_scenario/) · [WWW (TheWebConf) 2026 (1)](../../../WWW/2026/cross_domain_multi_scenario/)
+📌 **同领域跨会议浏览：** [KDD 2026 (1)](../../../KDD/2026/cross_domain_multi_scenario/) · [SIGIR 2026 (4)](../../../SIGIR/2026/cross_domain_multi_scenario/) · [WSDM 2026 (1)](../../../WSDM/2026/cross_domain_multi_scenario/) · [WWW (TheWebConf) 2026 (1)](../../../WWW/2026/cross_domain_multi_scenario/)
 
 <dl>
 <dt><strong><a href="a_dual_expert_strategy_integrating_llms_to_mitigate_negative_transfer_in_cr/">A Dual-Expert Strategy Integrating LLMs to Mitigate Negative Transfer in Cross-Domain Sequential Recommendation</a></strong></dt>

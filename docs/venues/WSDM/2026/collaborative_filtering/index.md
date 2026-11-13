@@ -4,7 +4,7 @@
 
 > **方向说明**：矩阵分解、双塔向量内积检索、ANN 索引量化、解耦表征与负采样理论
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (2)](../../../CIKM/2026/collaborative_filtering/) · [KDD 2026 (1)](../../../KDD/2026/collaborative_filtering/) · [SIGIR 2026 (5)](../../../SIGIR/2026/collaborative_filtering/) · [IEEE TKDE 2026 (1)](../../../TKDE/2026/collaborative_filtering/) · [WWW (TheWebConf) 2026 (1)](../../../WWW/2026/collaborative_filtering/)
+📌 **同领域跨会议浏览：** [CIKM 2026 (2)](../../../CIKM/2026/collaborative_filtering/) · [KDD 2026 (1)](../../../KDD/2026/collaborative_filtering/) · [RecSys 2026 (1)](../../../RecSys/2026/collaborative_filtering/) · [SIGIR 2026 (7)](../../../SIGIR/2026/collaborative_filtering/) · [IEEE TKDE 2026 (1)](../../../TKDE/2026/collaborative_filtering/) · [WWW (TheWebConf) 2026 (1)](../../../WWW/2026/collaborative_filtering/)
 
 <dl>
 <dt><strong><a href="have_we_really_understood_collaborative_information_an_empirical_investigat/">Have We Really Understood Collaborative Information? An Empirical Investigation</a></strong></dt>

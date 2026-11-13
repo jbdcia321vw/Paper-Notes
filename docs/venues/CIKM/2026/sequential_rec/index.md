@@ -4,7 +4,7 @@
 
 > **方向说明**：长短期动态兴趣建模、Transformer/Mamba(SSM)/MLP 序列架构、匿名会话推荐与 Next-Item 预测
 
-📌 **同领域跨会议浏览：** [KDD 2026 (4)](../../../KDD/2026/sequential_rec/) · [SIGIR 2026 (9)](../../../SIGIR/2026/sequential_rec/) · [IEEE TKDE 2026 (2)](../../../TKDE/2026/sequential_rec/) · [WSDM 2026 (1)](../../../WSDM/2026/sequential_rec/) · [WWW (TheWebConf) 2026 (2)](../../../WWW/2026/sequential_rec/)
+📌 **同领域跨会议浏览：** [KDD 2026 (4)](../../../KDD/2026/sequential_rec/) · [RecSys 2026 (3)](../../../RecSys/2026/sequential_rec/) · [SIGIR 2026 (15)](../../../SIGIR/2026/sequential_rec/) · [IEEE TKDE 2026 (2)](../../../TKDE/2026/sequential_rec/) · [WSDM 2026 (1)](../../../WSDM/2026/sequential_rec/) · [WWW (TheWebConf) 2026 (2)](../../../WWW/2026/sequential_rec/)
 
 🔥 **高频主题：** 精排 ×4 · 召回 ×2 · 序列推荐 ×2
 

@@ -4,7 +4,7 @@
 
 > **方向说明**：RQ-VAE/VQ 残差量化码本、TIGER 自回归生成式检索、扩散/流匹配生成推荐 (Diffusion/Flow Rec)
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (7)](../../../CIKM/2026/generative_rec/) · [KDD 2026 (8)](../../../KDD/2026/generative_rec/) · [SIGIR 2026 (12)](../../../SIGIR/2026/generative_rec/) · [WWW (TheWebConf) 2026 (1)](../../../WWW/2026/generative_rec/)
+📌 **同领域跨会议浏览：** [CIKM 2026 (7)](../../../CIKM/2026/generative_rec/) · [KDD 2026 (8)](../../../KDD/2026/generative_rec/) · [RecSys 2026 (8)](../../../RecSys/2026/generative_rec/) · [SIGIR 2026 (19)](../../../SIGIR/2026/generative_rec/) · [WWW (TheWebConf) 2026 (1)](../../../WWW/2026/generative_rec/)
 
 <dl>
 <dt><strong><a href="continuous_time_discrete_space_diffusion_model_for_recommendation/">Continuous-time Discrete-space Diffusion Model for Recommendation</a></strong></dt>

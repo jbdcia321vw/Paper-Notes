@@ -4,7 +4,7 @@
 
 > **方向说明**：Contextual Bandit 探索与利用 (E&E)、Offline RL 长期留存与生命周期价值 (LTV) 策略优化
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (2)](../../../CIKM/2026/rl_bandit_rec/) · [WWW (TheWebConf) 2026 (2)](../../../WWW/2026/rl_bandit_rec/)
+📌 **同领域跨会议浏览：** [CIKM 2026 (2)](../../../CIKM/2026/rl_bandit_rec/) · [RecSys 2026 (1)](../../../RecSys/2026/rl_bandit_rec/) · [WWW (TheWebConf) 2026 (2)](../../../WWW/2026/rl_bandit_rec/)
 
 🔥 **高频主题：** 精排 ×2
 

@@ -4,7 +4,7 @@
 
 > **方向说明**：多轮主动追问对话推荐 (CRS)、基于 LLM Agent 的用户行为模拟沙盒、可解释性推荐理由生成
 
-📌 **同领域跨会议浏览：** [KDD 2026 (2)](../../../KDD/2026/agent_conversational_rec/) · [SIGIR 2026 (2)](../../../SIGIR/2026/agent_conversational_rec/) · [ACM TORS 2026 (1)](../../../TORS/2026/agent_conversational_rec/) · [WWW (TheWebConf) 2026 (4)](../../../WWW/2026/agent_conversational_rec/)
+📌 **同领域跨会议浏览：** [KDD 2026 (2)](../../../KDD/2026/agent_conversational_rec/) · [RecSys 2026 (6)](../../../RecSys/2026/agent_conversational_rec/) · [SIGIR 2026 (7)](../../../SIGIR/2026/agent_conversational_rec/) · [ACM TORS 2026 (1)](../../../TORS/2026/agent_conversational_rec/) · [WWW (TheWebConf) 2026 (4)](../../../WWW/2026/agent_conversational_rec/)
 
 🔥 **高频主题：** 端到端生成式 ×2
 

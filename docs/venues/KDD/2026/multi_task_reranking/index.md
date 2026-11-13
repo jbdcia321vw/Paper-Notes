@@ -4,7 +4,7 @@
 
 > **方向说明**：MMoE/PLE 多任务多目标精排、帕累托最优、上下文列表重排 (Re-ranking) 与粗精排级联一致性
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (4)](../../../CIKM/2026/multi_task_reranking/) · [SIGIR 2026 (1)](../../../SIGIR/2026/multi_task_reranking/) · [WSDM 2026 (1)](../../../WSDM/2026/multi_task_reranking/)
+📌 **同领域跨会议浏览：** [CIKM 2026 (4)](../../../CIKM/2026/multi_task_reranking/) · [RecSys 2026 (5)](../../../RecSys/2026/multi_task_reranking/) · [SIGIR 2026 (4)](../../../SIGIR/2026/multi_task_reranking/) · [WSDM 2026 (1)](../../../WSDM/2026/multi_task_reranking/)
 
 <dl>
 <dt><strong><a href="degre_dense_supervised_generative_reranking_for_recommendation/">DeGRe: Dense-supervised Generative Reranking for Recommendation</a></strong></dt>

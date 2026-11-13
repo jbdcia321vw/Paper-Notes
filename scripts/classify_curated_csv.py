@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-classify_curated_csv.py (v3.3 严格剔除非推荐论文 + 自动同步删除/移动已生成 .md 笔记与图片版)
+classify_curated_csv.py (v3.4 严格剔除非推荐论文 + 跨CSV并集防误删孤儿笔记版)
 对现有策展 CSV 逐篇抓取 arXiv 标题/摘要，调用 LLM 严格判断推荐相关性并修正主分类。
 
 核心升级：
   1. 修复 arXiv ID 版本号 (`v1/v2`) 字典匹配失败导致摘要为空的 Bug。
   2. 当某篇论文被判定为“非推荐系统核心研究”并从 CSV 删除时，自动同步删除 `docs/venues/` 下已生成的 `.md` 笔记、`docs/assets/papers/` 下的对应图片目录及 `data/manifest.jsonl` 记录！
   3. 当某篇论文的主分类发生变更 (`old_category -> new_category`) 时，自动将其已生成的 `.md` 笔记移动到新分类目录并更新 Frontmatter，无需重复花钱重生成！
-  4. 自动扫描清理 `docs/venues/<venue>/<year>/` 下不在 CSV 名单中的孤儿 `.md` 笔记。
+  4. 孤儿笔记清理（`prune_orphan_notes`）按 `(venue, year)` 聚合 `data/papers/*.csv` 下所有同会刊年份 CSV 的有效论文并集后再统一执行，彻底避免 `SIGIR2026_extra.csv` 等附加子集 CSV 误删主 CSV 已生成的笔记！
 
 用法：
   python scripts/classify_curated_csv.py --all
@@ -23,6 +23,7 @@ import re
 import shutil
 import sys
 import time
+from collections import defaultdict
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -123,7 +124,7 @@ def move_paper_note_category(repo_root: Path, title: str, venue: str, year: str,
 
 
 def prune_orphan_notes(repo_root: Path, venue: str, year: str, valid_slugs: set, dry_run: bool = False) -> list:
-    """清理 docs/venues/<venue>/<year>/ 下不在当前 CSV 有效名单中的孤儿笔记。"""
+    """清理 docs/venues/<venue>/<year>/ 下不在当前会刊年份全部 CSV 有效并集中的孤儿笔记。"""
     docs_dir = repo_root / "docs"
     venue_year_dir = docs_dir / "venues" / venue / year
     pruned = []
@@ -234,6 +235,9 @@ def main():
         log=log,
     )
 
+    kept_by_csv = {}
+    touched_venue_years = set()
+
     for csv_path, rows in file_rows.items():
         kept = []
         removed = []
@@ -288,13 +292,10 @@ def main():
                     moved_files.append(mv)
                 row["category"] = new_category
             kept.append(row)
+            if row.get("venue") and row.get("year"):
+                touched_venue_years.add((row.get("venue", ""), str(row.get("year", ""))))
 
-        pruned_orphans = []
-        if not args.no_prune_orphans and not args.limit and kept:
-            v_name = kept[0].get("venue", "")
-            y_name = kept[0].get("year", "")
-            valid_slugs = {slugify(r.get("title", "")) for r in kept if r.get("title")}
-            pruned_orphans = prune_orphan_notes(repo_root, v_name, y_name, valid_slugs, dry_run=args.dry_run)
+        kept_by_csv[csv_path] = kept
 
         print(f"\n{'=' * 90}\n{csv_path.name}: 原始 {len(rows)} 篇 -> 保留纯推荐论文 {len(kept)} 篇")
         if removed:
@@ -303,10 +304,6 @@ def main():
                 print(f"    - ({confidence:.2f}) {title[:85]} | {reason}")
         if deleted_files:
             print(f"  [同步清理已生成笔记/图片] 共 {len(deleted_files)} 项")
-        if pruned_orphans:
-            print(f"  [清理孤儿笔记] 共 {len(pruned_orphans)} 篇：")
-            for p_str in pruned_orphans[:10]:
-                print(f"    - {p_str}")
         if changed:
             print(f"  [修正推荐子分类] 共 {len(changed)} 篇（同步迁移已有笔记 {len(moved_files)} 篇）：")
             for title, old, new in changed[:15]:
@@ -319,6 +316,29 @@ def main():
             print(f"  [已更新 CSV] {csv_path}")
         else:
             print("  [Dry-run] 未写入文件变更")
+
+    # 按 (venue, year) 汇总 data/papers/*.csv 下所有 CSV 的有效论文并集后再清理孤儿笔记，防止子集 CSV 误删主 CSV 笔记
+    if not args.no_prune_orphans and not args.limit and touched_venue_years:
+        union_slugs_by_vy = defaultdict(set)
+        all_repo_csvs = sorted((repo_root / "data" / "papers").glob("*.csv"))
+        for c_path in all_repo_csvs:
+            c_rows = kept_by_csv.get(c_path) if c_path in kept_by_csv else read_rows(c_path)
+            for r in c_rows:
+                v_name = (r.get("venue") or "").strip()
+                y_name = str(r.get("year") or "").strip()
+                t_name = (r.get("title") or "").strip()
+                if v_name and y_name and t_name:
+                    union_slugs_by_vy[(v_name, y_name)].add(slugify(t_name))
+
+        for (v_name, y_name) in sorted(touched_venue_years):
+            valid_slugs = union_slugs_by_vy.get((v_name, y_name), set())
+            if not valid_slugs:
+                continue
+            pruned_orphans = prune_orphan_notes(repo_root, v_name, y_name, valid_slugs, dry_run=args.dry_run)
+            if pruned_orphans:
+                print(f"\n[Orphan Prune] {v_name} {y_name}: 清理不在任何 CSV 并集中的孤儿笔记共 {len(pruned_orphans)} 篇：")
+                for p_str in pruned_orphans[:10]:
+                    print(f"  - {p_str}")
 
     if not args.dry_run:
         print("\n[Index] 正在同步刷新全站导航索引与卡片计数 ...")

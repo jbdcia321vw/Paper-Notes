@@ -4,7 +4,7 @@
 
 > **方向说明**：曝光/流行度/位置因果去偏 (Causal Rec)、双边公平性、联邦防投毒推荐、工业级全链路架构与评测基准
 
-📌 **同领域跨会议浏览：** [KDD 2026 (5)](../../../KDD/2026/debias_fairness_industrial/) · [SIGIR 2026 (6)](../../../SIGIR/2026/debias_fairness_industrial/) · [ACM TOIS 2026 (1)](../../../TOIS/2026/debias_fairness_industrial/) · [ACM TORS 2026 (4)](../../../TORS/2026/debias_fairness_industrial/) · [WWW (TheWebConf) 2026 (8)](../../../WWW/2026/debias_fairness_industrial/)
+📌 **同领域跨会议浏览：** [KDD 2026 (5)](../../../KDD/2026/debias_fairness_industrial/) · [RecSys 2026 (8)](../../../RecSys/2026/debias_fairness_industrial/) · [SIGIR 2026 (11)](../../../SIGIR/2026/debias_fairness_industrial/) · [ACM TOIS 2026 (1)](../../../TOIS/2026/debias_fairness_industrial/) · [ACM TORS 2026 (4)](../../../TORS/2026/debias_fairness_industrial/) · [WWW (TheWebConf) 2026 (8)](../../../WWW/2026/debias_fairness_industrial/)
 
 <dl>
 <dt><strong><a href="echotrace_diagnosing_recursive_risks_in_llm_powered_recommender_systems/">EchoTrace: Diagnosing Recursive Risks in LLM-Powered Recommender Systems</a></strong></dt>

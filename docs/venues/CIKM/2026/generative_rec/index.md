@@ -4,7 +4,7 @@
 
 > **方向说明**：RQ-VAE/VQ 残差量化码本、TIGER 自回归生成式检索、扩散/流匹配生成推荐 (Diffusion/Flow Rec)
 
-📌 **同领域跨会议浏览：** [KDD 2026 (8)](../../../KDD/2026/generative_rec/) · [SIGIR 2026 (12)](../../../SIGIR/2026/generative_rec/) · [WSDM 2026 (2)](../../../WSDM/2026/generative_rec/) · [WWW (TheWebConf) 2026 (1)](../../../WWW/2026/generative_rec/)
+📌 **同领域跨会议浏览：** [KDD 2026 (8)](../../../KDD/2026/generative_rec/) · [RecSys 2026 (8)](../../../RecSys/2026/generative_rec/) · [SIGIR 2026 (19)](../../../SIGIR/2026/generative_rec/) · [WSDM 2026 (2)](../../../WSDM/2026/generative_rec/) · [WWW (TheWebConf) 2026 (1)](../../../WWW/2026/generative_rec/)
 
 🔥 **高频主题：** 生成式推荐与离散语义ID ×4 · 生成式推荐 ×3 · 生成式端到端 ×3 · 精排 ×2
 

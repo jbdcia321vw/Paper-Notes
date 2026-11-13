@@ -4,7 +4,7 @@
 
 > **方向说明**：曝光/流行度/位置因果去偏 (Causal Rec)、双边公平性、联邦防投毒推荐、工业级全链路架构与评测基准
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (2)](../../../CIKM/2026/debias_fairness_industrial/) · [KDD 2026 (5)](../../../KDD/2026/debias_fairness_industrial/) · [SIGIR 2026 (6)](../../../SIGIR/2026/debias_fairness_industrial/) · [ACM TORS 2026 (4)](../../../TORS/2026/debias_fairness_industrial/) · [WWW (TheWebConf) 2026 (8)](../../../WWW/2026/debias_fairness_industrial/)
+📌 **同领域跨会议浏览：** [CIKM 2026 (2)](../../../CIKM/2026/debias_fairness_industrial/) · [KDD 2026 (5)](../../../KDD/2026/debias_fairness_industrial/) · [RecSys 2026 (8)](../../../RecSys/2026/debias_fairness_industrial/) · [SIGIR 2026 (11)](../../../SIGIR/2026/debias_fairness_industrial/) · [ACM TORS 2026 (4)](../../../TORS/2026/debias_fairness_industrial/) · [WWW (TheWebConf) 2026 (8)](../../../WWW/2026/debias_fairness_industrial/)
 
 <dl>
 <dt><strong><a href="mitigating_popularity_bias_in_recommendation_with_global_listwise_learning_/">Mitigating Popularity Bias in Recommendation with Global Listwise Learning and Progressive Bi-Weighting</a></strong></dt>
