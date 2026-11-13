@@ -3945,12 +3945,12 @@
 
 
 <h1 id="id">✨ 生成式推荐与离散语义 ID</h1>
-<p><strong>SIGIR 2026</strong> · <strong>12</strong> 篇论文解读</p>
+<p><strong>SIGIR 2026</strong> · <strong>19</strong> 篇论文解读</p>
 <blockquote>
 <p><strong>方向说明</strong>：RQ-VAE/VQ 残差量化码本、TIGER 自回归生成式检索、扩散/流匹配生成推荐 (Diffusion/Flow Rec)</p>
 </blockquote>
-<p>📌 <strong>同领域跨会议浏览：</strong> <a href="../../../CIKM/2026/generative_rec/">CIKM 2026 (7)</a> · <a href="../../../KDD/2026/generative_rec/">KDD 2026 (8)</a> · <a href="../../../WSDM/2026/generative_rec/">WSDM 2026 (2)</a> · <a href="../../../WWW/2026/generative_rec/">WWW (TheWebConf) 2026 (1)</a></p>
-<p>🔥 <strong>高频主题：</strong> 生成式推荐与离散语义ID ×9 · 端到端生成式 ×6 · 召回 ×2 · 生成式端到端 ×2</p>
+<p>📌 <strong>同领域跨会议浏览：</strong> <a href="../../../CIKM/2026/generative_rec/">CIKM 2026 (7)</a> · <a href="../../../KDD/2026/generative_rec/">KDD 2026 (8)</a> · <a href="../../../RecSys/2026/generative_rec/">RecSys 2026 (8)</a> · <a href="../../../WSDM/2026/generative_rec/">WSDM 2026 (2)</a> · <a href="../../../WWW/2026/generative_rec/">WWW (TheWebConf) 2026 (1)</a></p>
+<p>🔥 <strong>高频主题：</strong> 生成式推荐与离散语义ID ×14 · 端到端生成式 ×7 · 召回 ×5 · 生成式端到端 ×5 · 语义ID ×2</p>
 <dl>
 <dt><strong><a href="a_cascaded_generative_approach_for_e_commerce_recommendations/">A Cascaded Generative Approach for e-Commerce Recommendations</a></strong></dt>
 <dd>
@@ -3968,13 +3968,33 @@
 <dd>
 <p>用 Gumbel 噪声+不确定性衰减实现可微语义ID联合训练，缓解码本坍缩，Full-Ranking 下 NDCG@10 稳定提升</p>
 </dd>
+<dt><strong><a href="discrete_preference_learning_for_personalized_multimodal_generation/">Discrete Preference Learning for Personalized Multimodal Generation</a></strong></dt>
+<dd>
+<p>用模态专属LightGCN+RQ-VAE把协同偏好量化成离散token注入LLM与扩散模型，配合跨模态一致性奖励实现个性化图文生成。</p>
+</dd>
 <dt><strong><a href="dual_diffusional_generative_fashion_recommendation/">Dual-Diffusional Generative Fashion Recommendation</a></strong></dt>
 <dd>
 <p>双扩散 Transformer 联合生成时尚单品图像与属性级文本，实现可解释个性化穿搭推荐，PFITB/GOR 双任务全面领先。</p>
 </dd>
+<dt><strong><a href="fave_flow_based_average_velocity_establishment_for_sequential_recommendatio/">FAVE: Flow-based Average Velocity Establishment for Sequential Recommendation</a></strong></dt>
+<dd>
+<p>用语义锚先验替代高斯噪声、以平均速度场实现单步流匹配生成推荐，全库排序下 N@20 相对提升 9.9%，推理提速 20 倍以上。</p>
+</dd>
+<dt><strong><a href="gated_bidirectional_linear_attention_for_generative_retrieval/">Gated Bidirectional Linear Attention for Generative Retrieval</a></strong></dt>
+<dd>
+<p>用 Conv1D 局部混合、序列级 Key 门控软遗忘与门控 RMSNorm 将核化线性注意力扩展为双向线性时间算子，1:2 混合编码器在 Yandex Music 上追平双向自注意力，32768 长度单层提速 8.2×。</p>
+</dd>
+<dt><strong><a href="genrec_a_preference_oriented_generative_framework_for_large_scale_recommend/">GenRec: A Preference-Oriented Generative Framework for Large-Scale Recommendation</a></strong></dt>
+<dd>
+<p>以 Page-wise NTP 解一对多歧义、线性 Token Merger 压缩 2× 输入、GRPO-SR 混合奖励对齐偏好，京东线上点击 +9.5%、成交 +8.7%。</p>
+</dd>
 <dt><strong><a href="gflowgr_fine_tuning_generative_recommendation_frameworks_with_generative_fl/">GFlowGR: Fine-tuning Generative Recommendation Frameworks with Generative Flow Networks</a></strong></dt>
 <dd>
 <p>将GR重构为多步集合生成任务，用GFlowNets做token级微调对齐物品效用，三数据集双骨干一致提升并落地淘宝搜索广告。</p>
+</dd>
+<dt><strong><a href="learning_decomposed_contextual_token_representations_from_pretrained_and_co/">Learning Decomposed Contextual Token Representations from Pretrained and Collaborative Signals for Generative Recommendation</a></strong></dt>
+<dd>
+<p>DECOR 用冻结码本+可学协同嵌入分解融合、上下文 token 组合与可学 BOS 查询，缓解静态分词歧义与预训练语义丢失，Full-Ranking 下 NDCG@10 最高提升 14%。</p>
 </dd>
 <dt><strong><a href="mitigating_collaborative_semantic_id_staleness_in_generative_retrieval/">Mitigating Collaborative Semantic ID Staleness in Generative Retrieval</a></strong></dt>
 <dd>
@@ -3995,6 +4015,14 @@
 <dt><strong><a href="request_only_optimization_for_recommendation_systems/">Request-Only Optimization for Recommendation Systems</a></strong></dt>
 <dd>
 <p>以用户请求为训练样本单元，通过数据/系统/模型协同设计消除请求内特征冗余，训练吞吐提升最高570%，同等算力下模型FLOPs扩展7倍。</p>
+</dd>
+<dt><strong><a href="semantic_ids_for_recommender_systems_at_snapchat_use_cases_technical_challe/">Semantic IDs for Recommender Systems at Snapchat: Use Cases, Technical Challenges, and Design Choices</a></strong></dt>
+<dd>
+<p>Snapchat 工业级 SID 落地：STE 全码本反传与多模态融合缓解码本坍缩，启发式桶内消歧解决 SID-Item 碰撞，线上短视频分享 +4.39%。</p>
+</dd>
+<dt><strong><a href="sigma_a_semantic_grounded_instruction_driven_generative_multi_task_recommen/">SIGMA: A Semantic-Grounded Instruction-Driven Generative Multi-Task Recommender at AliExpress</a></strong></dt>
+<dd>
+<p>多视图语义对齐+混合SID/ID分词+指令多任务SFT+三步生成与自适应概率融合，离线HR@10达33.76%，线上GMV+7.84%</p>
 </dd>
 <dt><strong><a href="universal_item_tokenization_for_transferable_generative_recommendation/">Universal Item Tokenization for Transferable Generative Recommendation</a></strong></dt>
 <dd>
