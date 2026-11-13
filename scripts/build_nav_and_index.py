@@ -693,7 +693,7 @@ def build_home_and_mkdocs_yml(repo_root: Path, notes: list, years: list, github_
         "",
         "\n".join(year_cards),
         "",
-        "## 🏛️ 按顶会与顶刊浏览 (SIGIR / RecSys / KDD / WWW / ACM MM / TOIS / TKDE)",
+        f"## 🏛️ 按顶会与顶刊浏览 ({len(VENUES)} 个会刊)",
         "",
         "\n".join(venue_cards),
     ]
@@ -739,7 +739,7 @@ def build_home_and_mkdocs_yml(repo_root: Path, notes: list, years: list, github_
             conf_nav_items.append(f'          - "{year}": venues/{venue_code}/{year}/index.md')
 
     mkdocs_content = f"""site_name: RecSys Paper Notes · 推荐系统论文精读库
-site_description: 推荐系统与信息检索顶会顶刊论文解读（SIGIR / RecSys / KDD / WWW / ACM MM / TOIS / TKDE），按会刊与年份分类，每篇 5 分钟读懂核心思想
+site_description: RecSys Paper Notes 推荐系统与信息检索顶会顶刊论文精读库，覆盖 {len(VENUES)} 个会刊、{len(CATEGORIES)} 大方向，按会刊/年份/主题分类，每篇 5 分钟读懂核心思想
 site_url: https://{github_user}.github.io/Paper-Notes/
 repo_url: https://github.com/{github_user}/Paper-Notes
 repo_name: {github_user}/Paper-Notes
@@ -801,6 +801,7 @@ nav:
 {chr(10).join(year_nav_items)}
   - 🏛️ 按顶会与顶刊 ({len(VENUES)}个会刊):
 {chr(10).join(conf_nav_items)}
+  - ℹ️ 关于本站: about.md
 """
     (repo_root / "mkdocs.yml").write_text(mkdocs_content, encoding="utf-8")
     print(f"[Build] 已生成卡片式首页、分类/年份/会刊索引与 mkdocs.yml（共索引 {len(notes)} 篇笔记，{len(years)} 个年份）。")

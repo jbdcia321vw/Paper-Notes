@@ -128,7 +128,7 @@ hide:
   <a class="recsys-card" href="years/2026/">    <div class="recsys-card-head">      <span class="recsys-card-title">🗓️ 2026 年</span>      <span class="recsys-badge">304 篇</span>    </div>    <div class="recsys-card-desc">按会议/期刊浏览 2026 年收录的论文解读</div>  </a>
 </div>
 
-## 🏛️ 按顶会与顶刊浏览 (SIGIR / RecSys / KDD / WWW / ACM MM / TOIS / TKDE)
+## 🏛️ 按顶会与顶刊浏览 (22 个会刊)
 
 <div class="recsys-grid">
   <a class="recsys-card" href="venues/SIGIR/">    <div class="recsys-card-head">      <span class="recsys-card-title">🏛️ SIGIR</span>      <span class="recsys-badge">112 篇</span>    </div>    <div class="recsys-card-desc">CCF-A · IR/RecSys 顶会 · ACM SIGIR Conference on Research and Development in Information Retrieval</div>  </a>

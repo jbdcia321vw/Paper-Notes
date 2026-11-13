@@ -1,21 +1,111 @@
+<p align="center">
+  <a href="https://jbdcia321vw.github.io/Paper-Notes/">
+    <img src="docs/assets/papernotes-logo-horizontal.svg" alt="RecSys Paper Notes" width="100%">
+  </a>
+</p>
+
 # 📚 RecSys Paper Notes
 
-推荐系统与信息检索顶会/顶刊论文精读库。按 **会刊 × 年份 × 研究方向** 三维组织，每篇笔记包含核心思想、方法拆解、实验设置与评估协议、关键结果和审稿级批判。
+**5 分钟读懂一篇推荐系统与信息检索顶会/顶刊论文。**
 
-- 🏛️ 覆盖 SIGIR、RecSys、KDD、WWW、ACM MM、TOIS、TKDE 等 22 个核心会刊
-- 🔬 16 个推荐系统正交细分方向
-- 🗓️ 按年份归档，支持后续扩展多年份
-- 🔗 每篇笔记附论文原文与开源代码直达链接
-- 🧪 仅收录可获取全文的论文，生成后自动校验 Frontmatter 与必需章节
+- 仓库：[jbdcia321vw/Paper-Notes](https://github.com/jbdcia321vw/Paper-Notes)
+- 在线阅读：**[https://jbdcia321vw.github.io/Paper-Notes/](https://jbdcia321vw.github.io/Paper-Notes/)**
+- 当前收录：**304 篇**推荐系统与信息检索论文精读笔记
+- 覆盖范围：**22 个顶会与顶刊**、**16 个推荐系统正交方向**
+- 更新方式：自动发现候选论文 + LLM 辅助生成 + 人工抽查纠错
+
+> 仓库 slug 保持为 `Paper-Notes`，因此 GitHub Pages 访问地址稳定为
+> **https://jbdcia321vw.github.io/Paper-Notes/**。
 
 ## 🌐 在线阅读
 
-部署后访问：`https://<your-github-user>.github.io/Paper-Notes/`
+**[https://jbdcia321vw.github.io/Paper-Notes/](https://jbdcia321vw.github.io/Paper-Notes/)**
+
+站点支持按 **会刊 × 年份 × 研究方向** 三维浏览，并提供全站搜索、标签聚合和论文原文/代码直达链接。
+
+> 提示：如果数学公式渲染异常，刷新页面通常可以恢复。
+
+## 📖 项目简介
+
+RecSys Paper Notes 是一个面向推荐系统（Recommender Systems）与信息检索（Information Retrieval）领域的论文精读库。目标不是做论文列表，而是把每篇论文压缩成一篇可在 5 分钟内读完的结构化笔记，帮助读者快速判断：
+
+- 这篇论文解决什么问题，核心增量是什么；
+- 方法的关键公式与模块如何工作；
+- 实验设置、评估协议和主要结果是否可靠；
+- 论文有哪些可迁移亮点与审稿级局限。
+
+每篇笔记通常包含：
+
+- **TL;DR**：一句话总结问题、方法与关键收益；
+- **Background & Motivation**：主流范式、前人局限与核心洞察；
+- **Method**：整体框架、关键设计、损失函数与训练/推理细节；
+- **Experimental Setup**：数据集、划分方式、Ranking 协议与基线；
+- **Key Experimental Results**：主实验、消融实验与定量发现；
+- **Highlights, Limitations & Rating**：与代表作对比、可迁移点、局限与四维评分。
+
+### 与上游项目的关系
+
+本项目的目录组织、MkDocs 站点结构、图表提取与自动构建思路参考了
+[zhaoyang97/Paper-Notes](https://github.com/zhaoyang97/Paper-Notes)。本仓库聚焦推荐系统与信息检索，内容、会刊配置、分类体系与生成脚本均针对 RecSys/IR 场景做了定制，不是上游仓库的简单镜像。
+
+## 📊 收录概览
+
+> 统计截至 2026-11，具体数量以[站点首页](https://jbdcia321vw.github.io/Paper-Notes/)为准。
+
+### 顶会与顶刊
+
+| 会刊 | 类型 | 2026 笔记数 | 说明 |
+| :--- | :--- | ---: | :--- |
+| [SIGIR](https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/) | 会议 | 112 | IR/RecSys 顶会 |
+| [CIKM](https://jbdcia321vw.github.io/Paper-Notes/venues/CIKM/) | 会议 | 48 | IR/知识管理顶会 |
+| [RecSys](https://jbdcia321vw.github.io/Paper-Notes/venues/RecSys/) | 会议 | 46 | 推荐系统旗舰专会 |
+| [KDD](https://jbdcia321vw.github.io/Paper-Notes/venues/KDD/) | 会议 | 38 | 数据挖掘顶会 |
+| [WWW](https://jbdcia321vw.github.io/Paper-Notes/venues/WWW/) | 会议 | 33 | Web 与推荐顶会 |
+| [WSDM](https://jbdcia321vw.github.io/Paper-Notes/venues/WSDM/) | 会议 | 10 | 搜索与数据挖掘顶会 |
+| [TORS](https://jbdcia321vw.github.io/Paper-Notes/venues/TORS/) | 期刊 | 6 | ACM 推荐系统旗舰专刊 |
+| [TKDE](https://jbdcia321vw.github.io/Paper-Notes/venues/TKDE/) | 期刊 | 5 | IEEE 知识与数据工程顶刊 |
+| [ACM MM](https://jbdcia321vw.github.io/Paper-Notes/venues/ACM_MM/) | 会议 | 3 | 多媒体推荐重镇 |
+| [TOIS](https://jbdcia321vw.github.io/Paper-Notes/venues/TOIS/) | 期刊 | 3 | ACM 信息系统顶刊 |
+| [ECIR](https://jbdcia321vw.github.io/Paper-Notes/venues/ECIR/) | 会议 | 0 | 欧洲信息检索会议 |
+| [SIGIR-AP](https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR-AP/) | 会议 | 0 | SIGIR 亚太会议 |
+| [ICDE](https://jbdcia321vw.github.io/Paper-Notes/venues/ICDE/) | 会议 | 0 | 数据工程顶会 |
+| [ICDM](https://jbdcia321vw.github.io/Paper-Notes/venues/ICDM/) | 会议 | 0 | 数据挖掘顶会 |
+| [DASFAA](https://jbdcia321vw.github.io/Paper-Notes/venues/DASFAA/) | 会议 | 0 | 数据库与高级应用会议 |
+| [AAAI](https://jbdcia321vw.github.io/Paper-Notes/venues/AAAI/) | 会议 | 0 | AAAI RecSys Track |
+| [IJCAI](https://jbdcia321vw.github.io/Paper-Notes/venues/IJCAI/) | 会议 | 0 | IJCAI RecSys Track |
+| [ACL / EMNLP](https://jbdcia321vw.github.io/Paper-Notes/venues/ACL_EMNLP/) | 会议 | 0 | NLP 与对话推荐 |
+| [ICLR / NeurIPS / ICML](https://jbdcia321vw.github.io/Paper-Notes/venues/ICLR_NeurIPS_ICML/) | 会议 | 0 | 机器学习三大顶会 |
+| [TMM](https://jbdcia321vw.github.io/Paper-Notes/venues/TMM/) | 期刊 | 0 | IEEE 多媒体顶刊 |
+| [TKDD](https://jbdcia321vw.github.io/Paper-Notes/venues/TKDD/) | 期刊 | 0 | ACM 数据挖掘顶刊 |
+| [TWEB](https://jbdcia321vw.github.io/Paper-Notes/venues/TWEB/) | 期刊 | 0 | ACM Web 顶刊 |
+
+### 研究方向
+
+| 方向 | 主分类笔记数 | 关注主题 |
+| :--- | ---: | :--- |
+| [生成式推荐与离散语义 ID](https://jbdcia321vw.github.io/Paper-Notes/topics/generative_rec/) | 45 | RQ-VAE/VQ、自回归生成式检索、扩散/流匹配推荐 |
+| [去偏公平、可信隐私与工业架构](https://jbdcia321vw.github.io/Paper-Notes/topics/debias_fairness_industrial/) | 39 | 因果去偏、双边公平、隐私保护、工业全链路 |
+| [大语言模型推荐 (LLM4Rec)](https://jbdcia321vw.github.io/Paper-Notes/topics/llm_rec/) | 39 | 指令微调、In-Context 重排、语义增强、知识蒸馏 |
+| [序列与会话推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/sequential_rec/) | 33 | 长短期兴趣、Transformer/Mamba、Next-Item 预测 |
+| [对话推荐与智能体仿真](https://jbdcia321vw.github.io/Paper-Notes/topics/agent_conversational_rec/) | 24 | 多轮对话推荐、LLM Agent、可解释推荐 |
+| [多模态推荐与内容理解](https://jbdcia321vw.github.io/Paper-Notes/topics/multimodal_rec/) | 23 | 视觉-文本对齐、多模态图、短视频/电商推荐 |
+| [CTR/CVR 预估与特征交叉](https://jbdcia321vw.github.io/Paper-Notes/topics/ctr_feature_interaction/) | 20 | 高阶特征交叉、延迟反馈、概率校准 |
+| [多任务学习与列表级重排](https://jbdcia321vw.github.io/Paper-Notes/topics/multi_task_reranking/) | 17 | MMoE/PLE、Pareto 最优、列表重排 |
+| [协同过滤与双塔召回](https://jbdcia321vw.github.io/Paper-Notes/topics/collaborative_filtering/) | 14 | 矩阵分解、双塔检索、ANN 量化、负采样 |
+| [冷启动与长尾推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/cold_start_rec/) | 11 | Zero-shot 冷启动、元学习、长尾扶持 |
+| [跨域与多场景推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/cross_domain_multi_scenario/) | 10 | 跨域迁移、用户对齐、多业务联合建模 |
+| [强化学习与动态探索推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/rl_bandit_rec/) | 8 | Contextual Bandit、Offline RL、长期价值 |
+| [图神经网络与知识图谱推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/graph_rec/) | 8 | LightGCN、超图、异构图、知识图谱推理 |
+| [自监督对比学习与交互去噪](https://jbdcia321vw.github.io/Paper-Notes/topics/self_supervised_denoising/) | 5 | 图/序列对比学习、假阳性噪声过滤 |
+| [社交与群组推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/social_group_rec/) | 4 | 社交信任、群组偏好聚合、影响力建模 |
+| [时空轨迹与 POI 推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/poi_spatiotemporal_rec/) | 4 | Next-POI、轨迹建模、本地生活推荐 |
 
 ## 🗂️ 目录结构
 
 ```text
 docs/
+  about.md                 # 关于本站
+  index.md                 # 站点首页（自动生成）
   venues/
     SIGIR/
       2026/
@@ -26,25 +116,25 @@ docs/
     RecSys/
       2026/
         ...
-  assets/papers/   # 从 PDF 提取的论文图表（按 arXiv ID 归档）
-  topics/          # 按 16 大方向跨会刊聚合（自动生成）
-  years/           # 按年份聚合（自动生成）
+  topics/                  # 16 大方向跨会刊聚合（自动生成）
+  years/                   # 按年份聚合（自动生成）
+  assets/papers/           # 从 PDF 提取的论文图表（按 arXiv ID 归档）
 data/
   papers/
-    SIGIR2026.csv  # 策展论文名单
+    SIGIR2026.csv          # 策展论文名单
     RecSys2026.csv
-  manifest.jsonl   # 已生成笔记清单（自动维护）
+    ...
+  manifest.jsonl           # 已生成笔记清单（自动维护）
 scripts/
-  init_clean_recsys_repo.py
-  build_curated_list.py
-  classify_curated_csv.py
-  paper_classifier.py
-  generate_recsys_notes.py
-  extract_pdf_figures.py
-  build_nav_and_index.py
-  run_pipeline.py       # 一键串联生成/索引/构建
-  run_logging.py        # 日志、进度条、耗时与费用格式化
-  check_site_links.py   # 检查 site/ 本地链接
+  build_curated_list.py    # 自动发现候选论文
+  classify_curated_csv.py  # LLM 相关性复核与分类
+  paper_classifier.py      # 分类器与缓存
+  generate_recsys_notes.py # 生成论文精读笔记
+  extract_pdf_figures.py   # 从 PDF 提取图表
+  build_nav_and_index.py   # 重建首页、分类/年份/会刊索引与 mkdocs.yml
+  run_pipeline.py          # 一键串联生成/索引/构建
+  run_logging.py           # 日志、进度条、耗时与费用格式化
+  check_site_links.py      # 检查 site/ 本地链接
 ```
 
 ## 🚀 本地运行
@@ -71,15 +161,13 @@ python scripts/run_pipeline.py --profile fast --limit 5 --dry-run
 # 高峰时段自动等到非高峰再跑（DeepSeek 非高峰价为 5 折）
 python scripts/run_pipeline.py --profile balanced --off-peak-wait
 
-# 可选：从 arXiv 主会录用信号生成候选名单（默认用 LLM 判断相关性与分类）
-python scripts/build_curated_list.py --venue SIGIR --year 2026 --max-results 300
-python scripts/build_curated_list.py --venue RecSys --year 2026 --max-results 200
+# 自动发现候选论文（可加 --use-dblp 同时查询 OpenAlex / DBLP）
+python scripts/build_curated_list.py --venue SIGIR --year 2026 --max-results 300 --use-dblp
 
 # 对已有候选名单做 LLM 复核：默认只修正分类，不删除条目
 python scripts/classify_curated_csv.py --all --workers 4 --no-remove
 
 # 生成笔记（生产推荐：策展 CSV）
-# 小规模试点：只处理名单前 5 篇
 python scripts/generate_recsys_notes.py --papers-csv data/papers/SIGIR2026.csv --limit 5 --workers 2
 
 # 仅重建导航与索引
@@ -89,67 +177,71 @@ python scripts/build_nav_and_index.py
 mkdocs serve
 ```
 
+## 🔄 自动化流水线
+
+`scripts/run_pipeline.py` 将以下步骤串联起来：
+
+1. `build_curated_list.py`：从 arXiv / OpenAlex / DBLP 自动增量更新候选 CSV；
+2. `classify_curated_csv.py`：用 LLM 复核推荐相关性与主分类；
+3. `generate_recsys_notes.py`：下载全文、提取图表、生成笔记；
+4. `build_nav_and_index.py`：重建首页、分类/年份/会刊索引与 `mkdocs.yml`；
+5. `mkdocs build --strict` 与本地链接检查。
+
+`.github/workflows/init_and_deploy.yml` 负责构建并部署 MkDocs 站点。普通 push 只重建索引并部署，不会自动抓取论文或消耗 token；手动触发时可通过 `papers_csv` + `profile` 调用生成流程。
+
 ## 📝 策展名单 CSV
 
 文件：`data/papers/<VENUE><YEAR>.csv`
-
-> `SIGIR2026.csv` / `RecSys2026.csv` 由 `scripts/build_curated_list.py` 从 arXiv 主会录用信号生成，并可用 `scripts/classify_curated_csv.py` 调用 LLM 根据标题与摘要复核相关性和主分类。最终名单仍建议人工抽查，确认会刊、年份、分类与 workshop / challenge 排除规则。
 
 ```csv
 title,arxiv_id,paper_url,code_url,category,venue,year
 示例论文,2401.01234,https://arxiv.org/abs/2401.01234,https://github.com/org/repo,generative_rec,SIGIR,2026
 ```
 
-- `arxiv_id` 必填（或从 `paper_url` 自动解析）
-- `category` 必须是 `scripts/init_clean_recsys_repo.py` 中定义的 16 个 slug 之一
-- `venue` 使用会刊 key（如 `SIGIR`、`RecSys`），`year` 为四位年份
-- 脚本会下载 arXiv PDF 全文；**仅摘要模式默认拒绝**，除非显式传入 `--allow-abstract`
+- `arxiv_id` 必填（或从 `paper_url` 自动解析）；
+- `category` 必须是 `scripts/init_clean_recsys_repo.py` 中定义的 16 个 slug 之一；
+- `venue` 使用会刊 key（如 `SIGIR`、`RecSys`），`year` 为四位年份；
+- 脚本会下载 arXiv PDF 全文；**仅摘要模式默认拒绝**，除非显式传入 `--allow-abstract`；
+- 最终名单仍建议人工抽查，确认会刊、年份、分类与 workshop / challenge 排除规则。
 
 ## ✅ 生成质量约束
 
-- 默认模型：DeepSeek `deepseek-flash`，可通过 `LLM_MODEL` / `DEEPSEEK_MODEL` 覆盖
-- API Key：优先 `LLM_API_KEY`，其次 `DEEPSEEK_API_KEY`；也可用 `--api-key` 显式传入
-- 自动校验：YAML Frontmatter、`venue`/`year` 一致性、合法分类、必需章节、模板占位符
-- 失败自动重试（`--retries`）
-- 已存在笔记默认跳过，`--overwrite` 强制覆盖
-- 候选名单默认用 LLM 复核相关性与分类；`build_curated_list.py --no-llm` 可回退到关键词启发式
-- LLM 分类结果缓存在 `data/papers/.classification_cache.json`，`--refresh` 可强制刷新
-- `--seed-all-categories` 与 `--arxiv-query` 仅供本地试点，生产收录请使用策展 CSV
+- 默认模型：DeepSeek `deepseek-flash`，可通过 `LLM_MODEL` / `DEEPSEEK_MODEL` 覆盖；
+- API Key：优先 `LLM_API_KEY`，其次 `DEEPSEEK_API_KEY`；也可用 `--api-key` 显式传入；
+- 自动校验：YAML Frontmatter、`venue`/`year` 一致性、合法分类、必需章节、模板占位符；
+- 失败自动重试（`--retries`）；
+- 已存在笔记默认跳过，`--overwrite` 强制覆盖；
+- 候选名单默认用 LLM 复核相关性与分类；`build_curated_list.py --no-llm` 可回退到关键词启发式；
+- LLM 分类结果缓存在 `data/papers/.classification_cache.json`，`--refresh` 可强制刷新；
+- `--seed-all-categories` 与 `--arxiv-query` 仅供本地试点，生产收录请使用策展 CSV。
+
+> 注意：笔记由 LLM 辅助生成，可能存在事实错误、实验数字偏差或引用遗漏。请以论文原文与官方代码为准。
 
 ## 💰 Token 成本优化
 
 `run_pipeline.py` 提供三档预设：
 
-| Profile | 输入上限 | 输出上限 | 图表 | 图注翻译 | 适用场景 |
-| :--- | ---: | ---: | ---: | :--- | :--- |
-| `fast` | 28k 字符 | 5k token | 6 张 | 否（中文编号兜底） | 大批量初筛 |
-| `balanced` | 36k 字符 | 7k token | 8 张 | 否（中文编号兜底） | 默认生产 |
-| `quality` | 52k 字符 | 10k token | 10 张 | 是 | 重点论文 |
+| Profile | 并发 | 输入上限 | 输出上限 | 图表 | 图注翻译 | 适用场景 |
+| :--- | ---: | ---: | ---: | ---: | :--- | :--- |
+| `fast` | 4 | 48k 字符 | 8k token | 6 张 | 否（中文编号兜底） | 大批量初筛 |
+| `balanced` | 3 | 65k 字符 | 16k token | 8 张 | 是 | 默认生产 |
+| `quality` | 2 | 80k 字符 | 16k token | 10 张 | 是 | 重点论文 |
 
 已内置的成本控制：
 
-- **关闭 thinking**：DeepSeek 默认开启 thinking，会额外产生 reasoning token；脚本默认显式关闭，只有 `--thinking` 才开启。
-- **压缩输入**：自动去掉参考文献/致谢并限制 `--max-input-chars`，避免把整篇 PDF 全部送入模型。
-- **限制输出**：`--max-output-tokens` 防止模型生成过长笔记。
-- **图注翻译可选**：`run_pipeline.py` 的 `fast`/`balanced` 默认使用“图 n/表 n”中文编号兜底，省掉每篇一次额外翻译调用；`quality` 或 `--translate-figures` 才调用 LLM 翻译。
-- **非高峰运行**：DeepSeek 非高峰价为高峰的 5 折；`--off-peak-wait` 会自动等待。
-- **自动缓存**：DeepSeek Context Caching 默认开启，稳定的 system prompt 前缀可命中缓存；运行结束会打印 token、缓存命中率与近似成本。
+- **关闭 thinking**：DeepSeek 默认开启 thinking，会额外产生 reasoning token；脚本默认显式关闭，只有 `--thinking` 才开启；
+- **压缩输入**：自动去掉参考文献/致谢并限制 `--max-input-chars`，避免把整篇 PDF 全部送入模型；
+- **限制输出**：`--max-output-tokens` 防止模型生成过长笔记；
+- **图注翻译可选**：`fast` 默认使用“图 n/表 n”中文编号兜底，省掉每篇一次额外翻译调用；
+- **非高峰运行**：DeepSeek 非高峰价为高峰的 5 折；`--off-peak-wait` 会自动等待；
+- **自动缓存**：DeepSeek Context Caching 默认开启，稳定的 system prompt 前缀可命中缓存；
 - **断点续传**：已存在笔记默认跳过，避免重复生成。
 
 > 高峰时段（UTC）：周一至周五 01:00–04:00、06:00–10:00；中国法定节假日按官方规则视为非高峰。
 
-## 📊 运行日志、进度与费用报告
-
-生成笔记、分类复核和 `run_pipeline.py` 运行时都会输出实时进度：
-
-- 控制台进度条显示完成数、成功/跳过/失败数、已用时间、ETA 和当前累计花费。
-- 每篇论文的状态、重试原因和错误会写入 `logs/` 下的日志文件，便于中断后排查。
-- 运行结束会报告总 token、缓存命中率、总花费（USD 与近似 CNY）、平均每篇花费，以及总耗时和平均每篇耗时。
-- `logs/` 已加入 `.gitignore`，不会提交到仓库。
-
 ## 🖼️ 论文图表
 
-生成笔记时默认会从 PDF 提取 `Figure` / `Table` 区域，保存到 `docs/assets/papers/<arxiv_id>/`，并把图表清单交给 LLM，让它在方法或实验结果附近插入 `[[FIG:n]]` / `[[TABLE:n]]` 占位符。生成完成后脚本会把占位符替换成相对路径的 `<figure>`，未使用的图表会追加到文末“论文图表”小节。
+生成笔记时默认会从 PDF 提取 `Figure` / `Table` 区域，保存到 `docs/assets/papers/<arxiv_id>/`，并把图表清单交给 LLM。LLM 只会在真正适合辅助理解的段落后插入 `[[FIG:n]]` 占位符；生成完成后脚本把占位符替换成相对路径的 `<figure>`，未使用的图片会自动清理，不会堆砌到文末。
 
 ```powershell
 # 默认提取，每篇最多 8 张，200 DPI
@@ -163,15 +255,27 @@ python scripts/generate_recsys_notes.py --papers-csv data/papers/SIGIR2026.csv -
 
 # 不调用 LLM 翻译图注，使用“图 n/表 n”中文编号兜底（省 token）
 python scripts/generate_recsys_notes.py --papers-csv data/papers/SIGIR2026.csv --no-figure-translation
-
-# 单独提取某个 PDF 的图表
-python scripts/extract_pdf_figures.py --pdf .cache_pdfs/2605.29322v1.pdf --out docs/assets/papers/2605.29322v1
 ```
 
-- 依赖 `pymupdf`，已包含在 `requirements.txt`
-- 图片采用相对路径，笔记移动到其他分类目录时仍能正常显示
-- DeepSeek 文本模型看不到图片内容，只能根据图注与上下文决定插图位置
+- 依赖 `pymupdf`，已包含在 `requirements.txt`；
+- 图片采用相对路径，笔记移动到其他分类目录时仍能正常显示；
+- DeepSeek 文本模型看不到图片内容，只能根据图注与上下文决定插图位置。
 
-## 🔄 自动构建
+## 💬 反馈与纠错
 
-`.github/workflows/init_and_deploy.yml` 负责构建并部署 MkDocs 站点。手动触发时可通过 `papers_csv` + `profile` 调用 `run_pipeline.py` 生成笔记；普通 push 只重建索引并部署，不会自动抓取论文或消耗 token。
+欢迎反馈站点使用、内容准确性、论文收录与下架等问题：
+
+- 提交 [GitHub Issue](https://github.com/jbdcia321vw/Paper-Notes/issues)
+- 如果是论文作者并希望调整或下架相关内容，请在 Issue 中附上论文链接与具体页面。
+
+更多项目说明见站点 [关于本站](https://jbdcia321vw.github.io/Paper-Notes/about/)。
+
+## 📄 License
+
+本项目沿用上游项目的 **CC BY-NC-SA 4.0** 许可：
+
+- 署名：使用时请注明来源；
+- 非商业性使用：不得用于商业目的；
+- 相同方式共享：修改后须以相同协议分享。
+
+上游参考：[zhaoyang97/Paper-Notes](https://github.com/zhaoyang97/Paper-Notes)。
