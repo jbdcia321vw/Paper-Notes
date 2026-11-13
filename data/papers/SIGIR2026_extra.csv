@@ -1,63 +1,61 @@
-title,arxiv_id,paper_url,code_url,category,venue,year
-Differentiable Semantic ID for Generative Recommendation,2601.19711v3,https://arxiv.org/abs/2601.19711v3,https://github.com/junchen-fu/DIGER,generative_rec,SIGIR,2026
-RoTE: Coarse-to-Fine Multi-Level Rotary Time Embedding for Sequential Recommendation,2604.13389v1,https://arxiv.org/abs/2604.13389v1,https://github.com/XiaoLongtaoo/RoTE,sequential_rec,SIGIR,2026
-Bi-Level Optimization for Generative Recommendation: Bridging Tokenization and Generation,2510.21242v2,https://arxiv.org/abs/2510.21242v2,https://github.com/Ten-Mao/BLOGER,generative_rec,SIGIR,2026
-Post-hoc Provider Fairness Adaptation via Hierarchical Exposure Alignment,2605.01524v1,https://arxiv.org/abs/2605.01524v1,,debias_fairness_industrial,SIGIR,2026
-A Standardized Re-evaluation of Conversational Recommender Systems on the ReDial Dataset,2605.13053v2,https://arxiv.org/abs/2605.13053v2,,agent_conversational_rec,SIGIR,2026
-CARD: Non-Uniform Quantization of Visual Semantic Unit for Generative Recommendation,2604.26427v1,https://arxiv.org/abs/2604.26427v1,https://github.com/HAI-UESTC/CARD,generative_rec,SIGIR,2026
-Cheaper is Better: A Discount-Aware Network for Conversion Rate Prediction in E-commerce Recommendation System,2607.12578v1,https://arxiv.org/abs/2607.12578v1,https://github.com/tangrc/DANet,ctr_feature_interaction,SIGIR,2026
-Equity vs. Equality: Optimizing Ranking Fairness for Tailored Provider Needs,2602.00495v1,https://arxiv.org/abs/2602.00495v1,,debias_fairness_industrial,SIGIR,2026
-HyFormer: Revisiting the Roles of Sequence Modeling and Feature Interaction in CTR Prediction,2601.12681v2,https://arxiv.org/abs/2601.12681v2,,ctr_feature_interaction,SIGIR,2026
-Mitigating Collaborative Semantic ID Staleness in Generative Retrieval,2604.13273v1,https://arxiv.org/abs/2604.13273v1,,generative_rec,SIGIR,2026
-TRACE: A Conversational Framework for Sustainable Tourism Recommendation with Agentic Counterfactual Explanations,2604.14223v1,https://arxiv.org/abs/2604.14223v1,,agent_conversational_rec,SIGIR,2026
-Universal Item Tokenization for Transferable Generative Recommendation,2504.04405v3,https://arxiv.org/abs/2504.04405v3,,generative_rec,SIGIR,2026
-Counterfactual Multi-task Learning for Delayed Conversion Modeling in E-commerce Sales Pre-Promotion,2604.21675v2,https://arxiv.org/abs/2604.21675v2,,ctr_feature_interaction,SIGIR,2026
-GFlowGR: Fine-tuning Generative Recommendation Frameworks with Generative Flow Networks,2506.16114v3,https://arxiv.org/abs/2506.16114v3,,generative_rec,SIGIR,2026
-Learning to Forget: Satiation-Aware Long-Sequence Transducers for Mitigating Post-Purchase Redundancy,2607.12714v1,https://arxiv.org/abs/2607.12714v1,,sequential_rec,SIGIR,2026
-Balanced Co-Clustering of Users and Items for Embedding Table Compression in Recommender Systems,2604.18351v1,https://arxiv.org/abs/2604.18351v1,,collaborative_filtering,SIGIR,2026
-Bridging Behavior and Semantics for Time-aware Cross-Domain Sequential Recommendation,2605.02369v1,https://arxiv.org/abs/2605.02369v1,,cross_domain_multi_scenario,SIGIR,2026
-CMSL: Constructive Multi-Sequence Learning for Recommendation Systems,2606.28533v2,https://arxiv.org/abs/2606.28533v2,,sequential_rec,SIGIR,2026
-Divergence Meets Consensus: A Multi-Source Negative Sampling Framework for Sequential Recommendation,2605.19651v1,https://arxiv.org/abs/2605.19651v1,,sequential_rec,SIGIR,2026
-Dual-Diffusional Generative Fashion Recommendation,2605.17357v1,https://arxiv.org/abs/2605.17357v1,https://github.com/LinkMingzhe/DualFashion,generative_rec,SIGIR,2026
-ERASE -- A Real-World Aligned Benchmark for Unlearning in Recommender Systems,2603.08341v1,https://arxiv.org/abs/2603.08341v1,,debias_fairness_industrial,SIGIR,2026
-Factorized Latent Reasoning for LLM-based Recommendation,2604.26760v2,https://arxiv.org/abs/2604.26760v2,,llm_rec,SIGIR,2026
-From Raw Features to Effective Embeddings: A Three-Stage Approach for Multimodal Recipe Recommendation,2511.19176v3,https://arxiv.org/abs/2511.19176v3,,multimodal_rec,SIGIR,2026
-GenRecEdit: Adapting Model Editing for Generative Recommendation with Cold-Start Items,2603.14259v2,https://arxiv.org/abs/2603.14259v2,,cold_start_rec,SIGIR,2026
-LLM-EDT: Large Language Model Enhanced Cross-domain Sequential Recommendation with Dual-phase Training,2511.19931v2,https://arxiv.org/abs/2511.19931v2,,cross_domain_multi_scenario,SIGIR,2026
-LWGR: Lagrangian-Constrained Personalized World Knowledge for Generative Recommendation,2605.18771v1,https://arxiv.org/abs/2605.18771v1,,llm_rec,SIGIR,2026
-MLLMRec: A Preference Reasoning Paradigm with Graph Refinement for Multimodal Recommendation,2508.15304v3,https://arxiv.org/abs/2508.15304v3,https://github.com/Yuzhuo-Dang/MLLMRec.git,multimodal_rec,SIGIR,2026
-MVIGER: Multi-View Variational Integration of Complementary Knowledge for Generative Recommender,2408.08686v4,https://arxiv.org/abs/2408.08686v4,,generative_rec,SIGIR,2026
-QAGCF: Graph Collaborative Filtering for Q&A Recommendation,2406.04828v1,https://arxiv.org/abs/2406.04828v1,,graph_rec,SIGIR,2026
-RCLRec: Reverse Curriculum Learning for Modeling Sparse Conversions in Generative Recommendation,2603.28124v1,https://arxiv.org/abs/2603.28124v1,,generative_rec,SIGIR,2026
-RES-MR: Risk-Aware Reasoning for Explainable and Safe Medication Recommendation,2610.14474v1,https://arxiv.org/abs/2610.14474v1,https://github.com/wangcong2001/RES-MR,llm_rec,SIGIR,2026
-RQ-GMM: Residual Quantized Gaussian Mixture Model for Multimodal Semantic Discretization in CTR Prediction,2602.12593v1,https://arxiv.org/abs/2602.12593v1,,ctr_feature_interaction,SIGIR,2026
-RecPFN: Prior-Fitted Networks for In-Context-Based Recommendations,2608.19735v1,https://arxiv.org/abs/2608.19735v1,https://github.com/SAP-samples/tabular-ai-recpfn,sequential_rec,SIGIR,2026
-Reinforcing User Interest Evolution in Multi-Scenario Learning for recommender systems,2506.17682v1,https://arxiv.org/abs/2506.17682v1,,cross_domain_multi_scenario,SIGIR,2026
-Robust Multimodal Recommendation via Graph Retrieval-Enhanced Modality Completion,2605.00670v1,https://arxiv.org/abs/2605.00670v1,,multimodal_rec,SIGIR,2026
-SPRINT: Scalable and Predictive Intent Refinement for LLM-Enhanced Session-based Recommendation,2508.00570v3,https://arxiv.org/abs/2508.00570v3,,sequential_rec,SIGIR,2026
-SpecTran: Spectral-Aware Transformer-based Adapter for LLM-Enhanced Sequential Recommendation,2601.21986v2,https://arxiv.org/abs/2601.21986v2,,sequential_rec,SIGIR,2026
-Structural and Disentangled Adaptation of Large Vision Language Models for Multimodal Recommendation,2512.06883v2,https://arxiv.org/abs/2512.06883v2,https://github.com/RaoZhongtao/SDA,multimodal_rec,SIGIR,2026
-The Attention Market: Interpreting Online Fair Re-ranking as Manifold Optimization under Walrasian Equilibrium,2604.25577v1,https://arxiv.org/abs/2604.25577v1,,debias_fairness_industrial,SIGIR,2026
-Think When Needed: Model-Aware Reasoning Routing for LLM-based Ranking,2601.18146v2,https://arxiv.org/abs/2601.18146v2,,llm_rec,SIGIR,2026
-Time-Interval-Aware Disentangled Expert Modeling for Next-Basket Recommendation,2605.00499v1,https://arxiv.org/abs/2605.00499v1,,sequential_rec,SIGIR,2026
-TimeMM: Time-as-Operator Spectral Filtering for Dynamic Multimodal Recommendation,2604.26247v1,https://arxiv.org/abs/2604.26247v1,,multimodal_rec,SIGIR,2026
-Understanding DNNs in Feature Interaction Models: A Dimensional Collapse Perspective,2604.26489v1,https://arxiv.org/abs/2604.26489v1,,ctr_feature_interaction,SIGIR,2026
-Verifiable Reasoning for LLM-based Generative Recommendation,2603.07725v1,https://arxiv.org/abs/2603.07725v1,https://github.com/Linxyhaha/Verifiable-Rec,llm_rec,SIGIR,2026
-Fusion and Alignment Enhancement with Large Language Models for Tail-item Sequential Recommendation,2604.03688v1,https://arxiv.org/abs/2604.03688v1,,sequential_rec,SIGIR,2026
-A Cascaded Generative Approach for e-Commerce Recommendations,2605.11118v2,https://arxiv.org/abs/2605.11118v2,,generative_rec,SIGIR,2026
-Aspect-Aware Content-Based Recommendations for Mathematical Research Papers,2605.03861v1,https://arxiv.org/abs/2605.03861v1,,graph_rec,SIGIR,2026
-CLAX: Fast and Flexible Neural Click Models in JAX,2511.03620v1,https://arxiv.org/abs/2511.03620v1,https://github.com/philipphager/clax,ctr_feature_interaction,SIGIR,2026
-Next Interest Flow: A Generative Pre-training Paradigm for Recommender Systems by Modeling All-domain Movelines,2510.11317v2,https://arxiv.org/abs/2510.11317v2,,generative_rec,SIGIR,2026
-ReST: A Plug-and-Play Spatially-Constrained Representation Enhancement Framework for Local-Life Recommendation,2511.12947v2,https://arxiv.org/abs/2511.12947v2,,poi_spatiotemporal_rec,SIGIR,2026
-RecGPT-Mobile: On-Device Large Language Models for User Intent Understanding in Taobao Feed Recommendation,2605.04726v1,https://arxiv.org/abs/2605.04726v1,,llm_rec,SIGIR,2026
-SilverTorch: A Unified Model-based System to Democratize Large-Scale Recommendation on GPUs,2511.14881v5,https://arxiv.org/abs/2511.14881v5,,collaborative_filtering,SIGIR,2026
-SplitLight: An Exploratory Toolkit for Recommender Systems Datasets and Splits,2602.19339v1,https://arxiv.org/abs/2602.19339v1,,debias_fairness_industrial,SIGIR,2026
-Towards End-to-End Alignment of User Satisfaction via Questionnaire in Video Recommendation,2601.20215v1,https://arxiv.org/abs/2601.20215v1,,multi_task_reranking,SIGIR,2026
-Multi-modal Relational Item Representation Learning for Inferring Substitutable and Complementary Items,2507.22268v3,https://arxiv.org/abs/2507.22268v3,,multimodal_rec,SIGIR,2026
-From Top-1 to Top-K: A Reproducibility Study and Benchmarking of Counterfactual Explanations for Recommender Systems,2604.19663v1,https://arxiv.org/abs/2604.19663v1,https://github.com/L2R-UET/CFExpRec,debias_fairness_industrial,SIGIR,2026
-DIAURec: Dual-Intent Space Representation Optimization for Recommendation,2604.09087v2,https://arxiv.org/abs/2604.09087v2,,collaborative_filtering,SIGIR,2026
-From Time and Place to Preference: LLM-Driven Geo-Temporal Context in Recommendations,2510.24430v1,https://arxiv.org/abs/2510.24430v1,,poi_spatiotemporal_rec,SIGIR,2026
-OCP: Orthogonal Constrained Projection for Sparse Scaling in Industrial Commodity Recommendation,2603.18697v1,https://arxiv.org/abs/2603.18697v1,,collaborative_filtering,SIGIR,2026
-Request-Only Optimization for Recommendation Systems,2508.05640v3,https://arxiv.org/abs/2508.05640v3,,debias_fairness_industrial,SIGIR,2026
-ZoRRO: A Zero-Weight Personalized Recommender System for Scalable News Recommendation,2607.10910v1,https://arxiv.org/abs/2607.10910v1,https://github.com/johanneskruse/zorro,collaborative_filtering,SIGIR,2026
-Exploring Test-time Scaling via Prediction Merging on Large-Scale Recommendation,2512.07650v1,https://arxiv.org/abs/2512.07650v1,,debias_fairness_industrial,SIGIR,2026
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Differentiable Semantic ID for Generative Recommendation,2601.19711,https://arxiv.org/abs/2601.19711v3,https://github.com/junchen-fu/DIGER,generative_rec,SIGIR,2026
+RoTE: Coarse-to-Fine Multi-Level Rotary Time Embedding for Sequential Recommendation,2604.13389,https://arxiv.org/abs/2604.13389v1,https://github.com/XiaoLongtaoo/RoTE,sequential_rec,SIGIR,2026
+Bi-Level Optimization for Generative Recommendation: Bridging Tokenization and Generation,2510.21242,https://arxiv.org/abs/2510.21242v2,https://github.com/Ten-Mao/BLOGER,generative_rec,SIGIR,2026
+Post-hoc Provider Fairness Adaptation via Hierarchical Exposure Alignment,2605.01524,https://arxiv.org/abs/2605.01524v1,,debias_fairness_industrial,SIGIR,2026
+A Standardized Re-evaluation of Conversational Recommender Systems on the ReDial Dataset,2605.13053,https://arxiv.org/abs/2605.13053v2,,agent_conversational_rec,SIGIR,2026
+CARD: Non-Uniform Quantization of Visual Semantic Unit for Generative Recommendation,2604.26427,https://arxiv.org/abs/2604.26427v1,https://github.com/HAI-UESTC/CARD,generative_rec,SIGIR,2026
+Cheaper is Better: A Discount-Aware Network for Conversion Rate Prediction in E-commerce Recommendation System,2607.12578,https://arxiv.org/abs/2607.12578v1,https://github.com/tangrc/DANet,ctr_feature_interaction,SIGIR,2026
+Equity vs. Equality: Optimizing Ranking Fairness for Tailored Provider Needs,2602.00495,https://arxiv.org/abs/2602.00495v1,,debias_fairness_industrial,SIGIR,2026
+HyFormer: Revisiting the Roles of Sequence Modeling and Feature Interaction in CTR Prediction,2601.12681,https://arxiv.org/abs/2601.12681v2,,ctr_feature_interaction,SIGIR,2026
+Mitigating Collaborative Semantic ID Staleness in Generative Retrieval,2604.13273,https://arxiv.org/abs/2604.13273v1,,generative_rec,SIGIR,2026
+TRACE: A Conversational Framework for Sustainable Tourism Recommendation with Agentic Counterfactual Explanations,2604.14223,https://arxiv.org/abs/2604.14223v1,,agent_conversational_rec,SIGIR,2026
+Universal Item Tokenization for Transferable Generative Recommendation,2504.04405,https://arxiv.org/abs/2504.04405v3,,generative_rec,SIGIR,2026
+Counterfactual Multi-task Learning for Delayed Conversion Modeling in E-commerce Sales Pre-Promotion,2604.21675,https://arxiv.org/abs/2604.21675v2,,ctr_feature_interaction,SIGIR,2026
+GFlowGR: Fine-tuning Generative Recommendation Frameworks with Generative Flow Networks,2506.16114,https://arxiv.org/abs/2506.16114v3,,generative_rec,SIGIR,2026
+Learning to Forget: Satiation-Aware Long-Sequence Transducers for Mitigating Post-Purchase Redundancy,2607.12714,https://arxiv.org/abs/2607.12714v1,,sequential_rec,SIGIR,2026
+Balanced Co-Clustering of Users and Items for Embedding Table Compression in Recommender Systems,2604.18351,https://arxiv.org/abs/2604.18351v1,,collaborative_filtering,SIGIR,2026
+Bridging Behavior and Semantics for Time-aware Cross-Domain Sequential Recommendation,2605.02369,https://arxiv.org/abs/2605.02369v1,,cross_domain_multi_scenario,SIGIR,2026
+CMSL: Constructive Multi-Sequence Learning for Recommendation Systems,2606.28533,https://arxiv.org/abs/2606.28533v2,,sequential_rec,SIGIR,2026
+Divergence Meets Consensus: A Multi-Source Negative Sampling Framework for Sequential Recommendation,2605.19651,https://arxiv.org/abs/2605.19651v1,,sequential_rec,SIGIR,2026
+Dual-Diffusional Generative Fashion Recommendation,2605.17357,https://arxiv.org/abs/2605.17357v1,https://github.com/LinkMingzhe/DualFashion,generative_rec,SIGIR,2026
+ERASE -- A Real-World Aligned Benchmark for Unlearning in Recommender Systems,2603.08341,https://arxiv.org/abs/2603.08341v1,,debias_fairness_industrial,SIGIR,2026
+Factorized Latent Reasoning for LLM-based Recommendation,2604.26760,https://arxiv.org/abs/2604.26760v2,,llm_rec,SIGIR,2026
+From Raw Features to Effective Embeddings: A Three-Stage Approach for Multimodal Recipe Recommendation,2511.19176,https://arxiv.org/abs/2511.19176v3,,multimodal_rec,SIGIR,2026
+GenRecEdit: Adapting Model Editing for Generative Recommendation with Cold-Start Items,2603.14259,https://arxiv.org/abs/2603.14259v2,,cold_start_rec,SIGIR,2026
+LLM-EDT: Large Language Model Enhanced Cross-domain Sequential Recommendation with Dual-phase Training,2511.19931,https://arxiv.org/abs/2511.19931v2,,cross_domain_multi_scenario,SIGIR,2026
+LWGR: Lagrangian-Constrained Personalized World Knowledge for Generative Recommendation,2605.18771,https://arxiv.org/abs/2605.18771v1,,llm_rec,SIGIR,2026
+MLLMRec: A Preference Reasoning Paradigm with Graph Refinement for Multimodal Recommendation,2508.15304,https://arxiv.org/abs/2508.15304v3,https://github.com/Yuzhuo-Dang/MLLMRec.git,multimodal_rec,SIGIR,2026
+MVIGER: Multi-View Variational Integration of Complementary Knowledge for Generative Recommender,2408.08686,https://arxiv.org/abs/2408.08686v4,,generative_rec,SIGIR,2026
+QAGCF: Graph Collaborative Filtering for Q&A Recommendation,2406.04828,https://arxiv.org/abs/2406.04828v1,,graph_rec,SIGIR,2026
+RCLRec: Reverse Curriculum Learning for Modeling Sparse Conversions in Generative Recommendation,2603.28124,https://arxiv.org/abs/2603.28124v1,,generative_rec,SIGIR,2026
+RQ-GMM: Residual Quantized Gaussian Mixture Model for Multimodal Semantic Discretization in CTR Prediction,2602.12593,https://arxiv.org/abs/2602.12593v1,,ctr_feature_interaction,SIGIR,2026
+RecPFN: Prior-Fitted Networks for In-Context-Based Recommendations,2608.19735,https://arxiv.org/abs/2608.19735v1,https://github.com/SAP-samples/tabular-ai-recpfn,sequential_rec,SIGIR,2026
+Reinforcing User Interest Evolution in Multi-Scenario Learning for recommender systems,2506.17682,https://arxiv.org/abs/2506.17682v1,,cross_domain_multi_scenario,SIGIR,2026
+Robust Multimodal Recommendation via Graph Retrieval-Enhanced Modality Completion,2605.00670,https://arxiv.org/abs/2605.00670v1,,multimodal_rec,SIGIR,2026
+SPRINT: Scalable and Predictive Intent Refinement for LLM-Enhanced Session-based Recommendation,2508.00570,https://arxiv.org/abs/2508.00570v3,,sequential_rec,SIGIR,2026
+SpecTran: Spectral-Aware Transformer-based Adapter for LLM-Enhanced Sequential Recommendation,2601.21986,https://arxiv.org/abs/2601.21986v2,,llm_rec,SIGIR,2026
+Structural and Disentangled Adaptation of Large Vision Language Models for Multimodal Recommendation,2512.06883,https://arxiv.org/abs/2512.06883v2,https://github.com/RaoZhongtao/SDA,multimodal_rec,SIGIR,2026
+The Attention Market: Interpreting Online Fair Re-ranking as Manifold Optimization under Walrasian Equilibrium,2604.25577,https://arxiv.org/abs/2604.25577v1,,debias_fairness_industrial,SIGIR,2026
+Think When Needed: Model-Aware Reasoning Routing for LLM-based Ranking,2601.18146,https://arxiv.org/abs/2601.18146v2,,llm_rec,SIGIR,2026
+Time-Interval-Aware Disentangled Expert Modeling for Next-Basket Recommendation,2605.00499,https://arxiv.org/abs/2605.00499v1,,sequential_rec,SIGIR,2026
+TimeMM: Time-as-Operator Spectral Filtering for Dynamic Multimodal Recommendation,2604.26247,https://arxiv.org/abs/2604.26247v1,,multimodal_rec,SIGIR,2026
+Understanding DNNs in Feature Interaction Models: A Dimensional Collapse Perspective,2604.26489,https://arxiv.org/abs/2604.26489v1,,ctr_feature_interaction,SIGIR,2026
+Verifiable Reasoning for LLM-based Generative Recommendation,2603.07725,https://arxiv.org/abs/2603.07725v1,https://github.com/Linxyhaha/Verifiable-Rec,llm_rec,SIGIR,2026
+Fusion and Alignment Enhancement with Large Language Models for Tail-item Sequential Recommendation,2604.03688,https://arxiv.org/abs/2604.03688v1,,sequential_rec,SIGIR,2026
+A Cascaded Generative Approach for e-Commerce Recommendations,2605.11118,https://arxiv.org/abs/2605.11118v2,,generative_rec,SIGIR,2026
+Aspect-Aware Content-Based Recommendations for Mathematical Research Papers,2605.03861,https://arxiv.org/abs/2605.03861v1,,graph_rec,SIGIR,2026
+Next Interest Flow: A Generative Pre-training Paradigm for Recommender Systems by Modeling All-domain Movelines,2510.11317,https://arxiv.org/abs/2510.11317v2,,generative_rec,SIGIR,2026
+ReST: A Plug-and-Play Spatially-Constrained Representation Enhancement Framework for Local-Life Recommendation,2511.12947,https://arxiv.org/abs/2511.12947v2,,poi_spatiotemporal_rec,SIGIR,2026
+RecGPT-Mobile: On-Device Large Language Models for User Intent Understanding in Taobao Feed Recommendation,2605.04726,https://arxiv.org/abs/2605.04726v1,,llm_rec,SIGIR,2026
+SilverTorch: A Unified Model-based System to Democratize Large-Scale Recommendation on GPUs,2511.14881,https://arxiv.org/abs/2511.14881v5,,collaborative_filtering,SIGIR,2026
+SplitLight: An Exploratory Toolkit for Recommender Systems Datasets and Splits,2602.19339,https://arxiv.org/abs/2602.19339v1,,debias_fairness_industrial,SIGIR,2026
+Towards End-to-End Alignment of User Satisfaction via Questionnaire in Video Recommendation,2601.20215,https://arxiv.org/abs/2601.20215v1,,multi_task_reranking,SIGIR,2026
+Multi-modal Relational Item Representation Learning for Inferring Substitutable and Complementary Items,2507.22268,https://arxiv.org/abs/2507.22268v3,,multimodal_rec,SIGIR,2026
+From Top-1 to Top-K: A Reproducibility Study and Benchmarking of Counterfactual Explanations for Recommender Systems,2604.19663,https://arxiv.org/abs/2604.19663v1,https://github.com/L2R-UET/CFExpRec,debias_fairness_industrial,SIGIR,2026
+DIAURec: Dual-Intent Space Representation Optimization for Recommendation,2604.09087,https://arxiv.org/abs/2604.09087v2,,collaborative_filtering,SIGIR,2026
+From Time and Place to Preference: LLM-Driven Geo-Temporal Context in Recommendations,2510.24430,https://arxiv.org/abs/2510.24430v1,,sequential_rec,SIGIR,2026
+OCP: Orthogonal Constrained Projection for Sparse Scaling in Industrial Commodity Recommendation,2603.18697,https://arxiv.org/abs/2603.18697v1,,collaborative_filtering,SIGIR,2026
+Request-Only Optimization for Recommendation Systems,2508.05640,https://arxiv.org/abs/2508.05640v3,,generative_rec,SIGIR,2026
+ZoRRO: A Zero-Weight Personalized Recommender System for Scalable News Recommendation,2607.10910,https://arxiv.org/abs/2607.10910v1,https://github.com/johanneskruse/zorro,collaborative_filtering,SIGIR,2026
+Exploring Test-time Scaling via Prediction Merging on Large-Scale Recommendation,2512.07650,https://arxiv.org/abs/2512.07650v1,,ctr_feature_interaction,SIGIR,2026

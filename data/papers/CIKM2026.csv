@@ -1,0 +1,49 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+From Counterfactual Edits to Human Narratives: LLM-Driven Interpretations for Recommender System Explanations,2611.13914,https://arxiv.org/abs/2611.13914,https://github.com/vcahlik/from-counterfactual-edits-to-human-narratives,agent_conversational_rec,CIKM,2026
+PALATE: Pretrained Autoregressive LATent Embeddings,2610.39090,https://arxiv.org/abs/2610.39090,,generative_rec,CIKM,2026
+Latent Residual Reasoning for Ranking in Generative Recommendation,2610.36890,https://arxiv.org/abs/2610.36890,,generative_rec,CIKM,2026
+RecSoup: Efficient Model Merging Approach for Controllable Multi-Objective Recommendation,2610.21220,https://arxiv.org/abs/2610.21220,https://github.com/35798642/RECSOUP.git,multi_task_reranking,CIKM,2026
+LLM-based User-Product Relevance Evaluation for Dynamic Product Advertising,2610.14550,https://arxiv.org/abs/2610.14550,,debias_fairness_industrial,CIKM,2026
+EVOL: Simulator-Guided Evolutionary Expert Synthesis for Deployment-Free Learning Path Recommendation,2610.03273,https://arxiv.org/abs/2610.03273,,rl_bandit_rec,CIKM,2026
+RouteRec: Behavior-Guided Sparse Routing for Sequential Recommendation,2609.39007,https://arxiv.org/abs/2609.39007,https://github.com/jy1559/RouteRec,sequential_rec,CIKM,2026
+Efficient Offline Learning of Ranking Policies via Top-$k$ Policy Decomposition,2609.36740,https://arxiv.org/abs/2609.36740,,rl_bandit_rec,CIKM,2026
+Enriching Sequential Recommendation with Graph Laplacian Positional Embeddings,2609.31253,https://arxiv.org/abs/2609.31253,,sequential_rec,CIKM,2026
+LSF-SR: Latent Semantic Fusion for Sequential Recommendation via Flow-based Conditional Variational Autoencoders,2609.29815,https://arxiv.org/abs/2609.29815,,sequential_rec,CIKM,2026
+Cross-Country Code-Mixing for Generative Recommendation,2609.28972,https://arxiv.org/abs/2609.28972,,generative_rec,CIKM,2026
+A Behavioral Trait Leaks into Preferences: Diagnosing Trait Interference in LLM User Simulators,2609.25572,https://arxiv.org/abs/2609.25572,https://github.com/chaehyun1/PQA,agent_conversational_rec,CIKM,2026
+Task-Blind No MORE: Multi-Task Information Flow in Unified Ranking Backbones,2609.07273,https://arxiv.org/abs/2609.07273,,multi_task_reranking,CIKM,2026
+Closing the Long-Short View Gap in Sequential Recommendation without Cached History,2609.06219,https://arxiv.org/abs/2609.06219,,sequential_rec,CIKM,2026
+Do All Nodes Benefit Equally from Knowledge Graphs? Adaptive Node-Aware KG Fusion for Recommendation,2609.05909,https://arxiv.org/abs/2609.05909,,graph_rec,CIKM,2026
+Personalized Task Dependency Graphs for Mitigating Signal Erosion in Multi-Task Recommendation,2609.04862,https://arxiv.org/abs/2609.04862,,multi_task_reranking,CIKM,2026
+Information-Guided Selective Modality-Interest Alignment for Multimodal Recommendation,2608.27950,https://arxiv.org/abs/2608.27950,https://github.com/Wenze1/AMUR,multimodal_rec,CIKM,2026
+Scaling Graph Neural Networks for Friend Recommendation: Multi-Hash User Embeddings and Temporal Neighbor Sampling,2608.27413,https://arxiv.org/abs/2608.27413,https://github.com/makut/VK-GNN,social_group_rec,CIKM,2026
+The Recall Ceiling of LLM Recommendation Reranking,2609.27953,https://arxiv.org/abs/2609.27953,,llm_rec,CIKM,2026
+TransRetrieval: Scaling Up Transformer-Based Retrieval for Industrial Recommendation,2608.25528,https://arxiv.org/abs/2608.25528,,collaborative_filtering,CIKM,2026
+Native Multimodal Representation Learning for Click-Through Rate Prediction in E-Commerce Scenarios,2608.24091,https://arxiv.org/abs/2608.24091,,multimodal_rec,CIKM,2026
+A Dual-Expert Strategy Integrating LLMs to Mitigate Negative Transfer in Cross-Domain Sequential Recommendation,2608.23131,https://arxiv.org/abs/2608.23131,,cross_domain_multi_scenario,CIKM,2026
+Beyond Observed Auxiliary Relations: Environment-Conditioned Modeling for Multi-Behavior Recommendation,2608.22920,https://arxiv.org/abs/2608.22920,https://github.com/LSH0411/BOAR,graph_rec,CIKM,2026
+Rethinking Item Tokenization in Generative Recommenders: From Fixed Atoms to Semantic Subwords,2608.22734,https://arxiv.org/abs/2608.22734,https://github.com/mxrcandy/Semantic-Subword-Tokenization,generative_rec,CIKM,2026
+Profiling What Matters: Context-Aware Item Profiles from Large-Scale Metadata for LLM Recommenders,2608.20801,https://arxiv.org/abs/2608.20801,,llm_rec,CIKM,2026
+Training-Free LLM-Based Recommendation with Post-LLM Item Refinement Using Collaborative Signals,2608.19665,https://arxiv.org/abs/2608.19665,,llm_rec,CIKM,2026
+Think-to-Personalize: Unifying Reasoning and Retrieval for User-Centric Personalized Dense Retrieval,2608.18855,https://arxiv.org/abs/2608.18855,,llm_rec,CIKM,2026
+TRACER: Balancing Stability-Plasticity-Cognitivity Trilemma for LLM Enhanced Continual Recommendation,2608.16075,https://arxiv.org/abs/2608.16075,https://github.com/woo-joo/TRACER_CIKM26,llm_rec,CIKM,2026
+GOD: Enhancing Generalization via Deep Grafting for Sequential Recommendation,2608.16073,https://arxiv.org/abs/2608.16073,,sequential_rec,CIKM,2026
+Ask to Be Sure: Informative Interactions for Confident Multi-Turn LLM Recommendation,2608.15949,https://arxiv.org/abs/2608.15949,,agent_conversational_rec,CIKM,2026
+Sequential Multimodal Evidence Optimization for Product Media Ranking in E-Commerce,2608.15662,https://arxiv.org/abs/2608.15662,,multi_task_reranking,CIKM,2026
+Learning from Unreachable Rewards: Hint-Conditioned Reinforcement Learning for Generative Recommendation,2608.11980,https://arxiv.org/abs/2608.11980,https://github.com/WncFht/GRec,generative_rec,CIKM,2026
+From Overlooked to Explored: Recovering Item Relations via Mixture of Perspectives for Sequential Recommendation,2608.11846,https://arxiv.org/abs/2608.11846,https://github.com/327aem/PRISM,sequential_rec,CIKM,2026
+FunnelCausalNet: Funnel-aware Joint Conversion-Revenue Uplift for Multi-tier Coupon Allocation,2608.11675,https://arxiv.org/abs/2608.11675,,ctr_feature_interaction,CIKM,2026
+FedCGR: Federated Cross-Domain Generative Recommendation,2608.10929,https://arxiv.org/abs/2608.10929,,cross_domain_multi_scenario,CIKM,2026
+Neural Tree Collaborative Filtering: Rethinking Graph Collaborative Filtering as Tree Collaborative Filtering with Curvature-Aware Propagation Depth,2608.10297,https://arxiv.org/abs/2608.10297,,graph_rec,CIKM,2026
+DualSpectralCF: Training-Free Sign-Aware Spectral Collaborative Filtering,2608.10247,https://arxiv.org/abs/2608.10247,https://github.com/guanqun-yang/DualSpectralCF,collaborative_filtering,CIKM,2026
+Sequential Modality Dropout for Robust Multi-Modal Sequential Recommendation,2608.10240,https://arxiv.org/abs/2608.10240,https://github.com/guanqun-yang/SMD,multimodal_rec,CIKM,2026
+SIDInspector: A Mapping-First Diagnostic Resource for Semantic-ID Tokenizers,2606.10375,https://arxiv.org/abs/2606.10375,,generative_rec,CIKM,2026
+Faithful Evaluation of Semantic-ID Tokenizers for Generative Recommendation,2605.25330,https://arxiv.org/abs/2605.25330,https://github.com/Nishikata97/CollisionGenRec,generative_rec,CIKM,2026
+BRIDGE: Behavior-Guided Residual Integration with Dual-Frequency Graph Evidence,2605.22073,https://arxiv.org/abs/2605.22073,,multimodal_rec,CIKM,2026
+CASTLE: Contrastive and Seed-Guided Training for Cold-Start Natural Language Search,2605.21812,https://arxiv.org/abs/2605.21812,,cold_start_rec,CIKM,2026
+UniScale: Synergistic Entire Space Data and Model Scaling for Search Ranking,2603.24226,https://arxiv.org/abs/2603.24226,,ctr_feature_interaction,CIKM,2026
+Jointly Optimizing Debiased CTR and Uplift for Coupons Marketing: A Unified Causal Framework,2602.12972,https://arxiv.org/abs/2602.12972,,ctr_feature_interaction,CIKM,2026
+EchoTrace: Diagnosing Recursive Risks in LLM-Powered Recommender Systems,2602.07442,https://arxiv.org/abs/2602.07442,https://github.com/DongUk-Park/EchoTrace,debias_fairness_industrial,CIKM,2026
+LFM4Ads: Large Foundation Model for Ads Recommendation,2508.14948,https://arxiv.org/abs/2508.14948,https://github.com/ZhuangQu/LFM4Ads,cross_domain_multi_scenario,CIKM,2026
+Bidding-Aware Retrieval for Multi-Stage Consistency in Online Advertising,2508.05206,https://arxiv.org/abs/2508.05206,,ctr_feature_interaction,CIKM,2026
+On Mitigating Data Sparsity in Conversational Recommender Systems,2507.00479,https://arxiv.org/abs/2507.00479,,agent_conversational_rec,CIKM,2026

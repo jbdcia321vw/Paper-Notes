@@ -1,0 +1,11 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+EpicCBR: Item-Relation-Enhanced Dual-Scenario Contrastive Learning for Cold-Start Bundle Recommendation,2602.11680,https://arxiv.org/abs/2602.11680,https://github.com/alexlovecoding/EpicCBR,cold_start_rec,WSDM,2026
+Cold-Starting Podcast Ads and Promotions with Multi-Task Learning on Spotify,2601.02306,https://arxiv.org/abs/2601.02306,,multi_task_reranking,WSDM,2026
+Automated Information Flow Selection for Multi-scenario Multi-task Recommendation,2512.13396,https://arxiv.org/abs/2512.13396,,cross_domain_multi_scenario,WSDM,2026
+Foresight Prediction Enhanced Live-Streaming Recommendation,2512.06700,https://arxiv.org/abs/2512.06700,,sequential_rec,WSDM,2026
+Continuous-time Discrete-space Diffusion Model for Recommendation,2511.12114,https://arxiv.org/abs/2511.12114,,generative_rec,WSDM,2026
+Have We Really Understood Collaborative Information? An Empirical Investigation,2511.06905,https://arxiv.org/abs/2511.06905,,collaborative_filtering,WSDM,2026
+HADSF: Aspect Aware Semantic Control for Explainable Recommendation,2510.26994,https://arxiv.org/abs/2510.26994,https://github.com/niez233/HADSF,llm_rec,WSDM,2026
+SimDiffRec: Semantic Similarity-Guided Diffusion for Contrastive Sequential Recommendation,2507.11866,https://arxiv.org/abs/2507.11866,https://github.com/zingyon/SimDiffRec,self_supervised_denoising,WSDM,2026
+Towards Next-Generation Recommender Systems: A Benchmark for Personalized Recommendation Assistant with LLMs,2503.09382,https://arxiv.org/abs/2503.09382,https://github.com/jiani-huang/RecBench.git,llm_rec,WSDM,2026
+Unlocking Scaling Law in Industrial Recommendation Systems with a Three-step Paradigm based Large User Model,2502.08309,https://arxiv.org/abs/2502.08309,,generative_rec,WSDM,2026

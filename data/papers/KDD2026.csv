@@ -1,0 +1,39 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Collaborative Memory Augmentation for Generative Recommendation,2608.01315,https://arxiv.org/abs/2608.01315,,generative_rec,KDD,2026
+Hierarchical Residual Policy Optimization for Generative Recommendations,2608.00750,https://arxiv.org/abs/2608.00750,,generative_rec,KDD,2026
+Think2Go: Generative Next POI Recommendation with LLM Reasoning,2607.28997,https://arxiv.org/abs/2607.28997,,poi_spatiotemporal_rec,KDD,2026
+Improving Item Discoverability in e-Commerce Search via Related Intent Generation,2607.27172,https://arxiv.org/abs/2607.27172,,llm_rec,KDD,2026
+PinEqualizer: Full Funnel Content Exploration and Debiasing System at Pinterest,2607.22518,https://arxiv.org/abs/2607.22518,,cold_start_rec,KDD,2026
+CanniUplift: A Holistic Framework for Mitigating Seller and Incentive Cannibalization in E-commerce Uplift Modeling,2607.05242,https://arxiv.org/abs/2607.05242,,debias_fairness_industrial,KDD,2026
+LLM-as-a-Judge for Reliable and Explainable Offline Evaluation in Top-K Recommendation,2606.22961,https://arxiv.org/abs/2606.22961,,debias_fairness_industrial,KDD,2026
+The Pitfall of Scaling Up: Uncovering and Mitigating Popularity Bias Amplification in Scaling Transformer-based Recommenders,2606.21911,https://arxiv.org/abs/2606.21911,https://github.com/Tiny-Snow/GenRec,debias_fairness_industrial,KDD,2026
+Denoising Implicit Feedback for Cold-start Recommendation,2606.19658,https://arxiv.org/abs/2606.19658,,cold_start_rec,KDD,2026
+HOBA: Hierarchical On-Policy Bidding Agents for Adaptive Online Advertising,2607.24779,https://arxiv.org/abs/2607.24779,,rl_bandit_rec,KDD,2026
+JourneyFormer: Encoding Airbnb Guest Journey with Sequence Modeling,2606.19108,https://arxiv.org/abs/2606.19108,,sequential_rec,KDD,2026
+OneRank: Unified Transformer-Native Ranking Architecture for Multi-Task Recommendation,2606.16838,https://arxiv.org/abs/2606.16838,,multi_task_reranking,KDD,2026
+One Sequential Recommendation Model Pretrained from Synthetic Priors Predicts Multiple Datasets,2606.15752,https://arxiv.org/abs/2606.15752,,sequential_rec,KDD,2026
+HMAF: A Hierarchical Multi-Slot GD-RTB Allocation Framework,2606.09896,https://arxiv.org/abs/2606.09896,,ctr_feature_interaction,KDD,2026
+CausalPOI: Spatio-Temporal Graph-Based Causal Modeling for Cold-Start POI Check-in Forecasting,2606.05413,https://arxiv.org/abs/2606.05413,,poi_spatiotemporal_rec,KDD,2026
+Beyond Instance-Level Alignment and Uniformity: Semantic Factor Learning for Collaborative Filtering,2605.31414,https://arxiv.org/abs/2605.31414,,collaborative_filtering,KDD,2026
+Mixture-of-Experts Knowledge Graph Retrieval-Augmented Generation for Multi-Agent LLM-based Recommendation,2605.28175,https://arxiv.org/abs/2605.28175,,llm_rec,KDD,2026
+DeGRe: Dense-supervised Generative Reranking for Recommendation,2605.25749,https://arxiv.org/abs/2605.25749,,multi_task_reranking,KDD,2026
+"Expand More, Shrink Less: Shaping Effective-Rank Dynamics for Dense Scaling in Recommendation",2605.23191,https://arxiv.org/abs/2605.23191,https://github.com/vasile-paskardlgm/RankElastor,ctr_feature_interaction,KDD,2026
+Uncertainty-Calibrated Recommendations for Low-Active Users,2605.17788,https://arxiv.org/abs/2605.17788,,rl_bandit_rec,KDD,2026
+Text-Guided Visual Representation Learning for Robust Multimodal E-Commerce Recommendation,2605.17366,https://arxiv.org/abs/2605.17366,,multimodal_rec,KDD,2026
+Hierarchical Long-Term Semantic Memory for LinkedIn's Hiring Agent,2604.26197,https://arxiv.org/abs/2604.26197,,agent_conversational_rec,KDD,2026
+Reasoning over Semantic IDs Enhances Generative Recommendation,2603.23183,https://arxiv.org/abs/2603.23183,,generative_rec,KDD,2026
+Beyond Interleaving: Causal Attention Reformulations for Generative Recommender Systems,2603.10369,https://arxiv.org/abs/2603.10369,,generative_rec,KDD,2026
+MAC: A Conversion Rate Prediction Benchmark Featuring Labels Under Multiple Attribution Mechanisms,2603.02184,https://arxiv.org/abs/2603.02184,https://github.com/alimama-tech/PyMAL,ctr_feature_interaction,KDD,2026
+Vectorizing the Trie: Efficient Constrained Decoding for LLM-based Generative Retrieval on Accelerators,2602.22647,https://arxiv.org/abs/2602.22647,https://github.com/youtube/static-constraint-decoding,generative_rec,KDD,2026
+AgentLTV: An Agent-Based Unified Search-and-Evolution Framework for Automated Lifetime Value Prediction,2602.21634,https://arxiv.org/abs/2602.21634,,rl_bandit_rec,KDD,2026
+MixFormer: Co-Scaling Up Dense and Sequence in Industrial Recommenders,2602.14110,https://arxiv.org/abs/2602.14110,,sequential_rec,KDD,2026
+Hi-SAM: A Hierarchical Structure-Aware Multi-modal Framework for Large-Scale Recommendation,2602.11799,https://arxiv.org/abs/2602.11799,,generative_rec,KDD,2026
+Uncertainty-aware Generative Recommendation,2602.11719,https://arxiv.org/abs/2602.11719,https://github.com/cxfann/UGR,generative_rec,KDD,2026
+Isotonic Layer: A Unified Framework for Recommendation Calibration and Debiasing,2603.06589,https://arxiv.org/abs/2603.06589,,debias_fairness_industrial,KDD,2026
+S$^2$GR: Stepwise Semantic-Guided Reasoning in Latent Space for Generative Recommendation,2601.18664,https://arxiv.org/abs/2601.18664,,generative_rec,KDD,2026
+Enriching Semantic Profiles into Knowledge Graph for Recommender Systems Using Large Language Models,2601.08148,https://arxiv.org/abs/2601.08148,,llm_rec,KDD,2026
+Unleashing the Potential of Neighbors: Diffusion-based Latent Neighbor Generation for Session-based Recommendation,2601.03903,https://arxiv.org/abs/2601.03903,,sequential_rec,KDD,2026
+MergeRec: Model Merging for Data-Isolated Cross-Domain Sequential Recommendation,2601.01753,https://arxiv.org/abs/2601.01753,https://github.com/DIALLab-SKKU/MergeRec,cross_domain_multi_scenario,KDD,2026
+Personalizing Marketplace Policies with Competing Objectives and Constrained Experiments: Evidence from a Job Marketplace,2606.30932,https://arxiv.org/abs/2606.30932,,multi_task_reranking,KDD,2026
+SafeCRS: Personalized Safety Alignment for LLM-Based Conversational Recommender Systems,2603.03536,https://arxiv.org/abs/2603.03536,,agent_conversational_rec,KDD,2026
+Rethinking Popularity Bias in Collaborative Filtering via Analytical Vector Decomposition,2512.10688,https://arxiv.org/abs/2512.10688,https://github.com/LingFeng-Liu-AI/DDC,debias_fairness_industrial,KDD,2026

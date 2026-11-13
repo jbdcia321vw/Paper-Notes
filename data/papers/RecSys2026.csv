@@ -1,47 +1,47 @@
 ﻿title,arxiv_id,paper_url,code_url,category,venue,year
-Hierarchical GTV Estimation: Bridging the Gap between Container-Level Ranking and Item-Level Conversion,2610.32420v1,https://arxiv.org/abs/2610.32420v1,,ctr_feature_interaction,RecSys,2026
-Embedding Subspace Partitioning for Dynamic Multi-Objective Retrieval,2609.30601v1,https://arxiv.org/abs/2609.30601v1,,multi_task_reranking,RecSys,2026
-Decoupled Learning and Selection in Slate Recommendation for Privacy and Stability Under Noisy Scores,2609.29453v1,https://arxiv.org/abs/2609.29453v1,,debias_fairness_industrial,RecSys,2026
-Learned Cross-Task Relationships in Multi-Task Models,2609.28776v2,https://arxiv.org/abs/2609.28776v2,,multi_task_reranking,RecSys,2026
-Lightweight Ranking Heads: Accelerating Multi-Task Experimentation in Production Recommender Systems,2609.25433v1,https://arxiv.org/abs/2609.25433v1,,multi_task_reranking,RecSys,2026
-Do We Care About Personalization and Explainability? An Interview Study with News Recommendation Engineers,2609.21547v1,https://arxiv.org/abs/2609.21547v1,,debias_fairness_industrial,RecSys,2026
-Addressing Cross-Stage Decoupling of Semantic and Collaborative Signals in Generative Recommendation,2609.13678v1,https://arxiv.org/abs/2609.13678v1,,generative_rec,RecSys,2026
-Training seeds and model-selection stability in recommender-system evaluation,2609.02499v1,https://arxiv.org/abs/2609.02499v1,,debias_fairness_industrial,RecSys,2026
-DeepAffinity: Long-Term Aspect Preference Prediction in eCommerce using Small Language Models,2609.02468v2,https://arxiv.org/abs/2609.02468v2,,llm_rec,RecSys,2026
-Conversational Recommendation over Live E-Commerce Catalogues with Self-Refreshing Retrieval,2608.27006v1,https://arxiv.org/abs/2608.27006v1,https://github.com/infobip/infobip-agentic-crs,agent_conversational_rec,RecSys,2026
-Do Sequential Recommendation Benchmarks Really Require Higher-Order Sequence Modelling?,2608.19833v1,https://arxiv.org/abs/2608.19833v1,,sequential_rec,RecSys,2026
-Pairwise Ranking Outperforms Single-Action RL for Offline Explanation Selection: A Practical Lesson,2608.18531v2,https://arxiv.org/abs/2608.18531v2,,multi_task_reranking,RecSys,2026
-Whose Posts Get Ranked: Identical-Text Exposure Gaps in Bluesky Custom Feeds,2608.13879v1,https://arxiv.org/abs/2608.13879v1,,debias_fairness_industrial,RecSys,2026
-Predicting Custom-Feed Returns for New Bluesky Posts: A Prospective Study,2608.13874v1,https://arxiv.org/abs/2608.13874v1,,cold_start_rec,RecSys,2026
-Are We Really Making Progress in Group Recommendation? Unmasking the Tie-Breaking Illusion,2608.11190v1,https://arxiv.org/abs/2608.11190v1,https://github.com/songduoma/TieAwareGroupRec,social_group_rec,RecSys,2026
-"LLM Reasoning for Subjective Tasks: Failure Modes, Mitigation, and Dynamic Reasoning Routing",2608.08889v1,https://arxiv.org/abs/2608.08889v1,,llm_rec,RecSys,2026
-Structure-Preserving Projection for Mitigating Modality Bias in LLM-Based Sequential Recommendation,2608.08583v1,https://arxiv.org/abs/2608.08583v1,,llm_rec,RecSys,2026
-The Utility of LLMs in Recommender Systems Explanation Evaluation,2609.01627v1,https://arxiv.org/abs/2609.01627v1,,llm_rec,RecSys,2026
-Shape Your Feed: An LLM-based Agentic System for Conversational Recommendation,2608.06632v1,https://arxiv.org/abs/2608.06632v1,,agent_conversational_rec,RecSys,2026
-WatchLens: A Configurable Platform for Online Video Recommendation Experiments,2608.04807v1,https://arxiv.org/abs/2608.04807v1,,debias_fairness_industrial,RecSys,2026
-Multi-Objective Ranking for Live-Streaming: Balancing Fresh and Delayed Signals with Segment-Aware Targeting,2608.04455v1,https://arxiv.org/abs/2608.04455v1,,multi_task_reranking,RecSys,2026
-Position Bias Undermines Preference Consistency in Listwise LLM-Based Reranking,2608.03091v1,https://arxiv.org/abs/2608.03091v1,https://github.com/ejbito/InvariRank,multi_task_reranking,RecSys,2026
-LLM-as-a-Judge for Evaluating System Responses in Conversational Music Recommendation,2607.25640v1,https://arxiv.org/abs/2607.25640v1,,agent_conversational_rec,RecSys,2026
-On the Convergent Validity of Offline Evaluation Designs for Recommender Systems,2607.25097v1,https://arxiv.org/abs/2607.25097v1,,debias_fairness_industrial,RecSys,2026
-Tokens are All You Need: Dual-purpose Semantic IDs for Achieving LLM-Level I/O Efficiency in recommendation systems,2607.24865v1,https://arxiv.org/abs/2607.24865v1,,generative_rec,RecSys,2026
-EGR: Embedding-Native Generative Retrieval with a Shared LLM,2607.23038v1,https://arxiv.org/abs/2607.23038v1,,generative_rec,RecSys,2026
-Improving Rare Medication Recommendation with Counterfactual Data Augmentation and Large Language Models,2607.24829v1,https://arxiv.org/abs/2607.24829v1,,cold_start_rec,RecSys,2026
-Probabilistic Residual Learning for Online Recommendations,2607.20863v1,https://arxiv.org/abs/2607.20863v1,,debias_fairness_industrial,RecSys,2026
-Zero-Observation User Reactivation with Gap-Driven Dimensional Gating,2607.19802v1,https://arxiv.org/abs/2607.19802v1,https://github.com/jdding/DeltaGate,cold_start_rec,RecSys,2026
-Empowering Cross-Domain Sequential Recommendation with Hybrid Tokenization and Serial-Parallel Decoding,2607.28659v1,https://arxiv.org/abs/2607.28659v1,https://github.com/Applied-Machine-Learning-Lab/RecSys2026_GenCDSR,generative_rec,RecSys,2026
-Topology-Aware Tokenization for Generative Recommendation,2607.18600v1,https://arxiv.org/abs/2607.18600v1,,generative_rec,RecSys,2026
-Learning Sparse Representations of Multimodal Content for Enhanced Cold Item Recommendation,2607.17184v2,https://arxiv.org/abs/2607.17184v2,,cold_start_rec,RecSys,2026
-A Position Paper on Recommender Systems in the Era of Autonomous Agents,2607.24822v1,https://arxiv.org/abs/2607.24822v1,,agent_conversational_rec,RecSys,2026
-RECAP: Feedback-Driven Streaming Semantic User Profiles for Short-Video Recommendation,2607.15730v1,https://arxiv.org/abs/2607.15730v1,,llm_rec,RecSys,2026
-Long-term User Engagement Optimization through Model-agnostic Downstream Rewards Learning,2607.14192v3,https://arxiv.org/abs/2607.14192v3,,rl_bandit_rec,RecSys,2026
-Personalizing Incremental Video Search with Hybrid Text and ID Embeddings,2607.13493v1,https://arxiv.org/abs/2607.13493v1,,collaborative_filtering,RecSys,2026
-RecRec: Latent Interests Recursive Reasoning for Sequential Recommendation,2607.12945v1,https://arxiv.org/abs/2607.12945v1,,sequential_rec,RecSys,2026
-Consensus vs. Dissent: Dynamic LLM Modeling of Subjective Preferences in Group Recommenders,2607.10235v1,https://arxiv.org/abs/2607.10235v1,,social_group_rec,RecSys,2026
-GenPage: Towards End-to-End Generative Homepage Construction at Netflix,2606.31031v3,https://arxiv.org/abs/2606.31031v3,,generative_rec,RecSys,2026
-$τ$-Rec: A Verifiable Benchmark for Agentic Recommender Systems,2606.10156v3,https://arxiv.org/abs/2606.10156v3,https://github.com/nbharaths/tau-rec,agent_conversational_rec,RecSys,2026
-UniRec: Bridging the Expressive Gap between Generative and Discriminative Recommendation via Chain-of-Attribute,2604.12234v5,https://arxiv.org/abs/2604.12234v5,,generative_rec,RecSys,2026
-IDProxy: CTR Prediction with Multimodal LLMs for Cold-Start Recommendation at Xiaohongshu,2603.01590v2,https://arxiv.org/abs/2603.01590v2,,cold_start_rec,RecSys,2026
-Binge Watch: Reproducible Multimodal Benchmarks Datasets for Large-Scale Movie Recommendation on MovieLens-10M and 20M,2602.15505v2,https://arxiv.org/abs/2602.15505v2,https://github.com/giuspillo/M3L_10M_20M,multimodal_rec,RecSys,2026
-Self-Evolving Recommendation System: End-To-End Autonomous Model Optimization With LLM Agents,2602.10226v3,https://arxiv.org/abs/2602.10226v3,,llm_rec,RecSys,2026
-CoFiRec: Coarse-to-Fine Tokenization for Generative Recommendation,2511.22707v2,https://arxiv.org/abs/2511.22707v2,https://github.com/YennNing/CoFiRec,generative_rec,RecSys,2026
-Membership Inference Attacks on In-Context Examples in LLM-based Recommender Systems,2508.18665v6,https://arxiv.org/abs/2508.18665v6,,debias_fairness_industrial,RecSys,2026
+Hierarchical GTV Estimation: Bridging the Gap between Container-Level Ranking and Item-Level Conversion,2610.32420,https://arxiv.org/abs/2610.32420v1,,ctr_feature_interaction,RecSys,2026
+Embedding Subspace Partitioning for Dynamic Multi-Objective Retrieval,2609.30601,https://arxiv.org/abs/2609.30601v1,,multi_task_reranking,RecSys,2026
+Decoupled Learning and Selection in Slate Recommendation for Privacy and Stability Under Noisy Scores,2609.29453,https://arxiv.org/abs/2609.29453v1,,debias_fairness_industrial,RecSys,2026
+Learned Cross-Task Relationships in Multi-Task Models,2609.28776,https://arxiv.org/abs/2609.28776v2,,multi_task_reranking,RecSys,2026
+Lightweight Ranking Heads: Accelerating Multi-Task Experimentation in Production Recommender Systems,2609.25433,https://arxiv.org/abs/2609.25433v1,,multi_task_reranking,RecSys,2026
+Do We Care About Personalization and Explainability? An Interview Study with News Recommendation Engineers,2609.21547,https://arxiv.org/abs/2609.21547v1,,debias_fairness_industrial,RecSys,2026
+Addressing Cross-Stage Decoupling of Semantic and Collaborative Signals in Generative Recommendation,2609.13678,https://arxiv.org/abs/2609.13678v1,,generative_rec,RecSys,2026
+Training seeds and model-selection stability in recommender-system evaluation,2609.02499,https://arxiv.org/abs/2609.02499v1,,debias_fairness_industrial,RecSys,2026
+DeepAffinity: Long-Term Aspect Preference Prediction in eCommerce using Small Language Models,2609.02468,https://arxiv.org/abs/2609.02468v2,,llm_rec,RecSys,2026
+Conversational Recommendation over Live E-Commerce Catalogues with Self-Refreshing Retrieval,2608.27006,https://arxiv.org/abs/2608.27006v1,https://github.com/infobip/infobip-agentic-crs,agent_conversational_rec,RecSys,2026
+Do Sequential Recommendation Benchmarks Really Require Higher-Order Sequence Modelling?,2608.19833,https://arxiv.org/abs/2608.19833v1,,sequential_rec,RecSys,2026
+Pairwise Ranking Outperforms Single-Action RL for Offline Explanation Selection: A Practical Lesson,2608.18531,https://arxiv.org/abs/2608.18531v2,,llm_rec,RecSys,2026
+Whose Posts Get Ranked: Identical-Text Exposure Gaps in Bluesky Custom Feeds,2608.13879,https://arxiv.org/abs/2608.13879v1,,debias_fairness_industrial,RecSys,2026
+Predicting Custom-Feed Returns for New Bluesky Posts: A Prospective Study,2608.13874,https://arxiv.org/abs/2608.13874v1,,cold_start_rec,RecSys,2026
+Are We Really Making Progress in Group Recommendation? Unmasking the Tie-Breaking Illusion,2608.11190,https://arxiv.org/abs/2608.11190v1,https://github.com/songduoma/TieAwareGroupRec,social_group_rec,RecSys,2026
+"LLM Reasoning for Subjective Tasks: Failure Modes, Mitigation, and Dynamic Reasoning Routing",2608.08889,https://arxiv.org/abs/2608.08889v1,,llm_rec,RecSys,2026
+Structure-Preserving Projection for Mitigating Modality Bias in LLM-Based Sequential Recommendation,2608.08583,https://arxiv.org/abs/2608.08583v1,,llm_rec,RecSys,2026
+The Utility of LLMs in Recommender Systems Explanation Evaluation,2609.01627,https://arxiv.org/abs/2609.01627v1,,agent_conversational_rec,RecSys,2026
+Shape Your Feed: An LLM-based Agentic System for Conversational Recommendation,2608.06632,https://arxiv.org/abs/2608.06632v1,,agent_conversational_rec,RecSys,2026
+WatchLens: A Configurable Platform for Online Video Recommendation Experiments,2608.04807,https://arxiv.org/abs/2608.04807v1,,debias_fairness_industrial,RecSys,2026
+Multi-Objective Ranking for Live-Streaming: Balancing Fresh and Delayed Signals with Segment-Aware Targeting,2608.04455,https://arxiv.org/abs/2608.04455v1,,multi_task_reranking,RecSys,2026
+Position Bias Undermines Preference Consistency in Listwise LLM-Based Reranking,2608.03091,https://arxiv.org/abs/2608.03091v1,https://github.com/ejbito/InvariRank,multi_task_reranking,RecSys,2026
+LLM-as-a-Judge for Evaluating System Responses in Conversational Music Recommendation,2607.25640,https://arxiv.org/abs/2607.25640v1,,agent_conversational_rec,RecSys,2026
+On the Convergent Validity of Offline Evaluation Designs for Recommender Systems,2607.25097,https://arxiv.org/abs/2607.25097v1,,debias_fairness_industrial,RecSys,2026
+Tokens are All You Need: Dual-purpose Semantic IDs for Achieving LLM-Level I/O Efficiency in recommendation systems,2607.24865,https://arxiv.org/abs/2607.24865v1,,generative_rec,RecSys,2026
+EGR: Embedding-Native Generative Retrieval with a Shared LLM,2607.23038,https://arxiv.org/abs/2607.23038v1,,generative_rec,RecSys,2026
+Improving Rare Medication Recommendation with Counterfactual Data Augmentation and Large Language Models,2607.24829,https://arxiv.org/abs/2607.24829v1,,llm_rec,RecSys,2026
+Probabilistic Residual Learning for Online Recommendations,2607.20863,https://arxiv.org/abs/2607.20863v1,,debias_fairness_industrial,RecSys,2026
+Zero-Observation User Reactivation with Gap-Driven Dimensional Gating,2607.19802,https://arxiv.org/abs/2607.19802v1,https://github.com/jdding/DeltaGate,sequential_rec,RecSys,2026
+Empowering Cross-Domain Sequential Recommendation with Hybrid Tokenization and Serial-Parallel Decoding,2607.28659,https://arxiv.org/abs/2607.28659v1,https://github.com/Applied-Machine-Learning-Lab/RecSys2026_GenCDSR,generative_rec,RecSys,2026
+Topology-Aware Tokenization for Generative Recommendation,2607.18600,https://arxiv.org/abs/2607.18600v1,,generative_rec,RecSys,2026
+Learning Sparse Representations of Multimodal Content for Enhanced Cold Item Recommendation,2607.17184,https://arxiv.org/abs/2607.17184v2,,cold_start_rec,RecSys,2026
+A Position Paper on Recommender Systems in the Era of Autonomous Agents,2607.24822,https://arxiv.org/abs/2607.24822v1,,agent_conversational_rec,RecSys,2026
+RECAP: Feedback-Driven Streaming Semantic User Profiles for Short-Video Recommendation,2607.15730,https://arxiv.org/abs/2607.15730v1,,llm_rec,RecSys,2026
+Long-term User Engagement Optimization through Model-agnostic Downstream Rewards Learning,2607.14192,https://arxiv.org/abs/2607.14192v3,,rl_bandit_rec,RecSys,2026
+Personalizing Incremental Video Search with Hybrid Text and ID Embeddings,2607.13493,https://arxiv.org/abs/2607.13493v1,,collaborative_filtering,RecSys,2026
+RecRec: Latent Interests Recursive Reasoning for Sequential Recommendation,2607.12945,https://arxiv.org/abs/2607.12945v1,,sequential_rec,RecSys,2026
+Consensus vs. Dissent: Dynamic LLM Modeling of Subjective Preferences in Group Recommenders,2607.10235,https://arxiv.org/abs/2607.10235v1,,social_group_rec,RecSys,2026
+GenPage: Towards End-to-End Generative Homepage Construction at Netflix,2606.31031,https://arxiv.org/abs/2606.31031v3,,generative_rec,RecSys,2026
+$τ$-Rec: A Verifiable Benchmark for Agentic Recommender Systems,2606.10156,https://arxiv.org/abs/2606.10156v3,https://github.com/nbharaths/tau-rec,agent_conversational_rec,RecSys,2026
+UniRec: Bridging the Expressive Gap between Generative and Discriminative Recommendation via Chain-of-Attribute,2604.12234,https://arxiv.org/abs/2604.12234v5,,generative_rec,RecSys,2026
+IDProxy: CTR Prediction with Multimodal LLMs for Cold-Start Recommendation at Xiaohongshu,2603.01590,https://arxiv.org/abs/2603.01590v2,,cold_start_rec,RecSys,2026
+Binge Watch: Reproducible Multimodal Benchmarks Datasets for Large-Scale Movie Recommendation on MovieLens-10M and 20M,2602.15505,https://arxiv.org/abs/2602.15505v2,https://github.com/giuspillo/M3L_10M_20M,multimodal_rec,RecSys,2026
+Self-Evolving Recommendation System: End-To-End Autonomous Model Optimization With LLM Agents,2602.10226,https://arxiv.org/abs/2602.10226v3,,llm_rec,RecSys,2026
+CoFiRec: Coarse-to-Fine Tokenization for Generative Recommendation,2511.22707,https://arxiv.org/abs/2511.22707v2,https://github.com/YennNing/CoFiRec,generative_rec,RecSys,2026
+Membership Inference Attacks on In-Context Examples in LLM-based Recommender Systems,2508.18665,https://arxiv.org/abs/2508.18665v6,,debias_fairness_industrial,RecSys,2026

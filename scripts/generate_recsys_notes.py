@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-generate_recsys_notes.py (v3.2 高密度精读 Note 版 —— 拒绝流水账，每篇 5 分钟读懂核心思想)
+generate_recsys_notes.py (v3.3 高密度精读 Note + 图表“按需精选内嵌、不堆砌文末、自动清理未用图片”版)
 核心改进：
-  1. 提示词定位为「高密度精读笔记 (Concise Paper Note)」而非「论文逐段复述流水账」：
-     - 全文严格控制在 1,800–2,600 字（约 2,500–3,500 Tokens），只写本文相对于前人的增量创新 (Delta)，砍掉常规符号罗列与基础公式抄写。
-     - 每一小节均设有明确的字数与条目上限（如背景 4 条短句、关键设计仅提炼 2-3 个核心创新点且每点限 150 字 + 1 个核心公式），既彻底根除超长截断报错，又让笔记可读性真正达到“5分钟读懂核心思想”。
-  2. 保留 arXiv 原生 HTML 公式/表格无损提取、YAML Frontmatter 自动修复与推荐系统评估协议核查。
+  1. 彻底移除文末堆砌的 `## 论文图表`：
+     - 仅当大模型认为某张图（如核心模型架构图、关键动机对比图）适合放在对应正文段落位置时，才在正文中内嵌最多 1–3 张图片。
+     - 未被正文引用的提取图片不再追加到文末，且会自动从 `docs/assets/papers/` 中删除未使用的图片文件，防止仓库体积膨胀。
+     - 自动过滤掉冗余的表格截图（`[[TABLE:n]]`），因为数据集与实验结果已用原生 Markdown 表格呈现。
+  2. 提示词定位为「1,800–2,600 字高密度精读笔记 (Concise Paper Note)」，拒绝流水账。
 """
 
 import csv
@@ -427,7 +428,9 @@ flowchart TD
 - **审稿级局限批判**: 客观指出 2 个潜在短板（如推理延迟、评估局限或超参敏感度）。
 - **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
 
-### 四、图表与图注语言规范
+### 四、图表按需内嵌规范（宁缺毋滥，严禁堆砌！）
+- 如果提供了可用图表占位符（如 `[[FIG:1]]`），**仅当某张图（如核心架构图或关键动机对比图）确实非常适合放在某一段文字正下方辅助理解时，才在对应段落后单独另起一行插入最多 1–2 个占位符**。
+- **如果没有特别合适的位置，或者图片只是次要曲线/表格截图，请直接忽略不要插入任何占位符（不是非放不可）！严禁在文末集中罗列图片！**
 - 正文引用图表时统一使用中文“图 n / 表 n”，所有图注（figcaption）必须使用中文。
 """
 
@@ -475,12 +478,11 @@ def _normalize_unicode_escapes(text: str) -> str:
 
 
 def _fetch_arxiv_html_text(arxiv_id: str, max_chars: int = 80000) -> str:
-    """优先尝试从 https://arxiv.org/html/<arxiv_id> 提取原生 LaTeX 公式 (alttext) 与 HTML 实验表格。"""
     if not arxiv_id:
         return ""
     url = f"https://arxiv.org/html/{arxiv_id}"
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "RecSys-Paper-Notes/3.2"})
+        req = urllib.request.Request(url, headers={"User-Agent": "RecSys-Paper-Notes/3.3"})
         with urllib.request.urlopen(req, timeout=25) as resp:
             if resp.status != 200:
                 return ""
@@ -693,11 +695,16 @@ def figure_html(fig: dict, rel_path: str) -> str:
     )
 
 
-def apply_figure_placeholders(md_note: str, figures: list, rel_paths: dict) -> str:
+def apply_figure_placeholders(md_note: str, figures: list, rel_paths: dict, asset_dir: Path = None) -> tuple:
+    """仅替换正文中被 LLM 主动放置在合适段落位置的 `[[FIG:n]]` 占位符。
+    未被正文引用的图表绝不堆砌在文末，并自动从磁盘清理未引用的图片文件，保持笔记与仓库干净清爽。
+    返回 (替换后的 md_note, 实际被使用的 figures 列表)。
+    """
     if not figures:
-        return md_note
+        return md_note, []
 
-    used = set()
+    used_figs = []
+    used_tokens = set()
     for fig in figures:
         token = fig["token"]
         if token not in md_note:
@@ -705,8 +712,11 @@ def apply_figure_placeholders(md_note: str, figures: list, rel_paths: dict) -> s
         rel_path = rel_paths.get(token)
         if not rel_path:
             continue
-        used.add(token)
-        md_note = md_note.replace(token, figure_html(fig, rel_path))
+        used_tokens.add(token)
+        used_figs.append(fig)
+        # 仅替换第一次出现，清除重复出现的同一 token
+        md_note = md_note.replace(token, figure_html(fig, rel_path), 1)
+        md_note = md_note.replace(token, "")
 
     md_note = re.sub(
         r"(</figure>)[ \t]*(?:图|表|Figure|Table)\s*\d+[^\n]*",
@@ -725,20 +735,27 @@ def apply_figure_placeholders(md_note: str, figures: list, rel_paths: dict) -> s
         return "</figure>" if re.sub(r"\s+", "", line) in caption_norms else match.group(0)
 
     md_note = re.sub(r"</figure>\n([^\n]+)", _drop_duplicate_caption_line, md_note)
+    # 清除任何残留的未识别占位符
     md_note = re.sub(r"\[\[(?:FIG|TABLE):\d+\]\]", "", md_note)
 
-    unused = [fig for fig in figures if fig["token"] not in used]
-    if unused:
-        lines = ["", "## 论文图表", ""]
-        for fig in unused:
-            rel_path = rel_paths.get(fig["token"])
-            if not rel_path:
-                continue
-            lines.append(figure_html(fig, rel_path))
-            lines.append("")
-        md_note = md_note.rstrip() + "\n" + "\n".join(lines)
+    # 自动删除未被正文使用的图片文件，防止仓库堆积无用图片
+    if asset_dir and asset_dir.exists():
+        for fig in figures:
+            if fig["token"] not in used_tokens:
+                unused_file = asset_dir / fig.get("filename", "")
+                if unused_file.is_file():
+                    try:
+                        unused_file.unlink()
+                    except OSError:
+                        pass
+        # 如果该论文没有任何图片被嵌入，删除空的资源子目录
+        try:
+            if not any(asset_dir.iterdir()):
+                asset_dir.rmdir()
+        except OSError:
+            pass
 
-    return md_note
+    return md_note, used_figs
 
 
 def split_venue_year(venue_arg: str, year_arg: str = ""):
@@ -794,7 +811,7 @@ def infer_venue_from_comment(comment: str, default_venue: str, default_year: str
 
 def _fetch_arxiv_entries(api_params: dict, cache_dir: Path = None, download_pdf: bool = True):
     url = "https://export.arxiv.org/api/query?" + urllib.parse.urlencode(api_params)
-    req = urllib.request.Request(url, headers={"User-Agent": "RecSys-Paper-Notes/3.2"})
+    req = urllib.request.Request(url, headers={"User-Agent": "RecSys-Paper-Notes/3.3"})
     with urllib.request.urlopen(req, timeout=30) as resp:
         xml_data = resp.read()
 
@@ -827,7 +844,7 @@ def _fetch_arxiv_entries(api_params: dict, cache_dir: Path = None, download_pdf:
             pdf_file = cache_dir / f"{re.sub(r'[^a-zA-Z0-9._-]', '_', arxiv_id)}.pdf"
             if not pdf_file.exists():
                 try:
-                    pdf_req = urllib.request.Request(pdf_url, headers={"User-Agent": "RecSys-Paper-Notes/3.2"})
+                    pdf_req = urllib.request.Request(pdf_url, headers={"User-Agent": "RecSys-Paper-Notes/3.3"})
                     with urllib.request.urlopen(pdf_req, timeout=60) as p_resp:
                         pdf_file.write_bytes(p_resp.read())
                 except Exception as e:
@@ -924,11 +941,9 @@ def call_llm_api(
     figure_hint = ""
     if figure_context:
         figure_hint = (
-            "\n\n### 可用论文图表（请插入占位符）\n"
-            "请在正文最相关的位置插入下列占位符（例如方法、实验设置或结果段落），"
-            "每张图最多使用一次。占位符必须原样保留，不要改写、不要编造图片路径，"
-            "也不要把占位符放进代码块。图注已提供中文版本；正文引用图表时统一写"
-            "“图 n / 表 n”，不要写 Figure/Table：\n"
+            "\n\n### 可选论文插图（按需挑选 0–2 张内嵌，宁缺毋滥！）\n"
+            "以下是从论文 PDF 提取的插图占位符。**仅当某张图（如模型整体架构图或核心动机示意图）非常适合放在对应正文段落（如 `### 1. 整体框架` 或 `## Background`）中辅助理解时，才在该段落正下方单独一行插入该占位符（最多选用 1–2 张）**。\n"
+            "**如果某张图没有特别合适的位置，或者只是次要实验曲线，请直接忽略不要插入，不是非放不可！严禁在文末集中堆放图片！**\n"
             f"{figure_context}\n"
         )
     effective_max_tokens = max_output_tokens
@@ -1112,15 +1127,27 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
     figures = []
     figure_context = ""
     asset_key = re.sub(r"[^a-zA-Z0-9._-]", "_", item.get("arxiv_id") or slug)
+    asset_dir = docs_dir / "assets" / "papers" / asset_key
     if not args.no_figures and item.get("pdf_file"):
         try:
-            asset_dir = docs_dir / "assets" / "papers" / asset_key
-            figures = extract_figures(
+            raw_figures = extract_figures(
                 Path(item["pdf_file"]),
                 asset_dir,
                 dpi=args.figure_dpi,
                 max_figures=args.max_figures,
             )
+            # 过滤掉 [[TABLE:n]] 表格截图（因为正文中已有原生 Markdown 表格），只保留真正的 Figure 插图并删除表格截图文件
+            for fg in raw_figures:
+                if str(fg.get("token", "")).startswith("[[TABLE:"):
+                    tb_file = asset_dir / fg.get("filename", "")
+                    if tb_file.is_file():
+                        try:
+                            tb_file.unlink()
+                        except OSError:
+                            pass
+                else:
+                    figures.append(fg)
+
             if figures and not args.no_figure_translation:
                 figures = translate_figure_captions(figures, args.api_key, args.base_url, args.model)
             elif figures:
@@ -1128,7 +1155,7 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
                     fig.setdefault("caption_zh", _zh_figure_label(fig.get("label")))
             figure_context = format_figure_context(figures)
             if figures:
-                print(f"  [Figures] {item['title'][:45]} -> {len(figures)} 张图表")
+                print(f"  [Figures] {item['title'][:45]} -> 候选插图 {len(figures)} 张（按需内嵌）")
         except Exception as e:
             print(f"  [Warn] 提取图表失败 ({item['title'][:45]}): {e}")
 
@@ -1175,13 +1202,14 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
     target_dir.mkdir(parents=True, exist_ok=True)
     out_file = target_dir / f"{slug}.md"
 
+    used_figures = []
     if figures:
         note_dir = posixpath.dirname(out_file.relative_to(docs_dir).as_posix())
         rel_paths = {}
         for fig in figures:
             asset_rel = f"assets/papers/{asset_key}/{fig['filename']}"
             rel_paths[fig["token"]] = posixpath.relpath(asset_rel, start=note_dir)
-        md_note = apply_figure_placeholders(md_note, figures, rel_paths)
+        md_note, used_figures = apply_figure_placeholders(md_note, figures, rel_paths, asset_dir=asset_dir)
 
     out_file.write_text(md_note + "\n", encoding="utf-8")
 
@@ -1204,12 +1232,12 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
                 "page": fig["page"],
                 "caption_zh": fig.get("caption_zh", ""),
             }
-            for fig in figures
+            for fig in used_figures
         ],
         "model": args.model,
         "generated_at": datetime.now().isoformat(timespec="seconds"),
     }
-    return f"[OK] {item['title'][:55]}... -> venues/{venue}/{year}/{primary_cat}/{slug}.md", record
+    return f"[OK] {item['title'][:55]}... -> venues/{venue}/{year}/{primary_cat}/{slug}.md (内嵌插图 {len(used_figures)} 张)", record
 
 
 def tasks_from_curated_csv(csv_path: Path, cache_dir: Path, download_pdf: bool, limit: int = 0):
@@ -1283,7 +1311,7 @@ def main():
     parser.add_argument("--overwrite", action="store_true", help="强制覆盖已存在的同名笔记")
     parser.add_argument("--no-figures", action="store_true", help="不提取、不插入 PDF 图表")
     parser.add_argument("--no-figure-translation", action="store_true", help="不调用 LLM 翻译图注，改用“图 n/表 n”中文编号兜底")
-    parser.add_argument("--max-figures", type=int, default=8, help="每篇论文最多提取图表数（默认 8）")
+    parser.add_argument("--max-figures", type=int, default=6, help="每篇论文最多提取候选插图数（默认 6）")
     parser.add_argument("--figure-dpi", type=int, default=200, help="图表渲染 DPI（默认 200）")
     parser.add_argument("--max-input-chars", type=int, default=DEFAULT_MAX_INPUT_CHARS, help="送入 LLM 的论文最大字符数（默认 65000；0 表示不限制）")
     parser.add_argument("--max-output-tokens", type=int, default=DEFAULT_MAX_OUTPUT_TOKENS, help="单次生成最大输出 token（默认 8192）")

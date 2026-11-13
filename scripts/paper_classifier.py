@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-paper_classifier.py
+paper_classifier.py (v3.3 严格推荐系统边界过滤版)
 使用 LLM 根据论文标题与摘要判断“是否属于推荐系统核心研究”，并从 16 个方向中
 选择 1 个主分类。供 build_curated_list.py 与 classify_curated_csv.py 复用。
+
+核心升级：
+  - 严格收紧「推荐系统 (RecSys)」与「纯信息检索 / 网页搜索 (Web Search / IR)」的边界：
+    明确将纯网页搜索点击模型 (SERP Click Models 如 PBM/UBM)、给定显式 Query 的文档/段落检索 (MS MARCO / TREC / BEIR)、
+    开放域问答与通用 RAG、无个性化推荐交互的通用图文检索/图分类判为 `is_recommendation: false`。
+  - 缓存键升级为 `v2:{model}:{arxiv_id}`，自动失效之前宽松标准下的旧缓存。
 """
 
 import json
@@ -22,57 +28,56 @@ from generate_recsys_notes import call_chat_completion, estimate_usage_cost_usd
 from run_logging import ProgressReporter, RunLog
 
 DEFAULT_CACHE_PATH = SCRIPT_DIR.parent / "data" / "papers" / ".classification_cache.json"
+CACHE_SCHEMA_VERSION = "v2_strict_recsys"
 
 CATEGORY_LINES = "\n".join(
     f"- {slug}: {info['title']} / {info['en_title']} — {info['desc']}"
     for slug, info in CATEGORIES.items()
 )
 
-SYSTEM_PROMPT = f"""你是推荐系统（Recommender Systems）与信息检索（IR）领域的资深程序委员会成员。
-你的任务是判断一篇论文是否属于“推荐系统核心研究”，并从给定的 16 个分类中选出 1 个最核心的主分类。
+SYSTEM_PROMPT = f"""你是 ACM RecSys 与 SIGIR 推荐系统轨（Recommender Systems Track）的资深领域主席（Area Chair）。
+你的任务是严格判断一篇论文是否属于**「推荐系统（Recommender Systems）与个性化计算广告核心研究」**，并从给定的 16 个推荐细分方向中选出 1 个最核心的主分类。
 
-## 16 个分类
+## 16 个推荐系统细分方向
 {CATEGORY_LINES}
 
-## 判定标准
-- 推荐系统核心研究包括：推荐/排序/个性化/用户建模/CTR/CVR/广告/搜索推荐/对话推荐/生成式推荐/推荐评估/推荐公平性等。
-- 纯信息检索（如 ad-hoc search、文档检索、问答、RAG 检索、查询改写、社区搜索）如果不以推荐/个性化/排序为核心，应判为不相关。
-- 纯 NLP/CV/ML 方法论文如果没有明确面向推荐任务，应判为不相关。
-- 工业界论文只要核心任务是推荐/广告/排序/用户行为建模，应判为相关。
-- 只依据标题和摘要判断，不要臆测摘要中没有的内容。
+## 严格相关性判定标准（必须把「推荐系统」与「纯搜索引擎/文档检索」严格区分！）
 
-## 分类选择优先级（先判断核心任务，再看技术）
-1. 核心任务是 CTR/CVR/转化率/广告竞价/sponsored search/实时竞价 → `ctr_feature_interaction`
-2. 核心任务是序列/会话/next-item/next-basket/长序列建模 → `sequential_rec`
-3. 核心任务是生成式检索/语义 ID/自回归生成/扩散或流式生成推荐 → `generative_rec`
-4. 核心任务是对话/多轮交互/agent/用户模拟 → `agent_conversational_rec`
-5. 核心任务是重排/listwise/多任务/多目标/pre-ranking → `multi_task_reranking`
-6. 核心任务是跨域/多场景/多市场 → `cross_domain_multi_scenario`
-7. 核心任务是冷启动/长尾/用户召回/零观测 → `cold_start_rec`
-8. 核心任务是公平/偏差/隐私/因果/鲁棒性 → `debias_fairness_industrial`
-9. 核心任务是工业全链路架构/在线服务/实验平台/评估基准 → `debias_fairness_industrial`（仅当没有更具体的任务类别时）
-10. 核心任务是 LLM 作为推荐器或 LLM4Rec → `llm_rec`
-11. 核心任务是图/知识图谱 → `graph_rec`
-12. 核心任务是对比学习/自监督/去噪 → `self_supervised_denoising`
-13. 核心任务是强化学习/bandit/OPE/长期收益 → `rl_bandit_rec`
-14. 核心任务是社交/群组 → `social_group_rec`
-15. 核心任务是 POI/时空 → `poi_spatiotemporal_rec`
-16. 核心任务是协同过滤/双塔/向量召回 → `collaborative_filtering`
-17. 核心任务是多媒体内容理解/多模态融合 → `multimodal_rec`
+### 1. 应判为 `is_recommendation: true`（属于本库收录范围）：
+- **核心任务是向用户个性化推荐物品/内容/服务/好友/广告**：包括协同过滤、双塔向量召回、序列/会话推荐、生成式推荐（Semantic ID / RQ-VAE / Diffusion Rec）、大模型推荐（LLM4Rec）、对话推荐系统（CRS / 主动偏好询问）、多模态短视频/电商推荐、社交/群组推荐、POI 时空签到推荐、冷启动与跨域/多场景推荐、CTR/CVR 点击转化率预估与计算广告竞价、推荐多任务精排与列表重排（Re-ranking for RecSys）、推荐系统去偏/公平/隐私/防投毒、推荐强化学习/Bandit 以及工业级推荐系统架构与推荐评测。
+- **个性化搜索与搜推融合**：仅当搜索系统明确建模了**用户个性化历史行为序列/用户画像**，或服务于**电商商品推荐/赞助商广告推荐（Sponsored Search / E-commerce Product Search & Recommendation）**时，才判为 `true`。
 
-注意：
-- 不要因为论文使用了 LLM 就归入 `llm_rec`；如果核心任务是对话、序列、生成式、CTR 等，优先选对应任务类别。
-- 不要因为有工业数据或线上实验就归入 `debias_fairness_industrial`；只有偏差/公平/隐私/因果/鲁棒性，或全链路架构/评估基准本身是核心贡献时才选它。
-- 广告/竞价/赞助搜索即使使用了生成式模型，也优先归入 `ctr_feature_interaction`。
-- 含 “Listwise / Re-ranking / Position Bias” 的 LLM 排序论文优先归入 `multi_task_reranking`。
+### 2. 应判为 `is_recommendation: false`（必须严格排除！）：
+- **纯网页搜索与文档/段落检索 (Ad-hoc Web Search & Passage/Document Retrieval)**：针对给定显式文本 Query 检索网页或文档段落（如基于 MS MARCO、BEIR、TREC、Natural Questions 的 Dense Retrieval、BM25、SPLADE、LLM 零样本/少样本文档重排 Document Re-ranking、查询改写 Query Rewriting/Expansion）。
+- **纯搜索引擎结果页点击模型 (Web Search SERP Click Models & ULTR)**：仅研究传统网页搜索引擎结果页（如 Yandex、Baidu Search 日志）上的查询-网址位置偏差点击模型（如经典 PBM、UBM、DBN 点击模型或纯 Web Search Unbiased Learning to Rank），而没有针对个性化物品推荐场景建模。
+- **通用问答、智能体网页检索与 RAG (Open-Domain QA, Web Search Agents & General RAG)**：检索增强文本生成、医疗/法律问答、知识库问答（KBQA）、代码检索、数据集搜索、跨模态图文匹配检索（如 COCO/Flickr30k 图搜文/文搜图，无用户历史交互序列）。
+- **通用机器学习/图学习/NLP/CV 论文**：虽在标题或摘要中顺带提及“可用于推荐”，但核心方法与实验完全在非推荐数据集（如 Cora/CiteSeer 节点分类、ImageNet、GLUE 等）上进行。
 
-## 输出
-只输出一个 JSON 对象，不要输出 Markdown 代码块或其他文字：
-{{"is_recommendation": true, "category": "llm_rec", "confidence": 0.92, "reason": "一句话理由"}}
-- is_recommendation: 布尔值
-- category: 必须是上述 16 个 slug 之一；不相关时也填最接近的分类
-- confidence: 0 到 1 的浮点数
-- reason: 不超过 40 个汉字
+## 分类选择优先级（当 `is_recommendation: true` 时，先看核心业务问题，再看技术手段）
+1. 核心任务是 CTR/CVR 预估、特征交叉网络、转化延迟反馈、计算广告竞价 → `ctr_feature_interaction`
+2. 核心任务是序列推荐、会话推荐、Next-item/Next-basket、长短期行为序列建模 → `sequential_rec`
+3. 核心任务是生成式推荐、离散语义 ID (RQ-VAE/VQ)、自回归生成检索、扩散/流匹配生成推荐 → `generative_rec`
+4. 核心任务是多轮对话推荐 (CRS)、主动偏好询问 (Preference Elicitation)、推荐 Agent 与用户行为仿真 → `agent_conversational_rec`
+5. 核心任务是多任务/多目标学习 (MMoE/PLE/Pareto)、列表级重排 (Listwise Re-ranking)、粗精排级联一致性 → `multi_task_reranking`
+6. 核心任务是跨域推荐 (CDR)、多场景/多业务线联合推荐 → `cross_domain_multi_scenario`
+7. 核心任务是严格冷启动 (Zero-shot/Few-shot 新用户或新物品)、长尾物品推荐 → `cold_start_rec`
+8. 核心任务是推荐系统曝光/流行度/位置去偏、因果推荐、推荐公平性、隐私保护、防投毒鲁棒性或工业推荐评测基准 → `debias_fairness_industrial`
+9. 核心任务是利用大语言模型直接做推荐排序、指令微调推荐或 LLM 知识蒸馏增强推荐 → `llm_rec`
+10. 核心任务是图神经网络推荐 (LightGCN/超图)、知识图谱推荐 (KGRec) → `graph_rec`
+11. 核心任务是推荐对比学习、自监督数据增广、隐式反馈假阳性去噪 → `self_supervised_denoising`
+12. 核心任务是强化学习推荐、Contextual Bandit 探索与利用、长期留存/LTV 优化 → `rl_bandit_rec`
+13. 核心任务是社交网络信任推荐、群组推荐 (Group Rec) → `social_group_rec`
+14. 核心任务是 POI 兴趣点推荐、时空轨迹移动推荐 → `poi_spatiotemporal_rec`
+15. 核心任务是基础协同过滤、矩阵分解、双塔向量召回与 ANN 索引 → `collaborative_filtering`
+16. 核心任务是多模态特征（视觉/文本/音频）融合与解耦推荐、微视频推荐 → `multimodal_rec`
+
+## 输出格式
+只输出一个合法的 JSON 对象，不要输出 Markdown 代码块或其他文字：
+{{"is_recommendation": true, "category": "sequential_rec", "confidence": 0.95, "reason": "一句话说明核心任务与判定依据"}}
+- `is_recommendation`: 布尔值（若为纯网页搜索、SERP 点击模型、文档检索、RAG 问答，必须填 `false`！）
+- `category`: 必须是上述 16 个 slug 之一
+- `confidence`: 0 到 1 的浮点数
+- `reason`: 不超过 45 个汉字
 """
 
 
@@ -102,7 +107,7 @@ def classify_one(
     retries: int = 2,
     timeout: int = 90,
 ) -> dict:
-    """对单篇论文做相关性 + 主分类判断。失败时返回 source=error。"""
+    """对单篇论文做严格推荐相关性 + 主分类判断。失败时返回 source=error。"""
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {
@@ -178,19 +183,19 @@ def classify_items(
     cache_path: Path = DEFAULT_CACHE_PATH,
     refresh: bool = False,
     log: RunLog = None,
-    label: str = "LLM 分类",
+    label: str = "LLM 严格推荐相关性分类",
 ) -> dict:
-    """并发分类，返回 {arxiv_id: result}，并复用本地缓存。"""
+    """并发分类，返回 {arxiv_id: result}，并复用带版本前缀的本地缓存。"""
     cache_path = Path(cache_path) if cache_path else None
     cache = load_cache(cache_path)
     results = {}
     pending = []
 
     for item in items:
-        arxiv_id = str(item.get("arxiv_id", "")).strip()
+        arxiv_id = re.sub(r"v\d+$", "", str(item.get("arxiv_id", "")).strip())
         if not arxiv_id:
             continue
-        cache_key = f"{model}:{arxiv_id}"
+        cache_key = f"{CACHE_SCHEMA_VERSION}:{model}:{arxiv_id}"
         if not refresh and cache_key in cache:
             results[arxiv_id] = cache[cache_key]
         else:
@@ -219,7 +224,7 @@ def classify_items(
             }
             for future in as_completed(future_map):
                 item = future_map[future]
-                arxiv_id = str(item.get("arxiv_id", "")).strip()
+                arxiv_id = re.sub(r"v\d+$", "", str(item.get("arxiv_id", "")).strip())
                 try:
                     result = future.result()
                 except Exception as e:
@@ -231,10 +236,11 @@ def classify_items(
                         "source": "error",
                     }
                 results[arxiv_id] = result
-                cache[f"{model}:{arxiv_id}"] = result
+                cache[f"{CACHE_SCHEMA_VERSION}:{model}:{arxiv_id}"] = result
                 status = "error" if result.get("source") == "error" else "ok"
+                rel_tag = "RecSys" if result.get("is_recommendation") else "Exclude"
                 detail = (
-                    f"{arxiv_id} -> {result['category'] or '-'} "
+                    f"{arxiv_id} [{rel_tag}] -> {result['category'] or '-'} "
                     f"({result['confidence']:.2f}) {result['reason'][:50]}"
                 )
                 reporter.update(status, title=item.get("title", ""), detail=detail)

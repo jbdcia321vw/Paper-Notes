@@ -1,19 +1,17 @@
 # 🤝 协同过滤与双塔召回
 
-**SIGIR 2026** · **6** 篇论文解读
+**SIGIR 2026** · **5** 篇论文解读
 
 > **方向说明**：矩阵分解、双塔向量内积检索、ANN 索引量化、解耦表征与负采样理论
 
-🔥 **高频主题：** 召回 ×5
+📌 **同领域跨会议浏览：** [CIKM 2026 (2)](../../../CIKM/2026/collaborative_filtering/) · [KDD 2026 (1)](../../../KDD/2026/collaborative_filtering/) · [IEEE TKDE 2026 (1)](../../../TKDE/2026/collaborative_filtering/) · [WSDM 2026 (1)](../../../WSDM/2026/collaborative_filtering/) · [WWW (TheWebConf) 2026 (1)](../../../WWW/2026/collaborative_filtering/)
+
+🔥 **高频主题：** 召回 ×4
 
 <dl>
 <dt><strong><a href="balanced_co_clustering_of_users_and_items_for_embedding_table_compression_i/">Balanced Co-Clustering of Users and Items for Embedding Table Compression in Recommender Systems</a></strong></dt>
 <dd>
 <p>BACO 以平衡共聚类构建用户/物品草图矩阵压缩嵌入表，75% 参数削减下 Recall 仅降 1.85%，比最强基线快 346 倍</p>
-</dd>
-<dt><strong><a href="cs3_efficient_online_capability_synergy_for_two_tower_recommendation/">CS3: Efficient Online Capability Synergy for Two-Tower Recommendation</a></strong></dt>
-<dd>
-<p>提出 CAS/CTS/CMS 三模块协同增强双塔召回，兼容在线学习，离线三数据集 AUC 提升，线上广告收入最高 +8.36% 且保持毫秒级延迟。</p>
 </dd>
 <dt><strong><a href="diaurec_dual_intent_space_representation_optimization_for_recommendation/">DIAURec: Dual-Intent Space Representation Optimization for Recommendation</a></strong></dt>
 <dd>
