@@ -149,7 +149,7 @@
   "description": "\u63a8\u8350\u7cfb\u7edf\u4e0e\u4fe1\u606f\u68c0\u7d22\u9876\u4f1a\u9876\u520a\u8bba\u6587\u89e3\u8bfb\uff08SIGIR / RecSys / KDD / WWW / ACM MM / TOIS / TKDE\uff09\uff0c\u6309\u4f1a\u520a\u4e0e\u5e74\u4efd\u5206\u7c7b\uff0c\u6bcf\u7bc7 5 \u5206\u949f\u8bfb\u61c2\u6838\u5fc3\u601d\u60f3",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/sequential_rec/",
   "inLanguage": "zh-CN",
-  "dateModified": "2026-11-12",
+  "dateModified": "2026-11-13",
   
   "publisher": { "@id": "https://papernotes.org/#organization" },
   "isPartOf": {
@@ -3945,20 +3945,13 @@
 
 
 <h1 id="_1">⏱️ 序列与会话推荐</h1>
-<p><strong>SIGIR 2026</strong> · <strong>14</strong> 篇论文解读</p>
+<p><strong>SIGIR 2026</strong> · <strong>9</strong> 篇论文解读</p>
 <blockquote>
 <p><strong>方向说明</strong>：长短期动态兴趣建模、Transformer/Mamba(SSM)/MLP 序列架构、匿名会话推荐与 Next-Item 预测</p>
 </blockquote>
-<p>🔥 <strong>高频主题：</strong> 召回 ×11 · 精排 ×3</p>
+<p>📌 <strong>同领域跨会议浏览：</strong> <a href="../../../CIKM/2026/sequential_rec/">CIKM 2026 (6)</a> · <a href="../../../KDD/2026/sequential_rec/">KDD 2026 (4)</a> · <a href="../../../TKDE/2026/sequential_rec/">IEEE TKDE 2026 (2)</a> · <a href="../../../WSDM/2026/sequential_rec/">WSDM 2026 (1)</a> · <a href="../../../WWW/2026/sequential_rec/">WWW (TheWebConf) 2026 (2)</a></p>
+<p>🔥 <strong>高频主题：</strong> 召回 ×6 · 精排 ×3</p>
 <dl>
-<dt><strong><a href="beyond_item_ids_scaling_short_form_video_recommendation_via_semantic_native/">Beyond Item IDs: Scaling Short-Form-Video Recommendation via Semantic-Native Long Sequence Modeling</a></strong></dt>
-<dd>
-<p>用深度截断 Bi-gram 语义ID替代正交Video ID，并以无参时间折叠压缩超长序列，在十亿用户短视频平台实现L=2000序列建模与线上显著增益。</p>
-</dd>
-<dt><strong><a href="case_cadence_aware_set_encoding_for_large_scale_next_basket_repurchase_reco/">CASE: Cadence-Aware Set Encoding for Large-Scale Next Basket Repurchase Recommendation</a></strong></dt>
-<dd>
-<p>用日历时间二值信号+共享多尺度时序CNN+ISAB集合编码做下一篮复购推荐，全库候选排序下离线与生产均显著提升</p>
-</dd>
 <dt><strong><a href="cmsl_constructive_multi_sequence_learning_for_recommendation_systems/">CMSL: Constructive Multi-Sequence Learning for Recommendation Systems</a></strong></dt>
 <dd>
 <p>提出可学习多序列构造+线性注意力，将用户历史解耦为K条主题潜序列以缓解上下文污染，Meta四场景离线NE与线上A/B均显著提升</p>
@@ -3967,9 +3960,9 @@
 <dd>
 <p>借鉴最近发展区理论提出 Teacher-Peer-Self 多源负采样框架，以分歧重排提升多样性、共识蒸馏复用打分，六数据集五骨干稳定超越 SOTA。</p>
 </dd>
-<dt><strong><a href="flame_condensing_ensemble_diversity_into_a_single_network_for_efficient_seq/">FLAME: Condensing Ensemble Diversity into a Single Network for Efficient Sequential Recommendation</a></strong></dt>
+<dt><strong><a href="from_time_and_place_to_preference_llm_driven_geo_temporal_context_in_recomm/">From Time and Place to Preference: LLM-Driven Geo-Temporal Context in Recommendations</a></strong></dt>
 <dd>
-<p>用冻结+可学习双网络的模块化集成模拟指数级多样性，推理仅用单网络实现零开销的集成级序列推荐。</p>
+<p>用 LLM 从时间戳+粗粒度位置生成地理-时间上下文嵌入，经轻量信息量测试与两种融合策略注入序列推荐，MovieLens 与生产数据均获增益。</p>
 </dd>
 <dt><strong><a href="fusion_and_alignment_enhancement_with_large_language_models_for_tail_item_s/">Fusion and Alignment Enhancement with Large Language Models for Tail-item Sequential Recommendation</a></strong></dt>
 <dd>
@@ -3979,10 +3972,6 @@
 <dd>
 <p>将购买视为意图终止信号，用双路交叉注意力+自适应饱足门控+TTNP自监督学习兴趣生命周期，PPRR降超60%。</p>
 </dd>
-<dt><strong><a href="pay_attention_to_sequence_split_uncovering_the_impacts_of_sub_sequence_spli/">Pay Attention to Sequence Split: Uncovering the Impacts of Sub-Sequence Splitting on Sequential Recommendation Models</a></strong></dt>
-<dd>
-<p>揭示子序列切分(SSS)在数据读取阶段被隐性使用导致SR模型评估失真，系统分析SSS生效条件与机理并给出公平评估建议</p>
-</dd>
 <dt><strong><a href="recpfn_prior_fitted_networks_for_in_context_based_recommendations/">RecPFN: Prior-Fitted Networks for In-Context-Based Recommendations</a></strong></dt>
 <dd>
 <p>纯合成因果先验预训练的 PFN 式上下文学习序列推荐器，单次前向零样本适配新域，8 个基准上超越零样本基线并逼近低算力监督方法</p>
@@ -3991,10 +3980,6 @@
 <dd>
 <p>将时间戳分解为年/月/日多粒度并借 RoPE 旋转注入 Q/K，即插即用提升 SASRec/RPG，NDCG@5 最高 +20.11%</p>
 </dd>
-<dt><strong><a href="spectran_spectral_aware_transformer_based_adapter_for_llm_enhanced_sequenti/">SpecTran: Spectral-Aware Transformer-based Adapter for LLM-Enhanced Sequential Recommendation</a></strong></dt>
-<dd>
-<p>用谱域 Transformer 适配器替代静态 SVD 截断，全谱注意力聚合 LLM 语义嵌入，四数据集三骨干平均提升 9.17%</p>
-</dd>
 <dt><strong><a href="sprint_scalable_and_predictive_intent_refinement_for_llm_enhanced_session_b/">SPRINT: Scalable and Predictive Intent Refinement for LLM-Enhanced Session-based Recommendation</a></strong></dt>
 <dd>
 <p>用全局意图池约束LLM生成、以推荐效用验证意图，并蒸馏为轻量意图预测器，实现免LLM推理的会话推荐。</p>
@@ -4002,10 +3987,6 @@
 <dt><strong><a href="time_interval_aware_disentangled_expert_modeling_for_next_basket_recommenda/">Time-Interval-Aware Disentangled Expert Modeling for Next-Basket Recommendation</a></strong></dt>
 <dd>
 <p>提出 TIDE，用 Hawkes 增强傅里叶时间编码 + 双专家解耦习惯/探索意图，在四个 Amazon NBR 数据集上显著超越 SOTA。</p>
-</dd>
-<dt><strong><a href="wpgrec_wavelet_packet_guided_graph_enhanced_sequential_recommendation/">WPGRec: Wavelet Packet Guided Graph Enhanced Sequential Recommendation</a></strong></dt>
-<dd>
-<p>用平稳小波包变换生成等长平移不变子带，逐子带做 Chebyshev 图传播并以能量-谱平坦度门控融合，全排序协议下稀疏数据集 HR@20 提升 15.4%</p>
 </dd>
 </dl>
 
