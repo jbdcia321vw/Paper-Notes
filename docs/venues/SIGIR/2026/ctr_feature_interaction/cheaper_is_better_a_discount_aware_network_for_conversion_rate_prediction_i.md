@@ -126,4 +126,3 @@ $$\mathcal{L}=\mathcal{L}_{m}+\alpha\cdot\mathbb{I}(y=1)\,\mathrm{MSE}(y_d,\hat{
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （2.41B 曝光工业级数据 + 时间切分防穿越 + 5 次重复 + 线上 A/B 全链路验证，但仅单平台、缺延迟反馈对比）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐ （公式简洁、模块边界清楚，但 DCM-Context 的 GateNet 细节与 $\alpha$取值未展开，部分符号如$f_m$、$\mathcal{M}$ 定义略含糊）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （已在天猫全量部署、响应时间增幅 <5%、代码开源，工程可复现性极强）
-

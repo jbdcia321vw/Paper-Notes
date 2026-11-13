@@ -128,4 +128,3 @@ $$\text{Triplet ratio}=\frac{1}{\binom{n}{3}\cdot D-\text{missing}}\sum_{d=1}^{D
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （14 算法×89 数据集、GTS 切分、10 seed 平均、Optuna 统一调参、缺失率与时间戳打乱双重压力测试，规模与严谨度在评测类工作中属上乘）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （BT/PL/协变量 BT 的公式与优化流程交代清楚，但部分符号（如 $N_{ij}$与$W_{ij}$ 的关系）散落多处，附录依赖较重）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （开源 14 算法实现 + 89 数据集预处理 + 完整聚合分析框架，且"缺失数据下排名稳定"直接对应工业界算力受限的选型场景，落地价值高）
-

@@ -130,4 +130,3 @@ iFashion 图像生成消融：
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （双数据集双任务 + 图像/文本/对齐三视角消融较完整，但全为代理指标、无在线验证与显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三阶段训练与条件注入公式清晰，flow-matching 与离散扩散表述规范，推理 CFG 公式完整）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码与 checkpoint 开源，训练较 FashionDPO 快 7×，但双阶段扩散推理延迟与 LLM 依赖是落地门槛）
-

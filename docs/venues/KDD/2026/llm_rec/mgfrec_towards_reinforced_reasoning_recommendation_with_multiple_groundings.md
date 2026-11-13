@@ -127,4 +127,3 @@ $$\mathcal{J}^*_{GRPO}(\theta)=\mathbb{E}\Big[\tfrac{1}{G}\sum_{i=1}^{G}\min\big
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （Full-Ranking 无偏协议 + 三个数据集 + 完整消融与超参分析，但缺显著性检验与线上验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （动作模板、奖励与 GRPO 目标定义完整，loss masking 细节交代到位，公式推导偏引用式）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （开源代码可复现，但多轮接地 + 外部用户 Agent 的推理开销对线上部署构成实质门槛）
-

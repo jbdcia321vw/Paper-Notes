@@ -127,4 +127,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （4 数据集含大规模 Yambda、Full-Ranking、3 种子±标准差、阈值消融完整，唯 News 预处理为重建）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （复杂度对比表与算法伪代码清晰，RQ1–RQ3 组织严谨，收敛性变化仅作观察未深究）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码全开源、建树最高 59× 加速、模型零改动即可替换，对需频繁重训的生成式召回极具部署价值）
-

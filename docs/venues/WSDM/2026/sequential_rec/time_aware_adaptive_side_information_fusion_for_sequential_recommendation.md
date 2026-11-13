@@ -133,4 +133,3 @@ $$\mathcal{L}=\mathcal{L}^{ID}_{rec}+\sum_{j=1}^{\lvert\mathcal{A}\rvert}W_j\big
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （4 数据集 + Full-Ranking 无偏评测 + 5 种子 + 配对 t 检验 + 完整消融/滤波类型/超参/效率/案例研究，实验矩阵相当完整）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与符号定义清晰，复杂度分析给出与 MSSR 的显式对比，但部分符号如 $\mathbf{H}^{l-1}$ 同时指代 ID 与属性两路的写法略含混）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码开源、基于 RecBole 实现、训练时间与显存均优于 SOTA，TSP 可即插即用，工程部署门槛低）
-

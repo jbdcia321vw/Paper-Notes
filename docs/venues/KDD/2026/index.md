@@ -5,7 +5,7 @@ hide:
 
 # 🏛️ KDD 2026 推荐系统论文解读
 
-62 篇 KDD 2026 论文解读，覆盖 14 个推荐系统细分方向。每篇均包含一句话总结、核心思想、实验设置与审稿级批判，5 分钟读懂一篇论文。
+63 篇 KDD 2026 论文解读，覆盖 15 个推荐系统细分方向。每篇均包含一句话总结、核心思想、实验设置与审稿级批判，5 分钟读懂一篇论文。
 
 <div class="conf-index">
 <hr />
@@ -22,6 +22,14 @@ hide:
 <dt><strong><a href="collaborative_filtering/scaling_multilingual_semantic_search_in_uber_eats_delivery/">Scaling Multilingual Semantic Search in Uber Eats Delivery</a></strong></dt>
 <dd>
 <p>基于 gte-Qwen2 双塔统一多语言多垂类语义召回，InfoNCE+Triplet NCE 两阶段训练与 MRL 多维度服务，Store R@20 相对 Legacy 提升 88%。</p>
+</dd>
+</dl>
+<hr />
+<h2 id="graph_rec">🕸️ 图神经网络与知识图谱推荐 (1)</h2>
+<dl>
+<dt><strong><a href="graph_rec/how_do_graph_signals_affect_recommendation_unveiling_the_mystery_of_low_and/">How Do Graph Signals Affect Recommendation: Unveiling the Mystery of Low and High-Frequency Graph Signals</a></strong></dt>
+<dd>
+<p>理论证明同绝对值低频/高频图信号在推荐中等价，提出频率信号缩放器与空间翻转插件，在四个数据集全库排序下 Recall@20 最高提升约 3.0%。</p>
 </dd>
 </dl>
 <hr />

@@ -125,4 +125,3 @@ FT-ours 相对 FT-old 的 Recall@500 提升：Beauty +6.7%、Yambda +5.2%、VK-L
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （严格时序切分、10 种子、显著性检验齐全，但仅 3 数据集且限制旧词表子集）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与复杂度分析清晰，问题定义严谨，篇幅精炼）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （模型无关、CPU 级对齐、8-9 倍算力节省，代码开源，直接契合工业频繁更新管线）
-

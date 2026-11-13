@@ -125,4 +125,3 @@ $$\text{Gate}=\frac{1}{1-p+\epsilon}$$
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐ （Full-Ranking 协议值得肯定，但仅一个数据集、无显著性检验、无超参敏感性分析，实验规模偏薄）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐ （框架图与公式基本清晰，但符号复用混乱（$p$ 同时指正样本与概率）、Gate 设计动机推导略跳跃）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （推理开销与 SASRec 同级、易嵌入现有链路，但未开源且奖励工程需业务调参，复现门槛中等）
-

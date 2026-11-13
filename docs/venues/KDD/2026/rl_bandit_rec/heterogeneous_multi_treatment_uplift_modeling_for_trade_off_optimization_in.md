@@ -148,4 +148,3 @@ $$\mathcal{L}=\frac{1}{N}\sum_{i=1}^{N}\sum_{k'=1}^{K}\left[(y_{ir}^k-\hat{y}_{i
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （两个公开集 + 工业集 + 双阶段线上 A/B + 策略级消融，RCT 无偏测试集设计严谨）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与符号定义完整、mask 训练细节交代清楚，但部分符号如 $z$与$g$ 混用、DDM 标签构造的因果合理性论证偏薄）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （已在快手 Ranking 与 Edge Rerank 双阶段全量部署服务数亿用户，离线日级预计算 + 在线请求级推理的工程拆分极具参考价值）
-

@@ -140,4 +140,3 @@ $$\mathcal{L}_{\text{MRL}}=\sum_{m\in\mathcal{M}}c^{(m)}\mathcal{L}_{\star}\left
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （六市场三垂类 + 离线 kNN + 线上 A/B 双层验证，消融覆盖骨干/输入/池化/损失/维度/打分头，但缺公开数据与显著性细节）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式简洁、工程细节丰富，但部分表格为"illustrative"、线上数字缺置信区间）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （完整覆盖数据管线、分布式训练、ANN 索引、量化与蓝绿发布，MRL+INT8 的成本收益数据对工业界极具参考价值）
-

@@ -144,4 +144,3 @@ $$e^{\text{time}}_{i,d}=\alpha_d\cdot\log(\Delta t_i/60+1)+\beta_d$$
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （离线 RIG/AUC + 跨架构 + 跨任务 + 7 天线上 A/B 四层验证完整，扣分于单种子与缺搜索对照）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （RIG 定义、损失与时间嵌入公式交代清晰，局限章节坦诚；数据集统计与延迟实测缺失）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （真实生产部署 + 亚毫秒约束下的 DMP/DSP 拓扑 + 线上显著增益，工业参考价值极高，可惜未开源）
-

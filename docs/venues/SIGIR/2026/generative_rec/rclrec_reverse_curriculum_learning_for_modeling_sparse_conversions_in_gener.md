@@ -125,4 +125,3 @@ $$\mathcal{L}_{qual}=\max\left(0,\; m-\left(\mathcal{L}_{pay}^{base}(\theta_0)-\
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （两数据集 + 7 基线 + 消融 + $k$ 敏感性 + 线上 A/B 齐全，但目标集评测协议与数据统计披露不足）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （RCPM 三步流程与 IBQ 直通梯度推导交代清楚，公式紧凑；质量损失中 $\theta_0$ 冻结角色的说明可更显式）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （十亿级工业数据 + 线上 +2.09% 收入 / +1.86% 订单的实证极具说服力，但未开源且推理开销未披露）
-

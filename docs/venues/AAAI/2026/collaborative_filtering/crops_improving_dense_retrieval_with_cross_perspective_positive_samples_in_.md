@@ -133,4 +133,3 @@ $$\mathcal{L}=-\sum_{d_i\in\mathcal{S}}\log\frac{\exp(\mathrm{sim}(q,d_i)/\tau)}
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （10 亿候选池 Full-Ranking、时间切分防穿越、离线+线上 A/B+双模型类型验证，工业级扎实度罕见）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （H-InfoNCE 公式与掩码流程清晰，附录给算法示例；但部分符号与图表编号在正文中略显松散）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （已全量部署服务数亿用户、零推理开销、架构无关；扣分在数据不公开与 LLM 合成成本）
-

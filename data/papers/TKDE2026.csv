@@ -4,3 +4,5 @@ Training-free Graph-based Imputation of Missing Modalities in Multimodal Recomme
 "An Adaptive, Context-Aware, and Stacked Attention Network-Based Recommendation System to Capture Users' Temporal Preference",2611.11278,https://arxiv.org/abs/2611.11278,https://github.com/solitude6060/An-Adaptive-Context-Aware-and-Stacked-Attention-Network-Based-Recommendation-System,sequential_rec,TKDE,2026
 MIDA: Multi-Interest Decoding with Adaptive Aggregation for Session-based Recommendation,2610.34192,https://arxiv.org/abs/2610.34192,,sequential_rec,TKDE,2026
 Memory Is No Longer a Bottleneck: Memory-Efficient Graph Filtering for Scalable Collaborative Filtering,2606.21540,https://arxiv.org/abs/2606.21540,,collaborative_filtering,TKDE,2026
+Quantifying and Minimizing Perception Gap in Social Networks,2511.12106,https://arxiv.org/abs/2511.12106,,social_group_rec,TKDE,2026
+Reason4Rec: Deliberative User Preference Alignment of Large Language Models for Recommendation,2502.02061,https://arxiv.org/abs/2502.02061,https://github.com/Peter-Fy/Reason4Rec,llm_rec,TKDE,2026

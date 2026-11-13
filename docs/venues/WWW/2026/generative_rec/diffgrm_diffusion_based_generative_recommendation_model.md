@@ -128,4 +128,3 @@ DiffGRM 在 12 项指标中 11 项第一；唯一落后项为 Toys 的 Recall@10
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 Full-Ranking + 12 项指标 + 配对 t 检验 + 完整消融与 OCN 策略/束宽分析，缺工业级与长尾分桶验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （SID 两大结构性矛盾的动机刻画清晰，公式与复杂度分析完整，但部分符号如视图矩阵 $\mathbf{M}_{\text{ocn}}$与掩码集$\mathcal{M}^{(r)}$ 略显冗余）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码已开源，训练复杂度与 ARM 同阶、推理靠缓存并行控制延迟，快手工业背景支撑落地可信度，缺线上 A/B 数据）
-

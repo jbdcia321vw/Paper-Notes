@@ -127,4 +127,3 @@ $$\tilde{\kappa}(\boldsymbol{v}_i,\boldsymbol{v}_j)=q_i q_j \kappa(\boldsymbol{v
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （4 数据集 × 2 骨干 × 9 基线、Full-Ranking 无偏评测、5 种子均值 + $p<0.05$ 显著性，消融覆盖三大模块与两个关键超参）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （多样性定义、复杂度推导与算法伪代码完整清晰，$k$-DPP 细节置于附录，主线公式紧凑）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码已开源、无需元数据、训练耗时与 DNS/MixGCF 同量级，但缓存刷新与核矩阵开销在超大规模场景仍需工程优化）
-

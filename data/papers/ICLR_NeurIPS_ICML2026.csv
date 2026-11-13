@@ -1,0 +1,42 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+KuaiRecV2: Benchmarking Large-Scale Continual Learning for Diversified and Multi-task Recommendation,2611.16795,https://arxiv.org/abs/2611.16795,https://github.com/cxli2333/KuaiRecV2,debias_fairness_industrial,ICLR_NeurIPS_ICML,2026
+IntentLens: Grounding Underspecified Multimodal Queries for Recommendation via Tool-Augmented Reasoning,2611.11346,https://arxiv.org/abs/2611.11346,,multimodal_rec,ICLR_NeurIPS_ICML,2026
+SituRecBench: Evaluating Frontier Models as Situated Recommendation Assistants in 3D Environments,2611.10349,https://arxiv.org/abs/2611.10349,,agent_conversational_rec,ICLR_NeurIPS_ICML,2026
+User Embeddings are Superpositions of Interpretable Behavioral Modes,2611.08487,https://arxiv.org/abs/2611.08487,,debias_fairness_industrial,ICLR_NeurIPS_ICML,2026
+HARP: Training-Free Dual-Profile Agentic Communication for LLM-Based Recommendation,2611.05319,https://arxiv.org/abs/2611.05319,https://github.com/Jove-Zhen/HARP,llm_rec,ICLR_NeurIPS_ICML,2026
+Can Complementary Signals Bridge Similarity Islands? Manifold-Augmented Graph Embedding for Multimodal Recommendation,2610.37409,https://arxiv.org/abs/2610.37409,https://github.com/Alex-bupt/mage,multimodal_rec,ICLR_NeurIPS_ICML,2026
+Two-Level Softmax Sampling Done Right: Correcting Bias from Size Imbalance and Dispersion,2610.10483,https://arxiv.org/abs/2610.10483,,collaborative_filtering,ICLR_NeurIPS_ICML,2026
+Rethinking Semantic ID Construction for Generative Recommendation: SimHash with Parallel Decoding and Semantic Alignment,2610.07402,https://arxiv.org/abs/2610.07402,https://github.com/KevinC2015/Flash,generative_rec,ICLR_NeurIPS_ICML,2026
+Not All Is Lost: Repairing Lossy User Preference States of Personalization Encoders,2610.01270,https://arxiv.org/abs/2610.01270,,sequential_rec,ICLR_NeurIPS_ICML,2026
+CRAMER: Control via Request-Aware Masking for Editing Recommenders,2608.25370,https://arxiv.org/abs/2608.25370,,sequential_rec,ICLR_NeurIPS_ICML,2026
+Eating for a Sustainable Planet: Personalized Sustainable Diet Recommendation via Constraint-Aware Decision-Making Modeling,2608.24274,https://arxiv.org/abs/2608.24274,,cold_start_rec,ICLR_NeurIPS_ICML,2026
+Controllable and Content-Based Recommendations,2607.20938,https://arxiv.org/abs/2607.20938,,multimodal_rec,ICLR_NeurIPS_ICML,2026
+Optimal and Efficient Contextual Combinatorial Semi-bandits with General Function Approximation,2607.13686,https://arxiv.org/abs/2607.13686,,rl_bandit_rec,ICLR_NeurIPS_ICML,2026
+Obliviate: Efficient Unlearning in Recommender Systems,2607.22665,https://arxiv.org/abs/2607.22665,,debias_fairness_industrial,ICLR_NeurIPS_ICML,2026
+TRACER: Token ReAssignment for Concept ERasure in Generative Recommendation,2606.07688,https://arxiv.org/abs/2606.07688,,generative_rec,ICLR_NeurIPS_ICML,2026
+COPF: An Online Framework for Deployment-Stable Counterfactual Fairness in Evolving Graphs,2606.00700,https://arxiv.org/abs/2606.00700,https://github.com/lsnnnnnnnn/COPF,debias_fairness_industrial,ICLR_NeurIPS_ICML,2026
+Model Monotonicity in Autobidding Auctions: When Do Better Predictions Lead to Better Outcomes?,2605.31036,https://arxiv.org/abs/2605.31036,,ctr_feature_interaction,ICLR_NeurIPS_ICML,2026
+ALM-MTA:Front-Door Causal Multi-Touch Attribution Method for Creator-Ecosystem Optimization,2605.08881,https://arxiv.org/abs/2605.08881,,debias_fairness_industrial,ICLR_NeurIPS_ICML,2026
+Low-pass Personalized Subgraph Federated Recommendation,2603.20338,https://arxiv.org/abs/2603.20338,,debias_fairness_industrial,ICLR_NeurIPS_ICML,2026
+Generalizing Linear Autoencoder Recommenders with Decoupled Expected Quadratic Loss,2603.07402,https://arxiv.org/abs/2603.07402,,collaborative_filtering,ICLR_NeurIPS_ICML,2026
+Beyond Match Maximization and Fairness: Retention-Optimized Two-Sided Matching,2602.15752,https://arxiv.org/abs/2602.15752,,rl_bandit_rec,ICLR_NeurIPS_ICML,2026
+CollectiveKV: Decoupling and Sharing Collaborative Information in Sequential Recommendation,2601.19178,https://arxiv.org/abs/2601.19178,,sequential_rec,ICLR_NeurIPS_ICML,2026
+Massive Memorization with Hundreds of Trillions of Parameters for Sequential Transducer Generative Recommenders,2510.22049,https://arxiv.org/abs/2510.22049,,sequential_rec,ICLR_NeurIPS_ICML,2026
+GoalRank: Group-Relative Optimization for a Large Ranking Model,2509.22046,https://arxiv.org/abs/2509.22046,,multi_task_reranking,ICLR_NeurIPS_ICML,2026
+ProPerSim: Developing Proactive and Personalized AI Assistants through User-Assistant Simulation,2509.21730,https://arxiv.org/abs/2509.21730,,agent_conversational_rec,ICLR_NeurIPS_ICML,2026
+Rejuvenating Cross-Entropy Loss in Knowledge Distillation for Recommender Systems,2509.20989,https://arxiv.org/abs/2509.20989,https://github.com/BDML-lab/RCE-KD,llm_rec,ICLR_NeurIPS_ICML,2026
+Token-Efficient Item Representation via Images for LLM Recommender Systems,2503.06238,https://arxiv.org/abs/2503.06238,,llm_rec,ICLR_NeurIPS_ICML,2026
+Causal Representation Learning for Generalisable Recommendation,2605.27043,https://arxiv.org/abs/2605.27043,,debias_fairness_industrial,ICLR_NeurIPS_ICML,2026
+Learning Evidence Highlighting for Frozen LLMs,2604.22565,https://arxiv.org/abs/2604.22565,,llm_rec,ICLR_NeurIPS_ICML,2026
+LIME: Link-based User-item Interaction Modeling with Decoupled XOR Attention for Efficient Test Time Scaling,2510.18239,https://arxiv.org/abs/2510.18239,,sequential_rec,ICLR_NeurIPS_ICML,2026
+Goal-Conditioned Supervised Learning for Multi-Objective Recommendation,2412.08911,https://arxiv.org/abs/2412.08911,,multi_task_reranking,ICLR_NeurIPS_ICML,2026
+ProRL: Effective Reinforcement Learning for Proactive Recommendation via Rectified Policy Gradient Estimation,2605.28293,https://arxiv.org/abs/2605.28293,https://github.com/hongruhou89/ProRL,rl_bandit_rec,ICLR_NeurIPS_ICML,2026
+GCIB: Graph Contrastive Information Bottleneck for Multi-Behavior Recommendation,2605.25690,https://arxiv.org/abs/2605.25690,,self_supervised_denoising,ICLR_NeurIPS_ICML,2026
+Rethinking Contrastive Learning for Graph Collaborative Filtering: Limitations and a Simple Remedy,2605.24015,https://arxiv.org/abs/2605.24015,,self_supervised_denoising,ICLR_NeurIPS_ICML,2026
+SynGR: Unleashing the Potential of Cross-Modal Synergy for Generative Recommendation,2605.18920,https://arxiv.org/abs/2605.18920,,generative_rec,ICLR_NeurIPS_ICML,2026
+Adaptive Querying with AI Persona Priors,2605.00696,https://arxiv.org/abs/2605.00696,,cold_start_rec,ICLR_NeurIPS_ICML,2026
+AgentSelect: Benchmark for Narrative Query-to-Agent Recommendation,2603.03761,https://arxiv.org/abs/2603.03761,,agent_conversational_rec,ICLR_NeurIPS_ICML,2026
+Can Recommender Systems Teach Themselves? A Recursive Self-Improving Framework with Fidelity Control,2602.15659,https://arxiv.org/abs/2602.15659,https://github.com/USTC-StarTeam/RSIR,self_supervised_denoising,ICLR_NeurIPS_ICML,2026
+Principled Synthetic Data Enables the First Scaling Laws for LLMs in Recommendation,2602.07298,https://arxiv.org/abs/2602.07298,,llm_rec,ICLR_NeurIPS_ICML,2026
+On the Coordination of Value-Maximizing Bidders,2511.04993,https://arxiv.org/abs/2511.04993,,ctr_feature_interaction,ICLR_NeurIPS_ICML,2026
+Incentivized Exploration with Stochastic Covariates: A Two-Stage Mechanism Design for Recommender System,2406.04374,https://arxiv.org/abs/2406.04374,,rl_bandit_rec,ICLR_NeurIPS_ICML,2026

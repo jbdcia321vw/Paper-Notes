@@ -137,4 +137,3 @@ SASRec(BCE) + Mamba4Rec(Peer) 配置下（节选 Beauty / Toys / Sports / LastFM
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （6 数据集 × 5 骨干 × 2 损失 + Full-Ranking + 配对 t 检验 + 弱到强设定 + 完整消融，覆盖度在负采样论文中属上乘）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与算法伪代码清晰、复杂度分析到位，但 ZPD 理论映射偏修辞，缺少对分歧分有效性的理论刻画）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码已开源、推理零额外开销、即插即用；扣分在于训练期双模型前向的工程成本与超参调优负担）
-

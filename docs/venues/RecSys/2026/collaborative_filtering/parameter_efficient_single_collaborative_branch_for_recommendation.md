@@ -120,4 +120,3 @@ $$\mathcal{L}=-\ln\hat{y}_{ij}-\sum_{k=1}^{n_{neg}}\ln(1-\hat{y}_{ik}),$$
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （三数据集 + 全库排序 + Bonferroni 校正规范，但缺时间切分、缺传统消融、Baby 上性能退化未深入归因）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （5 页短文结构紧凑，公式与伪代码清晰，参数量推导明确，但 Algorithm 1 中负样本损失误写为 $\ln(1-\hat{y}_{ij})$ 属笔误）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码与预处理数据已开源、基于 Elliot 框架，参数量减半对显存敏感场景友好，但训练时长与线上延迟未验证）
-

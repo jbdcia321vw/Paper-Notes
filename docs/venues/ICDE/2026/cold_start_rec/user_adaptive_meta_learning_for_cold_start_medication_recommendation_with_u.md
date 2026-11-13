@@ -147,4 +147,3 @@ UQ 方法选择（MIMIC-III PRAUC）：Auxiliary Error 0.752 > NC Dropout 0.748 
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （双数据集五折 + 95% CI + 分位冷启动分析 + UQ/β 消融较完整，但缺少全库排序协议与线上验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与符号表清晰、算法伪代码完整，但部分符号如 $\hat{S}$与$S$ 的上下标略冗余）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码已开源、仅更新预测层使自适应开销极低，但 DDI 安全性与在线延迟是落地前必须补齐的短板）
-

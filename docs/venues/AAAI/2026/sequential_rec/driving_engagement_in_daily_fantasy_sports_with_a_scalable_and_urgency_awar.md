@@ -120,4 +120,3 @@ $$\mathcal{L}_{\text{rank}} = -\,\text{neuralNDCG}(\hat{y}, y)$$
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （用户不相交 + 时间外推划分严谨、数据规模惊人，但仅两个 GBDT 基线、无显著性检验、无线上验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化与符号定义清晰，公式简洁；主结果以图代表、缺少精确数值是明显减分项）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （Ray+DDP 的 80 GPU 训练框架与端上排序路线图对工业界参考价值高，但无开源代码、数据不可获取，复现门槛极高）
-

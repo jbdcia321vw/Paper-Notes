@@ -124,4 +124,3 @@ $$\min_{\mathbf{P}\geq 0}\ \langle \mathbf{P},\text{Cost}\rangle+\text{KL}(\math
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 × 五骨干 × 五类公平指标 + 消融 + 效率分析齐全，但缺线上验证与冷启动划分）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （定理证明简洁有力，三阶段模块边界清晰；部分符号如 $\lambda_{\text{virtual}}$与$\lambda_{\text{rec}}$ 在正文与图中命名略有不一致）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （模型无关插件、推理零开销、训练仅增约 3%、代码已开源，可直接挂载到现有 POI 推荐管线）
-

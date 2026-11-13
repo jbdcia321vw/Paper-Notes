@@ -131,4 +131,3 @@ $$\mathcal{L}(\theta)=-\mathbb{E}_k\Big[\min\big(\rho_k(\theta)A_k,\ \text{clip}
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （Full-Ranking 与 Funnel 双指标互补、离线消融覆盖全部设计选择、线上一个月 A/B 带显著性检验，但仅单平台且数据统计披露不足）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与算法伪代码完整、三阶段梯度流图示清晰，奖励模型与策略的符号区分严谨，缺少复杂度分析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （来自 NAVER WEBTOON 真实生产系统，开源参考实现，线上指标全面正向，对工业界部署 FM 排序有直接参考价值）
-

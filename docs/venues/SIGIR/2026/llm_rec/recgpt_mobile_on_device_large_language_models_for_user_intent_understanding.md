@@ -142,4 +142,3 @@ $$\Delta_{intent}=\lambda_1\Delta H+\lambda_2(1-JA)+\lambda_3\,JS(P_{\mathcal{B}
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （线上四场景数千万用户 A/B 极具说服力，但离线仅靠 LLM 自评、缺标准检索指标与模块级消融，学术严谨度打折）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与算法伪代码清晰，触发机制三信号定义完整，但部分符号如 $\mathcal{Z}$与$P_{\mathcal{B}}$ 的关系交代略简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （真实淘宝全量场景验证、GMV +2.5%，端侧部署路径完整可复制，是 LLM4Rec 工业落地的标杆案例；可惜未开源）
-

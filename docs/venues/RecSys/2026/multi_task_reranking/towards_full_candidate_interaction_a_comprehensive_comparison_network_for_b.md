@@ -135,4 +135,3 @@ MSDR 测试集（AUC %，RelaImpr 相对 Vanilla MLP）：
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （公开基准 + 5.12 亿样本自建集 + 两年线上 A/B，消融与超参敏感性完整；但自建集划分方式描述略简）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （CCO/CCB/PSN 公式紧凑、符号一致，复杂度分析到位；比较特征信息容量的理论讨论偏定性）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （高德生产环境服役两年、15 ms/200–300 QPS 实测、数据集开源，工业参考价值极高）
-

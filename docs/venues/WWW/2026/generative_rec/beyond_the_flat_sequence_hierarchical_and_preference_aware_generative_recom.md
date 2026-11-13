@@ -124,4 +124,3 @@ $$M_j=\max_{k\in\{1,\dots,K\}}\exp\left(-\frac{(j-p_k)^2}{2\sigma^2}\right)$$
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （全量未采样测试集复核 + 线上 A/B 是加分项，但缺公开数据集与多任务验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式简洁、图示清楚，PGSA 的 $\sigma$ 与掩码归一化细节略欠推导）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （真实生产 +1.99% eCPM 说服力强，但代码未开源、依赖私有数据，复现门槛高）
-

@@ -136,4 +136,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集六域、11 个基线、消融/分桶/噪声/可视化五类分析齐全，但仅采样排序、缺 Full-Ranking 与显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （ODE 离散化与反事实损失公式清晰，Euler 近似误差与 LLM 分支复杂度未展开分析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （ODE 与门控模块轻量易部署，但 LLM 语义分支的离线成本与未开源削弱了直接复现价值）
-

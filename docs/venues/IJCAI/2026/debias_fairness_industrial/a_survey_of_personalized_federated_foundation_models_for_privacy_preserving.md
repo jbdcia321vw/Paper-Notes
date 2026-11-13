@@ -113,4 +113,3 @@ $$\phi_g^{t+1}\leftarrow\phi_g^{t}-\eta\cdot\mathcal{G}_{\perp}\big(\{\Delta\phi
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐ （无任何自建实验与数值验证，仅提出双指标评测倡议，实证支撑薄弱）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （符号体系统一、五类开放问题均给出形式化表述，分类学清晰；部分算子停留于记号层面未展开）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （无开源代码，FM 全量载入与通信开销被作者自认为硬约束，但语义过滤聚合对合规场景具直接参考价值）
-

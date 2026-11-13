@@ -127,4 +127,3 @@ $$q^*(z|H(u),y^*)=\frac{p_\theta(y^*|z)p_\psi(z|H(u))}{\sum_{z'}p_\theta(y^*|z')
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 Full-Ranking + 显著性检验 + 索引替换/推理时延/超参敏感性分析齐全，缺 LLM 主干扩展）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （ELBO 拉格朗日推导与算法伪代码清晰，RQ-VAE 部分为标准引用）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （单视图降级路径实用，但多模板推理开销与代码未开源削弱直接部署性）
-

@@ -53,7 +53,7 @@ hide:
 </dd>
 <dt><strong><a href="agent_conversational_rec/interplay_training_independent_simulators_for_reference_free_conversational/">Interplay: Training Independent Simulators for Reference-Free Conversational Recommendation</a></strong></dt>
 <dd>
-<p>训练独立用户/推荐双模拟器实现无参考对话推荐，8B 模型 SR 达 95%、Recall@1 超 32B 基线 15 倍。</p>
+<p>训练独立用户/推荐双模拟器，以目标属性替代目标物品消除 oracle 泄漏，8B 模型 Recall@1 超 32B 基线 15 倍。</p>
 </dd>
 <dt><strong><a href="agent_conversational_rec/usersimcrs_v2_simulation_based_evaluation_for_conversational_recommender_sy/">UserSimCRS v2: Simulation-Based Evaluation for Conversational Recommender Systems</a></strong></dt>
 <dd>

@@ -129,4 +129,3 @@ $$\mathcal{L}=-\mathbb{E}\log\sigma\Big(\beta\log\tfrac{\pi_\theta(y_w|x)}{\pi_{
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集、三 backbone、三目标泛化 + 完整消融与 Top-K 对照，但仅 Sampled Ranking 与单一 HR@1 指标略欠）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （梯度分解与 $\beta$ 公式推导清晰，符号统一；坍缩的理论刻画仍偏一阶近似，缺收敛性分析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （即插即用、免预处理、训练开销 +0.85%、推理零额外成本，代码与 checkpoint 全开源，美团工业背景加持）
-

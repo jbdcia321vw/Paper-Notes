@@ -147,4 +147,3 @@ $$\text{MMR}(b)=\lambda\cdot q(b)+(1-\lambda)\left(1-\max_{b'\in S}\cos(b,b')\ri
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （70/30 会话留出防穿越、四任务互补、含 oracle 与 bootstrap CI 值得肯定；但 N=46、单域、无显著性检验、XR 案例无受控实验，统计功效偏弱）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （式 1–5 目标与近似策略交代清楚，明确区分"概念目标"与"摊销近似"，并主动披露 persona bias 与格式混淆；但核心算子多为提示流程，公式更多是形式化包装）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （人格一次构建跨任务复用、自然语言产物可直接驱动生成式 UI/XR，工程思路可落地；但 $79/用户成本、无开源代码、Stage 2 token 开销未优化，短期难规模化）
-

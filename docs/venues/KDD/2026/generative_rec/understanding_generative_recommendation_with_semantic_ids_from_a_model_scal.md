@@ -131,4 +131,3 @@ $\text{Recall}@k = R_0 - \frac{A}{(N_{\text{RS}}+\gamma_1 N_{\text{LLM}}+\gamma_
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 × 三扩展轴 × 44M–14B 全谱扫描 + 三次重复误差棒 + $R^2$ 拟合，控制变量严谨；缺工业数据与多模态验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （扩展律方程推导清晰、反证法逻辑严密，符号统一；部分拟合参数细节下放附录）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （结论对架构选型极具指导价值，但 Text-based GR 推理开销大、且未开源代码，直接复现成本较高）
-

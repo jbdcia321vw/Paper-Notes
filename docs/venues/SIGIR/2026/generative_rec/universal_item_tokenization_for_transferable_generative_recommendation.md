@@ -128,4 +128,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （Full-Ranking + Leave-One-Out + $p<0.01$ 显著性，12 个基线三类覆盖，消融 7 变体完整；扣分在仅 Amazon 单平台）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式链条清晰、码本损失与残差逆运算交代完整，但 MLLM 提示模板与码冲突重指派细节略简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码已开源、微调策略轻量可落地；但 MLLM 分词器的离线编码成本是大规模上线的现实门槛）
-

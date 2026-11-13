@@ -5,7 +5,7 @@ hide:
 
 # 📖 ACM TOIS 2026 推荐系统论文解读
 
-3 篇 ACM TOIS 2026 论文解读，覆盖 2 个推荐系统细分方向。每篇均包含一句话总结、核心思想、实验设置与审稿级批判，5 分钟读懂一篇论文。
+4 篇 ACM TOIS 2026 论文解读，覆盖 3 个推荐系统细分方向。每篇均包含一句话总结、核心思想、实验设置与审稿级批判，5 分钟读懂一篇论文。
 
 <div class="conf-index">
 <hr />
@@ -18,6 +18,14 @@ hide:
 <dt><strong><a href="graph_rec/hypemed_enhancing_medication_recommendations_with_hypergraph_based_patient_/">HypeMed: Enhancing Medication Recommendations with Hypergraph-Based Patient Relationships</a></strong></dt>
 <dd>
 <p>以就诊为超边建模集合级语义，知识感知对比预训练构建可检索空间，就诊条件检索相似病历增强用药推荐，Jaccard 提升 0.4–0.6% 且 DDI 低于真实处方。</p>
+</dd>
+</dl>
+<hr />
+<h2 id="cross_domain_multi_scenario">🌐 跨域与多场景推荐 (1)</h2>
+<dl>
+<dt><strong><a href="cross_domain_multi_scenario/causal_invariant_cross_domain_out_of_distribution_recommendation/">Causal-Invariant Cross-Domain Out-of-Distribution Recommendation</a></strong></dt>
+<dd>
+<p>统一建模跨域与单域双重分布偏移，用双层因果结构与 LLM 引导混杂因子发现实现跨域 OOD 推荐，HR@10 平均提升 6.34%。</p>
 </dd>
 </dl>
 <hr />

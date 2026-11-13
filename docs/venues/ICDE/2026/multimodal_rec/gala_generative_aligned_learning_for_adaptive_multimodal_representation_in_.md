@@ -143,4 +143,3 @@ $$\mathcal{L}_{Q\text{-}Align}=w_1\mathcal{L}_{Q\text{-}Text}+w_2\mathcal{L}_{Q\
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （42B 样本离线 + 大规模线上 A/B 且报告置信区间与 p 值，但缺公开数据集与采样排序对照）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三阶段公式与 GRPO 目标交代完整，但部分符号如 $w_1/w_2/w_3$与 Stage 3 的$\lambda$ 关系略散，图表编号与正文引用偶有错位）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （2 亿 DAU 全量部署、P99 延迟仅 +1.7ms、订单量 +0.55%，工程闭环与开销分析极为完整，唯代码未开源）
-

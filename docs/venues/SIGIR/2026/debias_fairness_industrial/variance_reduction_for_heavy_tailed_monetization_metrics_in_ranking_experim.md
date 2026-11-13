@@ -119,4 +119,3 @@ $$\text{GMV}^{\text{CUPED}}=\text{GMV}-\frac{\text{Cov}(\text{GMV},\widetilde{\t
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （40+ 生产实验、A/A 模拟覆盖 1%–50% 流量、阈值敏感性与分层方案消融齐全，唯缺离线公开基准）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （无偏性证明简洁、$w^2$ 方差压制直觉清晰，并诚实区分模拟 0% 与生产 6.1% 两类 Type-I 误差的来源）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （已作为 ShareChat 默认变现指标，节省约 45% 流量、决策时间减半，护栏设计完整，落地价值极高）
-

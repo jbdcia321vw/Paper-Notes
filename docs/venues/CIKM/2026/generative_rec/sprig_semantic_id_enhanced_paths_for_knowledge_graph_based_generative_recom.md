@@ -123,4 +123,3 @@ $\mathcal{L}(\theta;\mathcal{P})=-\frac{1}{|\mathcal{P}|}\sum_{\tilde{p}\in\math
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （双域数据集 + 配对 bootstrap 显著性到位，但生成式束搜索与全库排序协议不一致，消融仅以文字叙述、缺独立表格与超参敏感性）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （5 页短文公式紧凑、词表规模分析清晰，贯穿电影示例便于理解；复杂度与解码开销仅给 FLOPs 未给延迟）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、词表与目录解耦对大目录工业场景友好、算力近减半，但离线量化管线与束搜索在线延迟仍需实测）
-

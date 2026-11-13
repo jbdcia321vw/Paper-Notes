@@ -129,4 +129,3 @@ Beauty + Llama 骨干（NDCG@10）：
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （4 数据集 × 2 骨干 × 5 基线 + 消融/分词器鲁棒性/beam 可扩展性/效率/线上 A/B 齐全，但缺 Full-Ranking 对照与 hard negative 探索）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （全库 vs. Beam 的成功条件对比推导清晰，KKT 闭式解与复杂度分析完整，符号统一）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （pointwise 变体训练开销与 CE 持平、推理零改动，已在微信公众平台上线 +0.9% pCTR，代码与配置全开源）
-

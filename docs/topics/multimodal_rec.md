@@ -2,7 +2,7 @@
 
 > **研究范畴**：视觉-文本-音频特征融合与解耦、多模态图对齐、短视频/微视频推荐与图文电商匹配
 
-当前方向共收录 **42** 篇顶会/顶刊论文解读：
+当前方向共收录 **53** 篇顶会/顶刊论文解读：
 
 <dl>
 <dt><strong><a href="../../venues/AAAI/2026/cold_start_rec/motorec_sparse_regularized_multimodal_tokenization_for_cold_start_recommend/">MoToRec: Sparse-Regularized Multimodal Tokenization for Cold-Start Recommendation</a></strong></dt>
@@ -16,6 +16,22 @@
 <dt><strong><a href="../../venues/AAAI/2026/agent_conversational_rec/styletailor_towards_personalized_fashion_styling_via_hierarchical_negative_/">StyleTailor: Towards Personalized Fashion Styling via Hierarchical Negative Feedback</a></strong></dt>
 <dd>
 <p>首个统一个性化服装设计、购物推荐与虚拟试穿的协作智能体框架，以三级分层负反馈闭环迭代优化，在自建 64 样本基准上 Style Consistency 相对基线提升 39.4%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/agent_conversational_rec/re2a_situated_conversational_recommendation_via_rubric_based_preference_rea/">Re2A: Situated Conversational Recommendation via Rubric-based Preference Reasoning and Alignment</a></strong></dt>
+<dd>
+<p>将情境对话推荐重构为“先推理后对齐”两阶段，用自动评分标准引导偏好状态推理并以异构负例 DPO 实现用户-场景双重对齐，SIMMC 2.1 上 Hit@1 提升 8.17pt。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/multimodal_rec/reasonrec_a_reasoning_augmented_multimodal_agent_for_unified_recommendation/">ReasonRec: A Reasoning-Augmented Multimodal Agent for Unified Recommendation</a></strong></dt>
+<dd>
+<p>将推荐重构为 Observe-Deliberate-Act 三阶段 CoT 推理智能体，以证据视界课程学习与不确定性引导工具委派，在五数据集四任务上 HR@5 相对提升超 30% 并降低推理延迟。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/sequential_rec/two_sided_state_space_models_for_sequential_recommendation_with_non_random_/">Two-Sided State-Space Models for Sequential Recommendation with Non-Random Multimodal Review Feedback</a></strong></dt>
+<dd>
+<p>将评论视为双侧状态空间中的内生事件，用 MNAR 观测模式、非对称评论结转与局部图传播联合演化用户/物品状态，Full-Ranking 下 R@20 较 BSARec 提升 14.8%–18.8%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/agent_conversational_rec/where_and_what_reasoning_dynamic_and_implicit_preferences_in_situated_conve/">Where and What: Reasoning Dynamic and Implicit Preferences in Situated Conversational Recommendation</a></strong></dt>
+<dd>
+<p>提出 SiPeR 框架，用场景转移估计解决“去哪”与贝叶斯逆向推理解决“要什么”，在 SIMMC 2.1 与 SCREEN 上 R@1 平均提升约 10.9%/10.6%。</p>
 </dd>
 <dt><strong><a href="../../venues/ACM_MM/2026/multimodal_rec/beyond_modality_harmony_orthogonal_purification_and_topology_guided_moe_for/">Beyond Modality Harmony: Orthogonal Purification and Topology-Guided MoE for Conflict-Aware Multimodal Recommendation</a></strong></dt>
 <dd>
@@ -64,6 +80,30 @@
 <dt><strong><a href="../../venues/ICDE/2026/multimodal_rec/gala_generative_aligned_learning_for_adaptive_multimodal_representation_in_/">GALA: Generative Aligned Learning for Adaptive Multimodal Representation in the Taobao Shangou Recommender System</a></strong></dt>
 <dd>
 <p>三阶段流水线：行为三元组预训练 + GRPO 生成式行为对齐 + 自适应门控融合，离线 AUC +0.12/+0.20，线上订单量 +0.55%。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/multimodal_rec/can_complementary_signals_bridge_similarity_islands_manifold_augmented_grap/">Can Complementary Signals Bridge Similarity Islands? Manifold-Augmented Graph Embedding for Multimodal Recommendation</a></strong></dt>
+<dd>
+<p>提出 MAGE，用离线 Soft Conceptor 残差注入 + 在线非对称双流 GNN 桥接互补品“相似性孤岛”，四个 Amazon 数据集 Full-Ranking 全面领先。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/multimodal_rec/controllable_and_content_based_recommendations/">Controllable and Content-Based Recommendations</a></strong></dt>
+<dd>
+<p>用多模态 LLM 将图像/音频/视频条目转述为文本画像，经标签监督与 InfoNCE 对齐冻结 CF 骨干，实现可读可编辑的文本瓶颈控制。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/multimodal_rec/intentlens_grounding_underspecified_multimodal_queries_for_recommendation_v/">IntentLens: Grounding Underspecified Multimodal Queries for Recommendation via Tool-Augmented Reasoning</a></strong></dt>
+<dd>
+<p>用 MLLM 工具增强推理将欠指定图文查询接地为结构化意图，再以轻量双塔排序，构建两个新基准并显著超越 MLLM 与检索基线。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/agent_conversational_rec/siturecbench_evaluating_frontier_models_as_situated_recommendation_assistan/">SituRecBench: Evaluating Frontier Models as Situated Recommendation Assistants in 3D Environments</a></strong></dt>
+<dd>
+<p>构建 UE5 三维购物环境与共享第一人称视角的交互式基准，统一评测 VLM 助手的对话质量、推荐效用与导航有效性。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/generative_rec/syngr_unleashing_the_potential_of_cross_modal_synergy_for_generative_recomm/">SynGR: Unleashing the Potential of Cross-Modal Synergy for Generative Recommendation</a></strong></dt>
+<dd>
+<p>用 PID 信息分解揭示多模态生成式推荐的协同信息缺失，提出显著性感知掩码+协同对比学习，Full-Ranking 下平均提升约 10%</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/llm_rec/token_efficient_item_representation_via_images_for_llm_recommender_systems/">Token-Efficient Item Representation via Images for LLM Recommender Systems</a></strong></dt>
+<dd>
+<p>用单张物品图像替代冗长文本描述作为 LLM 推荐输入，配合 RISA 对齐与 RERI 检索式推荐，在 Amazon 四域上兼顾效率与效果。</p>
 </dd>
 <dt><strong><a href="../../venues/IJCAI/2026/sequential_rec/rethinking_convolutional_networks_for_attribute_aware_sequential_recommenda/">Rethinking Convolutional Networks for Attribute-Aware Sequential Recommendation</a></strong></dt>
 <dd>
@@ -156,6 +196,10 @@
 <dt><strong><a href="../../venues/TKDE/2026/multimodal_rec/training_free_graph_based_imputation_of_missing_modalities_in_multimodal_re/">Training-free Graph-based Imputation of Missing Modalities in Multimodal Recommendation</a></strong></dt>
 <dd>
 <p>将缺失模态重铸为物品-物品共购图上的图特征插值，提出四种免训练传播式填补算子，可即插即用并保持甚至扩大多模态与传统推荐的性能差距。</p>
+</dd>
+<dt><strong><a href="../../venues/TMM/2026/multimodal_rec/cross_modal_attention_network_with_dual_graph_learning_in_multimodal_recomm/">Cross-Modal Attention Network with Dual Graph Learning in Multimodal Recommendation</a></strong></dt>
+<dd>
+<p>递归跨模态注意力 RCA 迭代对齐图文特征，配合用户-物品异构图与物品-物品语义图双图 + 对比学习，四数据集平均提升约 5%。</p>
 </dd>
 <dt><strong><a href="../../venues/TORS/2026/multimodal_rec/adopting_state_of_the_art_pretrained_audio_representations_for_music_recomm/">Adopting State-of-the-Art Pretrained Audio Representations for Music Recommender Systems</a></strong></dt>
 <dd>

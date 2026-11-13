@@ -132,4 +132,3 @@ $\mathcal{L}=-\mathbb{E}_{(x,y_w,\mathcal{Y}_l)\sim\mathcal{D}_i}\Big[\log\sigma
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三公开集 + 13 基线 + 逐级消融 + 工业 A/B 全量部署，证据链完整；扣分在缺少 Full-Ranking 无偏协议与训练开销报告）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三级对齐叙事清晰、公式紧凑，Softmax-DPO 目标与两段式调度交代明确；部分符号如 $\mathcal{N}_u$ 与课程阈值定义略简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （快手全量部署 +1.432% 收入验证真实价值，分词模块可离线预计算；但代码未开源、三级串行训练成本高，复现门槛偏高）
-

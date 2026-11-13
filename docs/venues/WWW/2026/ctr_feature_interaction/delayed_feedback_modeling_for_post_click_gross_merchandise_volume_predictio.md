@@ -129,4 +129,3 @@ $$\mathcal{L}_{overall}=\mathcal{L}_{online}+\lambda_1(\mathcal{L}_{GRA}-\lambda
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （首个公开基准 + 在线流式评估贴近工业，消融完整含架构与路由两维，但缺跨平台与线上验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题定义与符号表清晰，公式推导简洁；式 (17) 中 $\mathcal{L}_{GRA}$ 重复书写为笔误，路由阈值缺敏感性讨论）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （数据与代码全开源，来自淘天真实广告系统，双塔 + 轻量路由的在线部署成本低，直接可落地）
-

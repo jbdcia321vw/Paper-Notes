@@ -128,4 +128,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （合成数据四维人工质检 + golden 集监控 + 1500 万用户线上 A/B 相当扎实，缺传统 ranking 指标与组件级线上拆分）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （管线与根因分类表述清晰，公式简洁；`pass@k` 估计细节与成本分析略薄）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （已在 Spotify 生产上线并驱动核心指标，冷启动方法论对工业团队直接可用；代码仅部分开源）
-

@@ -131,4 +131,3 @@ Beauty 数据集、$K=0$ 推理、同一 CoT SFT checkpoint 与匹配训练配�
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （Leave-One-Out + Full-Ranking + beam=50 协议规范、消融控制严格且给出乘性分解，但仅 3 个同源数据集、单骨干单 teacher，无显著性检验与线上验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （5 页短文结构紧凑，公式与算法 1 完整，温度退火与只监督首分量的动机交代清楚，复杂度 $K\times P$ 分析明确）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （18.3× 延迟下降且精度不降、模块可丢弃、仅 2.5M 参数与 LoRA 微调，工程部署价值高；扣分在于代码未开源、需 GPT-4 蒸馏 CoT 作为起点）
-

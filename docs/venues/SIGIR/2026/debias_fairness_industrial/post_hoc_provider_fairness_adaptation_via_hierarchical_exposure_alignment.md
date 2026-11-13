@@ -129,4 +129,3 @@ $$D_{KL}(\mathbf{p}\|\mathbf{t})=\underbrace{D_{KL}(\mathbf{p}_G\|\mathbf{t}_G)}
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 × 三基座 × 八基线，精度/公平六指标齐全，含子群分析与双参数敏感性；不足在于比例划分而非时间切分，未做线上 A/B）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （KL 分解证明完整、符号统一，可微排序与 NDCG 松弛推导清晰；$\Delta_{calib}$ 的实际优化处理略简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （仅 2,113 参数、推理零重排开销、代码开源，公平策略切换无需重训，工程部署价值突出）
-

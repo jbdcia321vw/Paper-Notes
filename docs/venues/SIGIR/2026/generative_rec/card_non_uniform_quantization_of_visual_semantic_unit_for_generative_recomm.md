@@ -128,4 +128,3 @@ $$\mathcal{L}_{\text{overall}}=\mathcal{L}_{\text{Recon}}+\mathcal{L}_{\text{RQ}
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 Full-Ranking + 配对 t 检验 + 双变体消融 + 插拔性实验完整，缺冷启动与长尾分桶分析）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （变换的闭式正逆与一致性损失推导清晰，RQ-VAE 部分复述略多，复杂度分析缺失）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码已开源、变换模块即插即用，但离线渲染 + VLM 编码的构建成本是落地主要门槛）
-

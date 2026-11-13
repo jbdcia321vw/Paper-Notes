@@ -123,4 +123,3 @@ $$\mathcal{L}_{\text{GRPO-A}}(\theta)=-\mathcal{L}_{\text{adv}}(\theta)+\beta D_
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （真实+合成双环境与 5 次重复置信区间是加分项，但缺数值主表、显著性检验与线上验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （最优性条件证明与奖励分解推导完整，符号统一；部分图表仅以曲线呈现略欠精确）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码已开源，训练流程与提示模板完整；双 LLM 推理开销与延迟是主要落地障碍）
-

@@ -128,4 +128,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 + 10 基线 + 消融 + 稀疏度/替代方案对比 + scaling law + 线上 A/B 完整，但线上流量与周期偏短）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与复杂度分析清晰，三分支与偏置定义完整，但部分符号如 $E_B$与$E_S$ 的关系需读者自行推断）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码开源，8.9× 加速、40ms 推理、线上 CTR/CPM 双涨，且验证了三个数量级 FLOPs 的 scaling law，工业部署价值突出）
-

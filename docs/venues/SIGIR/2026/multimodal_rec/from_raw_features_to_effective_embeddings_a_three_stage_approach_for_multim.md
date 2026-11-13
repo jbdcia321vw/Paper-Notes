@@ -124,4 +124,3 @@ $$\mathcal{L}_{UCL}=-\sum_{u\in\mathcal{U}}\log\frac{\exp(\cos(e^S_u,e^L_u)/\tau
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （Full-Ranking + 8 基线 + 5 种子 + 5 组消融 + 效率与超参分析齐全，缺显著性检验与跨域验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式简洁、动机—方法—实验闭环严密，5 页短文信息密度高，但部分实现细节如摘要 prompt 未给出）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码与数据全开源，离线预处理换在线零开销，训练/推理/显存全面优于基线，工程迁移成本低）
-

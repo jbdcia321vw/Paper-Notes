@@ -135,4 +135,3 @@ $$w_i=\big(\log_2(d_i+2)\big)^{-1},\quad c_i=\mathbb{I}(d_i<\tau)$$
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 + 13 个基线 + 整体/冷启动双场景 + 完整消融与效率分析，但冷启动划分未达 strict zero-shot）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与符号定义清晰，RQ-VAE 与稀疏正则推导完整，超参敏感性分析充分）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （图传播零额外开销、推理 3.8s/batch 与基线持平，但代码未开源且分词器训练开销需权衡）
-

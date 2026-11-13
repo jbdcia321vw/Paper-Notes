@@ -131,4 +131,3 @@ $$\mathcal{L}_{CL}=\frac{1}{2N}\sum_{i=1}^{N}\Big[\mathrm{KL}(T_{i,:}\|P_{i,:})+
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （四骨干 × 三数据集 × 长尾分桶 + 消融 + 梯度分析完整，扣分在 Sampled Ranking 与单一数据域）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （CMSA/MoDA 公式简洁、动机图清晰，但缺复杂度定量分析与对齐程度的显式度量）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （离线预计算、推理零开销、代码开源、即插即用兼容四类骨干，工程落地门槛极低）
-

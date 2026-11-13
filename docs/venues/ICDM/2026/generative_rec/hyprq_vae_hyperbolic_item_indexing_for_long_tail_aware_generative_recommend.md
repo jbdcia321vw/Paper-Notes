@@ -127,4 +127,3 @@ $$\mathcal{L}_{\text{RQ-VAE}}=\|x-\hat{x}\|_2^2+\gamma\sum_{i=1}^{L}\left(\|sg[r
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （Leave-One-Out + Full-Ranking 协议规范，头部/尾部拆分与 AQE 诊断有说服力，但缺显著性检验与大规模验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （双曲算子定义完整、图示清晰，但曲率敏感性与数值稳定性分析缺失）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、与 TIGER 架构对齐易替换，推理开销同量级，但双曲运算的工程稳定性待验证）
-

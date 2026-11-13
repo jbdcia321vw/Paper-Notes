@@ -2,7 +2,7 @@
 
 > **研究范畴**：曝光/流行度/位置因果去偏 (Causal Rec)、双边公平性、联邦防投毒推荐、工业级全链路架构与评测基准
 
-当前方向共收录 **129** 篇顶会/顶刊论文解读：
+当前方向共收录 **152** 篇顶会/顶刊论文解读：
 
 <dl>
 <dt><strong><a href="../../venues/AAAI/2026/debias_fairness_industrial/extracting_interaction_aware_monosemantic_concepts_in_recommender_systems/">Extracting Interaction-Aware Monosemantic Concepts in Recommender Systems</a></strong></dt>
@@ -32,6 +32,22 @@
 <dt><strong><a href="../../venues/AAAI/2026/debias_fairness_industrial/the_role_of_follow_networks_and_twitter_s_content_recommender_on_partisan_s/">The Role of Follow Networks and Twitter&#x27;s Content Recommender on Partisan Skew and Rumor Exposure during the 2022 U.S. Midterm Election</a></strong></dt>
 <dd>
 <p>用 18 个自动化审计账号在 2022 美国中期选举期间对比算法流与时间流，量化推荐算法与关注网络对党派倾斜、谣言与低质信息曝光的交互效应。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/debias_fairness_industrial/authority_bias_in_conversational_search_engines_for_academic_paper_recommen/">Authority Bias in Conversational Search Engines for Academic Paper Recommendation</a></strong></dt>
+<dd>
+<p>内容受控反事实审计揭示 LLM 学术推荐存在显著权威偏见，并提出 say-do gap 与前沿模型反向失效两大诊断现象。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/debias_fairness_industrial/content_fuzzing_for_escaping_information_cocoons_on_digital_social_media/">Content Fuzzing for Escaping Information Cocoons on Digital Social Media</a></strong></dt>
+<dd>
+<p>以立场检测置信度为灰盒反馈，用 LLM 迭代改写帖子翻转机器立场标签，助创作者突破信息茧房，跨 3 数据集 4 模型平均逃逸率 40%–91%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/llm_rec/one_polluted_page_is_enough_evaluating_web_content_pollution_in_llm_recomme/">One Polluted Page Is Enough: Evaluating Web Content Pollution in LLM Recommenders</a></strong></dt>
+<dd>
+<p>提出 FORGE 基准，在冻结检索包上本地改写真实品牌为虚假品牌，量化 12 个 LLM 推荐器被 GEO 网页污染欺骗的比率，并揭示推理与防御的反效果。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/debias_fairness_industrial/rethinking_fairness_in_llm_based_recommender_systems_a_survey/">Rethinking Fairness in LLM-Based Recommender Systems: A Survey</a></strong></dt>
+<dd>
+<p>首个 LLM4Rec 公平性综述，提出「偏置机制×公平目标」二维分类法，系统梳理数据集、评估协议、缓解策略与可信交叉议题。</p>
 </dd>
 <dt><strong><a href="../../venues/ACM_MM/2026/debias_fairness_industrial/tru_targeted_reverse_update_for_efficient_multimodal_recommendation_unlearn/">TRU: Targeted Reverse Update for Efficient Multimodal Recommendation Unlearning</a></strong></dt>
 <dd>
@@ -116,6 +132,54 @@
 <dt><strong><a href="../../venues/ICDM/2026/sequential_rec/revisiting_self_attentive_sequential_recommendation_beyond_the_llm_paradigm/">Revisiting Self-Attentive Sequential Recommendation Beyond the LLM Paradigm</a></strong></dt>
 <dd>
 <p>以 SASRec 为锚点对比推荐与语言建模的熵结构差异，诊断四条继承假设并给出数据优先议程，含同模型双视图实证。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/debias_fairness_industrial/alm_mta_front_door_causal_multi_touch_attribution_method_for_creator_ecosys/">ALM-MTA: Front-Door Causal Multi-Touch Attribution Method for Creator-Ecosystem Optimization</a></strong></dt>
+<dd>
+<p>以前门识别+对抗代理中介实现大规模推荐系统多触点因果归因，离线 AUC 0.907、线上创作者 +0.6%。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/rl_bandit_rec/beyond_match_maximization_and_fairness_retention_optimized_two_sided_matchi/">Beyond Match Maximization and Fairness: Retention-Optimized Two-Sided Matching</a></strong></dt>
+<dd>
+<p>将双边匹配推荐重构为留存最大化问题，用凹性 Jensen 下界把 NP-hard 排序松弛为 O(NlogN) 的 argsort 打分，在合成与真实约会平台数据上以约 70% 匹配量取得最高留存率。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/debias_fairness_industrial/causal_representation_learning_for_generalisable_recommendation/">Causal Representation Learning for Generalisable Recommendation</a></strong></dt>
+<dd>
+<p>提出信息论解耦准则 J=I(g(T);Y|Z)−λI(g(T);Z)，用 InfoNCE+梯度反转实现，零推理开销，Spotify 千万级 A/B 提升 +0.75% 播放。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/debias_fairness_industrial/copf_an_online_framework_for_deployment_stable_counterfactual_fairness_in_e/">COPF: An Online Framework for Deployment-Stable Counterfactual Fairness in Evolving Graphs</a></strong></dt>
+<dd>
+<p>以曝光反事实定义群体机会差，用倾向日志+GA-DR残差+Residual-OI证书在线审计并控制演化图链路推荐的部署稳定公平性。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/rl_bandit_rec/incentivized_exploration_with_stochastic_covariates_a_two_stage_mechanism_d/">Incentivized Exploration with Stochastic Covariates: A Two-Stage Mechanism Design for Recommender System</a></strong></dt>
+<dd>
+<p>面向在线随机用户协变量的激励相容探索，提出两阶段 RCB 算法（冷启动补贴 + 逆比例间隙采样），在满足 ε-DBIC 约束下达到 $\tilde{O}(\sqrt{KdT})$ 遗憾。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/debias_fairness_industrial/kuairecv2_benchmarking_large_scale_continual_learning_for_diversified_and_m/">KuaiRecV2: Benchmarking Large-Scale Continual Learning for Diversified and Multi-task Recommendation</a></strong></dt>
+<dd>
+<p>快手 30 天 4.84 亿交互动态物品池基准，统一评测持续学习、Token 级多样性与多任务检索。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/debias_fairness_industrial/low_pass_personalized_subgraph_federated_recommendation/">Low-pass Personalized Subgraph Federated Recommendation</a></strong></dt>
+<dd>
+<p>用低通谱滤波提取跨子图稳定的结构信号做个性化联邦聚合，并以局部流行度偏差感知 margin 抑制长尾偏置，五数据集 NDCG@20 最高提升 24.2%。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/ctr_feature_interaction/model_monotonicity_in_autobidding_auctions_when_do_better_predictions_lead_/">Model Monotonicity in Autobidding Auctions: When Do Better Predictions Lead to Better Outcomes?</a></strong></dt>
+<dd>
+<p>用划分细化刻画模型改进，系统证明自动出价拍卖中仅三种设定保证平台指标单调，其余均可反例击穿。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/debias_fairness_industrial/obliviate_efficient_unlearning_in_recommender_systems/">Obliviate: Efficient Unlearning in Recommender Systems</a></strong></dt>
+<dd>
+<p>两阶段低秩适配器+局部校准的推荐系统机器遗忘框架，20%删除率下兼顾遗忘完整性与效用，比全量重训快约 3 倍。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/generative_rec/tracer_token_reassignment_for_concept_erasure_in_generative_recommendation/">TRACER: Token ReAssignment for Concept ERasure in Generative Recommendation</a></strong></dt>
+<dd>
+<p>首个面向生成式推荐的概念遗忘框架，用可微 token 重分配替代直接抑制共享 SID，在 Amazon 三域上遗忘 HR@5 较 PISCES 再降 20%+ 且保留 97% 效用。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/collaborative_filtering/two_level_softmax_sampling_done_right_correcting_bias_from_size_imbalance_a/">Two-Level Softmax Sampling Done Right: Correcting Bias from Size Imbalance and Dispersion</a></strong></dt>
+<dd>
+<p>揭示两级 softmax 采样因簇大小失衡与簇内相似度离散导致的系统性偏差，提出 S-2LS/SD-2LS 校正，KL 保真度提升 1–4 个数量级且开销近乎为零。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/debias_fairness_industrial/user_embeddings_are_superpositions_of_interpretable_behavioral_modes/">User Embeddings are Superpositions of Interpretable Behavioral Modes</a></strong></dt>
+<dd>
+<p>将机制可解释性的叠加假设迁移到用户嵌入，用 SAE 事后分解出可命名行为模式，支撑零样本自然语言受众检索与画像。</p>
 </dd>
 <dt><strong><a href="../../venues/IJCAI/2026/debias_fairness_industrial/a_survey_of_personalized_federated_foundation_models_for_privacy_preserving/">A Survey of Personalized Federated Foundation Models for Privacy-Preserving Recommendation</a></strong></dt>
 <dd>
@@ -425,13 +489,41 @@
 <dd>
 <p>用后分层+CUPED压制重尾GMV方差，等效置信度下节省约45%流量，已在ShareChat 40+线上实验落地。</p>
 </dd>
+<dt><strong><a href="../../venues/TKDD/2026/generative_rec/eval4direc_a_unified_and_systematic_evaluation_framework_for_diffusion_base/">Eval4DiRec: A Unified and Systematic Evaluation Framework for Diffusion-based Recommender Systems</a></strong></dt>
+<dd>
+<p>首个面向扩散推荐的开源统一评测框架，覆盖 5 场景 14 模型，标准化扩散推理配置并揭示噪声调度与步数的关键影响。</p>
+</dd>
+<dt><strong><a href="../../venues/TKDE/2026/social_group_rec/quantifying_and_minimizing_perception_gap_in_social_networks/">Quantifying and Minimizing Perception Gap in Social Networks</a></strong></dt>
+<dd>
+<p>提出连续意见下的感知差距指数 PGI，用谱图理论刻画网络连通性与社群结构对局部-全局认知偏差的影响，并证明连边推荐最小化 PGI 的不可近似性，给出近最优贪心启发式。</p>
+</dd>
+<dt><strong><a href="../../venues/TOIS/2026/cross_domain_multi_scenario/causal_invariant_cross_domain_out_of_distribution_recommendation/">Causal-Invariant Cross-Domain Out-of-Distribution Recommendation</a></strong></dt>
+<dd>
+<p>统一建模跨域与单域双重分布偏移，用双层因果结构与 LLM 引导混杂因子发现实现跨域 OOD 推荐，HR@10 平均提升 6.34%。</p>
+</dd>
 <dt><strong><a href="../../venues/TOIS/2026/debias_fairness_industrial/mitigating_popularity_bias_in_recommendation_with_global_listwise_learning_/">Mitigating Popularity Bias in Recommendation with Global Listwise Learning and Progressive Bi-Weighting</a></strong></dt>
 <dd>
 <p>用 IPS 加权多项似然实现列表级全局无偏学习，并以 Bi-Weighting 平滑倾向估计与渐进式去偏，六数据集 Recall@20 平均提升 9.43%。</p>
 </dd>
+<dt><strong><a href="../../venues/TORS/2026/debias_fairness_industrial/balancing_fairness_and_high_match_rates_in_reciprocal_recommender_systems_a/">Balancing Fairness and High Match Rates in Reciprocal Recommender Systems: A Nash Social Welfare Approach</a></strong></dt>
+<dd>
+<p>将双边匹配推荐建模为推荐机会分配，用 Nash 社会福利交替优化实现近无嫉妒的公平推荐，并以 Sinkhorn 加速至大规模场景。</p>
+</dd>
 <dt><strong><a href="../../venues/TORS/2026/agent_conversational_rec/collab_rec_an_llm_based_agentic_framework_for_balancing_recommendations_in_/">Collab-Rec: An LLM-based Agentic Framework for Balancing Recommendations in Tourism</a></strong></dt>
 <dd>
 <p>三角色 LLM 智能体 + 确定性 Moderator 多轮约束精炼，在 900 条旅游查询上兼顾约束满足与长尾多样性。</p>
+</dd>
+<dt><strong><a href="../../venues/TORS/2026/generative_rec/diffusion_recommender_models_and_the_illusion_of_progress_a_concerning_stud/">Diffusion Recommender Models and the Illusion of Progress: A Concerning Study of Reproducibility and a Conceptual Mismatch</a></strong></dt>
+<dd>
+<p>复现 9 个 SIGIR&#x27;23-24 扩散推荐模型，仅 25% 结果可复现，调优简单基线全面反超，并揭示 DDPM 与 top-n 推荐任务的概念错配。</p>
+</dd>
+<dt><strong><a href="../../venues/TORS/2026/llm_rec/music_recommendation_with_large_language_models_challenges_opportunities_an/">Music Recommendation with Large Language Models: Challenges, Opportunities, and Evaluation</a></strong></dt>
+<dd>
+<p>系统梳理 LLM 驱动音乐推荐在用户建模、物品建模与自然语言请求三方面的变革，并提出 NLP 启发的评估分类体系与 MRS 成功/风险维度框架。</p>
+</dd>
+<dt><strong><a href="../../venues/TORS/2026/poi_spatiotemporal_rec/point_of_interest_recommendation_pitfalls_and_viable_solutions/">Point of Interest Recommendation: Pitfalls and Viable Solutions</a></strong></dt>
+<dd>
+<p>系统梳理POI推荐在数据集、算法与评估三维度的20项陷阱，并提出六方向研究议程与陷阱-方案映射表</p>
 </dd>
 <dt><strong><a href="../../venues/TORS/2026/debias_fairness_industrial/reproducibility_in_recommender_systems_a_survey/">Reproducibility in Recommender Systems: A Survey</a></strong></dt>
 <dd>

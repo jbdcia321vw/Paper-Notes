@@ -4,7 +4,7 @@
 
 > **方向说明**：LightGCN 谱图卷积改进、超图推荐 (Hypergraph)、异构图与知识图谱推理 (KGRec)
 
-📌 **同领域跨会议浏览：** [AAAI (RecSys Track) 2026 (1)](../../../AAAI/2026/graph_rec/) · [CIKM 2026 (3)](../../../CIKM/2026/graph_rec/) · [ACM TOIS 2026 (2)](../../../TOIS/2026/graph_rec/)
+📌 **同领域跨会议浏览：** [AAAI (RecSys Track) 2026 (1)](../../../AAAI/2026/graph_rec/) · [ACL / EMNLP (RecSys & CRS) 2026 (1)](../../../ACL_EMNLP/2026/graph_rec/) · [CIKM 2026 (3)](../../../CIKM/2026/graph_rec/) · [KDD 2026 (1)](../../../KDD/2026/graph_rec/) · [ACM TOIS 2026 (2)](../../../TOIS/2026/graph_rec/)
 
 🔥 **高频主题：** 召回 ×3
 

@@ -2,7 +2,7 @@
 
 > **研究范畴**：跨域知识迁移 (CDR)、重叠/非重叠用户对齐、多业务场景联合建模 (STAR/PEPNet 等)
 
-当前方向共收录 **26** 篇顶会/顶刊论文解读：
+当前方向共收录 **28** 篇顶会/顶刊论文解读：
 
 <dl>
 <dt><strong><a href="../../venues/AAAI/2026/cross_domain_multi_scenario/from_ids_to_semantics_a_generative_framework_for_cross_domain_recommendatio/">From IDs to Semantics: A Generative Framework for Cross-Domain Recommendation with Adaptive Semantic Tokenization</a></strong></dt>
@@ -12,6 +12,10 @@
 <dt><strong><a href="../../venues/AAAI/2026/generative_rec/tokenize_once_recommend_anywhere_unified_item_tokenization_for_multi_domain/">Tokenize Once, Recommend Anywhere: Unified Item Tokenization for Multi-domain LLM-based Recommendation</a></strong></dt>
 <dd>
 <p>提出 TokenMoE+码本+互信息校准的统一物品分词框架 UniTok，单模型跨 10 域训练，NDCG@10 最高提升 51.89%，参数量降 9.63×。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/cross_domain_multi_scenario/horizon_a_benchmark_for_in_the_wild_user_behaviour_modeling/">HORIZON: A Benchmark for In-the-wild User Behaviour Modeling</a></strong></dt>
+<dd>
+<p>重构 Amazon Reviews 为 54M 用户跨域长程基准，提出时间-用户双轴四象限评估与 LLM 查询改写/长程建模任务，揭示 ID 模型在时间外推下崩塌。</p>
 </dd>
 <dt><strong><a href="../../venues/CIKM/2026/cross_domain_multi_scenario/a_dual_expert_strategy_integrating_llms_to_mitigate_negative_transfer_in_cr/">A Dual-Expert Strategy Integrating LLMs to Mitigate Negative Transfer in Cross-Domain Sequential Recommendation</a></strong></dt>
 <dd>
@@ -84,6 +88,10 @@
 <dt><strong><a href="../../venues/SIGIR/2026/generative_rec/universal_item_tokenization_for_transferable_generative_recommendation/">Universal Item Tokenization for Transferable Generative Recommendation</a></strong></dt>
 <dd>
 <p>用 MLLM+树状码本构建跨域通用物品分词器，结合内容重建与共现协同对齐，实现可迁移生成式推荐，全库排序下全面超越基线。</p>
+</dd>
+<dt><strong><a href="../../venues/TOIS/2026/cross_domain_multi_scenario/causal_invariant_cross_domain_out_of_distribution_recommendation/">Causal-Invariant Cross-Domain Out-of-Distribution Recommendation</a></strong></dt>
+<dd>
+<p>统一建模跨域与单域双重分布偏移，用双层因果结构与 LLM 引导混杂因子发现实现跨域 OOD 推荐，HR@10 平均提升 6.34%。</p>
 </dd>
 <dt><strong><a href="../../venues/WSDM/2026/cross_domain_multi_scenario/automated_information_flow_selection_for_multi_scenario_multi_task_recommen/">Automated Information Flow Selection for Multi-scenario Multi-task Recommendation</a></strong></dt>
 <dd>

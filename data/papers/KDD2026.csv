@@ -61,3 +61,4 @@ PCR-CA: Parallel Codebook Representations with Contrastive Alignment for Multipl
 CTR-Sink: Attention Sink for Language Models in Click-Through Rate Prediction,2508.03668,https://arxiv.org/abs/2508.03668,https://github.com/UGUESS-lzx/CTR-SINK,ctr_feature_interaction,KDD,2026
 Scaling Recommender Transformers to One Billion Parameters,2507.15994,https://arxiv.org/abs/2507.15994,,sequential_rec,KDD,2026
 Breaking Information Cocoons: A Hyperbolic Framework for Balancing Exploration and Exploitation in Recommender Systems,2411.13865,https://arxiv.org/abs/2411.13865,https://github.com/Martin-qyma/HERec,collaborative_filtering,KDD,2026
+How Do Graph Signals Affect Recommendation: Unveiling the Mystery of Low and High-Frequency Graph Signals,2512.15744,https://arxiv.org/abs/2512.15744,https://github.com/mojosey/SimGCF,graph_rec,KDD,2026

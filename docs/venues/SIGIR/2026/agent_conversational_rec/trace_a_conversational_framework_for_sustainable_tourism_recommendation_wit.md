@@ -133,4 +133,3 @@ $$(r^*, E, r_{alt}) = A_{EG}(R_0, R_1, U, \mathrm{WTC})$$
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐ （无基线、无消融、无显著性检验，24 人小样本主观研究，仅够 Demo 级别）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （形式化四阶段流水线清晰、公式简洁、系统架构与实现栈交代完整，但缺复杂度与失败案例分析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （ADK + FastAPI + Firestore + Docker 全栈可复现、延迟可接受，但无公开仓库链接与多智能体成本核算）
-

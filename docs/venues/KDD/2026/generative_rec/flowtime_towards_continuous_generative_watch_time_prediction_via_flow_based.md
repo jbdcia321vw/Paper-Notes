@@ -129,4 +129,3 @@ $$z_k=z_{k-1}+\mathbf{u}_k(\mathbf{h}_{\text{prior}})\cdot\tanh\!\big(\mathbf{w}
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （三数据集+线上 A/B+新 PDF 指标+开源 TimeRec 库，11 基线全范式覆盖，5 次重复）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三大范式缺陷均有命题与证明，但部分符号在正文与附录间略有跳转）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （4亿 DAU 线上验证、单步推理、首个开源 WTP 基准库，工程价值极高）
-

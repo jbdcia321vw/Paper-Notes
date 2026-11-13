@@ -4,7 +4,7 @@
 
 > **方向说明**：Next-POI 兴趣点推荐、时空序列轨迹建模、LBS 本地生活服务与移动出行推荐
 
-📌 **同领域跨会议浏览：** [KDD 2026 (2)](../../../KDD/2026/poi_spatiotemporal_rec/) · [RecSys 2026 (2)](../../../RecSys/2026/poi_spatiotemporal_rec/) · [SIGIR 2026 (1)](../../../SIGIR/2026/poi_spatiotemporal_rec/)
+📌 **同领域跨会议浏览：** [KDD 2026 (2)](../../../KDD/2026/poi_spatiotemporal_rec/) · [RecSys 2026 (2)](../../../RecSys/2026/poi_spatiotemporal_rec/) · [SIGIR 2026 (1)](../../../SIGIR/2026/poi_spatiotemporal_rec/) · [ACM TORS 2026 (1)](../../../TORS/2026/poi_spatiotemporal_rec/)
 
 <dl>
 <dt><strong><a href="adaptive_location_hierarchy_learning_for_long_tailed_mobility_prediction/">Adaptive Location Hierarchy Learning for Long-Tailed Mobility Prediction</a></strong></dt>

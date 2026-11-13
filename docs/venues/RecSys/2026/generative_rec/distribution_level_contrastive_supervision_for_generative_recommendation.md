@@ -131,4 +131,3 @@ $$\mathcal{L}_{\text{SODA}}=-\log\sigma\big(\beta\cdot(s(h^+,h_y)-s(h^-,h_y))\bi
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （Full-Ranking + Leave-One-Out 协议规范、三骨干一致增益可信，但仅 3 数据集、消融单数据集、无显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （5 页短文公式紧凑、软量化与 KL 匹配定义清晰，但 $\beta$ 的作用与负样本构造动机仅一句话带过）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （即插即用、推理零开销、训练 <5% 增量、代码已开源，工程友好；但超参调优成本与大规模验证缺失扣分）
-

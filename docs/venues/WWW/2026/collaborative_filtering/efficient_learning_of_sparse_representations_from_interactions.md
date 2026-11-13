@@ -129,4 +129,3 @@ Goodbooks-10k，nDCG@100（图 1）：
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 + strong generalization + 等字节预算对齐公平，但缺显著性检验与分段定量评估）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （4 页短文公式紧凑、算子定义清晰，剪枝调度与推理复杂度交代到位，部分实现细节外引原文）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （基于生产级 ELSA 改造、代码与在线 demo 全开源、SpMV 推理有实际加速，落地路径极短）
-

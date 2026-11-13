@@ -133,4 +133,3 @@ $\boldsymbol{c}^1_u=\text{MeanPool}\big(\text{Concat}(\text{Attn}^1_1,\dots,\tex
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （六个真实下游任务 + 线上 A/B + 三组消融 + 效率对比相当完整，扣分在于无公开数据集、无全库排序协议、阈值敏感性缺失）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （符号体系对 $\boldsymbol{u}^k$与$u$的区分交代清楚，公式简洁；但$T_4$跳过逻辑与$\mathcal{L}_{INTRA}$中$N(T)$ 的表述略绕）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （线上 289 万用户 A/B 验证 +1.28% AUC，推理仅增 $d_u$ 维特征、开销可忽略，是少见的端到端可落地预训练方案；可惜未开源）
-

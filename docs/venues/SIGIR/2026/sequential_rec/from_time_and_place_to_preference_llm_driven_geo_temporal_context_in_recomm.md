@@ -138,4 +138,3 @@ MovieLens explorer 用户（相对 SASRec 提升 %，绝对基线 NDCG@5=0.0395�
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （覆盖 MovieLens/LastFM/生产三域并区分 general/explorer，但仅 Sampled Ranking、单骨干、无显著性检验与线上 A/B）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （prompt 模板、四种集成架构与公式定义清晰，诊断测试逻辑自洽，附录给出绝对指标）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （离线预生成嵌入、模型无关辅助损失、参数高效 M+GT 变体均利于工程部署，且释放增强版 MovieLens 数据集）
-

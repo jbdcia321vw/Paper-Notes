@@ -125,4 +125,3 @@ $\mathrm{LoRA}_u=\begin{cases}\mathrm{LoRA}_{global}, & H(w_u)>0.95\log N\\ \mat
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集+时间切分防泄漏+消融/跨域/效率分析完整，但缺全库排序与线上 A/B）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与门控阈值定义明确，分阶段训练流程清晰，部分符号如 $\sigma/\mu$ 表述略含糊）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源，LoRA 增量 <1.5%、延迟 <10%，单次前向即可批量打分，工程友好）
-

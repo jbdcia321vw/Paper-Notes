@@ -118,4 +118,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （双数据集 + 谱/RankMe/梯度三重证据较完整，但缺显著性检验、数据集统计与更多骨干验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （梯度推导清晰，p-DNN/s-DNN 梯度形式区分明确，符号统一）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源，RankMe 监控成本低、可直接嵌入现有精排训练管线）
-

@@ -122,4 +122,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （双数据集 + 5 次运行 + 显著性检验与完整消融，但仅 small 版本、impression 内排序，缺全库与线上验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （t-范数与层间算子定义完整、算法伪代码清晰，规则示例可读性强；复杂度分析略简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （2064 参数、推理近零开销、匿名代码开源，规则可直接供编辑审计，契合 AI Act 合规诉求）
-

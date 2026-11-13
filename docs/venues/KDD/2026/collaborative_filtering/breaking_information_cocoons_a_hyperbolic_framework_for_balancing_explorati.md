@@ -130,4 +130,3 @@ Google-Reviews 上 HERec 同样取得 R@20=0.1598、N@20=0.0992、Div@20=0.3543�
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 Full-Ranking + 头尾分桶 + 大规模扩展 + 10 次运行方差报告齐全，唯缺线上验证与显著性检验细节）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （Proposition 1 证明含误差界分析，洛伦兹公式规范；但部分符号（如 $\delta$ 中范数比）解释略简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、LLM 仅离线调用、单 epoch <5 秒，层次树可解释可调；$O(N^2)$ 构图是规模化主要瓶颈）
-

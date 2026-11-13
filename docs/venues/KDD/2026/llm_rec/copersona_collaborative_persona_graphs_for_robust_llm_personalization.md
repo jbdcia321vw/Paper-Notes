@@ -130,4 +130,3 @@ $$\mathbf{h}_u^{(m)}=\sigma\!\left(W\!\left(\gamma_u^{(m)}\mathbf{h}_u^{(0,m)}+(
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （六数据集+双模型规模+LLM-as-Judge 较完整，但缺人工评估、缺排序任务、划分沿用旧工作未做时间切分）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式简洁、符号一致、方面 schema 示例表直观；门控函数 $f_\theta$与$\omega$ 细节被推入附录，正文略欠完整）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （软提示可缓存、图检索为查表，推理友好；但画像构建的 LLM 调用成本与未开源代码削弱了直接复现性）
-

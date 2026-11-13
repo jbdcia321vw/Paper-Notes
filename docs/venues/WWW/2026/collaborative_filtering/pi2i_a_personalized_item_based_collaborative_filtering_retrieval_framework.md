@@ -131,4 +131,3 @@ Taobao-Small（图 3 趋势，HR@4K 相对变化）：
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集+15 天线上 A/B 完整，但仅 HR 单指标、缺显著性检验且部分基线 OOM 缺席）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （Swing 加权与注意力公式清晰，但部分符号（如 $\mathcal{V}$、$\sigma$）定义略松散，缺复杂度分析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （淘宝全量部署、成交率 +1.05%，并开源 1.3 亿交互数据集，工程与复现价值极高）
-

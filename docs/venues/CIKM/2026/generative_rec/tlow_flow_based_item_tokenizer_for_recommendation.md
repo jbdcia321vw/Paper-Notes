@@ -125,4 +125,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （四数据集 Full-Ranking + 跨域/多模态/冷启动分桶 + 微信线上 A/B 全链路验证，但缺解码效率实测与方差/多次运行报告）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （flow 各层 log-det 推导完整、并行解码的独立性论证清晰，但多尺度切分维度与 $C$ 的对应关系表述略含糊）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码开源；token 嵌入仅 $C\times S=4096$ 对比数千万物品嵌入，单卡数分钟可分词千万级新物品，微信线上已验证，落地价值极高）
-

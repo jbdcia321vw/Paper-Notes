@@ -135,4 +135,3 @@ $$R_U=\frac{1-(1-\alpha_I)^k}{(1-\alpha_I)\cdot k\cdot\gamma+r},\quad R_I=\frac{
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （6 攻 4 防 + 3 原生攻击 + 跨 4 个 LLM 骨干 + 攻击者比例网格，覆盖扎实；扣分在单数据集、无重复种子显著性检验、Judge 未人工校准）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （F1/F2/F3 三条跨方法规律提炼清晰，Table 1 方向性汇总高效；SIS 一阶近似推导简洁但作者自承过度简化，符号略密）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码与 conda 环境全开源，$R_U/R_I$ 预测器可做上线前拓扑风险预筛；但 LLM 推理成本高、仅 MovieLens 小规模，直接部署需扩规模验证）
-

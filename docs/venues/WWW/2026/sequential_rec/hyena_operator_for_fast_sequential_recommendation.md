@@ -129,4 +129,3 @@ $$\mathbf{V}^{(o)}=\mathrm{Conv}_{dw}\big(\mathbf{V}^{(o-1)}\odot\mathbf{X}^{(o)
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （四数据集覆盖短/中/超长序列，Full-Ranking 无偏评测规范，消融含 Fourier/Chebyshev 强对照；扣分在缺长度分桶分析与 Mamba4Rec 主表对比）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （核构造、$\ell_1$归一化与三项递推公式完整，复杂度推导清晰；部分符号如$O$阶数与$O(\cdot)$ 复杂度记号混用略易混淆）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （线性复杂度 + $O(D)$ 增量推理 + 最高 6× 训练加速，工程价值明确；但代码未开源、FFT 长卷积的线上延迟实测缺失，复现门槛偏高）
-

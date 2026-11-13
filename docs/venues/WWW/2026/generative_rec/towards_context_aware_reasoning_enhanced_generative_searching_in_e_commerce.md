@@ -126,4 +126,3 @@ R-GRPO vs. 原始 GRPO（All-50K，三轮 RL 迭代）：
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三规模真实日志、统一 trie 保证公平 beam search、含冷启动分桶与骨干规模分析，但缺公开数据集与显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （R-GRPO 的偏差分析与公式推导清晰，奖励设计逐项给出；部分符号如 $K$ 在码本层数与 beam 宽度间复用，略有歧义）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （来自快手真实场景、SID 构建免训练易落地，但代码未开源且思维链推理的线上时延未披露）
-

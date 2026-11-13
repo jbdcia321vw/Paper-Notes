@@ -141,4 +141,3 @@ $$\mathcal{L} = \mathcal{L}_v + \mathcal{L}_r + \mathcal{L}^{\text{DAR}}_v + \ma
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （首个公开 NetCVR 流式基准 + 8 个强基线 + 完整消融与窗口敏感性分析，但仅单数据集）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三条洞察驱动设计的叙事清晰，去偏权重推导置于附录，主文公式紧凑）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （淘天真实场景验证、代码与数据集全开源、推理仅一次前向，工程可复现性极高）
-

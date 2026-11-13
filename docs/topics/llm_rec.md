@@ -2,7 +2,7 @@
 
 > **研究范畴**：LLM 指令微调推荐、In-Context 列表重排、语义表征增强、大模型向轻量推荐模型知识蒸馏
 
-当前方向共收录 **142** 篇顶会/顶刊论文解读：
+当前方向共收录 **181** 篇顶会/顶刊论文解读：
 
 <dl>
 <dt><strong><a href="../../venues/AAAI/2026/llm_rec/align_3_gr_unified_multi_level_alignment_for_llm_based_generative_recommend/">Align$^3$GR: Unified Multi-Level Alignment for LLM-based Generative Recommendation</a></strong></dt>
@@ -36,6 +36,102 @@
 <dt><strong><a href="../../venues/AAAI/2026/agent_conversational_rec/when_top_ranked_recommendations_fail_modeling_multi_granular_negative_feedb/">When Top-ranked Recommendations Fail: Modeling Multi-Granular Negative Feedback for Explainable and Robust Video Recommendation</a></strong></dt>
 <dd>
 <p>三智能体协同建模多粒度负反馈，S-GRPO 渐进奖励实现可解释视频推荐，线上快滑率降 9.4%</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/debias_fairness_industrial/authority_bias_in_conversational_search_engines_for_academic_paper_recommen/">Authority Bias in Conversational Search Engines for Academic Paper Recommendation</a></strong></dt>
+<dd>
+<p>内容受控反事实审计揭示 LLM 学术推荐存在显著权威偏见，并提出 say-do gap 与前沿模型反向失效两大诊断现象。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/llm_rec/beyond_retrieval_learning_compact_user_representations_for_scalable_llm_per/">Beyond Retrieval: Learning Compact User Representations for Scalable LLM Personalization</a></strong></dt>
+<dd>
+<p>用双轨前缀（用户态+查询感知时序记录）替代提示序列化与逐用户适配器，LaMP 六任务全面领先且每用户参数降 130×</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/llm_rec/bridging_language_and_items_for_retrieval_and_recommendation_benchmarking_l/">Bridging Language and Items for Retrieval and Recommendation: Benchmarking LLMs as Semantic Encoders</a></strong></dt>
+<dd>
+<p>构建 BLaIR 基准，用 11 个 LLM 作语义编码器评测序列推荐、协同过滤与复杂查询商品搜索，揭示其排名与 MTEB 几乎不相关。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/collaborative_filtering/clusterrag_cluster_based_collaborative_filtering_for_personalized_retrieval/">ClusterRAG: Cluster-Based Collaborative Filtering for Personalized Retrieval-Augmented Generation</a></strong></dt>
+<dd>
+<p>用 HDBSCAN 将用户按画像嵌入聚类，簇内 ColBERTv2 排序选近邻，簇-文档两级检索融合协同画像做个性化 RAG，LaMP 全任务最优。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/debias_fairness_industrial/content_fuzzing_for_escaping_information_cocoons_on_digital_social_media/">Content Fuzzing for Escaping Information Cocoons on Digital Social Media</a></strong></dt>
+<dd>
+<p>以立场检测置信度为灰盒反馈，用 LLM 迭代改写帖子翻转机器立场标签，助创作者突破信息茧房，跨 3 数据集 4 模型平均逃逸率 40%–91%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/graph_rec/continual_graph_memory_for_adaptive_recommendation_under_intent_drift/">Continual Graph Memory for Adaptive Recommendation under Intent Drift</a></strong></dt>
+<dd>
+<p>将知识图谱视为可写双记忆（语义图记忆+情景教训记忆），冻结参数下仅靠质量门控图编辑实现意图漂移自适应重排。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/agent_conversational_rec/decisive_guiding_user_decisions_with_optimal_preference_elicitation_from_un/">Decisive: Guiding User Decisions with Optimal Preference Elicitation from Unstructured Documents</a></strong></dt>
+<dd>
+<p>将决策解耦为文档客观打分矩阵与贝叶斯偏好推断，用决策感知信息增益主动提问，Top-1 准确率最高提升约 20%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/llm_rec/eager_enrich_and_align_generative_query_recommendation_from_clicked_items_i/">EAGER: Enrich-and-Align Generative Query Recommendation from Clicked Items in E-commerce Search</a></strong></dt>
+<dd>
+<p>两阶段生成式 I2Q 查询推荐：课程化 SFT 扩意图覆盖 + GRPO 混合奖励对齐线上约束，线上 UCTR +0.83%、Pay Count +3.49%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/agent_conversational_rec/from_recall_to_forgetting_benchmarking_long_term_memory_for_personalized_ag/">From Recall to Forgetting: Benchmarking Long-Term Memory for Personalized Agents</a></strong></dt>
+<dd>
+<p>提出 Memora 长周期记忆基准与 FAMA 遗忘感知指标，揭示 LLM 与记忆智能体在记忆突变下频繁复用失效记忆。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/llm_rec/graphlora_structure_aware_low_rank_adaptation_for_large_language_model_reco/">GraphLoRA: Structure-Aware Low-Rank Adaptation for Large Language Model Recommendation</a></strong></dt>
+<dd>
+<p>将可训练 GNN 消息传递嵌入 LoRA 瓶颈（A 与 B 之间），让协同拓扑在参数空间传播；在 ML-1M/Amazon-Book 上以 r=8 的极小参数预算超越 CoRA 等 SOTA。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/agent_conversational_rec/harpo_hierarchical_agentic_reasoning_for_user_aligned_conversational_recomm/">HARPO: Hierarchical Agentic Reasoning for User-Aligned Conversational Recommendation</a></strong></dt>
+<dd>
+<p>将对话推荐重构为多维质量驱动的结构化决策，用分层偏好奖励引导树搜索推理，ReDial R@10 达 29.8%（+18.7%）。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/llm_rec/hsuga_llm_enhanced_recommendation_with_hierarchical_semantic_understanding_/">HSUGA: LLM-Enhanced Recommendation with Hierarchical Semantic Understanding and Group-Aware Alignment</a></strong></dt>
+<dd>
+<p>用分阶段可编辑兴趣演化替代长序列一次性摘要，并按用户活跃度分组调节语义对齐强度，三数据集全库排序稳定提升。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/llm_rec/memrec_collaborative_memory_augmented_agentic_recommender_system/">MemRec: Collaborative Memory-Augmented Agentic Recommender System</a></strong></dt>
+<dd>
+<p>将记忆管理从推理中架构解耦，用轻量 LM_Mem 在协同记忆图上做零样本规则剪枝与异步传播，仅向重型 LLM_Rec 注入蒸馏后的高信号协同上下文，四基准全库排序 H@1 最高 +28.98%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/agent_conversational_rec/mirroring_users_towards_building_preference_aligned_user_simulator_with_use/">Mirroring Users: Towards Building Preference-aligned User Simulator with User Feedback in Recommendation</a></strong></dt>
+<dd>
+<p>用 LLM 生成 EKB 决策过程作澄清、按认知不确定性蒸馏并拒绝采样去噪，微调 3B 模拟器在 8 域上超越 GPT-5 与教师模型。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/llm_rec/one_polluted_page_is_enough_evaluating_web_content_pollution_in_llm_recomme/">One Polluted Page Is Enough: Evaluating Web Content Pollution in LLM Recommenders</a></strong></dt>
+<dd>
+<p>提出 FORGE 基准，在冻结检索包上本地改写真实品牌为虚假品牌，量化 12 个 LLM 推荐器被 GEO 网页污染欺骗的比率，并揭示推理与防御的反效果。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/multimodal_rec/reasonrec_a_reasoning_augmented_multimodal_agent_for_unified_recommendation/">ReasonRec: A Reasoning-Augmented Multimodal Agent for Unified Recommendation</a></strong></dt>
+<dd>
+<p>将推荐重构为 Observe-Deliberate-Act 三阶段 CoT 推理智能体，以证据视界课程学习与不确定性引导工具委派，在五数据集四任务上 HR@5 相对提升超 30% 并降低推理延迟。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/agent_conversational_rec/rectoolbench_benchmarking_recommendation_specific_tool_orchestration_under_/">RecToolBench: Benchmarking Recommendation-Specific Tool Orchestration under Fuzzy User Intent</a></strong></dt>
+<dd>
+<p>首个基于 MCP 的模糊意图推荐工具编排基准，1288 条四级难度可执行任务，揭示语法合法≠推荐成功的执行-结果鸿沟。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/llm_rec/rerec_reasoning_augmented_llm_based_recommendation_assistant_via_reinforcem/">ReRec: Reasoning-Augmented LLM-based Recommendation Assistant via Reinforcement Fine-tuning</a></strong></dt>
+<dd>
+<p>用双图奖励塑形、推理感知优势估计与在线课程调度改造 RFT，使 3B LLM 在复杂查询推荐上大幅超越 GRPO 系基线并保留通用能力。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/debias_fairness_industrial/rethinking_fairness_in_llm_based_recommender_systems_a_survey/">Rethinking Fairness in LLM-Based Recommender Systems: A Survey</a></strong></dt>
+<dd>
+<p>首个 LLM4Rec 公平性综述，提出「偏置机制×公平目标」二维分类法，系统梳理数据集、评估协议、缓解策略与可信交叉议题。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/llm_rec/tatk_triple_aware_top_k_learning_with_knowledge_grounded_verification_for_l/">TATK: Triple-Aware Top-K Learning with Knowledge-Grounded Verification for LLM-based Sequential Recommendation</a></strong></dt>
+<dd>
+<p>用元数据物品图贯穿提示接地、Top-K 位置奖励与推理期 top-M 重排，全库排序下 NDCG@10 最高提升 27.03%</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/agent_conversational_rec/towards_effective_structured_context_modeling_for_conversational_recommende/">Towards Effective Structured Context Modeling for Conversational Recommender Systems via Dual-node Monte Carlo Tree Search</a></strong></dt>
+<dd>
+<p>将对话上下文建模为双节点 MCTS 树，ELNode 搜索追问动作、EXNode 精炼检索查询，Redial/OpenDialKG 上 SR 平均提升 9.07%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/generative_rec/what_makes_an_ideal_quote_recommending_unexpected_yet_rational_quotations_v/">What Makes an Ideal Quote? Recommending &#x27;Unexpected yet Rational&#x27; Quotations via Novelty</a></strong></dt>
+<dd>
+<p>提出 NovelQR，用生成式标签智能体构建深层语义知识库并做标签增强检索，再以 token 级新颖性估计器缓解自回归续写偏差进行重排，双语数据集上人类评审 78% 偏好本系统。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/llm_rec/what_makes_llms_effective_sequential_recommenders_a_study_on_preference_int/">What Makes LLMs Effective Sequential Recommenders? A Study on Preference Intensity and Temporal Context</a></strong></dt>
+<dd>
+<p>揭示二元偏好对齐丢失偏好强度与时序上下文，提出自适应奖励边际 RecPO，五数据集 HR@1 全面领先 S-DPO。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2026/rl_bandit_rec/world_model_guided_reinforcement_learning_via_counterfactual_user_engagemen/">World Model-Guided Reinforcement Learning via Counterfactual User Engagement Simulation</a></strong></dt>
+<dd>
+<p>将推荐视为动作、异构反馈视为观测，用语言世界模型 UEWM 做反事实用户模拟器，为 1.7B 策略提供同状态稠密奖励，跨域零样本超越大模型。</p>
 </dd>
 <dt><strong><a href="../../venues/CIKM/2026/agent_conversational_rec/a_behavioral_trait_leaks_into_preferences_diagnosing_trait_interference_in_/">A Behavioral Trait Leaks into Preferences: Diagnosing Trait Interference in LLM User Simulators</a></strong></dt>
 <dd>
@@ -135,7 +231,7 @@
 </dd>
 <dt><strong><a href="../../venues/ECIR/2026/agent_conversational_rec/interplay_training_independent_simulators_for_reference_free_conversational/">Interplay: Training Independent Simulators for Reference-Free Conversational Recommendation</a></strong></dt>
 <dd>
-<p>训练独立用户/推荐双模拟器实现无参考对话推荐，8B 模型 SR 达 95%、Recall@1 超 32B 基线 15 倍。</p>
+<p>训练独立用户/推荐双模拟器，以目标属性替代目标物品消除 oracle 泄漏，8B 模型 Recall@1 超 32B 基线 15 倍。</p>
 </dd>
 <dt><strong><a href="../../venues/ECIR/2026/self_supervised_denoising/post_training_denoising_of_user_profiles_with_llms_in_collaborative_filteri/">Post-Training Denoising of User Profiles with LLMs in Collaborative Filtering Recommendation</a></strong></dt>
 <dd>
@@ -172,6 +268,54 @@
 <dt><strong><a href="../../venues/ICDM/2026/llm_rec/memory_has_geometry_non_uniform_geometric_memory_for_long_horizon_personali/">Memory Has Geometry: Non-Uniform Geometric Memory for Long-Horizon Personalized AI</a></strong></dt>
 <dd>
 <p>将长程个性化记忆重构为用户特定非均匀几何状态空间上的轨迹条件状态估计，替代扁平记录检索范式。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/cold_start_rec/adaptive_querying_with_ai_persona_priors/">Adaptive Querying with AI Persona Priors</a></strong></dt>
+<dd>
+<p>用 LLM 人物画像构建有限混合贝叶斯先验，实现闭式后验更新与自适应提问，在冷启动用户/题目场景下优于 CAT/IRT 基线。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/multimodal_rec/controllable_and_content_based_recommendations/">Controllable and Content-Based Recommendations</a></strong></dt>
+<dd>
+<p>用多模态 LLM 将图像/音频/视频条目转述为文本画像，经标签监督与 InfoNCE 对齐冻结 CF 骨干，实现可读可编辑的文本瓶颈控制。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/sequential_rec/cramer_control_via_request_aware_masking_for_editing_recommenders/">CRAMER: Control via Request-Aware Masking for Editing Recommenders</a></strong></dt>
+<dd>
+<p>将自然语言请求编码为稀疏行列门控掩码，对冻结序列推荐骨干做后验行为编辑，采样100负例排序下全面超越四类请求感知基线且推理仅增0.018s。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/llm_rec/harp_training_free_dual_profile_agentic_communication_for_llm_based_recomme/">HARP: Training-Free Dual-Profile Agentic Communication for LLM-Based Recommendation</a></strong></dt>
+<dd>
+<p>将 LLM 推荐重构为四阶段智能体通信，用双画像、同质性门控检索与单次反思三个免训练算子补齐缺失环节，Hit@1 相对提升 6.9%–24.0%。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/multimodal_rec/intentlens_grounding_underspecified_multimodal_queries_for_recommendation_v/">IntentLens: Grounding Underspecified Multimodal Queries for Recommendation via Tool-Augmented Reasoning</a></strong></dt>
+<dd>
+<p>用 MLLM 工具增强推理将欠指定图文查询接地为结构化意图，再以轻量双塔排序，构建两个新基准并显著超越 MLLM 与检索基线。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/llm_rec/learning_evidence_highlighting_for_frozen_llms/">Learning Evidence Highlighting for Frozen LLMs</a></strong></dt>
+<dd>
+<p>用轻量 Emphasis Actor 以 RL 在冻结 LLM 的原始上下文中插入高亮标签，解耦证据选择与推理，序列推荐 HR@10 相对最优基线提升 5.38%。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/sequential_rec/not_all_is_lost_repairing_lossy_user_preference_states_of_personalization_e/">Not All Is Lost: Repairing Lossy User Preference States of Personalization Encoders</a></strong></dt>
+<dd>
+<p>冻结宿主编码器与任务头，仅训练轻量 REPAIR 模块，用缓存逐步表征对压缩偏好状态做时序结构化残差校正，12 个推荐宿主 MRR/nDCG@10 全面提升。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/llm_rec/principled_synthetic_data_enables_the_first_scaling_laws_for_llms_in_recomm/">Principled Synthetic Data Enables the First Scaling Laws for LLMs in Recommendation</a></strong></dt>
+<dd>
+<p>用分层合成数据课程（Item-Text/CF/UIH）替代噪声交互日志，首次在 0.6B–8B LLM CPT 上拟合出推荐域幂律缩放律，SasRec 在合成数据上 Recall@100 提升 130%。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/agent_conversational_rec/propersim_developing_proactive_and_personalized_ai_assistants_through_user_/">ProPerSim: Developing Proactive and Personalized AI Assistants through User-Assistant Simulation</a></strong></dt>
+<dd>
+<p>提出 ProPerSim 仿真任务与 ProPerAssistant 基线，用 LLM 用户智能体+四维评分准则+DPO 偏好学习，让助手在时机与内容上同时个性化，14 天内平均满意度从 2.2 升至 3.3/4。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/llm_rec/rejuvenating_cross_entropy_loss_in_knowledge_distillation_for_recommender_s/">Rejuvenating Cross-Entropy Loss in Knowledge Distillation for Recommender Systems</a></strong></dt>
+<dd>
+<p>揭示CE蒸馏损失与NDCG的闭包假设矛盾，提出师生协同子集拆分与自适应加权的RCE-KD，全库排序下NDCG@20最高提升11.76%。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/llm_rec/token_efficient_item_representation_via_images_for_llm_recommender_systems/">Token-Efficient Item Representation via Images for LLM Recommender Systems</a></strong></dt>
+<dd>
+<p>用单张物品图像替代冗长文本描述作为 LLM 推荐输入，配合 RISA 对齐与 RERI 检索式推荐，在 Amazon 四域上兼顾效率与效果。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/debias_fairness_industrial/user_embeddings_are_superpositions_of_interpretable_behavioral_modes/">User Embeddings are Superpositions of Interpretable Behavioral Modes</a></strong></dt>
+<dd>
+<p>将机制可解释性的叠加假设迁移到用户嵌入，用 SAE 事后分解出可命名行为模式，支撑零样本自然语言受众检索与画像。</p>
 </dd>
 <dt><strong><a href="../../venues/IJCAI/2026/debias_fairness_industrial/a_survey_of_personalized_federated_foundation_models_for_privacy_preserving/">A Survey of Personalized Federated Foundation Models for Privacy-Preserving Recommendation</a></strong></dt>
 <dd>
@@ -473,9 +617,21 @@
 <dd>
 <p>提出 InPE 标注数据集与 COPE 分层 MoE 架构，显式建模“何时问、怎么问”的阶段感知偏好引导策略，Recall@10 相对最优基线提升 14.6%。</p>
 </dd>
+<dt><strong><a href="../../venues/TKDD/2026/ctr_feature_interaction/dual_stream_mlp_is_all_you_need_for_ctr_prediction/">Dual-Stream MLP is All You Need for CTR Prediction</a></strong></dt>
+<dd>
+<p>用知识蒸馏把复杂显式交叉教师压进纯MLP双流学生，配合隐状态BN与预测对齐，三基准AUC全面SOTA且推理低延迟。</p>
+</dd>
+<dt><strong><a href="../../venues/TKDE/2026/llm_rec/reason4rec_deliberative_user_preference_alignment_of_large_language_models_/">Reason4Rec: Deliberative User Preference Alignment of Large Language Models for Recommendation</a></strong></dt>
+<dd>
+<p>提出审慎推荐任务与三专家多步推理框架，用评论监督偏好蒸馏-匹配-预测，评分预测与排序全面领先。</p>
+</dd>
 <dt><strong><a href="../../venues/TOIS/2026/graph_rec/cpgrec_a_balance_oriented_framework_for_personalized_video_game_recommendat/">CPGRec+: A Balance-oriented Framework for Personalized Video Game Recommendations</a></strong></dt>
 <dd>
 <p>以 Fisher 分布符号边重加权缓解过平滑、LLM 生成偏好描述精炼表征，在 Steam 双数据集上兼顾精度与多样性。</p>
+</dd>
+<dt><strong><a href="../../venues/TORS/2026/llm_rec/music_recommendation_with_large_language_models_challenges_opportunities_an/">Music Recommendation with Large Language Models: Challenges, Opportunities, and Evaluation</a></strong></dt>
+<dd>
+<p>系统梳理 LLM 驱动音乐推荐在用户建模、物品建模与自然语言请求三方面的变革，并提出 NLP 启发的评估分类体系与 MRS 成功/风险维度框架。</p>
 </dd>
 <dt><strong><a href="../../venues/WSDM/2026/llm_rec/hadsf_aspect_aware_semantic_control_for_explainable_recommendation/">HADSF: Aspect Aware Semantic Control for Explainable Recommendation</a></strong></dt>
 <dd>

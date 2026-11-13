@@ -121,4 +121,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （GTS 与 Random 双协议对照、iALS 相似度验证较扎实，但基线过简、缺序列 SOTA 锚点与竞赛结果）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （Schema、统计表与伦理说明清晰完整，无复杂公式故无符号歧义，但基线评估细节略含糊）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （407 亿真实交互 + Apache 2.0 + 子集脚本 + 活跃竞赛，是短视频序列推荐与冷启动研究的高价值公共基础设施）
-

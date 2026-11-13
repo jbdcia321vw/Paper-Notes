@@ -125,4 +125,3 @@ ZoRRO 相对最强基线 NRMS 的 AUC 提升 **+1.34 绝对点（+2.1% 相对）
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （离线 Full-Ranking + 六天真实线上 A/B + 效率测量 + beyond-accuracy 多维分析，唯缺线上显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式极简清晰、向量化形式给出明确，超参敏感性与 embedding 选型分析完整，但缺少复杂度推导）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码开源、零参数、0.51ms 延迟、600 倍吞吐，是可直接上线的强 baseline，落地价值极高）
-

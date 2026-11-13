@@ -131,4 +131,3 @@ $$\mathcal{L}_{total}=\lambda_1\mathcal{L}_{ret}+\lambda_2\mathcal{L}_{gen}+\lam
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （Full-Ranking + 工业级 100M 物品集 + 线上 A/B 三重验证较扎实，公开集缺显著性检验与采样协议对比）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三大设计问题驱动叙事、公式与损失定义完整，融合网络 $f_{fusion}$ 的具体结构未展开）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （70ms 延迟、确定性列表长度控制与线上正向收益，工程价值突出；可惜暂未开源）
-

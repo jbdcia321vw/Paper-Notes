@@ -128,4 +128,3 @@ $$\mathbf{e}_j^{(h)}=\frac{1}{|B_j|}\sum_{i\in B_j}\left(\boldsymbol{W}_{\text{a
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （双数据集 + 双骨干 + 效率实测较完整，但仅 Sampled Ranking、缺显著性检验与超参敏感度）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式精简、符号清晰、三步流程与图示对应良好，复杂度分析到位）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码开源、零额外推理开销、6× 加速且精度不降，可直接嵌入现有 GR 流水线）
-

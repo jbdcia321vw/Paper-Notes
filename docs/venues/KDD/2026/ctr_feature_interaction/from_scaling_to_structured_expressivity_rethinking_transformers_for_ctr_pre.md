@@ -135,4 +135,3 @@ $$\boldsymbol{W}^{(f)}_\Phi=\sum_{m\in\pi_f}\alpha^{(f)}_m\boldsymbol{B}_{m,\Phi
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （双尺度协议设计公平、消融完整、含线上 A/B，但切分与负采样细节披露不足）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （动机—算子—理论的叙事闭环清晰，公式紧凑；幂律为经验拟合稍显薄弱）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （线上 +2.33% CTR/+0.66% RPM、P99 仅 +3ms、支持热启动特征演化，工业价值极高；可惜暂未开源）
-

@@ -124,4 +124,3 @@ $$\mathcal{L}=\sum_{t=1}^{T}\lambda_t\mathcal{L}^t+\lambda_{cl}\mathcal{L}_{cl}+
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （两个大规模真实数据集、7 个强基线、5 次运行取均值，消融与超参敏感性完整；但 MIND 伪周期划分削弱了时序验证力度）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与符号定义清晰、三路融合与损失设计交代完整，复杂度分析略缺）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码已开源，框架模块化易复现；但多子图多次 GCN 的训练开销在超大规模工业场景需额外优化）
-

@@ -117,4 +117,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （工业级数据+时间切分+线上 A/B+冗余专指标 PPRR 设计到位，消融完整；缺超参敏感度与多平台验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式紧凑、掩码三段式行为解释清晰；周期预测的不确定性与复杂度分析略欠）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （阿里 TorchEasyRec 工程实现、线上 1% 流量验证 CTR/GMV 双涨且 Bad-Case 降 74.5%，落地价值极高）
-

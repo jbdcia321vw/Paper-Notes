@@ -136,4 +136,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （五数据集、三类基线、冷启动/度分桶/噪声注入/超参敏感性齐全，但 1000 负采样排序偏乐观，测试集经 LLM 过滤引入评估偏差）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与符号定义清晰、元路径与门控推导完整，训练时间与 LLM 预处理成本均有量化，但部分符号如 $\boldsymbol{z}_i^{\phi\prime}$与$\boldsymbol{z}_i^\phi$ 关系表述略含糊）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、推理零 LLM 开销、每 epoch 0.2s 远快于 DHGAN，LLM 预处理为一次性离线成本；但依赖 BLIP-2 与 Flan-T5-XXL 的部署门槛与静态关系假设限制实时演化场景）
-

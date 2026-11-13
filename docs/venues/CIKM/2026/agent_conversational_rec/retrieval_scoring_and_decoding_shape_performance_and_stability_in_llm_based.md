@@ -130,4 +130,3 @@ ReDial 上 c250 严格候选感知打分（c0 为零样本口径，仅列关键�
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （matched-pool、bootstrap CI、Wilcoxon+Holm、20 次采样稳定性，协议严谨；受限于单数据集）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （RQ 驱动、口径定义清晰、局限自陈充分；公式极简，理论深度有限）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码/prompt/输出全开源，提出的"必报字段"清单对工业评测规范有直接借鉴意义）
-

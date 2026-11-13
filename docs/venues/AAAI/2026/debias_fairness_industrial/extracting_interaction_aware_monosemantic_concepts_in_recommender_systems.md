@@ -131,4 +131,3 @@ $$\mathrm{KL}(p_j\|\rho)=\rho\log\frac{\rho}{p_j}+(1-\rho)\log\frac{1-\rho}{1-p_
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （跨 2 模型 × 2 数据集较全面，但缺精度对照、缺可解释基线、干预仅个例）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （损失分解与梯度路径交代清晰，KL 稀疏动机明确；复杂度与超参敏感性分析偏薄）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （后验训练、零改架构、单坐标干预，代码已开源，适合做嵌入审计与内容治理工具）
-

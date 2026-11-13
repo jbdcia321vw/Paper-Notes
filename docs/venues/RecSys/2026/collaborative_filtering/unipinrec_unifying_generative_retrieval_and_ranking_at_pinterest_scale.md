@@ -136,4 +136,3 @@ $$\mathcal{L}=\mathcal{L}_{\text{item}}+\mathcal{L}_{\text{action}},\quad \mathc
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （离线 + 双 surface 线上 A/B + 服务基准 + 掩码/缩放消融齐全，扣分在单数据集与曝光集内排序）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （损失与掩码无泄漏条件表述清晰，注意力复杂度分析到位，部分实现细节如槽位管理偏工程叙述）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （真实生产部署、延迟降 11.1% 且 QPS 升 63.6%，drop-in 设计与增量上线路径极具借鉴价值，可惜未开源）
-

@@ -130,4 +130,3 @@ $$P(Y^m_t \mid do(A^m_t=a), D_t) = P(Y^m_t \mid A^m_t=a, D_t)$$
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （时间切分与 seen/held-out 双轨设计合理、分桶细致，但缺显著性检验、单系统单窗口、pre-entry 目标仅为代理）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （DAG 与识别等式表述严谨、特征维度交代清楚，5 页篇幅下公式与符号无冗余）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （直接面向 A/B 前置门控的真实痛点，推理仅需分钟级快照与 8-token 短序列，工程开销极低；但数据与代码未开源，复现受限）
-

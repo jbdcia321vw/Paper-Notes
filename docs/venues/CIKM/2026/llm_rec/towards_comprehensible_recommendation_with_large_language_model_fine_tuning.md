@@ -130,4 +130,3 @@ $$\boldsymbol{s}_{ui}=\text{MultiHeadAttention}(\boldsymbol{e}_{p_u},\boldsymbol
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 + Full-Ranking + 11 基线 + 冷启动分桶 + 效率与 GSB 评测较完整，扣分在于缺少显著性检验与人工评估）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三阶段与公式对应清楚、提示词模板完整披露，但 GRPO 目标与奖励设计的推导较简，部分符号如 $f$与$W_\Theta$ 混用）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码已开源，在线延迟与 SASRec 同量级、特征可预存，落地路径明确；但离线 79.6+27.7 GPU-hours 的 LLM 训练成本与理由列表存储膨胀是主要工程门槛）
-

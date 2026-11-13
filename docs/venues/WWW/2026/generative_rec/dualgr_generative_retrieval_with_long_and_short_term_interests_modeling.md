@@ -126,4 +126,3 @@ $$\mathcal{L}_{\text{ENTP}}=\frac{1}{N}\sum_{i\in\mathcal{B}}\Big[c_i\sum_{\ell=
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （工业级在线 HR 与一周 A/B 有说服力，但缺离线公开数据集复现、显著性检验与多样性指标）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （4 页短文公式紧凑、符号一致，S2D 的历史压缩量级分析到位，但训练-推理不一致处未展开讨论）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （已在快手亿级用户场景全量验证、延迟可控，工程价值高；但未开源，复现依赖私有日志与 SID 量化流程）
-

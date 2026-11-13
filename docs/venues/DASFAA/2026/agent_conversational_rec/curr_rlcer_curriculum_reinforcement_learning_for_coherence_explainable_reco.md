@@ -137,4 +137,3 @@ $$R_{\text{Coherence}}(t_{\text{ans}},r_{\text{gt}})=1-\frac{|C(t_{\text{ans}})-
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （三数据集 + GPT/BERT/人工三路一致性评估较完整，但随机划分、无排序指标、无分类器校准分析削弱说服力）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三阶段奖励公式与评估式 8 定义清晰，DPO/GRPO 推导规范；但主表指标列过多、部分基线缺一致性数值）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码与数据全开源，3B 模型即可部署；但三阶段串行训练与组采样推理的算力开销需在工程上进一步压缩）
-

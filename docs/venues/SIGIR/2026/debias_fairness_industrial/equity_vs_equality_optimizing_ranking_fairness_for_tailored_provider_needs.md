@@ -126,4 +126,3 @@ $$\max_\pi\sum_{\tau\in\mathcal{I}}\underbrace{\left[r(\tau)+\alpha\cdot B(\text
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （4 个大规模数据集 + 离线/在线双设定 + 三种偏好场景 + 全 $\alpha$ 空间曲线对比 + 5 次重复与显著性检验，但收益参数为模拟采样是硬伤）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （从效用定义到梯度推导链条完整，$B(g)$的负反馈直觉解释到位，复杂度分析清晰；部分符号如$y_g$ 的语义依赖脚注补充）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （无训练、即插即用、复杂度与 FairCo 同阶，工程友好；但依赖平台侧提供者偏好参数，且代码未独立开源，复现需自行实现）
-

@@ -131,4 +131,3 @@ $\alpha^S_{uv}=\frac{1}{2}\big(1+\text{sim}(\mathbf{h}^I_u,\mathbf{h}^I_v)\big)\
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 + Full-Ranking + 13 基线 + 冷启动/噪声/分桶多维分析齐全，扣分于单次运行与部分基线设置不一致）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与模块职责清晰、复杂度分析完整，但消融与超参分析置于附录，正文自洽性略打折）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码开源、显存与训练时间均最优、参数减半，对大规模用户集的存储成本极具吸引力）
-

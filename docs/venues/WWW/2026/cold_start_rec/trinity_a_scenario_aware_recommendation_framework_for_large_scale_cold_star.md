@@ -119,4 +119,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （十亿级真实数据 + 逐日防穿越滚动评估 + 大规模线上 A/B，但基线偏少、无公开数据）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐ （框架叙述清晰，但公式极少、多处 need citation 未清理，理论分析薄弱）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （已全量上线，+10ms 延迟换 5.61% 时长，工程性价比极高；但未开源，复现门槛高）
-

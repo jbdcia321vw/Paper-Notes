@@ -132,4 +132,3 @@ $$k=\mathrm{LLM}(I_u,\,j,\,r_j,\,e),\quad k\in I_u,\quad r'_j=\mathcal{M}(I_u\se
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 × 四 LLM × 多提示 × 全库排序 + 配对 t 检验 + 上界基线，唯缺线上 A/B 与更大规模验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式极简、提示模板完整披露、错误率统计透明，但理论分析偏薄）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、模型无关、可离线预计算，但 LLM 调用成本与幻觉治理是落地门槛）
-

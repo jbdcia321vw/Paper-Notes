@@ -133,4 +133,3 @@ $\mathcal{L}_{\text{distill}} = -\sum_{i \in \mathcal{D}_{\text{valid}}} \log p_
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （离线+调研+30 天 A/B 三层验证完整，但缺传统排序指标与成本量化）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐ （工程叙述清晰，但几乎无形式化定义与复杂度分析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （十亿级真实部署与完整架构描述，工业参考价值极高，可惜未开源）
-

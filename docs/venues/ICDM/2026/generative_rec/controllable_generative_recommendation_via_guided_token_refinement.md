@@ -135,4 +135,3 @@ $$x_{t+1}\leftarrow\arg\max_{x\in\mathcal{V}^L}p_\theta\big(x\mid x_t\odot(1-m_t
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （三数据集 + 消融 + Pareto 前沿 + 参数敏感性较完整，但候选池内排序与品类覆盖率代理削弱了结论强度）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式推导清晰、控制分数与 Trie 约束定义严谨，问题形式化 Eq.(1) 的"效用+可控性"分解很干净）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （免训练实时控制、$T=4$ 收敛、代码开源，对线上动态调权场景价值高，但 beam=50 的推理开销需进一步压测）
-

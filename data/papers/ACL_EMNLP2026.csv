@@ -1,0 +1,31 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+RecToolBench: Benchmarking Recommendation-Specific Tool Orchestration under Fuzzy User Intent,2609.30717,https://arxiv.org/abs/2609.30717,https://github.com/ShawnChenn/RecToolBench,agent_conversational_rec,ACL_EMNLP,2026
+Re2A: Situated Conversational Recommendation via Rubric-based Preference Reasoning and Alignment,2609.18249,https://arxiv.org/abs/2609.18249,https://github.com/DongdingLin/Re2A,agent_conversational_rec,ACL_EMNLP,2026
+TATK: Triple-Aware Top-K Learning with Knowledge-Grounded Verification for LLM-based Sequential Recommendation,2609.14565,https://arxiv.org/abs/2609.14565,,llm_rec,ACL_EMNLP,2026
+EAGER: Enrich-and-Align Generative Query Recommendation from Clicked Items in E-commerce Search,2609.07143,https://arxiv.org/abs/2609.07143,,llm_rec,ACL_EMNLP,2026
+Continual Graph Memory for Adaptive Recommendation under Intent Drift,2609.04651,https://arxiv.org/abs/2609.04651,,graph_rec,ACL_EMNLP,2026
+World Model-Guided Reinforcement Learning via Counterfactual User Engagement Simulation,2609.01067,https://arxiv.org/abs/2609.01067,,rl_bandit_rec,ACL_EMNLP,2026
+Towards Effective Structured Context Modeling for Conversational Recommender Systems via Dual-node Monte Carlo Tree Search,2609.00618,https://arxiv.org/abs/2609.00618,,agent_conversational_rec,ACL_EMNLP,2026
+Authority Bias in Conversational Search Engines for Academic Paper Recommendation,2609.00248,https://arxiv.org/abs/2609.00248,,debias_fairness_industrial,ACL_EMNLP,2026
+Two-Sided State-Space Models for Sequential Recommendation with Non-Random Multimodal Review Feedback,2609.00165,https://arxiv.org/abs/2609.00165,,sequential_rec,ACL_EMNLP,2026
+One Polluted Page Is Enough: Evaluating Web Content Pollution in LLM Recommenders,2606.13610,https://arxiv.org/abs/2606.13610,https://github.com/leoluolol/forge-benchmark,llm_rec,ACL_EMNLP,2026
+ReasonRec: A Reasoning-Augmented Multimodal Agent for Unified Recommendation,2606.28357,https://arxiv.org/abs/2606.28357,,multimodal_rec,ACL_EMNLP,2026
+Beyond Retrieval: Learning Compact User Representations for Scalable LLM Personalization,2606.04547,https://arxiv.org/abs/2606.04547,,llm_rec,ACL_EMNLP,2026
+Rethinking Fairness in LLM-Based Recommender Systems: A Survey,2606.28340,https://arxiv.org/abs/2606.28340,,debias_fairness_industrial,ACL_EMNLP,2026
+HSUGA: LLM-Enhanced Recommendation with Hierarchical Semantic Understanding and Group-Aware Alignment,2605.11662,https://arxiv.org/abs/2605.11662,,llm_rec,ACL_EMNLP,2026
+Intent-Driven Semantic ID Generation for Grounded Conversational News Recommendation,2605.07613,https://arxiv.org/abs/2605.07613,,agent_conversational_rec,ACL_EMNLP,2026
+Where and What: Reasoning Dynamic and Implicit Preferences in Situated Conversational Recommendation,2604.20749,https://arxiv.org/abs/2604.20749,https://github.com/DongdingLin/SiPeR,agent_conversational_rec,ACL_EMNLP,2026
+From Recall to Forgetting: Benchmarking Long-Term Memory for Personalized Agents,2604.20006,https://arxiv.org/abs/2604.20006,,agent_conversational_rec,ACL_EMNLP,2026
+Decisive: Guiding User Decisions with Optimal Preference Elicitation from Unstructured Documents,2604.18122,https://arxiv.org/abs/2604.18122,,agent_conversational_rec,ACL_EMNLP,2026
+GraphLoRA: Structure-Aware Low-Rank Adaptation for Large Language Model Recommendation,2606.07526,https://arxiv.org/abs/2606.07526,https://github.com/wgj15965/GraphLoRA,llm_rec,ACL_EMNLP,2026
+HORIZON: A Benchmark for In-the-wild User Behaviour Modeling,2604.17259,https://arxiv.org/abs/2604.17259,,cross_domain_multi_scenario,ACL_EMNLP,2026
+ClusterRAG: Cluster-Based Collaborative Filtering for Personalized Retrieval-Augmented Generation,2605.18769,https://arxiv.org/abs/2605.18769,,collaborative_filtering,ACL_EMNLP,2026
+HARPO: Hierarchical Agentic Reasoning for User-Aligned Conversational Recommendation,2604.10048,https://arxiv.org/abs/2604.10048,,agent_conversational_rec,ACL_EMNLP,2026
+ReRec: Reasoning-Augmented LLM-based Recommendation Assistant via Reinforcement Fine-tuning,2604.07851,https://arxiv.org/abs/2604.07851,https://github.com/jiani-huang/ReRec,llm_rec,ACL_EMNLP,2026
+Content Fuzzing for Escaping Information Cocoons on Digital Social Media,2604.05461,https://arxiv.org/abs/2604.05461,,debias_fairness_industrial,ACL_EMNLP,2026
+MemRec: Collaborative Memory-Augmented Agentic Recommender System,2601.08816,https://arxiv.org/abs/2601.08816,https://github.com/rutgerswiselab/memrec,llm_rec,ACL_EMNLP,2026
+"What Makes an Ideal Quote? Recommending ""Unexpected yet Rational"" Quotations via Novelty",2602.22220,https://arxiv.org/abs/2602.22220,https://github.com/Chang-pw/NoQuote,generative_rec,ACL_EMNLP,2026
+From Past To Path: Masked History Learning for Next-Item Prediction in Generative Recommendation,2509.23649,https://arxiv.org/abs/2509.23649,,generative_rec,ACL_EMNLP,2026
+Mirroring Users: Towards Building Preference-aligned User Simulator with User Feedback in Recommendation,2508.18142,https://arxiv.org/abs/2508.18142,https://github.com/Joinn99/UserMirrorer,agent_conversational_rec,ACL_EMNLP,2026
+What Makes LLMs Effective Sequential Recommenders? A Study on Preference Intensity and Temporal Context,2506.02261,https://arxiv.org/abs/2506.02261,,llm_rec,ACL_EMNLP,2026
+Bridging Language and Items for Retrieval and Recommendation: Benchmarking LLMs as Semantic Encoders,2403.03952,https://arxiv.org/abs/2403.03952,,llm_rec,ACL_EMNLP,2026

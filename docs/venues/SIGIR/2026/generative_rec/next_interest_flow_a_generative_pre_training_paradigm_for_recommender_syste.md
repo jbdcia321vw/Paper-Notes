@@ -123,4 +123,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （6.7B 工业数据与线上 A/B 极具说服力，但缺公开数据集复现、无采样排序对照、消融幅度偏小）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （两个 Proposition 证明简洁、符号统一，但部分记号如 $K\le D_k$ 表述含混、TSP 校准网络细节略欠）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （仅 +1~2 ms 延迟、CPU 集群日处理亿级样本，落地价值极高；但未开源削弱复现性）
-

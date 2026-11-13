@@ -132,4 +132,3 @@ $$\mathcal{L}_{DPO}=-\log\sigma\Big(\beta\big[\log\tfrac{\pi_\theta(x^+)}{\pi_{r
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （线上 7 天大规模 A/B 与多场景验证很有说服力，但离线仅 pairwise 候选排序、数据统计缺失、无全库排序与方差报告）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式推导从 RLHF 到 DPO 链条完整、符号统一，但部分模块动机论述偏工程叙述，缺复杂度分析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （已上线生产系统并带来稳定业务增益，推理零额外开销；扣分在于未开源、数据不可得）
-

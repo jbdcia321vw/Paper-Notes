@@ -127,4 +127,3 @@ $$\mathcal{L}_{\text{SC-DPO}}=\mathcal{L}_{\text{DPO}}+\lambda_a\max(0,\delta-r^
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （10 万级工业数据 + 标签指标 + LLM 评委 + 14 天线上 A/B 三层验证完整，但离线目标为教师生成、缺乏人工标注的真实偏好）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （损失各项动机与消融一一对应，CALR 与 Latent-Valid 诊断设计严谨；部分符号如 $g(t)$与$b(e)$ 的映射交代略简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码与匿名数据集开源，503ms 延迟满足生产要求，线上 UV-CTR 正向收益，是少见的全链路闭环工业论文）
-

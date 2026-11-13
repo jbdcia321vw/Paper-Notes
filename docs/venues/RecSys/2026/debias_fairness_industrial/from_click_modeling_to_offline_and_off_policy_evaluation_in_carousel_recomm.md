@@ -121,4 +121,3 @@ $$P(\text{click}_i \mid x)=\sum_{k:\,i\in C_k}P(C_k\mid x)\cdot\frac{\exp(u_i)}{
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （RecGaze 数据采集规范、假设检验清晰，但缺乏统一基准上的主实验表、消融与显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （RQ 与论文依赖关系图组织清晰，MNL 公式简洁到位；但部分模块仅有定性描述，缺复杂度与可识别性分析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （轮播是工业主流界面，问题定义极具落地价值；但暂无开源代码，OPE 方案未验证，短期难以直接部署）
-

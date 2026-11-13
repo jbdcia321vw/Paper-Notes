@@ -128,4 +128,3 @@ $$\mathcal{L}_{\text{GHCL}}=\underbrace{\mathcal{L}_{\text{RN}}+\mathcal{L}_{\te
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （自建全链路工业数据集并开源，分难度测试集设计细致，离线+线上 9 个月 A/B 双重验证，唯缺多业务数据集泛化实验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （梯度比推导链条清晰，公式与表格组织紧凑；部分符号如 $\lambda_t$ 取值未在正文给出，需查附录）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （真实生产部署 9 个月、成本降 6% 且效果正向，代码与数据集双开源，是粗排方向少有的高复现价值工作）
-

@@ -132,4 +132,3 @@ Llama3.2-3B 骨干下 FLEXRec 同样全面最优（Toys N@10 0.0524、Beauty 0.0
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 × 双骨干 × Full-Ranking + 时延 + 三类 MoE 对照 + 完整消融，但缺工业规模与显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三阶段训练与各损失动机交代清晰，条件平移与 stop-gradient 的数值稳定性论证到位）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、延迟仅增 <1ms、可共享骨干多档路由器部署，实用性强）
-

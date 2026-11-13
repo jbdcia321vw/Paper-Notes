@@ -125,4 +125,3 @@ $$R=\mathbb{I}_{\text{Gate}}\cdot(w_{cate}R_{cate}+w_{attr}R_{attr}+w_{reason}R_
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （离线双分布测试集 + RAR 忠实度指标 + 线上 GSB 人工评测 + 4 天 A/B 形成完整证据链，扣分在于训练集规模与统计显著性检验披露不足）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （奖励门控与 GRPO 目标公式表述清晰、案例研究直观，但部分符号如 $R_{label}$与$R_{cate}/R_{attr}/R_{rele}$ 的层级关系在正文中略显跳跃）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （已在淘宝主搜服务数亿用户，MFU 35%、P99 ≤400ms 的工程指标完整披露，是少见的"论文即生产系统"范例；但未开源、依赖私有 42B MoE 基座，复现门槛高）
-

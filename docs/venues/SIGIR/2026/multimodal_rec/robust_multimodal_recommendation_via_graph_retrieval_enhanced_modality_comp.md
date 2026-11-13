@@ -135,4 +135,3 @@ $$\mathcal{L}=\sum_{m}\sum_{i}\big\|\hat{\mathbf{x}}_i^{(m)}-\mathbf{x}_i^{(m)}\
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 + 11 个基线 + 5 次随机种子 + 显著性检验 + 缺失率扫描较完整，扣分在随机掩码假设与缺少补全保真度指标）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （MAGE 与 ACS 均给出完整伪代码与复杂度上界，公式定义紧凑；但部分符号如 $\tilde{\mathbf{x}}$、$\bar{\hat{g}}_e$ 的维度说明略简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （作为即插即用前置模块无需改下游架构，实测比 MoDiCF 快一个数量级；但未开源，且码本与锚点数需逐数据集调参）
-

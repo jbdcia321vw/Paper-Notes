@@ -149,4 +149,3 @@ Reason Agent（Profile / Video / S-GRPO 三组件）：
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （显式/隐式双粒度评估 + 消融 + 跨域泛化 + 线上 A/B 四重验证完整，但隐式任务缺乏全库排序协议与显著性检验细节）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （S-GRPO 公式与奖励定义清晰，但部分符号如 $R_i^S$与$r_{\text{judge}}$ 的对应关系在正文中略跳跃）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （线上三项指标全面提升且给出量化部署方案，但代码未开源、1 QPS 吞吐限制了大规模落地）
-

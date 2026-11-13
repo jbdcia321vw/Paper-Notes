@@ -132,4 +132,3 @@ $$\mathcal{L}_{\mathrm{red}}=\frac{1}{K}\sum_{k=1}^{K}\frac{\boldsymbol{e}^{(\ma
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （6 个 Surface 的离线 NE + 线上 A/B 覆盖充分且方向一致，但无公开数据集、无开源、无与外部 SOTA 的同协议对比，消融以专家族聚合为主）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （系统三阶段与四类专家职责划分清晰，MRM/CRL 公式简洁可落地；但部分关键设计如随机长度训练的采样分布、$\lambda$取值与$\tau$ 阈值均未给出具体数值）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （混合 CPU/GPU 服务栈、79% GPU 降本、3–5× 评估提速对大规模工业团队极具参考价值；但闭源与强内部依赖使外部复现门槛极高）
-

@@ -130,4 +130,3 @@ FLOPs 匹配预算下测试集结果（10 种子均值）：
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 + 10 种子 95% CI + Pareto 前沿 + 多组消融完整，但仅采样排序、缺 Full-Ranking 与线上验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （四阶段流水线清晰，Lemma C.1 给出阈值校准的理论保证，FLOPs 分解逐项可核）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （FLOPs 匹配下 4–5× 更长历史、0.57× 计算量极具吸引力，但未开源且 kernel 优化欠缺）
-

@@ -134,4 +134,3 @@ LETTER / Beauty：
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集×两骨干×六基线，Full-Ranking + 显著性检验 + 完整消融 + 线上 A/B，唯缺采样排序协议对照）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （DB/TB 推导与 $P_B=1$的化简交代清楚，算法伪码完整；奖励尺度与$\lambda$ 的敏感性分析略简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （淘宝搜索广告全量部署、年收入相对 +0.4%、新上架物品 +4.0%、长尾 query +1.8%，代码开源，推理零改动）
-

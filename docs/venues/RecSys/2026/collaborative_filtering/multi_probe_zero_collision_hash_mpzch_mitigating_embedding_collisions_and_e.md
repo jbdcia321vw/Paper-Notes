@@ -136,4 +136,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （线上 3B MAU A/B 与 150M ID 碰撞率扫描有说服力，但缺公开数据集、缺显著性检验与容量不足场景的系统实验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （算法伪代码与 kernel 执行示例清晰，公式克制；但部分机制仅文字描述、缺复杂度与显存开销的定量分析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （已随 TorchRec 开源、与 EmbeddingBagCollection 无缝集成、延迟不随探测深度退化，是可直接落地的系统级贡献）
-

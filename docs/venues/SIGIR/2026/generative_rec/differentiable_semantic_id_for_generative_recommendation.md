@@ -128,4 +128,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 + Full-Ranking + 显著性检验 + 完整消融，但消融集中于单数据集）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （定理-引理-闭式推导链条清晰，附录给出两阶段次优性构造性证明）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、推理开销与 TIGER 同阶，但联合训练稳定性与超参 $r,\lambda$ 的线上鲁棒性仍需验证）
-

@@ -125,4 +125,3 @@ SilverRiM（General）：GraphCL MRR 0.396 → **AchGNN 0.410**；Qwen3-7B-FT 0.
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （Full-Ranking 全库检索 + 5 折交叉验证 + 防引用泄漏处理严谨，但 GoldRiM 规模小、单标注者削弱结论稳健性）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式编号完整、符号统一，aspect 本体构建流程交代清楚；部分消融仅给相对下降百分比未给绝对值）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （已部署 MaRDI 平台、数据集与代码全开源、模型 <8B 参数贴合真实数字图书馆部署约束）
-

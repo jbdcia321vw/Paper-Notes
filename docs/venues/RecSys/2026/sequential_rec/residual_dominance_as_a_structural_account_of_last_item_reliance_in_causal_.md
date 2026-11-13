@@ -125,4 +125,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （9 数据集、GTS + Full-Catalog 协议严谨，诊断指标设计合理；但缺在线 A/B 与训练期对照）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （混合比定义与分解推导清晰，明确声明非因果识别，边界界定诚实）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （代码开源、干预零训练成本，但直接部署收益有限，主要价值在诊断与调优启发）
-

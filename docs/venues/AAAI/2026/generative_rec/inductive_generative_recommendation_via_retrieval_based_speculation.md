@@ -131,4 +131,3 @@ $$Q_j=\{x_i\mid x_i\in D(X),\ (c^i_1,\dots,c^i_j)\in B_j\}$$
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （时间戳切分 + In-Sample/Unseen 子集拆解非常到位，消融覆盖推理与训练两层面，唯数据集限于 Amazon 单源）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （验证分数分段定义与复杂度分析清晰，$T\leq l$ 的迭代上界论证严谨，部分符号在正文与附录间略有重复）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （即插即用、代码开源、4 位语义 ID 下 1.7× 加速且最坏不慢于基线，可控归纳强度对上新运营极具吸引力）
-

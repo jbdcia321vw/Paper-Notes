@@ -133,4 +133,3 @@ $$\mathcal{L}_{Rec}=\mathcal{L}_{AU}+\lambda_1(\mathcal{L}_{Coarse}+\mathcal{L}_
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （15 基线三分类覆盖全面、Full-Ranking + 显著性检验 + 稀疏分桶充分，扣分在随机比例划分而非时间切分）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与复杂度分析清晰，Eq.9 边缘化推导略跳步，符号 $\mathbf{z}_{x,\sigma}$与$\mathbf{c}_x$ 混用稍显含糊）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （复杂度与 GCN 同阶、训练效率优于 DirectAU，但依赖 LLM 离线画像且未开源，复现门槛中等）
-

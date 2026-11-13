@@ -126,4 +126,3 @@ $$\frac{\text{FLOPs}_{\text{Merge}}}{\text{FLOPs}_{\text{vanilla}}}=\frac{6dK+L/
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （52 亿样本 + 严格时间切分 + 双业务线线上 A/B，工业说服力强；但缺公开数据集与显著性检验细节）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （复杂度推导与 FLOPs 对比清晰，scaling law 拟合给出 $R^2$；部分符号与掩码定义略简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （已在字节 10+ 场景全量部署、服务十亿用户，KV Cache 与混合精度优化可直接借鉴；扣分项为未开源）
-

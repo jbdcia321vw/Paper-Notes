@@ -125,4 +125,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （Full-Ranking + 五指标 + 四类 11 个基线 + $t$ 检验齐全，消融覆盖构图/滤波/对比三模块，但随机划分与仅两数据集略欠）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （四图构造与滤波公式定义清晰，复杂度分析完整，附录给出 Jacobi 递推；但 Eq.16 与 Eq.13 的符号一致性、$\mathbf{C}$ 每 epoch 重建的梯度处理细节略含糊）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （基于 RecBole-GNN 实现、ZhihuRec 公开可复现，四图结构贴合真实问答平台；但动态构图开销与模型代码未开源限制了直接落地）
-

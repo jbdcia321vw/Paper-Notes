@@ -132,4 +132,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （统一划分、20 轮 TPE、显著性检验、$\tau$ 扫描与 Head/Tail 分解齐备，划分与超参全开源）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （RQ 驱动结构清晰、复现偏差量化到 $10^{-4}$ 量级，但公式与复杂度分析偏简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码与划分完全公开、Elliot 可一键复跑；但缺时延/显存实测，工业规模验证待补）
-
