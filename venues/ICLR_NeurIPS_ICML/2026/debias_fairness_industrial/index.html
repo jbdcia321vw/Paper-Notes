@@ -149,7 +149,7 @@
   "description": "RecSys Paper Notes \u63a8\u8350\u7cfb\u7edf\u4e0e\u4fe1\u606f\u68c0\u7d22\u9876\u4f1a\u9876\u520a\u8bba\u6587\u7cbe\u8bfb\u5e93\uff0c\u8986\u76d6 22 \u4e2a\u4f1a\u520a\u300116 \u5927\u65b9\u5411\uff0c\u6309\u4f1a\u520a/\u5e74\u4efd/\u4e3b\u9898\u5206\u7c7b\uff0c\u6bcf\u7bc7 5 \u5206\u949f\u8bfb\u61c2\u6838\u5fc3\u601d\u60f3",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/ICLR_NeurIPS_ICML/2026/debias_fairness_industrial/",
   "inLanguage": "zh-CN",
-  "dateModified": "2026-11-12",
+  "dateModified": "2026-11-13",
   
   "publisher": { "@id": "https://papernotes.org/#organization" },
   "isPartOf": {
@@ -3991,11 +3991,42 @@
 
 
 <h1 id="_1">🛡️ 去偏公平、可信隐私与工业架构</h1>
-<p><strong>ICLR / NeurIPS / ICML (RecSys) 2026</strong> · <strong>0</strong> 篇论文解读</p>
+<p><strong>ICLR / NeurIPS / ICML (RecSys) 2026</strong> · <strong>7</strong> 篇论文解读</p>
 <blockquote>
 <p><strong>方向说明</strong>：曝光/流行度/位置因果去偏 (Causal Rec)、双边公平性、联邦防投毒推荐、工业级全链路架构与评测基准</p>
 </blockquote>
-<p><em>当前会议在该年份、该细分方向下暂无论文笔记。</em></p>
+<p>📌 <strong>同领域跨会议浏览：</strong> <a href="../../../AAAI/2026/debias_fairness_industrial/">AAAI (RecSys Track) 2026 (7)</a> · <a href="../../../ACL_EMNLP/2026/debias_fairness_industrial/">ACL / EMNLP (RecSys &amp; CRS) 2026 (3)</a> · <a href="../../../ACM_MM/2026/debias_fairness_industrial/">ACM MM 2026 (1)</a> · <a href="../../../CIKM/2026/debias_fairness_industrial/">CIKM 2026 (4)</a> · <a href="../../../ECIR/2026/debias_fairness_industrial/">ECIR 2026 (2)</a> · <a href="../../../ICDM/2026/debias_fairness_industrial/">ICDM 2026 (2)</a> · <a href="../../../IJCAI/2026/debias_fairness_industrial/">IJCAI (RecSys Track) 2026 (1)</a> · <a href="../../../KDD/2026/debias_fairness_industrial/">KDD 2026 (7)</a> · <a href="../../../RecSys/2026/debias_fairness_industrial/">RecSys 2026 (14)</a> · <a href="../../../SIGIR/2026/debias_fairness_industrial/">SIGIR 2026 (13)</a> · <a href="../../../TOIS/2026/debias_fairness_industrial/">ACM TOIS 2026 (1)</a> · <a href="../../../TORS/2026/debias_fairness_industrial/">ACM TORS 2026 (3)</a> · <a href="../../../WWW/2026/debias_fairness_industrial/">WWW (TheWebConf) 2026 (10)</a></p>
+<p>🔥 <strong>高频主题：</strong> NeurIPS ×3 · 去偏公平与工业架构 ×3 · ICML ×2 · 召回 ×2 · 精排 ×2</p>
+<dl>
+<dt><strong><a href="alm_mta_front_door_causal_multi_touch_attribution_method_for_creator_ecosys/">ALM-MTA: Front-Door Causal Multi-Touch Attribution Method for Creator-Ecosystem Optimization</a></strong></dt>
+<dd>
+<p>以前门识别+对抗代理中介实现大规模推荐系统多触点因果归因，离线 AUC 0.907、线上创作者 +0.6%。</p>
+</dd>
+<dt><strong><a href="causal_representation_learning_for_generalisable_recommendation/">Causal Representation Learning for Generalisable Recommendation</a></strong></dt>
+<dd>
+<p>提出信息论解耦准则 J=I(g(T);Y|Z)−λI(g(T);Z)，用 InfoNCE+梯度反转实现，零推理开销，Spotify 千万级 A/B 提升 +0.75% 播放。</p>
+</dd>
+<dt><strong><a href="copf_an_online_framework_for_deployment_stable_counterfactual_fairness_in_e/">COPF: An Online Framework for Deployment-Stable Counterfactual Fairness in Evolving Graphs</a></strong></dt>
+<dd>
+<p>以曝光反事实定义群体机会差，用倾向日志+GA-DR残差+Residual-OI证书在线审计并控制演化图链路推荐的部署稳定公平性。</p>
+</dd>
+<dt><strong><a href="kuairecv2_benchmarking_large_scale_continual_learning_for_diversified_and_m/">KuaiRecV2: Benchmarking Large-Scale Continual Learning for Diversified and Multi-task Recommendation</a></strong></dt>
+<dd>
+<p>快手 30 天 4.84 亿交互动态物品池基准，统一评测持续学习、Token 级多样性与多任务检索。</p>
+</dd>
+<dt><strong><a href="low_pass_personalized_subgraph_federated_recommendation/">Low-pass Personalized Subgraph Federated Recommendation</a></strong></dt>
+<dd>
+<p>用低通谱滤波提取跨子图稳定的结构信号做个性化联邦聚合，并以局部流行度偏差感知 margin 抑制长尾偏置，五数据集 NDCG@20 最高提升 24.2%。</p>
+</dd>
+<dt><strong><a href="obliviate_efficient_unlearning_in_recommender_systems/">Obliviate: Efficient Unlearning in Recommender Systems</a></strong></dt>
+<dd>
+<p>两阶段低秩适配器+局部校准的推荐系统机器遗忘框架，20%删除率下兼顾遗忘完整性与效用，比全量重训快约 3 倍。</p>
+</dd>
+<dt><strong><a href="user_embeddings_are_superpositions_of_interpretable_behavioral_modes/">User Embeddings are Superpositions of Interpretable Behavioral Modes</a></strong></dt>
+<dd>
+<p>将机制可解释性的叠加假设迁移到用户嵌入，用 SAE 事后分解出可命名行为模式，支撑零样本自然语言受众检索与画像。</p>
+</dd>
+</dl>
 
 
 
