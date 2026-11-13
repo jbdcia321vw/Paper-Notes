@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][LLM4Rec] 提出轻量即插即用路由器，基于排序感知特征与模型感知难度信号，逐实例决定是否触发推理，实现精度-效率帕累托最优。">
+        <meta name="description" content="[SIGIR 2026][大语言模型推荐] 提出轻量即插即用的模型感知推理路由器，在生成前逐实例决定 Think/Non-Think，以 Pareto 前沿策略在降 token 的同时提升排序效用。">
       
       
       
@@ -108,12 +108,12 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, LLM4Rec, 重排, 自适应推理, 推理路由, 列表级排序" />
+<meta name="keywords" content="SIGIR 2026, 大语言模型推荐, 重排, 自适应推理, 推理路由, Pareto 前沿" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
 
-<meta property="article:tag" content="LLM4Rec" />
+<meta property="article:tag" content="大语言模型推荐" />
 
 <meta property="article:tag" content="重排" />
 
@@ -121,7 +121,7 @@
 
 <meta property="article:tag" content="推理路由" />
 
-<meta property="article:tag" content="列表级排序" />
+<meta property="article:tag" content="Pareto 前沿" />
 
 
 
@@ -131,10 +131,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/think_when_needed_model_aware_reasoning_routing_for_llm_based_ranking/" />
 <meta property="og:title" content="[Paper Note] Think When Needed: Model-Aware Reasoning Routing for LLM-based Ranking" />
-<meta property="og:description" content="[SIGIR 2026][LLM4Rec] 提出轻量即插即用路由器，基于排序感知特征与模型感知难度信号，逐实例决定是否触发推理，实现精度-效率帕累托最优。" />
+<meta property="og:description" content="[SIGIR 2026][大语言模型推荐] 提出轻量即插即用的模型感知推理路由器，在生成前逐实例决定 Think/Non-Think，以 Pareto 前沿策略在降 token 的同时提升排序效用。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] Think When Needed: Model-Aware Reasoning Routing for LLM-based Ranking" />
-<meta name="twitter:description" content="[SIGIR 2026][LLM4Rec] 提出轻量即插即用路由器，基于排序感知特征与模型感知难度信号，逐实例决定是否触发推理，实现精度-效率帕累托最优。" />
+<meta name="twitter:description" content="[SIGIR 2026][大语言模型推荐] 提出轻量即插即用的模型感知推理路由器，在生成前逐实例决定 Think/Non-Think，以 Pareto 前沿策略在降 token 的同时提升排序效用。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +160,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] Think When Needed: Model-Aware Reasoning Routing for LLM-based Ranking",
   "headline": "[Paper Note] Think When Needed: Model-Aware Reasoning Routing for LLM-based Ranking",
-  "description": "[SIGIR 2026][LLM4Rec] \u63d0\u51fa\u8f7b\u91cf\u5373\u63d2\u5373\u7528\u8def\u7531\u5668\uff0c\u57fa\u4e8e\u6392\u5e8f\u611f\u77e5\u7279\u5f81\u4e0e\u6a21\u578b\u611f\u77e5\u96be\u5ea6\u4fe1\u53f7\uff0c\u9010\u5b9e\u4f8b\u51b3\u5b9a\u662f\u5426\u89e6\u53d1\u63a8\u7406\uff0c\u5b9e\u73b0\u7cbe\u5ea6-\u6548\u7387\u5e15\u7d2f\u6258\u6700\u4f18\u3002",
+  "description": "[SIGIR 2026][\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350] \u63d0\u51fa\u8f7b\u91cf\u5373\u63d2\u5373\u7528\u7684\u6a21\u578b\u611f\u77e5\u63a8\u7406\u8def\u7531\u5668\uff0c\u5728\u751f\u6210\u524d\u9010\u5b9e\u4f8b\u51b3\u5b9a Think/Non-Think\uff0c\u4ee5 Pareto \u524d\u6cbf\u7b56\u7565\u5728\u964d token \u7684\u540c\u65f6\u63d0\u5347\u6392\u5e8f\u6548\u7528\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/think_when_needed_model_aware_reasoning_routing_for_llm_based_ranking/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/think_when_needed_model_aware_reasoning_routing_for_llm_based_ranking/",
   "inLanguage": "zh-CN",
@@ -168,18 +168,18 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, LLM4Rec, \u91cd\u6392, \u81ea\u9002\u5e94\u63a8\u7406, \u63a8\u7406\u8def\u7531, \u5217\u8868\u7ea7\u6392\u5e8f",
+  "keywords": "SIGIR 2026, \u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350, \u91cd\u6392, \u81ea\u9002\u5e94\u63a8\u7406, \u63a8\u7406\u8def\u7531, Pareto \u524d\u6cbf",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
-    { "@type": "Thing", "name": "LLM4Rec" },
+    { "@type": "Thing", "name": "\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350" },
     { "@type": "Thing", "name": "\u91cd\u6392" },
     { "@type": "Thing", "name": "\u81ea\u9002\u5e94\u63a8\u7406" },
     { "@type": "Thing", "name": "\u63a8\u7406\u8def\u7531" },
-    { "@type": "Thing", "name": "\u5217\u8868\u7ea7\u6392\u5e8f" }
+    { "@type": "Thing", "name": "Pareto \u524d\u6cbf" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3997,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4011,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4019,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4072,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4095,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4103,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4119,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4181,9 +4159,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][LLM4Rec] 提出轻量即插即用路由器，基于排序感知特征与模型感知难度信号，逐实例决定是否触发推理，实现精度-效率帕累托最优。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][大语言模型推荐] 提出轻量即插即用的模型感知推理路由器，在生成前逐实例决定 Think/Non-Think，以 Pareto 前沿策略在降 token 的同时提升排序效用。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · LLM4Rec · 重排 · 自适应推理 · 推理路由 · 列表级排序</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 大语言模型推荐 · 重排 · 自适应推理 · 推理路由 · Pareto 前沿</p>
   
 </aside>
   
@@ -4204,7 +4182,7 @@
       
       
       
-        <span class="md-tag">LLM4Rec</span>
+        <span class="md-tag">大语言模型推荐</span>
       
     
       
@@ -4232,7 +4210,7 @@
       
       
       
-        <span class="md-tag">列表级排序</span>
+        <span class="md-tag">Pareto 前沿</span>
       
     
   </nav>
@@ -4244,189 +4222,311 @@
 
 <h1 id="think-when-needed-model-aware-reasoning-routing-for-llm-based-ranking-llm">Think When Needed: Model-Aware Reasoning Routing for LLM-based Ranking (按需思考：面向 LLM 排序的模型感知推理路由)</h1>
 <ul>
-<li><strong>会议/期刊</strong>: SIGIR 2026 (第 49 届国际 ACM SIGIR 会议)</li>
-<li><strong>推荐链路定位</strong>: 重排 (Re-ranking) / 列表级排序 (List-wise Ranking)</li>
-<li><strong>研究方向</strong>: 大语言模型推荐 (LLM4Rec) / 多任务学习与列表级重排</li>
+<li><strong>会议/期刊</strong>: SIGIR 2026</li>
+<li><strong>作者与机构</strong>: Huizhong Guo、Dongxia Wang（浙江大学），Tianjun Wei、Yingpeng Du、Ziyan Wang、Jie Zhang（南洋理工大学），Zhu Sun（新加坡科技设计大学）</li>
+<li><strong>推荐链路定位</strong>: 重排（LLM 列表级排序 / 生成式打分）</li>
+<li><strong>研究方向</strong>: 大语言模型推荐 / 多任务学习与列表级重排</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2601.18146v2">https://arxiv.org/abs/2601.18146v2</a></li>
 <li><strong>开源代码</strong>: <a href="https://github.com/Grey-z/reasoning_router">https://github.com/Grey-z/reasoning_router</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对 LLM 排序中"推理提示 (Think) 收益不一致且 token 开销巨大"的痛点，本文提出轻量即插即用的<strong>推理路由器 (Reasoning Router)</strong>：在生成前仅依赖排序感知特征（候选分散度、上下文-候选对齐）与模型感知难度信号（诊断清单的掩码响应概率），逐实例决定走 Non-Think 还是 Think。在 MS-MARCO、MovieLens、Amazon-VG 三个数据集上，配合 Qwen3-4B/8B/14B，实现精度提升同时 token 大幅下降（MovieLens + Qwen3-4B：NDCG@10 +6.3%，token −49.5%）。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>LLM 排序中"推理提示 (Think)"平均有效但并非普遍有益：约 35% 实例上 Non-Think 反而更优，且 Think 的 token 开销约为 Non-Think 的 8 倍。本文提出轻量即插即用的<strong>模型感知推理路由器</strong>，仅用生成前信号（排序感知特征 + 清单探针难度信号）逐实例预测 Think 相对 Non-Think 的效用增益，并沿验证集 Pareto 前沿选择部署策略。在 MovieLens/Amazon-VG/MS-MARCO 三个数据集、五种开源 LLM 上，Qwen3-4B 于 MovieLens 取得 NDCG@10 +6.3% 且 token −49.5%。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: LLM 已被广泛用于 IR 与 Rec 的列表级排序，近期工作（如 Sun et al. [30]）表明推理提示 (Think) 能让模型通过多步推理区分近邻候选的相关性，提升排序质量。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>收益不一致</strong>：图 1 显示 Think 平均提升 NDCG，但 token 消耗约为 Non-Think 的 7–8 倍；图 2(a) 进一步表明在 MS-MARCO + Qwen3-14B 上，<strong>35% 的实例 Non-Think 反而优于 Think</strong>，另有 3.6% 实例两种模式均零收益（超出模型能力）。</li>
-<li><strong>LLM 自选模式不可靠</strong>：Self-Select 模式（让 LLM 自行决定是否推理）的排序效用显著低于始终 Think，说明当前 LLM 无法可靠评估实例难度或推理的边际收益。</li>
-<li><strong>模型依赖性</strong>：图 2(b) 显示同一实例在 Qwen3-4B 与 Qwen3-14B 上的最优模式判断有 <strong>46.3% 不一致</strong>，通用路由器无法跨模型迁移。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 排序任务的难度缺乏显式客观度量（候选间关系、查询-候选关联多因素交织）；且排序系统本质是成本敏感的——token 预算直接转化为系统延迟，不能像数学/代码任务那样以"最大化单实例正确率"为唯一目标。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者通过诊断实验发现 <strong>Ideal 模式</strong>（oracle 逐实例选优）在 MovieLens 上可同时实现 NDCG +32% 与 token −55%，证明"<strong>何时推理</strong>与<strong>如何推理</strong>同等重要"。因此应设计一个在生成前即可决策的、模型感知的逐实例路由器。</li>
+<li><strong>主流范式</strong>: 将 LLM 作为列表级排序器，通过推理提示（<code>&lt;thought&gt;</code> 前缀触发 CoT）提升细粒度相关性判别，已在 IR 与推荐中被验证平均有效。</li>
+<li><strong>前人局限</strong>: 其一，Think 的收益<strong>不一致</strong>——MS-MARCO 上 Qwen3-14B 有 35% 实例 Non-Think 更优，另有 3.6% 实例两种模式均零收益（超出模型能力）；其二，让 LLM 自选模式（Self-Select）不可靠，其效用甚至低于固定 Think，说明模型无法自估实例难度。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 图 1 显示 oracle 的 Ideal 模式可在 MovieLens 上 NDCG +32% 同时 token −55%，即"<strong>何时推理</strong>"与"<strong>如何推理</strong>"同等关键；且图 2(b) 显示同一实例在 Qwen3-4B 与 14B 上的最优模式仅 53.7% 一致，路由必须<strong>模型感知</strong>。</li>
+<li><strong>本文切入点</strong>: 在生成前用一个轻量回归路由器预测逐实例的 Think 效用优势，把推理预算分配给最可能受益的实例。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>任务指令提示 <span class="arithmatex">\(P\)</span>，候选集 <span class="arithmatex">\(\mathcal{I}=\{i_1,\dots,i_n\}\)</span>，上下文 <span class="arithmatex">\(C\)</span>（IR 中 <span class="arithmatex">\(C=Q\)</span> 为查询；Rec 中 <span class="arithmatex">\(C=H=\{h_t\}_{t=1}^m\)</span> 为用户历史），目标长度 <span class="arithmatex">\(K\le n\)</span>。</li>
-<li>LLM <span class="arithmatex">\(f_\theta\)</span> 为每个候选打分 <span class="arithmatex">\(s_\theta(i\mid P,C,\mathcal{I})\in\mathbb{R}\)</span>，返回 top-<span class="arithmatex">\(K\)</span> 列表 <span class="arithmatex">\(L_K=\tau_K(\{s_\theta(i\mid P,C,\mathcal{I}):i\in\mathcal{I}\})\)</span>。</li>
-<li>记 LLM 最后一层隐状态 <span class="arithmatex">\(S\in\mathbb{R}^{T\times d}\)</span>（<span class="arithmatex">\(T\)</span> 为输入 token 数，<span class="arithmatex">\(d\)</span> 为隐维），<span class="arithmatex">\(\mathcal{T}_C\)</span>、<span class="arithmatex">\(\mathcal{T}_i\)</span> 分别为上下文段与第 <span class="arithmatex">\(i\)</span> 个候选段的 token 索引集合。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：输入提示（含候选与诊断清单）→ 单次前向 prefill → 同时抽取 (i) 排序感知特征（段池化 + 统计量）与 (ii) 模型感知难度信号（清单问题掩码响应概率）→ 拼接送入轻量路由器头 → 输出控制 token（<code>&lt;Thought&gt;</code> 或 <code>&lt;Output&gt;</code>）→ 决定后续解码是否进入推理。全部组件在<strong>单次前向</strong>内完成，不修改骨干架构与解码流程。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>路由器与主干 LLM 共享<strong>同一次前向</strong>：输入排序提示（指令 + 上下文 + 候选集）后，一方面从末层隐状态池化出上下文/候选段嵌入并计算排序感知统计特征；另一方面在提示后缀挂接带块对角因果掩码的诊断清单，从 "Answer:" 锚点处 LM Head 读出 Yes/No 概率作为模型感知难度信号。两类特征拼接后送入梯度提升回归器，输出 Think 相对 Non-Think 的效用优势 <span class="arithmatex">\(\hat{A}_p\)</span>；部署时按验证集 Pareto 前沿选定密度参数<span class="arithmatex">\(\eta\)</span>，以<span class="arithmatex">\(a_p(\eta)=\mathbb{I}[\hat{A}_p-\eta(T^{\text{Think}}_p-T^{\text{Non}}_p)\ge 0]\)</span> 决定是否触发 Think。全程不修改主干架构与解码流程。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 提示 P + 上下文 C + 候选集 I + 诊断清单"] --&gt; B["LLM 单次前向 Prefill (KV Cache)"]
-    B --&gt; C1["排序感知特征提取器: 段池化 e_C, e_i + 统计特征"]
-    B --&gt; C2["模型感知难度信号: 清单掩码响应概率 + 去偏聚合"]
-    C1 --&gt; D["路由器特征聚合 (拼接)"]
-    C2 --&gt; D
-    D --&gt; E["轻量路由器头 → 控制 token"]
-    E --&gt; F1["Non-Think: 直接输出排序"]
-    E --&gt; F2["Think: 生成 thought 后输出排序"]
-    F1 --&gt; G["Top-K 排序列表"]
-    F2 --&gt; G</code></pre>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 排序感知特征提取器 (Ranking-Aware Feature Extractor)</strong>：对上下文段与候选段做池化得到段嵌入：</p>
-<div class="arithmatex">\[e_C=\text{pooling}(S_{\mathcal{T}_C}),\quad e_i=\text{pooling}(S_{\mathcal{T}_i})\]</div>
-<p>Rec 任务额外对每个历史物品提取 <span class="arithmatex">\(e_{h_t}=\text{pooling}(S_{\mathcal{T}_{h_t}})\)</span>。特征沿两个维度组织：
-- <strong>上下文/候选复杂度</strong>：上下文表征的集中度/漂移（查询具体性、用户兴趣稳定性）与候选集在嵌入空间的分布离散度（candidate dispersion）；
-- <strong>上下文-候选对齐</strong>：<span class="arithmatex">\(e_C\)</span> 与 <span class="arithmatex">\(\{e_i\}\)</span> 的对齐程度及 top 候选的可区分性——高对齐意味着清晰的相关性线索适合 Non-Think，低对齐则提示 Think 可能更有益。</p>
-<p>特征选择采用<strong>两阶段精炼</strong>：先用带稀疏正则的轻量预测器按路由目标筛除低贡献特征，再跨数据集与骨干模型做一致性分析，仅保留稳定特征。</p>
-<p><strong>(2) 模型感知难度信号 (Model-Aware Difficulty Signals)</strong>：在提示后缀插入少量领域定制的诊断 yes/no 问题作为<strong>掩码清单</strong>，通过隔离掩码 (Isolation Masking) 保证清单问题不干扰排序任务本身，读取 LLM 对这些问题的响应概率，经<strong>去偏与聚合</strong>后作为模型内部不确定性与潜在推理失败模式的信号。该信号与排序感知特征互补，且天然随骨干模型变化（解决图 2(b) 的跨模型不一致问题）。</p>
-<p><strong>(3) 轻量路由器头与帕累托策略选择</strong>：两类特征拼接后送入轻量路由器头，输出控制 token 决定模式。路由器被训练为估计"Think 相对 Non-Think 的期望效用增益"。部署时利用<strong>验证集帕累托前沿</strong>在多个操作点（Knee、Utopia、Epsilon、UMax，见图 5）间自适应选择策略，在给定计算约束下仅对预测收益最高的实例分配 Think。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 原文正文未给出完整损失公式（受篇幅限制，特征集与实现细节置于开源代码）。路由器以"是否应触发 Think"为二分类/效用回归目标训练，采用带稀疏诱导正则的轻量预测器做特征筛选。<strong>具体损失形式与权重原文未在正文完整报告</strong>。</li>
-<li><strong>训练负采样策略</strong>: 不适用（非召回/对比学习任务，无负采样环节）；训练样本为逐实例的 (特征, 最优模式标签) 对，标签由 Non-Think 与 Think 的实际 NDCG 对比生成。</li>
-<li><strong>时间与空间复杂度</strong>: 路由器所有组件在骨干 LLM 的<strong>单次前向 prefill</strong> 内完成，复用 KV Cache，不增加额外生成轮次；相比 Always-Think 可节省约 49.5% token（MovieLens + Qwen3-4B）。<strong>原文未报告具体 ms/request 延迟与峰值显存数值</strong>。</li>
-</ul>
+    A["排序提示: 指令+上下文+候选集"] --&gt; B["共享前缀前向 (Prefill)"]
+    B --&gt; C["排序感知特征: 候选离散度/上下文-候选对齐"]
+    B --&gt; D["清单探针: 块对角掩码 + Yes/No 概率去偏"]
+    C --&gt; E["轻量路由器 (GBDT 回归)"]
+    D --&gt; E
+    E --&gt; F["Pareto 前沿选 η → Think / Non-Think 解码"]</code></pre>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>排序感知特征提取器（刻画实例内在结构复杂度）</strong>：LLM 难以直接从长文本判断排序难度，故将上下文段与候选段在末层隐状态上池化得 <span class="arithmatex">\(\mathbf{e}_C=\text{pooling}(S_{\mathcal{T}_C})\)</span>、<span class="arithmatex">\(\mathbf{e}_i=\text{pooling}(S_{\mathcal{T}_i})\)</span>，再沿两个维度构造统计量——(i) 上下文/候选复杂度（候选簇大小熵、上下文漂移相邻余弦）；(ii) 上下文-候选对齐（质心余弦、Top-k 相似度间隙、成对胜出计数）。直觉：排序难度源于表征重叠与弱可分，这些量在生成前即可显式量化歧义度。特征经"稀疏正则筛选 + 跨数据集/跨模型一致性"两阶段裁剪为紧凑子集。</p>
+</li>
+<li>
+<p><strong>清单式模型感知难度信号（捕捉模型自身的不确定性）</strong>：排序感知特征不含模型能力差异，故在提示后缀插入成对、方向平衡的诊断问题（如"Is the query single-intent?" vs "Is the query ambiguous or multi-intent?"），用<strong>块对角因果掩码</strong>令每个探针只关注共享前缀与自身 token，保证探针不干扰排序生成；从 "Answer:" 锚点取 Yes/No log-odds 并减去中性探针基线 <span class="arithmatex">\(\beta\)</span>以抑制 yes-bias，聚合为<span class="arithmatex">\(\Delta\text{logit}_j=r^{\text{NT}}_j-r^{\text{T}}_j\)</span> 等信号。</p>
+</li>
+<li>
+<p><strong>代价感知优势回归与 Pareto 策略选择</strong>：路由标签为 <span class="arithmatex">\(A_p=(U^{\text{Think}}_p-U^{\text{Non}}_p)-\lambda(T^{\text{Think}}_p-T^{\text{Non}}_p)\)</span>，训练目标为带单调性约束的加权平方损失<span class="arithmatex">\(\min_\phi \frac{1}{N_p}\sum_p w_p(f_\phi(\mathbf{x}_p)-A_p)^2\ \text{s.t.}\ \partial f_\phi/\partial \Delta T\le 0\)</span>，强制"成本越高预测优势不增"。部署时在验证 Pareto 前沿上定义 Knee（效率优先，取离反对角线最远点）、Utopia（均衡）、Epsilon（效用约束）、UMax（效用优先）四个锚点反解<span class="arithmatex">\(\eta\)</span> 并冻结。<strong>无负采样、无参数微调</strong>，额外开销仅为一次共享前向中的探针 token。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文使用三个公开数据集，覆盖 IR 与 Rec 两类任务。<strong>原文正文未提供 #Users / #Items / #Interactions / 稀疏度的完整统计表</strong>（受 11 页篇幅限制），下表仅列出原文明确提及的信息：</li>
+<li><strong>数据集与预处理</strong>:</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">MS-MARCO [26]</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: left;">IR 任务：查询-段落相关性排序</td>
-</tr>
-<tr>
-<td style="text-align: left;">MovieLens [11]</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: left;">Rec 任务：电影推荐，用户历史为上下文</td>
-</tr>
-<tr>
-<td style="text-align: left;">Amazon-VG [21]</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: left;">Rec 任务：视频游戏推荐</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文使用验证集做帕累托前沿策略选择（图 5 明确标注 "validation sets"），测试集报告主结果。<strong>具体划分比例（LOO / Ratio / 时间戳切分）原文正文未明确说明</strong>，需查阅开源代码确认。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 采用列表级排序评测，指标为 <strong>NDCG@10</strong>（主指标）与 <strong>NDCG@100</strong>（图 1 中 MS-MARCO 报告）。<strong>是否为 Full-Ranking 或 Sampled Ranking 原文未明确说明</strong>；由于任务设定为"上游检索器/采样器提供候选集"，实际为<strong>给定候选集内的重排评测</strong>。</li>
-<li><strong>评价指标与显著性检验</strong>: NDCG@10 / NDCG@100；表 1 中所有分数指标乘以 100 以便阅读，并报告<strong>五次独立运行的平均值</strong>。<strong>原文未明确报告配对显著性检验（如 <span class="arithmatex">\(p&lt;0.05\)</span>）</strong>。</li>
-</ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
-<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>表 1 报告了跨数据集与 LLM 骨干的排序效用与 token 成本。核心结论为：本文路由器在三个数据集、Qwen3-4B/8B/14B 三种规模上<strong>一致实现精度提升与 token 下降</strong>。代表性结果（MovieLens + Qwen3-4B）：<strong>NDCG@10 +6.3%，token −49.5%</strong>。图 1 的对照显示：MovieLens 上 Think 相对 Non-Think 仅提升 NDCG 2.1%（0.186→0.190）却消耗约 7 倍 token（48→384）；而 Ideal 模式可达 NDCG 0.250、token 174，验证了路由的潜在上限。</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">Non-Think</th>
-<th style="text-align: center;">Think</th>
-<th style="text-align: center;">Self-Select</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;">任务</th>
+<th style="text-align: center;">候选集构造</th>
+<th style="text-align: center;">划分</th>
+<th style="text-align: left;">说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">MovieLens (Qwen3-4B)</td>
-<td style="text-align: left;">NDCG@10 / Token</td>
-<td style="text-align: center;">0.186 / 48</td>
-<td style="text-align: center;">0.190 / 384</td>
-<td style="text-align: center;">0.176 / 64</td>
-<td style="text-align: center;"><strong>+6.3% NDCG, −49.5% token</strong></td>
-<td style="text-align: center;">+6.3%</td>
+<td style="text-align: left;">MovieLens</td>
+<td style="text-align: center;">推荐</td>
+<td style="text-align: center;">1 正 + 49 均匀采样负 = 50</td>
+<td style="text-align: center;">6:2:2</td>
+<td style="text-align: left;">按天排序，Leave-One-Out 取最后一项为目标</td>
 </tr>
 <tr>
-<td style="text-align: left;">MS-MARCO (Qwen3-14B)</td>
-<td style="text-align: left;">NDCG@100 / Token</td>
-<td style="text-align: center;">0.877 / 55</td>
-<td style="text-align: center;">0.880 / 263</td>
-<td style="text-align: center;">0.879 / 160</td>
-<td style="text-align: center;">见表 1（原文报告）</td>
-<td style="text-align: center;">原文报告</td>
+<td style="text-align: left;">Amazon-VG</td>
+<td style="text-align: center;">推荐</td>
+<td style="text-align: center;">同上，50 候选</td>
+<td style="text-align: center;">6:2:2</td>
+<td style="text-align: left;">视频游戏评论</td>
+</tr>
+<tr>
+<td style="text-align: left;">MS-MARCO</td>
+<td style="text-align: center;">检索</td>
+<td style="text-align: center;">原始候选池，不增强</td>
+<td style="text-align: center;">6:2:2</td>
+<td style="text-align: left;">变长候选池</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>注：表 1 完整数值（含 Amazon-VG 与 Qwen3-8B）请参见原文；上表仅提取正文明确给出的数字，其余标注"原文报告"以避免臆造。</p>
-</blockquote>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2601.18146v2/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文通过特征来源的对照间接验证各模块贡献：<strong>排序感知特征</strong>单独刻画实例内在结构复杂度，<strong>模型感知难度信号</strong>单独刻画 LLM 自身对难度的感知；二者互补拼接。图 2(b) 的跨模型一致性分析（46.3% 不一致）直接支撑了模型感知信号的必要性。<strong>原文正文未提供逐模块移除的定量消融表格</strong>，完整消融见开源代码。</p>
-<figure class="paper-figure">
-  <img alt="图 4" src="../../../../../assets/papers/2601.18146v2/figure_4.png" /><figcaption>图 4</figcaption>
-</figure>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
 <ul>
-<li><strong>实例级分桶表现</strong>: 图 2(a) 按 ΔNDCG 符号分桶：MS-MARCO + Qwen3-4B 中 ΔNDCG&lt;0 有 3784 例、&gt;0 有 3721 例、=0 有 478 例；Qwen3-14B 中分别为 2762 / 4930 / 291 例。说明"何时不该推理"的实例占比极高，路由空间巨大。</li>
-<li><strong>关键超参数敏感度</strong>: 路由器在验证集帕累托前沿上提供 Knee、Utopia、Epsilon、UMax 四个操作点（图 5），对应不同 token 预算约束下的精度-效率权衡；<strong>具体超参（如路由器隐藏维、清单问题数量）原文正文未系统报告</strong>。</li>
-<li><strong>线上 A/B 测试结果</strong>: <strong>原文仅包含离线实验</strong>，未报告线上 A/B 测试。</li>
+<li><strong>数据划分与防穿越</strong>: 推荐任务采用 <code>Leave-One-Out</code>（最后一项为测试目标，历史为上下文）后按 6:2:2 切分；检索任务按原始 query 划分。</li>
+<li><strong>排名评测协议</strong>: 推荐为 <code>Sampled Ranking</code>（固定 50 候选，1:49 正负比）；检索为原始池内排序。指标含 Top-1 Agreement、Pairwise Accuracy、Recall@k、NDCG@k，token 数作为效率度量，五次独立运行取均值。</li>
+<li><strong>对比基线与超参</strong>: 主干为 Qwen3-4B/8B/14B、Gemma3-12B、GPT-Oss-20B（指令微调版，零参数更新，统一 prompt 与解码超参）；基线含 Non-Think、Think、Random、Self-Select 及自适应推理 SOTA 家族 ARM-3B/7B/14B。</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2601.18146v2/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2601.18146v2/figure_2.png" /><figcaption>图 2</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2601.18146v2/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 5" src="../../../../../assets/papers/2601.18146v2/figure_5.png" /><figcaption>图 5</figcaption>
-</figure>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">主干 / 方法</th>
+<th style="text-align: center;">MovieLens N@10</th>
+<th style="text-align: center;">Token</th>
+<th style="text-align: center;">Amazon-VG N@10</th>
+<th style="text-align: center;">Token</th>
+<th style="text-align: center;">MS-MARCO N@10</th>
+<th style="text-align: center;">Token</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Qwen3-4B Non-Think</td>
+<td style="text-align: center;">18.59</td>
+<td style="text-align: center;">48</td>
+<td style="text-align: center;">17.01</td>
+<td style="text-align: center;">63</td>
+<td style="text-align: center;">87.74</td>
+<td style="text-align: center;">55</td>
+</tr>
+<tr>
+<td style="text-align: left;">Qwen3-4B Think</td>
+<td style="text-align: center;">19.02</td>
+<td style="text-align: center;">384</td>
+<td style="text-align: center;">20.34</td>
+<td style="text-align: center;">404</td>
+<td style="text-align: center;">87.99</td>
+<td style="text-align: center;">263</td>
+</tr>
+<tr>
+<td style="text-align: left;">Qwen3-4B Self-Select</td>
+<td style="text-align: center;">17.64</td>
+<td style="text-align: center;">64</td>
+<td style="text-align: center;">17.04</td>
+<td style="text-align: center;">125</td>
+<td style="text-align: center;">87.90</td>
+<td style="text-align: center;">160</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Qwen3-4B Ours</strong></td>
+<td style="text-align: center;"><strong>20.22</strong></td>
+<td style="text-align: center;"><strong>194</strong></td>
+<td style="text-align: center;"><strong>21.10</strong></td>
+<td style="text-align: center;"><strong>321</strong></td>
+<td style="text-align: center;"><strong>88.26</strong></td>
+<td style="text-align: center;"><strong>65</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Qwen3-14B Think</td>
+<td style="text-align: center;">20.75</td>
+<td style="text-align: center;">368</td>
+<td style="text-align: center;">24.96</td>
+<td style="text-align: center;">563</td>
+<td style="text-align: center;">90.94</td>
+<td style="text-align: center;">319</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Qwen3-14B Ours</strong></td>
+<td style="text-align: center;"><strong>21.63</strong></td>
+<td style="text-align: center;"><strong>254</strong></td>
+<td style="text-align: center;"><strong>25.52</strong></td>
+<td style="text-align: center;"><strong>279</strong></td>
+<td style="text-align: center;"><strong>91.22</strong></td>
+<td style="text-align: center;"><strong>265</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Gemma3-12B Non-Think</td>
+<td style="text-align: center;">25.96</td>
+<td style="text-align: center;">63</td>
+<td style="text-align: center;">24.99</td>
+<td style="text-align: center;">69</td>
+<td style="text-align: center;">77.32</td>
+<td style="text-align: center;">54</td>
+</tr>
+<tr>
+<td style="text-align: left;">Gemma3-12B Think</td>
+<td style="text-align: center;">21.22</td>
+<td style="text-align: center;">234</td>
+<td style="text-align: center;">26.00</td>
+<td style="text-align: center;">210</td>
+<td style="text-align: center;">90.26</td>
+<td style="text-align: center;">253</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Gemma3-12B Ours</strong></td>
+<td style="text-align: center;"><strong>26.12</strong></td>
+<td style="text-align: center;"><strong>83</strong></td>
+<td style="text-align: center;"><strong>27.13</strong></td>
+<td style="text-align: center;"><strong>150</strong></td>
+<td style="text-align: center;">89.69</td>
+<td style="text-align: center;">167</td>
+</tr>
+<tr>
+<td style="text-align: left;">GPT-Oss-20B Think</td>
+<td style="text-align: center;">25.01</td>
+<td style="text-align: center;">360</td>
+<td style="text-align: center;">28.17</td>
+<td style="text-align: center;">388</td>
+<td style="text-align: center;">88.43</td>
+<td style="text-align: center;">234</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>GPT-Oss-20B Ours</strong></td>
+<td style="text-align: center;"><strong>25.25</strong></td>
+<td style="text-align: center;"><strong>272</strong></td>
+<td style="text-align: center;"><strong>28.91</strong></td>
+<td style="text-align: center;"><strong>282</strong></td>
+<td style="text-align: center;"><strong>88.47</strong></td>
+<td style="text-align: center;"><strong>182</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">ARM-14B</td>
+<td style="text-align: center;">16.74</td>
+<td style="text-align: center;">1071</td>
+<td style="text-align: center;">12.89</td>
+<td style="text-align: center;">1090</td>
+<td style="text-align: center;">79.03</td>
+<td style="text-align: center;">1275</td>
+</tr>
+</tbody>
+</table>
+<p>相对 Think 的提升：Qwen3-4B 于 MovieLens <strong>+6.3% N@10 / −49.5% token</strong>，Amazon-VG <strong>+3.9% / −20.5%</strong>，MS-MARCO <strong>−75.3% token</strong>；Gemma3-12B 在 MovieLens 上 Think 本身劣于 Non-Think，路由器仍取得 26.12（优于两者）。</p>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">主干 / 变体</th>
+<th style="text-align: center;">Amazon-VG N@10</th>
+<th style="text-align: center;">Token</th>
+<th style="text-align: center;">Trade-off</th>
+<th style="text-align: center;">MS-MARCO N@10</th>
+<th style="text-align: center;">Token</th>
+<th style="text-align: center;">Trade-off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Qwen3-14B w/o ranking-aware</td>
+<td style="text-align: center;">23.57</td>
+<td style="text-align: center;">254</td>
+<td style="text-align: center;">21.03</td>
+<td style="text-align: center;">90.87</td>
+<td style="text-align: center;">243</td>
+<td style="text-align: center;">88.44</td>
+</tr>
+<tr>
+<td style="text-align: left;">Qwen3-14B w/o model-aware</td>
+<td style="text-align: center;">24.61</td>
+<td style="text-align: center;">286</td>
+<td style="text-align: center;">21.75</td>
+<td style="text-align: center;">90.44</td>
+<td style="text-align: center;">236</td>
+<td style="text-align: center;">88.08</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Qwen3-14B Ours</strong></td>
+<td style="text-align: center;"><strong>25.52</strong></td>
+<td style="text-align: center;">279</td>
+<td style="text-align: center;"><strong>22.73</strong></td>
+<td style="text-align: center;"><strong>91.22</strong></td>
+<td style="text-align: center;">265</td>
+<td style="text-align: center;"><strong>88.57</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Gemma3-12B w/o model-aware</td>
+<td style="text-align: center;">26.91</td>
+<td style="text-align: center;">144</td>
+<td style="text-align: center;">25.47</td>
+<td style="text-align: center;">81.97</td>
+<td style="text-align: center;">104</td>
+<td style="text-align: center;">80.93</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Gemma3-12B Ours</strong></td>
+<td style="text-align: center;"><strong>27.13</strong></td>
+<td style="text-align: center;">150</td>
+<td style="text-align: center;"><strong>25.63</strong></td>
+<td style="text-align: center;"><strong>89.69</strong></td>
+<td style="text-align: center;">167</td>
+<td style="text-align: center;"><strong>88.02</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">GPT-Oss-20B w/o model-aware</td>
+<td style="text-align: center;">27.89</td>
+<td style="text-align: center;">204</td>
+<td style="text-align: center;">25.85</td>
+<td style="text-align: center;">84.61</td>
+<td style="text-align: center;">141</td>
+<td style="text-align: center;">83.20</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>GPT-Oss-20B Ours</strong></td>
+<td style="text-align: center;"><strong>28.91</strong></td>
+<td style="text-align: center;">282</td>
+<td style="text-align: center;"><strong>26.09</strong></td>
+<td style="text-align: center;"><strong>88.47</strong></td>
+<td style="text-align: center;">182</td>
+<td style="text-align: center;"><strong>86.65</strong></td>
+</tr>
+</tbody>
+</table>
+<p>（Trade-off <span class="arithmatex">\(=\text{N@10}-10^{-4}\times\text{Token}\)</span>）</p>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>两类特征互补且任务相关</strong>：推荐任务上移除排序感知特征损失更大（Qwen3-14B 于 Amazon-VG N@10 掉 1.95），检索任务上移除模型感知信号损失更大（Gemma3-12B 于 MS-MARCO N@10 从 89.69 骤降至 81.97），与 SHAP 分析一致——Rec 依赖偏好/匹配结构，IR 依赖逐 query 难度探针。</li>
+<li><strong>Pareto 前沿给出可解释的部署旋钮</strong>：Epsilon 锚点在 MovieLens/Amazon-VG 上以约少 10–30% token 达到 Think 级 NDCG；Utopia 通常将 token 减半而效用仅微降（0.1787 vs 0.183）；UMax 甚至因规避"有害过度推理"而超过 Think 峰值。</li>
+<li><strong>通用自适应推理方法不适配排序</strong>：ARM 家族倾向把几乎所有实例判为"难"并默认长链推理，token 高达 1000+ 却效用垫底（ARM-14B 于 Amazon-VG N@10 仅 12.89），反证排序场景需要模型感知的逐实例路由。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>问题形式化新颖</strong>：首次将"推理路由"形式化到排序任务，并用诊断实验（图 1、图 2）扎实论证"Think 非普适有益"与"LLM 自选不可靠"两大动机。</li>
-<li><strong>生成前决策 + 单次前向</strong>：路由器完全依赖 pre-generation 信号，复用 KV Cache，工程上即插即用，可直接迁移到任意 LLM 排序/重排管线。</li>
-<li><strong>模型感知设计</strong>：清单探测信号天然随骨干变化，解决了跨模型难度感知不一致（46.3%）的关键痛点；帕累托前沿策略选择使系统可在不同延迟约束下灵活部署。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议透明度不足</strong>：正文未明确数据划分方式（LOO / Ratio / 时间戳）、候选集构造与是否 Full-Ranking，复现与公平比较存在障碍；亦未报告配对显著性检验。</li>
-<li><strong>效率证据偏弱</strong>：仅报告 token 数作为成本代理，<strong>缺少真实端到端延迟 (ms/request)、峰值显存与路由器自身开销</strong>的量化，而排序系统对延迟高度敏感，这是审稿人最可能质疑之处。</li>
-<li><strong>清单问题的领域定制成本</strong>：诊断清单需"领域定制"，跨域迁移时清单构造的人工成本与鲁棒性未讨论；特征集因篇幅被推至代码仓库，削弱了正文自洽性。</li>
-<li><strong>基线覆盖有限</strong>：未与已有的通用自适应推理方法（如长度惩罚 RL、latent reasoning）在排序任务上直接对比，仅与 Non-Think / Think / Self-Select 对照。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较固定推理提示（Sun et al. 的推理模板）与 Self-Select，本文把"是否推理"外置为可学习回归问题；相较 ARM 等通用自适应推理，本文不依赖可验证答案反馈，而是用生成前信号 + 代价感知优势标签，且显式建模跨模型难度差异。</li>
+<li><strong>可迁移亮点</strong>: (i) 块对角因果掩码的"探针隔离"技巧可在单次前向中零干扰地读取模型内部置信度，可迁移至 CTR 预估的样本难度估计与主动学习；(ii) 以验证 Pareto 前沿反解阈值 <span class="arithmatex">\(\eta\)</span> 的部署范式，适合任何"精度-延迟"可调的服务化排序系统。</li>
+<li><strong>审稿级局限批判</strong>: 其一，路由策略依赖训练/测试分布对齐，若用户意图、候选构成或 prompt 格式显著漂移，策略可能退化为近似均匀模式；其二，实验候选集仅 50（受 LLM 上下文限制），未验证大规模检索池与多阶段级联场景，且探针 token 与 GBDT 特征工程带来额外离线维护成本。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （首次形式化排序任务的推理路由，模型感知清单探针与代价感知优势回归设计新颖，但整体为特征工程 + GBDT 的组合式创新）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （三数据集 × 五主干 × 五随机种子，含 Pareto 前沿、SHAP、prompt 敏感性与消融，但推荐侧为 50 候选采样排序，未覆盖全库排序）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （路由规则、单调约束与四类策略公式定义清晰，动机实验图表有力；部分特征细节下放代码仓库略影响可复现阅读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （即插即用、不改主干、单次前向完成路由，代码已开源；但需按主干模型重训路由器，跨模型迁移需重新标定）</li>
 </ul>
 
 

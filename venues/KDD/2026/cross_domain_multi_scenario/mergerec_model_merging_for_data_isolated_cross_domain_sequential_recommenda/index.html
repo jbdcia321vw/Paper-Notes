@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4222,7 +4233,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>给定 <span class="arithmatex">\(K\)</span> 个域各自微调的文本序列推荐模型 <span class="arithmatex">\(\{\theta_k\}\)</span> 与共享预训练底座 <span class="arithmatex">\(\theta_{base}\)</span>，MergeRec 分三步闭环：(a) <strong>合并初始化</strong>——计算任务向量 <span class="arithmatex">\(\tau_k=\theta_k-\theta_{base}\)</span>，按域级或层级权重线性叠加得到初始统一模型；(b) <strong>伪用户构造</strong>——把每个域内每个物品 <span class="arithmatex">\(i\)</span> 单独视为一条序列 <span class="arithmatex">\([i]\)</span>，作为探针输入各域教师模型，得到条件分布 <span class="arithmatex">\(\hat p_k(\cdot|[i])\)</span>；(c) <strong>协同合并优化</strong>——仅优化合并权重 <span class="arithmatex">\(w\)</span>（域级 <span class="arithmatex">\(K\)</span> 个或层级 <span class="arithmatex">\(K\times L\)</span> 个），联合最小化蒸馏损失与推荐损失，最终输出单一通用推荐模型。</p>
+<p>给定 <span class="arithmatex">\(K\)</span>个域各自微调的文本序列推荐模型<span class="arithmatex">\(\{\theta_k\}\)</span>与共享预训练底座<span class="arithmatex">\(\theta_{base}\)</span>，MergeRec 分三步闭环：(a) <strong>合并初始化</strong>——计算任务向量<span class="arithmatex">\(\tau_k=\theta_k-\theta_{base}\)</span>，按域级或层级权重线性叠加得到初始统一模型；(b) <strong>伪用户构造</strong>——把每个域内每个物品<span class="arithmatex">\(i\)</span>单独视为一条序列<span class="arithmatex">\([i]\)</span>，作为探针输入各域教师模型，得到条件分布<span class="arithmatex">\(\hat p_k(\cdot|[i])\)</span>；(c) <strong>协同合并优化</strong>——仅优化合并权重<span class="arithmatex">\(w\)</span>（域级<span class="arithmatex">\(K\)</span>个或层级<span class="arithmatex">\(K\times L\)</span> 个），联合最小化蒸馏损失与推荐损失，最终输出单一通用推荐模型。</p>
 <pre class="mermaid"><code>flowchart TD
     A["K 个域微调模型 θ_k + 预训练底座 θ_base"] --&gt; B["任务向量 τ_k = θ_k - θ_base"]
     B --&gt; C["合并初始化: θ_merge = θ_base + Σ w_k·τ_k"]
@@ -4236,15 +4247,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>层级/域级任务向量合并（Merging Initialization）</strong>：单一域标量无法抑制层间抽象差异带来的域间干扰 <span class="arithmatex">\(\to\)</span> 为每域每层分配独立权重，<span class="arithmatex">\(\theta_{merge}=\{\theta^l_{base}+\sum_{k}w^l_k\cdot\tau^l_k\}_{l=1}^{L}\)</span>。直觉：浅层共享通用文本表征、深层承载域特有 CF 模式，分层加权可细粒度控制知识注入强度。</p>
+<p><strong>层级/域级任务向量合并（Merging Initialization）</strong>：单一域标量无法抑制层间抽象差异带来的域间干扰 <span class="arithmatex">\(\to\)</span>为每域每层分配独立权重，<span class="arithmatex">\(\theta_{merge}=\{\theta^l_{base}+\sum_{k}w^l_k\cdot\tau^l_k\}_{l=1}^{L}\)</span>。直觉：浅层共享通用文本表征、深层承载域特有 CF 模式，分层加权可细粒度控制知识注入强度。</p>
 </li>
 <li>
-<p><strong>伪用户数据构造（Pseudo-user Construction）</strong>：数据隔离下无任何样本可学权重 <span class="arithmatex">\(\to\)</span> 令 <span class="arithmatex">\(\tilde{\mathcal{U}}_k=\{[i]\mid i\in\mathcal{I}_k\}\)</span>，把单物品序列喂入教师模型 <span class="arithmatex">\(f_{\theta_k}\)</span>，其输出分布即刻画物品 <span class="arithmatex">\(i\)</span> 的局部共现结构。直觉：CF 知识已固化在参数中，单物品探针足以「唤醒」它，等价于模拟跨域冷启动用户，且完全不触碰真实日志。</p>
+<p><strong>伪用户数据构造（Pseudo-user Construction）</strong>：数据隔离下无任何样本可学权重 <span class="arithmatex">\(\to\)</span>令<span class="arithmatex">\(\tilde{\mathcal{U}}_k=\{[i]\mid i\in\mathcal{I}_k\}\)</span>，把单物品序列喂入教师模型<span class="arithmatex">\(f_{\theta_k}\)</span>，其输出分布即刻画物品<span class="arithmatex">\(i\)</span> 的局部共现结构。直觉：CF 知识已固化在参数中，单物品探针足以「唤醒」它，等价于模拟跨域冷启动用户，且完全不触碰真实日志。</p>
 </li>
 <li>
 <p><strong>推荐 + 蒸馏联合目标（Collaborative Merging Optimization）</strong>：AdaMerging 仅最小化预测熵，只放大 top-1 置信度，无法刻画用户多意图（图 3 显示其交叉熵不降）<span class="arithmatex">\(\to\)</span> 引入
 $<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{Rec}+\lambda\cdot\mathcal{L}_{KD},\quad \mathcal{L}_{KD}=\sum_{k}\sum_{u\in\tilde{\mathcal{U}}_k}\mathrm{KL}(\hat p_{merge,u}\,\|\,\hat p_{k,u})\)</span>$
-其中 <span class="arithmatex">\(\mathcal{L}_{Rec}\)</span> 以教师模型对伪用户的 top-1 预测 <span class="arithmatex">\(\tilde i^+\)</span> 作硬伪标签、域内负采样构造 BPR 式交叉熵。蒸馏传软分布（多意图 CF 信号），推荐损失保排序判别力。<strong>训练仅更新 <span class="arithmatex">\(K\)</span> 或 <span class="arithmatex">\(K\times L\)</span> 个标量权重</strong>，底座与任务向量冻结，推理零额外开销。</p>
+其中 <span class="arithmatex">\(\mathcal{L}_{Rec}\)</span>以教师模型对伪用户的 top-1 预测<span class="arithmatex">\(\tilde i^+\)</span>作硬伪标签、域内负采样构造 BPR 式交叉熵。蒸馏传软分布（多意图 CF 信号），推荐损失保排序判别力。<strong>训练仅更新<span class="arithmatex">\(K\)</span>或<span class="arithmatex">\(K\times L\)</span> 个标量权重</strong>，底座与任务向量冻结，推理零额外开销。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4276,7 +4287,7 @@ $<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{Rec}+\lambda\cdot\mathcal{L
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: <code>Leave-One-Out</code>——每用户最后 1 次交互作测试、倒数第 2 次作验证、其余训练；训练数据仅用于微调与 Joint Learning，合并阶段不可见。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 域内全物品排序，报告 Recall@10 与 NDCG@10；主表采用<strong>相对微调模型的归一化 R@10</strong>（微调=100%），并给出未归一化结果于附录 C。</li>
-<li><strong>对比基线与超参设置</strong>: Zero-shot、Fine-tuning、Joint Learning、Weight Averaging、Task Arithmetic、TIES、AdaMerging（域级/层级，为公平起见改用同一伪用户数据做无监督熵最小化）；骨干为 RecFormer-base/large 与 BLaIR-base/large；温度 <span class="arithmatex">\(T=1\)</span>，<span class="arithmatex">\(\lambda\)</span> 做敏感性扫描；显著性用单尾 t 检验 <span class="arithmatex">\(p&lt;0.02\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: Zero-shot、Fine-tuning、Joint Learning、Weight Averaging、Task Arithmetic、TIES、AdaMerging（域级/层级，为公平起见改用同一伪用户数据做无监督熵最小化）；骨干为 RecFormer-base/large 与 BLaIR-base/large；温度 <span class="arithmatex">\(T=1\)</span>，<span class="arithmatex">\(\lambda\)</span>做敏感性扫描；显著性用单尾 t 检验<span class="arithmatex">\(p&lt;0.02\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4426,12 +4437,18 @@ $<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{Rec}+\lambda\cdot\mathcal{L
 <li><strong>域数越多优势越大</strong>：图 4 中 Task Arithmetic/TIES 在 4–5 域时尚可竞争，随域数增至 8 明显退化，而 MergeRec 单调上升，验证任务向量冲突随域数累积、而推荐导向目标可有效消解。</li>
 <li><strong>稀疏域与长尾物品受益最大</strong>：Scientific 域上 MergeRec 较微调提升 1.44%（RecFormer-base 域级）至 5.18%（BLaIR-large 层级）；图 5(b) 中最冷门物品组（1–10）增益最显著；数据稀缺实验（目标域仅 1%/5%/10% 用户）中 MergeRec 平均 R@10 达 0.1089/0.1128/0.1120，全面优于微调与 AdaMerging；未见域（Inst./Office/Sci.）上较 Task Arithmetic 最高 +3.92%。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 C2DSR/MAN/DTCDR 等 CDSR 的本质区别是<strong>彻底放弃跨域数据与重叠实体假设</strong>，只交换参数；与 FedGCDR 等隐私保护 CDR 的区别是训练期完全无跨域协调、无梯度/参数交换；与 AdaMerging 的区别是把「无监督熵最小化」替换为「教师软分布蒸馏 + 伪标签推荐」的推荐感知目标。</li>
 <li><strong>可迁移亮点</strong>: ① 「物品即伪用户」的单物品探针可迁移到任何缺乏原始数据、仅有模型权重的联邦/多租户合并场景；② 用教师 top-1 作硬伪标签 + KL 软分布的双监督组合，是低成本补齐「排序判别力」的通用配方。</li>
 <li><strong>审稿级局限批判</strong>: ① 伪用户仅用单物品序列，丢失序列上下文，长序列用户（图 5a 中 20+）增益有限；② 合并权重数量随域数线性增长，且需预先固定底座与任务向量，底座不同（跨架构）时无法合并；③ 评估仅限 Amazon 文本序列推荐与归一化指标，缺少工业级在线 A/B 与延迟实测。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,17 +4230,17 @@
 <li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>短视频推荐要把用户历史拉到 <span class="arithmatex">\(10^3\)</span> 量级，却卡在两个瓶颈：正交 Video ID 语义稀疏、嵌入表随语料无界膨胀；标准自注意力 <span class="arithmatex">\(O(L^2)\)</span> 复杂度在毫秒级延迟下无法承受。本文提出「语义原生」框架：序列侧改用 RQ-VAE 深度截断 Bi-gram 语义 ID（嵌入参数 -38.07%、存储 -39.33%），架构侧用无参时间折叠 + 全局 Query 的压缩 Transformer（训练步时 -83.9%、峰值显存 -92.2%），从而把序列从 800 扩到 2000。十亿用户级线上 A/B 中满意观看时长 +1.42%、满意播放 +1.08%、活跃用户 +0.52%（<span class="arithmatex">\(p&lt;0.05\)</span>）。</p>
+<p>短视频推荐要把用户历史拉到 <span class="arithmatex">\(10^3\)</span>量级，却卡在两个瓶颈：正交 Video ID 语义稀疏、嵌入表随语料无界膨胀；标准自注意力<span class="arithmatex">\(O(L^2)\)</span>复杂度在毫秒级延迟下无法承受。本文提出「语义原生」框架：序列侧改用 RQ-VAE 深度截断 Bi-gram 语义 ID（嵌入参数 -38.07%、存储 -39.33%），架构侧用无参时间折叠 + 全局 Query 的压缩 Transformer（训练步时 -83.9%、峰值显存 -92.2%），从而把序列从 800 扩到 2000。十亿用户级线上 A/B 中满意观看时长 +1.42%、满意播放 +1.08%、活跃用户 +0.52%（<span class="arithmatex">\(p&lt;0.05\)</span>）。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 工业长序列建模走两条路——启发式过滤/层次聚类（SIM、TWIN、TWIN-V2）做两阶段截断，或端到端改造架构（LONGER、HyFormer、HSTU）直接吃全序列；物品表征则从哈希 ID（TDM、Deep Retrieval）转向 RQ-VAE 语义 ID（PLUM、TRM）。</li>
 <li><strong>前人局限</strong>: 其一，正交 Video ID 把每个视频当独立 token，模型只能"记忆"交互，冷启内容零泛化，且嵌入表规模与语料基数线性绑定；其二，过滤式长序列方案以丢弃信号换效率，聚类方案依赖昂贵离线预计算，二者都存在信息损失或工程耦合。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 语义 ID 的层级前缀天然把交互聚到"游戏-沙盒 / 游戏-射击"这类子垂类，粗粒度截断即可保留语义主旨；而注意力的二次复杂度本质是"时间分辨率"过细，若把相邻 <span class="arithmatex">\(k\)</span> 个 token 折叠进特征维，则可在不丢信息的前提下把序列长度除以 <span class="arithmatex">\(k\)</span>。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 语义 ID 的层级前缀天然把交互聚到"游戏-沙盒 / 游戏-射击"这类子垂类，粗粒度截断即可保留语义主旨；而注意力的二次复杂度本质是"时间分辨率"过细，若把相邻 <span class="arithmatex">\(k\)</span>个 token 折叠进特征维，则可在不丢信息的前提下把序列长度除以<span class="arithmatex">\(k\)</span>。</li>
 <li><strong>本文切入点</strong>: 把语义 ID 的泛化力与无参序列压缩的效率红利叠加，在同一个共享骨干里同时解决表征瓶颈与算力瓶颈，从而"省下的算力全部换成序列长度与模型容量"。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>系统采用同步-异步混合框架：同步短序列模块实时编码交互尾部 <span class="arithmatex">\(S_{short}\)</span> 捕捉即时兴趣；异步长序列模块对 <span class="arithmatex">\(S_{long}=\{v_1,\dots,v_L\}\)</span>（<span class="arithmatex">\(L\)</span> 可达 2000）做离线/异步编码。两个模块共享骨干与优化目标，保证异步表征与实时排序特征落在同一隐空间，避免特征错位。长序列侧先经语义 ID 嵌入层（Bi-gram 截断词表），再进入 Global-Aware Compressed Transformer：时间折叠把 <span class="arithmatex">\((L,d)\)</span> 重塑为 <span class="arithmatex">\((L/k, k\cdot d)\)</span>，前置可学习 Global Query 后过若干层 Transformer，最后用统一掩码均值池化融合全局意图与局部细节，输出用户长兴趣向量供精排拼接。</p>
+<p>系统采用同步-异步混合框架：同步短序列模块实时编码交互尾部 <span class="arithmatex">\(S_{short}\)</span>捕捉即时兴趣；异步长序列模块对<span class="arithmatex">\(S_{long}=\{v_1,\dots,v_L\}\)</span>（<span class="arithmatex">\(L\)</span>可达 2000）做离线/异步编码。两个模块共享骨干与优化目标，保证异步表征与实时排序特征落在同一隐空间，避免特征错位。长序列侧先经语义 ID 嵌入层（Bi-gram 截断词表），再进入 Global-Aware Compressed Transformer：时间折叠把<span class="arithmatex">\((L,d)\)</span>重塑为<span class="arithmatex">\((L/k, k\cdot d)\)</span>，前置可学习 Global Query 后过若干层 Transformer，最后用统一掩码均值池化融合全局意图与局部细节，输出用户长兴趣向量供精排拼接。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户超长观看序列 S_long (L≤2000)"] --&gt; B["RQ-VAE 深度截断 Bi-gram 语义ID 嵌入"]
     B --&gt; C["无参时间折叠 (L,d)→(L/k, k·d)"]
@@ -4247,12 +4258,12 @@ $<span class="arithmatex">\(\mathrm{ID}_{seq}=c_1\cdot|\mathcal{V}|+c_2,\)</span
 而候选物品与关键交互特征（如最近一次观看 ID）仍保留细粒度全层级。这样嵌入表规模由层级深度而非语料基数决定，且共享语义前缀使冷启内容天然获得可泛化的表示——本质是把"记忆式 ID"换成"类别级先验 + 细粒度匹配"的非对称分工。</p>
 </li>
 <li>
-<p><strong>无参时间折叠（Parameter-Free Temporal Folding）</strong>：针对 <span class="arithmatex">\(O(L^2)\)</span> 注意力，本文不做池化式有损聚合，而是把输入按窗口 <span class="arithmatex">\(k\)</span> 切分后通道拼接成 super-token：
+<p><strong>无参时间折叠（Parameter-Free Temporal Folding）</strong>：针对 <span class="arithmatex">\(O(L^2)\)</span>注意力，本文不做池化式有损聚合，而是把输入按窗口<span class="arithmatex">\(k\)</span> 切分后通道拼接成 super-token：
 $<span class="arithmatex">\(H^{super}_i=\mathrm{Concat}\big(x_{(i-1)k+1},\dots,x_{ik}\big).\)</span>$
-零参数地把序列压到 <span class="arithmatex">\(L/k\)</span>、隐维升到 <span class="arithmatex">\(k\cdot d\)</span>，显式用时间分辨率换特征表达力，使注意力在"超级事件"层面捕捉稠密局部依赖，同时顺带起到局部去噪作用。</p>
+零参数地把序列压到 <span class="arithmatex">\(L/k\)</span>、隐维升到<span class="arithmatex">\(k\cdot d\)</span>，显式用时间分辨率换特征表达力，使注意力在"超级事件"层面捕捉稠密局部依赖，同时顺带起到局部去噪作用。</p>
 </li>
 <li>
-<p><strong>全局 Query 与统一掩码池化 + 训练目标</strong>：在压缩序列前拼接 <span class="arithmatex">\(N_g\)</span> 个特征无关的可学习 Global Query <span class="arithmatex">\(G_{init}\)</span>，它既作为注意力汇聚点（attention sink 吸收低熵信号、稳定优化），又强制表征只从动态交互中推导。最终表示为
+<p><strong>全局 Query 与统一掩码池化 + 训练目标</strong>：在压缩序列前拼接 <span class="arithmatex">\(N_g\)</span>个特征无关的可学习 Global Query<span class="arithmatex">\(G_{init}\)</span>，它既作为注意力汇聚点（attention sink 吸收低熵信号、稳定优化），又强制表征只从动态交互中推导。最终表示为
 $<span class="arithmatex">\(u_{final}=\frac{\sum_{j=1}^{L'+N_g} H_{out}[j]\cdot M'_j}{\sum_{j=1}^{L'+N_g} M'_j+\epsilon},\)</span>$
 其中 <span class="arithmatex">\(M'\)</span> 为扩展有效掩码（Global Query 位恒为 1），归一化保证不同历史长度下量级不变。训练沿用精排主任务的排序损失（共享骨干、共享目标），序列侧无需额外负采样；推理侧长序列异步计算，在线仅做拼接，延迟可控。</p>
 </li>
@@ -4300,7 +4311,7 @@ $<span class="arithmatex">\(u_{final}=\frac{\sum_{j=1}^{L'+N_g} H_{out}[j]\cdot 
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 工业在线 A/B 分流 + 离线按时间先后构造训练/评估样本（历史序列严格早于标签交互），属时间切分范式，无随机泄漏。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 离线采用全量曝光样本上的 AUC 与 LogLoss（非采样负例排序）；线上采用满意观看时长、满意播放、活跃用户、新鲜度等业务指标，显著性 <span class="arithmatex">\(p&lt;0.05\)</span>。</li>
-<li><strong>对比基线与超参设置</strong>: 基线为线上 SOTA 生产系统（Video ID + 800 长序列）与 Vanilla Transformer；压缩窗口 <span class="arithmatex">\(k\in\{4,6\}\)</span>，隐藏维 <span class="arithmatex">\(d\in\{128,256,1024\}\)</span>，层数 <span class="arithmatex">\(N\in\{2,4,6\}\)</span>，Global Query 数 <span class="arithmatex">\(N_g\)</span> 未在正文披露。</li>
+<li><strong>对比基线与超参设置</strong>: 基线为线上 SOTA 生产系统（Video ID + 800 长序列）与 Vanilla Transformer；压缩窗口 <span class="arithmatex">\(k\in\{4,6\}\)</span>，隐藏维<span class="arithmatex">\(d\in\{128,256,1024\}\)</span>，层数<span class="arithmatex">\(N\in\{2,4,6\}\)</span>，Global Query 数<span class="arithmatex">\(N_g\)</span> 未在正文披露。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4331,7 +4342,7 @@ $<span class="arithmatex">\(u_{final}=\frac{\sum_{j=1}^{L'+N_g} H_{out}[j]\cdot 
 </tr>
 </tbody>
 </table>
-<p>全系统上线（基线 <span class="arithmatex">\(L=800\)</span> Video ID → 新系统 <span class="arithmatex">\(L=2000\)</span> SID）：</p>
+<p>全系统上线（基线 <span class="arithmatex">\(L=800\)</span>Video ID → 新系统<span class="arithmatex">\(L=2000\)</span> SID）：</p>
 <table>
 <thead>
 <tr>
@@ -4361,7 +4372,7 @@ $<span class="arithmatex">\(u_{final}=\frac{\sum_{j=1}^{L'+N_g} H_{out}[j]\cdot 
 <tr>
 <th style="text-align: left;">配置</th>
 <th style="text-align: center;">Task 1 <span class="arithmatex">\(\Delta\)</span>AUC</th>
-<th style="text-align: center;">Task 2 <span class="arithmatex">\(\Delta\)</span>AUC</th>
+<th style="text-align: center;">Task 2<span class="arithmatex">\(\Delta\)</span>AUC</th>
 <th style="text-align: center;">训练步时 (ms)</th>
 <th style="text-align: center;">峰值 HBM (MiB)</th>
 </tr>
@@ -4396,7 +4407,7 @@ $<span class="arithmatex">\(u_{final}=\frac{\sum_{j=1}^{L'+N_g} H_{out}[j]\cdot 
 <tr>
 <th style="text-align: left;">配置</th>
 <th style="text-align: center;">Task 1 <span class="arithmatex">\(\Delta\)</span>AUC</th>
-<th style="text-align: center;">Task 2 <span class="arithmatex">\(\Delta\)</span>AUC</th>
+<th style="text-align: center;">Task 2<span class="arithmatex">\(\Delta\)</span>AUC</th>
 </tr>
 </thead>
 <tbody>
@@ -4430,15 +4441,21 @@ $<span class="arithmatex">\(u_{final}=\frac{\sum_{j=1}^{L'+N_g} H_{out}[j]\cdot 
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>语义 ID 的收益主要来自泛化而非记忆</strong>：满意播放仅 +0.86% 说明记忆能力基本持平，但新鲜度 +6.81% 是前者的近 8 倍，证明共享语义前缀确实把冷启内容从"零样本"拉到了"类别先验可迁移"的状态，同时嵌入参数与存储各降约 38–39%。</li>
-<li><strong>压缩不是精度妥协而是帕累托改进</strong>：<span class="arithmatex">\(k=4\)</span> 在步时降 83.9%、显存降 92.2% 的同时 AUC 反升 +0.06%/+0.15%，归因于折叠带来的局部去噪与 <span class="arithmatex">\(k\)</span> 倍有效隐维；但 <span class="arithmatex">\(k=6\)</span> 时 Task 1 转为 -0.04%，说明时间分辨率存在硬下限，<span class="arithmatex">\(k=4\)</span> 是效率-分辨率的最优点。</li>
-<li><strong>深度比宽度更划算，长度扩展服从幂律</strong>：同为加参，<span class="arithmatex">\(N:2\to6\)</span> 带来 +0.23%/+0.36%，远高于 <span class="arithmatex">\(d:128\to1024\)</span> 的 +0.10%/+0.15%；序列从 1200 扩到 2000 时 AUC 仍单调上升，相对 LogLoss 服从 <span class="arithmatex">\((\delta T)^k\)</span> 幂律（两任务指数 -0.634 与 -0.056），说明超长历史中仍有未被短窗覆盖的信号，且扩展收益可按幂律外推预算。</li>
+<li><strong>压缩不是精度妥协而是帕累托改进</strong>：<span class="arithmatex">\(k=4\)</span>在步时降 83.9%、显存降 92.2% 的同时 AUC 反升 +0.06%/+0.15%，归因于折叠带来的局部去噪与<span class="arithmatex">\(k\)</span>倍有效隐维；但<span class="arithmatex">\(k=6\)</span>时 Task 1 转为 -0.04%，说明时间分辨率存在硬下限，<span class="arithmatex">\(k=4\)</span> 是效率-分辨率的最优点。</li>
+<li><strong>深度比宽度更划算，长度扩展服从幂律</strong>：同为加参，<span class="arithmatex">\(N:2\to6\)</span>带来 +0.23%/+0.36%，远高于<span class="arithmatex">\(d:128\to1024\)</span>的 +0.10%/+0.15%；序列从 1200 扩到 2000 时 AUC 仍单调上升，相对 LogLoss 服从<span class="arithmatex">\((\delta T)^k\)</span> 幂律（两任务指数 -0.634 与 -0.056），说明超长历史中仍有未被短窗覆盖的信号，且扩展收益可按幂律外推预算。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 SIM/TWIN-V2 的"先过滤/聚类再建模"，本文不丢任何交互、无离线预计算，端到端吃全序列；相比 LONGER/HSTU 纯架构侧扩展，本文同时改造表征层，用语义 ID 把嵌入表与语料规模解耦；相比 PLUM/TRM 只做层级 SID，本文首次把 SID 与超长序列压缩架构在十亿用户生产系统中联合验证。</li>
 <li><strong>可迁移亮点</strong>: ①「非对称粒度」策略——序列侧粗、目标侧细，可低成本迁移到任何词表爆炸的序列建模场景（电商 item、搜索 query）；②无参时间折叠是即插即用的算子，可在不改动注意力实现的前提下把任意 Transformer 序列模型的显存降一个数量级。</li>
 <li><strong>审稿级局限批判</strong>: ①全部结论基于单一平台私有流量，无公开数据集复现，且 Global Query 数量、异步刷新周期、特征拼接方式等关键超参未披露，可复现性弱；②<span class="arithmatex">\(k\)</span> 的最优值强依赖业务的时间粒度（短视频 4 个连续观看约数十秒），换到长视频或电商场景需重新调参，且折叠后序列位置编码如何保持时序一致性文中未讨论。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

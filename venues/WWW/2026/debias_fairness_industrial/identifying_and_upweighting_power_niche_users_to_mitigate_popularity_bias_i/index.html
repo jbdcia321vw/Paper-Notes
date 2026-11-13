@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,7 +4220,7 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/dliu18/power-niche-users-www">https://github.com/dliu18/power-niche-users-www</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>现有流行度去偏方法（IPW、正则、重排）普遍只按物品流行度加权，且默认"性能-偏差"存在权衡。本文先做数据侧实证：将用户按活跃度（power/light）× 流行度偏好（mainstream/niche）划四象限，发现"高活跃-小众"用户数量显著超零模型预期，且其交互数据对整体与小众召回最有价值。据此提出 PAIR，在 BPR 损失上同时按用户活跃度 <span class="arithmatex">\(d_u^{\alpha}\)</span> 与物品流行度 <span class="arithmatex">\(d_i^{-\beta}\)</span> 连续重加权。在 Gowalla/Yelp2018/Amazon-Book 上以 Full-Ranking 评测，MF 骨干下 Recall@20 平均提升 20.1%、POB 降 7.5%，6 组配置中 5 组帕累托支配 Vanilla。</p>
+<p>现有流行度去偏方法（IPW、正则、重排）普遍只按物品流行度加权，且默认"性能-偏差"存在权衡。本文先做数据侧实证：将用户按活跃度（power/light）× 流行度偏好（mainstream/niche）划四象限，发现"高活跃-小众"用户数量显著超零模型预期，且其交互数据对整体与小众召回最有价值。据此提出 PAIR，在 BPR 损失上同时按用户活跃度 <span class="arithmatex">\(d_u^{\alpha}\)</span>与物品流行度<span class="arithmatex">\(d_i^{-\beta}\)</span> 连续重加权。在 Gowalla/Yelp2018/Amazon-Book 上以 Full-Ranking 评测，MF 骨干下 Recall@20 平均提升 20.1%、POB 降 7.5%，6 组配置中 5 组帕累托支配 Vanilla。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 流行度去偏分三派——正则化（惩罚打分与流行度正相关）、重加权（IPW 按物品倾向 <span class="arithmatex">\(p_i^{-\beta}\)</span> 加权）、后处理重排（流行度补偿）。三者均以<strong>物品</strong>为唯一偏置源。</li>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>PAIR 不改动骨干网络，仅改造 BPR 损失的采样与加权逻辑。输入为用户-物品二部交互矩阵，先统计每个用户的活跃度 <span class="arithmatex">\(d_u\)</span> 与每个物品的流行度 <span class="arithmatex">\(d_i\)</span>；训练时对每个用户按 <span class="arithmatex">\(d_u^{\alpha}\)</span> 决定其每 epoch 采样正样本三元组数量，对每个正样本按 <span class="arithmatex">\(d_i^{-\beta}\)</span> 放大其损失权重，负样本从全库均匀采样；最终在 MF 或 LightGCN 打分器上优化加权 BPR，推理阶段与标准 CF 完全一致（无额外开销）。</p>
+<p>PAIR 不改动骨干网络，仅改造 BPR 损失的采样与加权逻辑。输入为用户-物品二部交互矩阵，先统计每个用户的活跃度 <span class="arithmatex">\(d_u\)</span>与每个物品的流行度<span class="arithmatex">\(d_i\)</span>；训练时对每个用户按<span class="arithmatex">\(d_u^{\alpha}\)</span>决定其每 epoch 采样正样本三元组数量，对每个正样本按<span class="arithmatex">\(d_i^{-\beta}\)</span> 放大其损失权重，负样本从全库均匀采样；最终在 MF 或 LightGCN 打分器上优化加权 BPR，推理阶段与标准 CF 完全一致（无额外开销）。</p>
 <pre class="mermaid"><code>flowchart TD
     A["交互矩阵 D"] --&gt; B["统计 d_u 与 d_i"]
     B --&gt; C["按 d_u^α 分配每用户采样数 S_u"]
@@ -4231,13 +4242,13 @@
 <li>
 <p><strong>双参数连续重加权 BPR（PAIR 核心损失）</strong>：痛点在于原 BPR 对所有 (u,i,j) 三元组等权、且 LightGCN 实现固定每用户采样数隐式上调了轻用户。PAIR 改为对均匀采样取期望并乘活跃度因子：
 $<span class="arithmatex">\(l_{\text{PAIR}}^{\alpha,\beta} = -\sum_{u=1}^{n} d_u^{\alpha}\, \mathbb{E}_{i\sim U(\mathcal{N}_u),\, j\sim U(\mathcal{I}\setminus\mathcal{N}_u)}\big[d_i^{-\beta}\ln\sigma(\hat{Y}_{ui}-\hat{Y}_{uj})\big]\)</span>$
-其中 <span class="arithmatex">\(\alpha\in[0,1]\)</span> 控制活跃度权重（<span class="arithmatex">\(\alpha=0\)</span> 退化为 LightGCN 等采样，<span class="arithmatex">\(\alpha=1\)</span> 贴近原始 BPR），<span class="arithmatex">\(\beta\in[0,\infty)\)</span> 控制流行度去偏强度（<span class="arithmatex">\(\beta=0\)</span> 无去偏）。直觉：<span class="arithmatex">\(d_i^{-\beta}\)</span> 补偿热门物品的曝光优势，<span class="arithmatex">\(d_u^{\alpha}\)</span> 让高活跃用户贡献更多梯度，二者叠加使 power-niche 用户获得最大净权重。</p>
+其中 <span class="arithmatex">\(\alpha\in[0,1]\)</span>控制活跃度权重（<span class="arithmatex">\(\alpha=0\)</span>退化为 LightGCN 等采样，<span class="arithmatex">\(\alpha=1\)</span>贴近原始 BPR），<span class="arithmatex">\(\beta\in[0,\infty)\)</span>控制流行度去偏强度（<span class="arithmatex">\(\beta=0\)</span>无去偏）。直觉：<span class="arithmatex">\(d_i^{-\beta}\)</span>补偿热门物品的曝光优势，<span class="arithmatex">\(d_u^{\alpha}\)</span> 让高活跃用户贡献更多梯度，二者叠加使 power-niche 用户获得最大净权重。</p>
 </li>
 <li>
-<p><strong>采样数按活跃度分配（工程落地关键）</strong>：直接对期望求导不可行，作者将期望转为实际采样：用户 <span class="arithmatex">\(u\)</span> 每 epoch 采样 <span class="arithmatex">\(S_u=\text{round}\big(d_u^{\alpha}\sum_{u'}d_{u'}^{\alpha}\cdot\frac{\sum_{u''}d_{u''}}{\sum_{u''}d_{u''}^{\alpha}}\big)\)</span> 个三元组，即活跃度越高采样越多。这样 <span class="arithmatex">\(\alpha\)</span> 在实现层面对应"每用户正样本预算"，与 <span class="arithmatex">\(\beta\)</span> 的物品权重解耦，便于网格搜索。</p>
+<p><strong>采样数按活跃度分配（工程落地关键）</strong>：直接对期望求导不可行，作者将期望转为实际采样：用户 <span class="arithmatex">\(u\)</span>每 epoch 采样<span class="arithmatex">\(S_u=\text{round}\big(d_u^{\alpha}\sum_{u'}d_{u'}^{\alpha}\cdot\frac{\sum_{u''}d_{u''}}{\sum_{u''}d_{u''}^{\alpha}}\big)\)</span>个三元组，即活跃度越高采样越多。这样<span class="arithmatex">\(\alpha\)</span>在实现层面对应"每用户正样本预算"，与<span class="arithmatex">\(\beta\)</span> 的物品权重解耦，便于网格搜索。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：总损失即上式加权 BPR + 嵌入 Frobenius 正则；负采样为<strong>全库均匀采样</strong>（非 in-batch、非 hard negative）；<span class="arithmatex">\(\alpha,\beta\)</span> 在验证集上按 Recall@20 网格搜索。推理与 Vanilla 完全同构，无额外延迟，仅训练期采样量随 <span class="arithmatex">\(\alpha\)</span> 略增。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：总损失即上式加权 BPR + 嵌入 Frobenius 正则；负采样为<strong>全库均匀采样</strong>（非 in-batch、非 hard negative）；<span class="arithmatex">\(\alpha,\beta\)</span>在验证集上按 Recall@20 网格搜索。推理与 Vanilla 完全同构，无额外延迟，仅训练期采样量随<span class="arithmatex">\(\alpha\)</span> 略增。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4281,7 +4292,7 @@ $<span class="arithmatex">\(l_{\text{PAIR}}^{\alpha,\beta} = -\sum_{u=1}^{n} d_u
 <ul>
 <li><strong>数据划分与防穿越</strong>: 沿用 Lee et al. 的标准 train/validation/test 划分（非 Leave-One-Out），测试集固定。</li>
 <li><strong>排名评测协议</strong>: <strong>Full-Ranking 全库未交互排序</strong>，<span class="arithmatex">\(k=20\)</span>；指标含 Recall@20、Precision@20、NDCG@20、POB@20（物品流行度与其平均排名的相关性，越低越去偏）、Coverage@20、Niche Recall@20（仅小众用户上的召回）。</li>
-<li><strong>对比基线与超参</strong>: 骨干为 MF 与 3 层 LightGCN（<span class="arithmatex">\(d\)</span> 沿用原文默认）；基线含 Vanilla（<span class="arithmatex">\(\alpha=0\)</span>）、Vanilla-BPR（<span class="arithmatex">\(\alpha=1\)</span>）、IPW（固定 <span class="arithmatex">\(\alpha=0\)</span> 调 <span class="arithmatex">\(\beta\)</span>）、Pop. Comp.（后处理重排）、Pop. Reg.（流行度正则）。结果取 4 次试验均值与置信区间。</li>
+<li><strong>对比基线与超参</strong>: 骨干为 MF 与 3 层 LightGCN（<span class="arithmatex">\(d\)</span>沿用原文默认）；基线含 Vanilla（<span class="arithmatex">\(\alpha=0\)</span>）、Vanilla-BPR（<span class="arithmatex">\(\alpha=1\)</span>）、IPW（固定<span class="arithmatex">\(\alpha=0\)</span>调<span class="arithmatex">\(\beta\)</span>）、Pop. Comp.（后处理重排）、Pop. Reg.（流行度正则）。结果取 4 次试验均值与置信区间。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4456,16 +4467,22 @@ $<span class="arithmatex">\(l_{\text{PAIR}}^{\alpha,\beta} = -\sum_{u=1}^{n} d_u
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>双维加权是帕累托双赢的关键</strong>：图 6 显示 IPW 在 LGN 上随 <span class="arithmatex">\(\beta\)</span> 增大先保精度后掉点（典型权衡），而 PAIR 因额外引入 <span class="arithmatex">\(\alpha\)</span> 在 Yelp/Amazon 上同时降 POB 并升 Recall，说明"仅物品去偏"不足，活跃度维度是打破权衡的杠杆。</li>
+<li><strong>双维加权是帕累托双赢的关键</strong>：图 6 显示 IPW 在 LGN 上随 <span class="arithmatex">\(\beta\)</span>增大先保精度后掉点（典型权衡），而 PAIR 因额外引入<span class="arithmatex">\(\alpha\)</span> 在 Yelp/Amazon 上同时降 POB 并升 Recall，说明"仅物品去偏"不足，活跃度维度是打破权衡的杠杆。</li>
 <li><strong>重加权方向与动机一致</strong>：图 5 热力图显示 PAIR 优化后 power-niche 象限权重变化最大（如 LGN-Yelp 上 +16.6%），light 用户普遍降权（−11.3%），power-mainstream 仅微增，验证了"把梯度预算倾斜给高价值象限"的设计意图。</li>
 <li><strong>浅层模型受益远大于深层模型</strong>：MF 上 Recall 平均 +20.1%，LGN 仅 +1.2%，且 Gowalla-LGN 是唯一未帕累托支配的配置（Recall 低 0.0008）。说明 LightGCN 的高阶邻域聚合本身已部分吸收活跃度信号，PAIR 的边际增益被稀释，提示该方法更适合浅层/工业双塔召回。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 IPW（Schnabel et al.）仅按物品倾向 <span class="arithmatex">\(p_i^{-\beta}\)</span> 加权，PAIR 多出用户活跃度维度 <span class="arithmatex">\(d_u^{\alpha}\)</span>，且实证证明这是打破权衡的关键；相比 Pop. Reg./Pop. Comp.（Zhu et al.）以大幅掉点换覆盖率，PAIR 在 5/6 配置上不掉点反升点；相比 Abdollahpouri et al. 仅观察到活跃度与流行度偏好的负相关，本文首次量化 power-niche 用户的统计显著性与数据价值。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 IPW（Schnabel et al.）仅按物品倾向 <span class="arithmatex">\(p_i^{-\beta}\)</span>加权，PAIR 多出用户活跃度维度<span class="arithmatex">\(d_u^{\alpha}\)</span>，且实证证明这是打破权衡的关键；相比 Pop. Reg./Pop. Comp.（Zhu et al.）以大幅掉点换覆盖率，PAIR 在 5/6 配置上不掉点反升点；相比 Abdollahpouri et al. 仅观察到活跃度与流行度偏好的负相关，本文首次量化 power-niche 用户的统计显著性与数据价值。</li>
 <li><strong>可迁移亮点</strong>: ① "固定集 + 处理组"的<strong>用户象限数据估值法</strong>可迁移到任何需要评估某类用户数据边际价值的场景（如冷启动用户、跨域用户）；② 将期望重加权转化为"每用户采样预算 <span class="arithmatex">\(S_u\)</span>"的实现技巧，可直接套用到任意 pair-wise 损失框架。</li>
 <li><strong>审稿级局限批判</strong>: ① 增益高度依赖骨干：深层 LGN 上提升微弱甚至个别配置掉点，方法普适性存疑；② <span class="arithmatex">\(\alpha,\beta\)</span> 需验证集网格搜索，且 Amazon-MF 上 PAIR 未超过 Vanilla-BPR，说明超参选择对结果敏感、泛化性有限；③ 仅在三个静态隐式反馈基准上离线评测，缺乏线上 A/B 与动态流行度漂移场景验证。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

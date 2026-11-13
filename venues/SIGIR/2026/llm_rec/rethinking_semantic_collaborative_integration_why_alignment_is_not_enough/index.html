@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4446,15 +4457,21 @@
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>互补性远大于重叠性，且集中在头部排名</strong>：两视图 List Jaccard 仅 6.37%（Movies）/14.53%（Books）/19.20%（Games），CompRatio 稳定 &gt;55%（Movies 达 63.03%），且在 <span class="arithmatex">\(K=5\)</span> 时峰值 66%–69%——说明两塔在<strong>高置信预测</strong>上分歧最大，融合收益恰好落在最关键的 Top 位；语义独有命中的平均 log 流行度比协同命中低 18.4%（Movies），证实语义塔是长尾补偿器。</li>
-<li><strong>低容量对齐在分布偏移下结构性失效</strong>：训练物品上 MLP-2 可达 <span class="arithmatex">\(R^2=0.977\)</span>、ListJac 0.767，但迁移到未见测试物品时 <span class="arithmatex">\(R^2\)</span> 跌至 <strong>−0.487</strong>、Cos 从 0.988 降至 0.290，投影后 Recall 仅 0.0564（协同上限 0.1005）——高容量映射只是记忆了训练对应关系，协同空间的私有因子无法由语义恢复，直接证伪"全局可对齐"。</li>
+<li><strong>低容量对齐在分布偏移下结构性失效</strong>：训练物品上 MLP-2 可达 <span class="arithmatex">\(R^2=0.977\)</span>、ListJac 0.767，但迁移到未见测试物品时<span class="arithmatex">\(R^2\)</span> 跌至 <strong>−0.487</strong>、Cos 从 0.988 降至 0.290，投影后 Recall 仅 0.0564（协同上限 0.1005）——高容量映射只是记忆了训练对应关系，协同空间的私有因子无法由语义恢复，直接证伪"全局可对齐"。</li>
 <li><strong>融合逼近并集上界，且增益来自"保留"而非"对齐"</strong>：Movies 上 Fused 0.1580 距 UUB 0.1594 仅差 0.0014（兑现 99% 的互补潜力），相对最佳单视图 +41.7%；融合后内部两分支 List Jaccard 仍 &lt;0.1，独有命中占比 21%–44%，说明模型没有把两塔压成同一模态。分层看，Mid 组协同增益最大（Books +36.8%），Cold 组语义主导（Books Cold：语义 0.0690 vs 协同 0.0399），Hot 组协同主导（0.2720 vs 0.1917），呈现清晰的分工边界。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: RLMRec/CoLLM 用对比损失把语义拉向协同几何，本质是求<strong>交集</strong>；AlphaRec 主张协同信号可由 LM 表征经低容量投影隐式恢复，本质是<strong>语义替代协同</strong>；本文则主张保留两视图独立性、在打分层求<strong>并集</strong>，并用 UUB 上界给出"融合是否真的引入新信息"的可证伪判据——这是方法论层面而非模型层面的差异。</li>
 <li><strong>可迁移亮点</strong>: ①CompRatio + UUB 这套诊断可直接移植到多模态推荐、跨域推荐等任何"双视图融合"场景，用于判断该做对齐还是做融合；②Norm-Concat-Norm 的对称归一化是抑制强势分支吞并的零成本技巧，可迁移至多任务/多场景联合建模。</li>
 <li><strong>审稿级局限批判</strong>: ①融合策略本身极简（concat + 难负样本），未显式做共享/私有因子解耦，作者自承"隐式并集"限制可解释性，且未与 VAE/信息瓶颈类解耦方法对比；②实验仅限 Amazon 三域、<span class="arithmatex">\(d=64\)</span>、离线 Full-Ranking，缺少工业级大规模与在线 A/B 验证，也未讨论语义编码器换用不同 LLM 时的敏感性；③对齐探针的负结果依赖"冻结编码器 + 仅学映射"的设定，若允许联合微调语义塔，结论强度可能被削弱。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

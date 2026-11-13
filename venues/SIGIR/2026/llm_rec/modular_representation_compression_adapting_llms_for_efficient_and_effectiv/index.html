@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>MARC 由三个模块端到端串联：<strong>表征模块</strong>（LLM + LoRA，仅做池化输出原始表征 <span class="arithmatex">\(r_u, r_i \in \mathbb{R}^{4096}\)</span>，<strong>不施加任何直接监督</strong>）→ <strong>压缩模块</strong>（轻量 MLP <span class="arithmatex">\(g(\cdot)\)</span> 将单条表征压到 <span class="arithmatex">\(c_u, c_i \in \mathbb{R}^{128}\)</span>）→ <strong>任务适配模块</strong>（用户-物品匹配网络 <span class="arithmatex">\(f(\cdot)\)</span> 吸收全部监督压力）。关键点在于：任务损失只回传到外部轻量模块，LLM 主干仅通过反传间接优化，从而避免末层坍缩为任务专用头。训练完成后冻结模型，产出稳定低维表征供下游复用。</p>
+<p>MARC 由三个模块端到端串联：<strong>表征模块</strong>（LLM + LoRA，仅做池化输出原始表征 <span class="arithmatex">\(r_u, r_i \in \mathbb{R}^{4096}\)</span>，<strong>不施加任何直接监督</strong>）→ <strong>压缩模块</strong>（轻量 MLP<span class="arithmatex">\(g(\cdot)\)</span>将单条表征压到<span class="arithmatex">\(c_u, c_i \in \mathbb{R}^{128}\)</span>）→ <strong>任务适配模块</strong>（用户-物品匹配网络<span class="arithmatex">\(f(\cdot)\)</span> 吸收全部监督压力）。关键点在于：任务损失只回传到外部轻量模块，LLM 主干仅通过反传间接优化，从而避免末层坍缩为任务专用头。训练完成后冻结模型，产出稳定低维表征供下游复用。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户/物品文本 T_u, T_i"] --&gt; B["LLM 主干 (LoRA) 池化 → r (4096d)"]
     B --&gt; C["压缩网络 g(·) → c (128d)"]
@@ -4247,10 +4258,10 @@
 <li>
 <p><strong>模块任务解耦 (Modular Task Decoupling)</strong>：仅加模块不够，需保证各司其职。① <strong>HSIC 信息约束</strong>：压缩需最大化 <span class="arithmatex">\(MI(r_u, c_u)\)</span>，但两者维度/概念层级悬殊，MSE/InfoNCE 要求维度匹配、简单投影会扭曲信息；改用核方法 HSIC 在 RKHS 中度量非线性依赖，天然容忍维度失配：
 $<span class="arithmatex">\(\mathcal{L}_{HSIC}=\frac{1}{(n-1)^2}\mathrm{Tr}(K_X J K_Y J)\)</span>$
-其中 <span class="arithmatex">\(K_X,K_Y\)</span> 为高斯核矩阵，<span class="arithmatex">\(J\)</span> 为中心化矩阵，复杂度 <span class="arithmatex">\(O(n^2)\)</span> 相对 LLM 前向可忽略。② <strong>结构异质</strong>：压缩网络逐条处理单表征，匹配网络输入用户+物品对并做显式交互（<span class="arithmatex">\(|c_i-c_u|\)</span>、<span class="arithmatex">\(c_i \odot c_u\)</span>）再经隐式网络，二者输入与结构天然不同，进一步拉开任务边界。</p>
+其中 <span class="arithmatex">\(K_X,K_Y\)</span>为高斯核矩阵，<span class="arithmatex">\(J\)</span>为中心化矩阵，复杂度<span class="arithmatex">\(O(n^2)\)</span>相对 LLM 前向可忽略。② <strong>结构异质</strong>：压缩网络逐条处理单表征，匹配网络输入用户+物品对并做显式交互（<span class="arithmatex">\(|c_i-c_u|\)</span>、<span class="arithmatex">\(c_i \odot c_u\)</span>）再经隐式网络，二者输入与结构天然不同，进一步拉开任务边界。</p>
 </li>
 <li>
-<p><strong>训练目标与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{match}+\alpha\mathcal{L}_{HSIC}\)</span>，<span class="arithmatex">\(\mathcal{L}_{match}\)</span> 为匹配网络上的交叉熵，<span class="arithmatex">\(\alpha=0.01\)</span>；无需负采样（直接用点击/评分二值标签）。推理阶段 LLM 完全离线，线上仅需查 128 维静态表征表，延迟与现有压缩方案持平。</p>
+<p><strong>训练目标与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{match}+\alpha\mathcal{L}_{HSIC}\)</span>，<span class="arithmatex">\(\mathcal{L}_{match}\)</span>为匹配网络上的交叉熵，<span class="arithmatex">\(\alpha=0.01\)</span>；无需负采样（直接用点击/评分二值标签）。推理阶段 LLM 完全离线，线上仅需查 128 维静态表征表，延迟与现有压缩方案持平。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4298,7 +4309,7 @@ $<span class="arithmatex">\(\mathcal{L}_{HSIC}=\frac{1}{(n-1)^2}\mathrm{Tr}(K_X 
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 按 user ID <strong>9:1 比例划分</strong>训练/测试（非时间戳切分，存在轻度未来信息泄漏风险）。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: CTR 任务用 <strong>AUC / Logloss</strong>（全样本二分类评估，非采样排序）；重排用 MAP@K、NDCG@K（K=1,3,5,7）；召回用 NDCG@K、HitRate@K、MRR（K=10,20,50）。</li>
-<li><strong>对比基线与超参设置</strong>: 无训练压缩 PCA/AE/VAE；微调压缩 LARR、BAHE、ESE、MRL；以及 TinyBERT/BERT/Qwen2-1.5B/Phi-2/Qwen2-7B 原生表征。主干统一 Llama3-8B + LoRA，压缩维度 128，压缩网络 MLP [256,128]，匹配网络 MLP [128,1]，下游 embedding 32，显著性 <span class="arithmatex">\(t\)</span>-test <span class="arithmatex">\(p&lt;0.05\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: 无训练压缩 PCA/AE/VAE；微调压缩 LARR、BAHE、ESE、MRL；以及 TinyBERT/BERT/Qwen2-1.5B/Phi-2/Qwen2-7B 原生表征。主干统一 Llama3-8B + LoRA，压缩维度 128，压缩网络 MLP [256,128]，匹配网络 MLP [128,1]，下游 embedding 32，显著性 <span class="arithmatex">\(t\)</span>-test<span class="arithmatex">\(p&lt;0.05\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4511,12 +4522,18 @@ $<span class="arithmatex">\(\mathcal{L}_{HSIC}=\frac{1}{(n-1)^2}\mathrm{Tr}(K_X 
 <li><strong>128 维压缩几乎无损</strong>：MARC-C 与 4096 维 MARC-O 差距仅 0.11%（ML-1M），却比冻结 Llama3-8B 的 4096 维表征还高 0.63%，信息密度极高；召回任务 HitRate@10 较 MRL 提升 12.67%、较冻结 LLM 提升 8.76%，泛化性更强。</li>
 <li><strong>跨模型/跨下游兼容</strong>：在 xDeepFM/FiBiNet/DeepFM/FiGNN/DCNv1/DIN/AutoInt 七种 CTR 模型上 MARC-C 全面领先 MRL 且逼近 MARC-O（差距 &lt;0.1%）；换 Qwen2-1.5B/Phi-2/Qwen2.5-3B/Qwen2-7B 主干同样有效，说明框架与主干规模解耦。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 MRL（嵌套式，压末层）和 LARR（投影式，压末层+对比学习）的本质区别在于——前两者默认末层最优、只在末层做压缩；MARC 指出末层已被监督信号污染，转而<strong>从架构上保护末层</strong>，把压缩与适配外置。相较 PCA/AE 等无训练方法，MARC 通过微调 + HSIC 保留推荐相关信息，避免 PCA-768 不如 BERT 的窘境。</li>
 <li><strong>可迁移亮点</strong>: ① HSIC 作为跨维度信息约束，可迁移到任何"高维教师→低维学生"的表征蒸馏场景；② "监督信号只作用于外挂轻量模块、主干仅间接优化"的范式，可推广到其他需要保护预训练主干泛化性的适配任务。</li>
 <li><strong>审稿级局限批判</strong>: ① 数据按 user ID 9:1 随机划分而非时间切分，存在未来交互泄漏，AUC 绝对值可能偏乐观；② 压缩维度超过 128 后 MARC-O/C 均出现下降，作者归因于训练难度但未深入分析，超参（<span class="arithmatex">\(\alpha\)</span>、压缩维度）敏感性讨论不足；③ 线上仅报告 eCPM 单一指标与 7 天 A/B，缺乏延迟/存储的量化对比细节。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

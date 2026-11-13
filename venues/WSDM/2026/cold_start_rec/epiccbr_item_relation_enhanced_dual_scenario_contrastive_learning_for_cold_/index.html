@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>模型分三条路径：(1) <strong>冷路径</strong>：从 UI/BI 图挖掘物品对关系，将 R2 边注入 UI 图得增强邻接 <span class="arithmatex">\(\hat{G}_{UI}\)</span>，同时构建流行度加权的 BI 图 <span class="arithmatex">\(\hat{G}_{BI}\)</span>，经 LightGCN 传播后做视图级早融合；(2) <strong>暖路径</strong>：用历史 UB/UI/BI 交互以相同 LightGCN 算子学习用户与捆绑嵌入，保证架构对齐；(3) <strong>双场景对齐与打分</strong>：多视图对比学习对齐两路径表示，最终以统一内积 <span class="arithmatex">\(y^*_{u,b}=\langle e_u,e_b\rangle\)</span> 做 Top-K 排序。重关系挖掘离线完成，在线仅需缓存嵌入检索与内积。</p>
+<p>模型分三条路径：(1) <strong>冷路径</strong>：从 UI/BI 图挖掘物品对关系，将 R2 边注入 UI 图得增强邻接 <span class="arithmatex">\(\hat{G}_{UI}\)</span>，同时构建流行度加权的 BI 图<span class="arithmatex">\(\hat{G}_{BI}\)</span>，经 LightGCN 传播后做视图级早融合；(2) <strong>暖路径</strong>：用历史 UB/UI/BI 交互以相同 LightGCN 算子学习用户与捆绑嵌入，保证架构对齐；(3) <strong>双场景对齐与打分</strong>：多视图对比学习对齐两路径表示，最终以统一内积<span class="arithmatex">\(y^*_{u,b}=\langle e_u,e_b\rangle\)</span> 做 Top-K 排序。重关系挖掘离线完成，在线仅需缓存嵌入检索与内积。</p>
 <pre class="mermaid"><code>flowchart TD
     A["UI 图 / BI 图"] --&gt; B["物品对关系挖掘 (R1-R4)"]
     B --&gt; C["R2 边注入增强 UI 图"]
@@ -4246,13 +4257,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>物品对四类关系挖掘与视图增强</strong>：痛点是用 UB 历史无法刻画新捆绑包的目标用户。以 Jaccard 相似度 <span class="arithmatex">\(J_{i,j}=\frac{|E_{i,j}|}{C_i+C_j-|E_{i,j}|}\)</span> 在 UI 与 BI 图上双重筛选（<span class="arithmatex">\(\theta_{high}\)</span> 取 95 分位、<span class="arithmatex">\(\theta_{low}\)</span> 取 20 分位、<span class="arithmatex">\(\theta_{anti}\)</span> 取 5 分位），划分 R1 同类、R2 跨域互补、R3 设计驱动、R4 反类。仅将 R2 边注入 UI 图：<span class="arithmatex">\(A'_{UI}=A_{UI}+\alpha(A_{UI}\cdot A^{enh}_{II})\)</span>。直觉：R2 是"用户自发买、平台未组合"的信号，最能补充冷启动捆绑包的潜在受众；R4 则作为对比损失的强负样本。</p>
+<p><strong>物品对四类关系挖掘与视图增强</strong>：痛点是用 UB 历史无法刻画新捆绑包的目标用户。以 Jaccard 相似度 <span class="arithmatex">\(J_{i,j}=\frac{|E_{i,j}|}{C_i+C_j-|E_{i,j}|}\)</span>在 UI 与 BI 图上双重筛选（<span class="arithmatex">\(\theta_{high}\)</span>取 95 分位、<span class="arithmatex">\(\theta_{low}\)</span>取 20 分位、<span class="arithmatex">\(\theta_{anti}\)</span>取 5 分位），划分 R1 同类、R2 跨域互补、R3 设计驱动、R4 反类。仅将 R2 边注入 UI 图：<span class="arithmatex">\(A'_{UI}=A_{UI}+\alpha(A_{UI}\cdot A^{enh}_{II})\)</span>。直觉：R2 是"用户自发买、平台未组合"的信号，最能补充冷启动捆绑包的潜在受众；R4 则作为对比损失的强负样本。</p>
 </li>
 <li>
-<p><strong>流行度感知的捆绑包表示</strong>：新捆绑包无独立嵌入，需由组成物品聚合。物品流行度双源量化 <span class="arithmatex">\(pop_i=pop^{UI}_i+pop^{BI}_i\)</span>，其中 BI 侧用 90 分位截断归一化 <span class="arithmatex">\(w_b=\min(N^{UB}_b/P_{90},1)\)</span> 抑制热门捆绑包主导；再经分段线性长尾自适应缩放得 <span class="arithmatex">\(pop^{adj}_i\)</span>，作为 BI 图边权 <span class="arithmatex">\(w^{pop}_{bi}\)</span>，按度归一化聚合：<span class="arithmatex">\(e^{UI,cold}_b=\sum_{i\in N_b}\frac{w^{pop}_{bi}\cdot e^{UI,cold}_i}{\sqrt{D_b(b)D_i(i)}}\)</span>。直觉：把冷启动捆绑包"翻译"为热门物品表示，绕开对 UB 交互的强依赖。</p>
+<p><strong>流行度感知的捆绑包表示</strong>：新捆绑包无独立嵌入，需由组成物品聚合。物品流行度双源量化 <span class="arithmatex">\(pop_i=pop^{UI}_i+pop^{BI}_i\)</span>，其中 BI 侧用 90 分位截断归一化<span class="arithmatex">\(w_b=\min(N^{UB}_b/P_{90},1)\)</span>抑制热门捆绑包主导；再经分段线性长尾自适应缩放得<span class="arithmatex">\(pop^{adj}_i\)</span>，作为 BI 图边权<span class="arithmatex">\(w^{pop}_{bi}\)</span>，按度归一化聚合：<span class="arithmatex">\(e^{UI,cold}_b=\sum_{i\in N_b}\frac{w^{pop}_{bi}\cdot e^{UI,cold}_i}{\sqrt{D_b(b)D_i(i)}}\)</span>。直觉：把冷启动捆绑包"翻译"为热门物品表示，绕开对 UB 交互的强依赖。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{BPR}+\beta_1(\mathcal{L}^C_u+\mathcal{L}^C_b)+\beta_2\mathcal{L}_{scen}+\beta_3\mathcal{L}^C_i+\beta_4\|\Theta\|^2_2\)</span>。其中 <span class="arithmatex">\(\mathcal{L}_{scen}\)</span> 为冷/暖场景同一用户/捆绑嵌入的 InfoNCE 对齐；<span class="arithmatex">\(\mathcal{L}^C_i\)</span> 以 R4 反类物品为负样本、仅自身为正样本，显式拉开互补与无关物品的语义边界；UB 对比损失沿用噪声注入增广 + in-batch 负采样。冷启动下调大 <span class="arithmatex">\(\beta_1\)</span> 以降低对 UB 历史的依赖。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{BPR}+\beta_1(\mathcal{L}^C_u+\mathcal{L}^C_b)+\beta_2\mathcal{L}_{scen}+\beta_3\mathcal{L}^C_i+\beta_4\|\Theta\|^2_2\)</span>。其中<span class="arithmatex">\(\mathcal{L}_{scen}\)</span>为冷/暖场景同一用户/捆绑嵌入的 InfoNCE 对齐；<span class="arithmatex">\(\mathcal{L}^C_i\)</span>以 R4 反类物品为负样本、仅自身为正样本，显式拉开互补与无关物品的语义边界；UB 对比损失沿用噪声注入增广 + in-batch 负采样。冷启动下调大<span class="arithmatex">\(\beta_1\)</span> 以降低对 UB 历史的依赖。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4443,12 +4454,18 @@
 <li><strong>iFashion 的 387% 提升源于极端 BI 稀疏</strong>：其平均捆绑大小仅 3.86，单物品表示质量被放大；R2 关系让"高交互但低共现"的物品对互补信息，恰好弥补稀疏损失，故该数据集上 UI 增强与物品对比损失增益也最大。</li>
 <li><strong>物品对对比损失在小捆绑数据集上可能反噬</strong>：EpicCBR-iiloss 在 iFashion 上反而略高（.0764 vs .0828 的差距小于其他数据集），作者归因于小捆绑下物品级负样本引入噪声；同时场景权重 <span class="arithmatex">\(k\)</span> 在混合 All 集上呈明显峰值，证明冷/暖双路径需精细平衡而非简单相加。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 CoHeat 的课程式视图迁移，EpicCBR 用双场景并行 + 对比对齐解耦冷/暖信号，避免视图干扰；相比 MultiCBR 仅用历史交互构图，本文显式挖掘 R1–R4 物品关系并注入 R2 边，使冷启动捆绑包可借物品语义触达用户；相比 CrossCBR 的单一暖场景图对比，本文新增流行度感知 BI 图作为冷启动表示的唯一来源。</li>
 <li><strong>可迁移亮点</strong>: (1) 双 Jaccard 阈值 + 分位数筛选的四类物品关系框架可直接迁移到跨域推荐与捆绑生成；(2) 用 90 分位截断归一化 + 分段线性缩放处理长尾流行度，是轻量且通用的边权设计。</li>
 <li><strong>审稿级局限批判</strong>: (1) 未明确 Full-Ranking 协议，冷启动基线数值极低（如 MultiCBR 近 0），可能受采样排序影响，绝对提升幅度需谨慎解读；(2) 关系挖掘依赖多组分位数阈值与 <span class="arithmatex">\(\alpha,k,\tau,\beta_{1\text{-}4}\)</span> 大量超参，跨数据集迁移成本高，且物品对对比损失在小捆绑场景存在负迁移风险。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

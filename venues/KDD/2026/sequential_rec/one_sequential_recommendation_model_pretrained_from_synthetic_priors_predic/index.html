@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4245,16 +4256,16 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>hDCSBM 合成先验（让预训练覆盖真实转移谱）</strong>：痛点是用真实数据集预训练会绑定其转移模式。本文用层级度修正随机块模型生成物品图——层级社区刻画类目/子类目、幂律度分布刻画重尾流行度、社区重要性分数刻画核心-边缘结构；再以几何分布采样回退步长 <span class="arithmatex">\(\ell_t\)</span> 做随机游走：<span class="arithmatex">\(i_{u,t+1}\sim\mathrm{Categorical}(G_{\tilde i_{u,t},:})\)</span>，其中 <span class="arithmatex">\(\tilde i_{u,t}=i_{u,t-\ell_t}\)</span>。回退机制同时产生短程连贯与长程回访，使合成序列在（确定性 <span class="arithmatex">\(D(i)\)</span>，有效分支 <span class="arithmatex">\(k_{\text{eff}}\)</span>）平面与真实数据重叠（图 3）。</p>
+<p><strong>hDCSBM 合成先验（让预训练覆盖真实转移谱）</strong>：痛点是用真实数据集预训练会绑定其转移模式。本文用层级度修正随机块模型生成物品图——层级社区刻画类目/子类目、幂律度分布刻画重尾流行度、社区重要性分数刻画核心-边缘结构；再以几何分布采样回退步长 <span class="arithmatex">\(\ell_t\)</span>做随机游走：<span class="arithmatex">\(i_{u,t+1}\sim\mathrm{Categorical}(G_{\tilde i_{u,t},:})\)</span>，其中<span class="arithmatex">\(\tilde i_{u,t}=i_{u,t-\ell_t}\)</span>。回退机制同时产生短程连贯与长程回访，使合成序列在（确定性<span class="arithmatex">\(D(i)\)</span>，有效分支<span class="arithmatex">\(k_{\text{eff}}\)</span>）平面与真实数据重叠（图 3）。</p>
 </li>
 <li>
-<p><strong>非对称转移嵌入 + 一致性门控编码器</strong>：痛点是把物品当作单一向量会丢失"作为前驱 vs 作为后继"的方向性。本文从转移矩阵分解中拆出源侧 <span class="arithmatex">\(i_{\text{src}}\)</span>（出边）与目标侧 <span class="arithmatex">\(i_{\text{dst}}\)</span>（入边），对相邻对 <span class="arithmatex">\((i_{u,t-1},i_{u,t})\)</span> 分别构造上下文向量并拼用户嵌入得状态 <span class="arithmatex">\(e_{u,t}\)</span>，再用余弦一致性特征 <span class="arithmatex">\(v_{u,t}\)</span> 生成标量门控做残差更新：<span class="arithmatex">\(z_{u,t}=\mathrm{LN}(e_{u,t}+g^{\text{enc}}_{u,t}\cdot\delta_{u,t})\)</span>，<span class="arithmatex">\(g^{\text{enc}}_{u,t}=\sigma(\mathrm{MLP}_g(v_{u,t}))\)</span>。直觉：噪声转移对的门控趋近 0，避免污染状态。</p>
+<p><strong>非对称转移嵌入 + 一致性门控编码器</strong>：痛点是把物品当作单一向量会丢失"作为前驱 vs 作为后继"的方向性。本文从转移矩阵分解中拆出源侧 <span class="arithmatex">\(i_{\text{src}}\)</span>（出边）与目标侧<span class="arithmatex">\(i_{\text{dst}}\)</span>（入边），对相邻对<span class="arithmatex">\((i_{u,t-1},i_{u,t})\)</span>分别构造上下文向量并拼用户嵌入得状态<span class="arithmatex">\(e_{u,t}\)</span>，再用余弦一致性特征<span class="arithmatex">\(v_{u,t}\)</span>生成标量门控做残差更新：<span class="arithmatex">\(z_{u,t}=\mathrm{LN}(e_{u,t}+g^{\text{enc}}_{u,t}\cdot\delta_{u,t})\)</span>，<span class="arithmatex">\(g^{\text{enc}}_{u,t}=\sigma(\mathrm{MLP}_g(v_{u,t}))\)</span>。直觉：噪声转移对的门控趋近 0，避免污染状态。</p>
 </li>
 <li>
-<p><strong>支持集跨注意力 = 摊销后验更新</strong>：痛点是无梯度更新时模型如何"看到"目标域。以序列表征 <span class="arithmatex">\(q_{u,n_u-1}\)</span> 为 Query、支持集记忆库 <span class="arithmatex">\(M_u\)</span> 为 K/V 做多头跨注意力，再以 <span class="arithmatex">\(q\)</span> 导出的门控 <span class="arithmatex">\(g^{\text{trans}}\)</span> 做残差融合：<span class="arithmatex">\(\hat y=\mathrm{Norm}(q+g^{\text{trans}}\cdot\psi)\)</span>。这等价于用一次前向完成贝叶斯后验修正，支持集大小 <span class="arithmatex">\(|D_{\text{support}}|=16\)</span>。</p>
+<p><strong>支持集跨注意力 = 摊销后验更新</strong>：痛点是无梯度更新时模型如何"看到"目标域。以序列表征 <span class="arithmatex">\(q_{u,n_u-1}\)</span>为 Query、支持集记忆库<span class="arithmatex">\(M_u\)</span>为 K/V 做多头跨注意力，再以<span class="arithmatex">\(q\)</span>导出的门控<span class="arithmatex">\(g^{\text{trans}}\)</span>做残差融合：<span class="arithmatex">\(\hat y=\mathrm{Norm}(q+g^{\text{trans}}\cdot\psi)\)</span>。这等价于用一次前向完成贝叶斯后验修正，支持集大小<span class="arithmatex">\(|D_{\text{support}}|=16\)</span>。</p>
 </li>
 <li>
-<p><strong>训练目标与推理开销</strong>：候选集 <span class="arithmatex">\(\mathcal{C}(x)\)</span> 内 softmax 交叉熵 <span class="arithmatex">\(\mathcal{L}=-\log\frac{\exp(s_\theta(y))}{\sum_{j\in\mathcal{C}(x)}\exp(s_\theta(j))}\)</span>，负采样为均匀采样；理论上均匀负采样下式 (17) 的全局最优解在 <span class="arithmatex">\(\mathcal{C}(x)\)</span> 上重归一化后即恢复贝叶斯 PPD，故排序与 Bayes 最优一致。推理仅需 14 s 预处理 + 45 s 前向。</p>
+<p><strong>训练目标与推理开销</strong>：候选集 <span class="arithmatex">\(\mathcal{C}(x)\)</span>内 softmax 交叉熵<span class="arithmatex">\(\mathcal{L}=-\log\frac{\exp(s_\theta(y))}{\sum_{j\in\mathcal{C}(x)}\exp(s_\theta(j))}\)</span>，负采样为均匀采样；理论上均匀负采样下式 (17) 的全局最优解在<span class="arithmatex">\(\mathcal{C}(x)\)</span> 上重归一化后即恢复贝叶斯 PPD，故排序与 Bayes 最优一致。推理仅需 14 s 预处理 + 45 s 前向。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4446,12 +4457,18 @@
 <li><strong>增益集中在长尾而非头部</strong>：按训练频次 20/60/20 分桶，SRPFN 相对最强基线的 Tail HR@5 提升 Beauty 55.5%、Sports 81.5%、Yelp 49.3%，而 Head 仅 4.9%/10.1%/2.7%。这证明收益来自合成先验对多样流行度区制的覆盖，而非简单偏向热门物品。</li>
 <li><strong>方向性与门控各贡献约 1–2 个点</strong>：合并源/目标侧嵌入使 Beauty HR@5 掉 1.27 点，去门控掉 2.10 点，二者叠加的损失小于各自之和的简单外推，说明"保留转移方向"与"抑制噪声对"是互补而非冗余的设计。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 对比 SASRec/FEARec，本文不改序列编码器结构，而改<strong>参数来源</strong>——从目标域拟合改为合成先验预训练 + 支持集条件化；对比 UniSRec/RecFormer，本文不依赖文本/视觉侧信息，纯交互统计即可跨域，且在未见类目上大幅领先（HR@1 约 2–5 倍）；对比 Markov-1/ItemKNN，同样使用目标域转移统计，但以跨注意力做上下文聚合而非固定打分规则，Beauty HR@10 高出 0.2164。</li>
 <li><strong>可迁移亮点</strong>: ① "低秩统计量作输入表征 + 冻结推断网络"可迁移到 CTR 冷启动场景，用共现谱摘要替代 ID 嵌入；② 一致性门控（余弦相似度驱动标量门）是低成本抑制噪声转移对的通用插件。</li>
 <li><strong>审稿级局限批判</strong>: ① 合成先验基于静态图随机游走，无法刻画时间衰减、会话边界与重复消费，对强时序漂移场景（如新闻）可能失效；② LastFM 上 NDCG@5/@10 略逊 SASRec，作者归因于 PPMI 平滑了细粒度序列差异，说明小物品库 + 长序列区制下低秩摘要信息有损；③ 主实验为 99 负采样排序，全库排序仅在附录，且预训练 15 小时的一次性成本未纳入跨域摊销讨论。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

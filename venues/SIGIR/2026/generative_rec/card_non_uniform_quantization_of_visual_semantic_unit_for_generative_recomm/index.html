@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将文本/视觉/协同信号渲染为卡片式视觉语义单元，并用可学习可逆非均匀变换的 NU-RQ-VAE 量化，缓解码本失衡与生成偏置。">
+        <meta name="description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将文本/图像/协同信号渲染为统一视觉语义单元，并用可逆非均匀变换校正偏斜分布，提升码本利用率与生成式推荐精度。">
       
       
       
@@ -108,7 +108,7 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 生成式推荐与离散语义ID, 生成式端到端, 视觉语义单元, 非均匀残差量化, 语义ID" />
+<meta name="keywords" content="SIGIR 2026, 生成式推荐与离散语义ID, 生成式端到端, 语义ID构建, 非均匀量化, 视觉语义单元" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
@@ -117,11 +117,11 @@
 
 <meta property="article:tag" content="生成式端到端" />
 
+<meta property="article:tag" content="语义ID构建" />
+
+<meta property="article:tag" content="非均匀量化" />
+
 <meta property="article:tag" content="视觉语义单元" />
-
-<meta property="article:tag" content="非均匀残差量化" />
-
-<meta property="article:tag" content="语义ID" />
 
 
 
@@ -131,10 +131,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/card_non_uniform_quantization_of_visual_semantic_unit_for_generative_recomm/" />
 <meta property="og:title" content="[Paper Note] CARD: Non-Uniform Quantization of Visual Semantic Unit for Generative Recommendation" />
-<meta property="og:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将文本/视觉/协同信号渲染为卡片式视觉语义单元，并用可学习可逆非均匀变换的 NU-RQ-VAE 量化，缓解码本失衡与生成偏置。" />
+<meta property="og:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将文本/图像/协同信号渲染为统一视觉语义单元，并用可逆非均匀变换校正偏斜分布，提升码本利用率与生成式推荐精度。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] CARD: Non-Uniform Quantization of Visual Semantic Unit for Generative Recommendation" />
-<meta name="twitter:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将文本/视觉/协同信号渲染为卡片式视觉语义单元，并用可学习可逆非均匀变换的 NU-RQ-VAE 量化，缓解码本失衡与生成偏置。" />
+<meta name="twitter:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将文本/图像/协同信号渲染为统一视觉语义单元，并用可逆非均匀变换校正偏斜分布，提升码本利用率与生成式推荐精度。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +160,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] CARD: Non-Uniform Quantization of Visual Semantic Unit for Generative Recommendation",
   "headline": "[Paper Note] CARD: Non-Uniform Quantization of Visual Semantic Unit for Generative Recommendation",
-  "description": "[SIGIR 2026][\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID] \u5c06\u6587\u672c/\u89c6\u89c9/\u534f\u540c\u4fe1\u53f7\u6e32\u67d3\u4e3a\u5361\u7247\u5f0f\u89c6\u89c9\u8bed\u4e49\u5355\u5143\uff0c\u5e76\u7528\u53ef\u5b66\u4e60\u53ef\u9006\u975e\u5747\u5300\u53d8\u6362\u7684 NU-RQ-VAE \u91cf\u5316\uff0c\u7f13\u89e3\u7801\u672c\u5931\u8861\u4e0e\u751f\u6210\u504f\u7f6e\u3002",
+  "description": "[SIGIR 2026][\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID] \u5c06\u6587\u672c/\u56fe\u50cf/\u534f\u540c\u4fe1\u53f7\u6e32\u67d3\u4e3a\u7edf\u4e00\u89c6\u89c9\u8bed\u4e49\u5355\u5143\uff0c\u5e76\u7528\u53ef\u9006\u975e\u5747\u5300\u53d8\u6362\u6821\u6b63\u504f\u659c\u5206\u5e03\uff0c\u63d0\u5347\u7801\u672c\u5229\u7528\u7387\u4e0e\u751f\u6210\u5f0f\u63a8\u8350\u7cbe\u5ea6\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/card_non_uniform_quantization_of_visual_semantic_unit_for_generative_recomm/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/card_non_uniform_quantization_of_visual_semantic_unit_for_generative_recomm/",
   "inLanguage": "zh-CN",
@@ -168,18 +168,18 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID, \u751f\u6210\u5f0f\u7aef\u5230\u7aef, \u89c6\u89c9\u8bed\u4e49\u5355\u5143, \u975e\u5747\u5300\u6b8b\u5dee\u91cf\u5316, \u8bed\u4e49ID",
+  "keywords": "SIGIR 2026, \u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID, \u751f\u6210\u5f0f\u7aef\u5230\u7aef, \u8bed\u4e49ID\u6784\u5efa, \u975e\u5747\u5300\u91cf\u5316, \u89c6\u89c9\u8bed\u4e49\u5355\u5143",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID" },
     { "@type": "Thing", "name": "\u751f\u6210\u5f0f\u7aef\u5230\u7aef" },
-    { "@type": "Thing", "name": "\u89c6\u89c9\u8bed\u4e49\u5355\u5143" },
-    { "@type": "Thing", "name": "\u975e\u5747\u5300\u6b8b\u5dee\u91cf\u5316" },
-    { "@type": "Thing", "name": "\u8bed\u4e49ID" }
+    { "@type": "Thing", "name": "\u8bed\u4e49ID\u6784\u5efa" },
+    { "@type": "Thing", "name": "\u975e\u5747\u5300\u91cf\u5316" },
+    { "@type": "Thing", "name": "\u89c6\u89c9\u8bed\u4e49\u5355\u5143" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3997,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4011,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4019,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4072,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4095,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4103,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4119,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4156,17 +4134,6 @@
     <span class="md-ellipsis">
       
         Rating (四维评分)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        论文图表
       
     </span>
   </a>
@@ -4192,9 +4159,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][生成式推荐与离散语义ID] 将文本/视觉/协同信号渲染为卡片式视觉语义单元，并用可学习可逆非均匀变换的 NU-RQ-VAE 量化，缓解码本失衡与生成偏置。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][生成式推荐与离散语义ID] 将文本/图像/协同信号渲染为统一视觉语义单元，并用可逆非均匀变换校正偏斜分布，提升码本利用率与生成式推荐精度。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 生成式推荐与离散语义ID · 生成式端到端 · 视觉语义单元 · 非均匀残差量化 · 语义ID</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 生成式推荐与离散语义ID · 生成式端到端 · 语义ID构建 · 非均匀量化 · 视觉语义单元</p>
   
 </aside>
   
@@ -4229,21 +4196,21 @@
       
       
       
+        <span class="md-tag">语义ID构建</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">非均匀量化</span>
+      
+    
+      
+      
+      
+      
         <span class="md-tag">视觉语义单元</span>
-      
-    
-      
-      
-      
-      
-        <span class="md-tag">非均匀残差量化</span>
-      
-    
-      
-      
-      
-      
-        <span class="md-tag">语义ID</span>
       
     
   </nav>
@@ -4253,179 +4220,268 @@
   
 
 
-<h1 id="card-non-uniform-quantization-of-visual-semantic-unit-for-generative-recommendation">CARD: Non-Uniform Quantization of Visual Semantic Unit for Generative Recommendation (面向生成式推荐的视觉语义单元非均匀量化)</h1>
+<h1 id="card-non-uniform-quantization-of-visual-semantic-unit-for-generative-recommendation">CARD: Non-Uniform Quantization of Visual Semantic Unit for Generative Recommendation (视觉语义单元的非均匀量化生成式推荐)</h1>
 <ul>
-<li><strong>会议/期刊</strong>: SIGIR 2026 (第49届国际ACM SIGIR信息检索大会)</li>
-<li><strong>推荐链路定位</strong>: 端到端生成式 (End-to-End Generative) — 语义ID构建 + 自回归生成式检索</li>
-<li><strong>研究方向</strong>: 生成式推荐与离散语义ID (主) / 多模态推荐与内容理解 (次)</li>
+<li><strong>会议/期刊</strong>: SIGIR 2026</li>
+<li><strong>作者与机构</strong>: Yibiao Wei, Jie Zou, Pengfei Zhang, Xiao Ao, Weikang Guo, Zeyu Ma, Yang Yang（电子科技大学、西南财经大学）</li>
+<li><strong>推荐链路定位</strong>: 端到端生成式（SID 构建 + 自回归生成）</li>
+<li><strong>研究方向</strong>: 生成式推荐与离散语义ID / 多模态推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2604.26427v1">https://arxiv.org/abs/2604.26427v1</a></li>
 <li><strong>开源代码</strong>: <a href="https://github.com/HAI-UESTC/CARD">https://github.com/HAI-UESTC/CARD</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对生成式推荐中两阶段范式监督不足导致异构融合困难、以及物品语义嵌入高度非均匀导致码字失衡与生成偏置两大痛点，CARD 将文本、图像与协同邻居渲染为"卡片式视觉语义单元"实现编码前统一融合，并提出 NU-RQ-VAE 用可学习可逆非均匀变换（Kumaraswamy CDF / Logistic-Logit）将偏斜分布映射至近似均匀空间后再残差量化。在 Clothing/Food 等数据集上，CARD 在 Full-Ranking 协议下一致超越 TIGER/LETTER 等基线，且非均匀变换模块可插拔、跨量化方案鲁棒。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>生成式推荐的两阶段范式（先建 SID 再自回归生成）对异构模态融合监督不足，且物品语义嵌入高度非均匀，导致码字分配失衡与生成偏差。CARD 提出"视觉语义单元"：把标题文本、商品图与协同邻居缩略图渲染成一张结构化卡片图，用 SigLIP2 统一编码，实现编码前融合；再用 NU-RQ-VAE 在量化前插入可学习可逆非均匀变换（Kumaraswamy CDF 或 Scaled Logistic/Logit），把偏斜分布拉回近似均匀空间。在 Amazon 三数据集 Leave-One-Out + Full-Ranking 协议下，Recall@10 相对最强基线 MACRec 提升 9.5%（Food）、3.5%（Phones）、7.1%（Clothing），且非均匀变换对 R-VQ/RQ-VAE 均可插拔增益最高 15.74%。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 生成式推荐以离散语义ID (SID) 表示物品，主流做法是先用 RQ-VAE / RQ-KMeans 等量化器将物品内容（文本、多模态、协同信号）压缩为码字序列，再用 T5 等生成模型对 SID 做自回归 next-item 预测（TIGER、LETTER、LC-Rec、OneRec、MQL4GRec、MMQ、MACRec 等）。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>监督不足下的异构融合困境</strong>：现有方法多用模态独立编码器分别编码文本/视觉/协同信号，再通过后置对齐（对比损失等）融合；但两阶段范式下 SID 构建与下游推荐目标解耦，融合缺乏直接监督。强对齐又会过度同质化、削弱单模态判别性，并在离散化时放大语义冲突。</li>
-<li><strong>非均匀嵌入导致码字失衡</strong>：图 1 显示物品语义嵌入在 PCA 空间呈密集簇 + 稀疏长尾；RQ-VAE 最小化全局重构误差、隐含均匀分配码本容量的假设失效，导致少数高频码字主导并在自回归解码中被进一步放大，形成生成偏置。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 在监督不足的两阶段设定下，如何避免复杂融合机制而实现整体语义建模？以及如何在量化前/中显式校正偏斜分布以平衡码字使用？</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 受卡牌游戏（如 Slay the Spire）启发——单张卡牌紧凑整合多属性——作者提出将异构信息渲染为结构化"卡片图像"，在编码前统一到视觉模态，从而绕开跨模态对齐；同时引入"可调尺子"式的可学习可逆非线性变换，把非均匀语义分布映射到近似均匀潜空间，使残差量化在更有利的分布条件下工作。</li>
+<li><strong>主流范式</strong>: TIGER/LETTER/LC-Rec 等用 RQ-VAE 将物品文本量化成层级 SID，再由 T5 自回归生成下一物品的码序列；近期工作（MQL4GRec、MACRec）进一步把多模态与协同信号塞进量化过程。</li>
+<li><strong>前人局限一</strong>: 各模态用独立编码器 + 事后对齐（对比损失/拼接），而 SID 学习与下游推荐目标解耦、监督信号稀薄，强对齐又会抹平模态差异，离散化时语义冲突被放大。</li>
+<li><strong>前人局限二</strong>: RQ-VAE 的全局重构损失隐含"嵌入空间近似均匀"假设，但真实物品嵌入呈密集簇 + 长尾稀疏（图1左），少数高频码字主导并在自回归解码中被进一步放大（图1右），形成生成偏差。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 若在<strong>编码前</strong>就把异构信号统一到同一视觉模态，可绕开复杂融合机制；若在<strong>量化前</strong>用单调可逆变换把偏斜分布重参数化为近似均匀，则码本容量可按密度自适应分配。</li>
+<li><strong>本文切入点</strong>: 借鉴卡牌游戏"一张卡承载多重属性"的直觉，构造卡片式视觉语义单元 + 分布感知的非均匀残差量化。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>物品集 <span class="arithmatex">\(\mathcal{I}\)</span>，物品 <span class="arithmatex">\(i\)</span> 的图像 <span class="arithmatex">\(x_i^{\text{img}}\)</span>、文本属性 <span class="arithmatex">\(x_i^{\text{text}}\)</span>（标题、类目）。</li>
-<li>协同嵌入 <span class="arithmatex">\(u_i \in \mathbb{R}^d\)</span>（由 SASRec 等传统推荐模型预训练得到），用于检索协同邻居 <span class="arithmatex">\(\mathcal{N}(i)\)</span>。</li>
-<li>卡片图像 <span class="arithmatex">\(G_i \in \mathbb{R}^{H \times W \times 3}\)</span>；视觉语言编码器 <span class="arithmatex">\(f(\cdot)\)</span>（SigLIP2）输出 <span class="arithmatex">\(m\)</span> 维语义嵌入 <span class="arithmatex">\(z = f(G_i) \in \mathbb{R}^m\)</span>。</li>
-<li>量化器：编码器 <span class="arithmatex">\(\text{Encoder}(\cdot)\)</span>、解码器 <span class="arithmatex">\(\text{Decoder}(\cdot)\)</span>、<span class="arithmatex">\(K\)</span> 级码本 <span class="arithmatex">\(\{\mathcal{C}_1,\dots,\mathcal{C}_K\}\)</span>，每级码本大小 <span class="arithmatex">\(N\)</span>、码字维度 <span class="arithmatex">\(d\)</span>。</li>
-<li>输出：SID <span class="arithmatex">\(\tilde{i} = [c_1, c_2, \dots, c_K]\)</span>，供 T5 自回归生成。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：为每个物品构建卡片式视觉语义单元（视觉区 + 文本语义区 + 协同信号区）→ SigLIP2 统一编码为语义嵌入 → NU-RQ-VAE 做非均匀变换 + 多级残差量化得到 SID → 下游 T5 自回归生成式推荐。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>对每个物品 <span class="arithmatex">\(i\)</span>，先离线用 SASRec 学协同嵌入，取 Top-<span class="arithmatex">\(K\)</span>相似邻居；再把原图（上区）、标题/类目文本面板（中区）、邻居缩略图与标题（下区）渲染成一张<span class="arithmatex">\(512\times512\)</span>卡片图<span class="arithmatex">\(G_i\)</span>。SigLIP2 编码得<span class="arithmatex">\(\mathbf{z}=f(G_i)\)</span>，经 NU-RQ-VAE 的编码器与可逆非均匀变换后做 4 级残差量化，得到 SID<span class="arithmatex">\([c_1,\dots,c_4]\)</span>；解码端逆变换回原语义空间重构。下游把用户历史交互序列转成码序列，用 T5 以 token 级负对数似然自回归预测下一物品 SID，推理时 beam search 解码。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 物品图像 + 文本属性 + 协同邻居(K=3)"] --&gt; B["卡片式视觉语义单元 G_i (H×W×3)"]
-    B --&gt; C["SigLIP2 统一编码 z ∈ R^m"]
-    C --&gt; D["NU-RQ-VAE: 非均匀变换 + K级残差量化"]
-    D --&gt; E["离散 SID [c1,...,cK]"]
-    E --&gt; F["T5 自回归生成式推荐"]</code></pre>
-<p>图 2 给出了 CARD 框架总览：卡片单元经 SigLIP2 编码后进入 NU-RQ-VAE，非均匀变换与多级残差量化共同产生离散 SID，用于下游生成式推荐。</p>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 卡片式统一物品表征（编码前融合）</strong>。每张卡片 <span class="arithmatex">\(G_i\)</span> 含三个功能区：上部视觉区保留原始图像；中部文本语义区用固定模板渲染标题与类目；底部协同信号区展示行为相似邻居。邻居选择为：</p>
-<div class="arithmatex">\[\mathcal{N}(i) = \arg\max_{\mathcal{N} \subset \mathcal{I}\setminus\{i\},\,|\mathcal{N}|=K_{\text{neighbors}}} \sum_{j \in \mathcal{N}} s(i,j), \quad s(i,j) = u_i^\top u_j\]</div>
-<p>其中 <span class="arithmatex">\(K_{\text{neighbors}}=3\)</span>（经验验证）。邻居以缩略图 + 标题横向排列，把仅存在于隐空间的协同信号转为编码器可直接感知的视觉上下文。图 3 展示了 Clothing 与 Food 数据集上的视觉语义单元示例。物理直觉：所有异构信号在进入编码器前已处于同一视觉空间，天然消除语义鸿沟，无需显式跨模态对齐。</p>
-<p><strong>(2) NU-RQ-VAE 非均匀量化</strong>。标准 RQ-VAE 逐级残差量化：</p>
-<div class="arithmatex">\[c_k = \arg\min_{i} \|r_{k-1} - e_i\|_2,\ e_i \in \mathcal{C}_k; \quad r_k = r_{k-1} - e_{c_k}, \quad r_0 = h = \text{Encoder}(z)\]</div>
-<p>量化嵌入 <span class="arithmatex">\(\hat{h} = \sum_{k=1}^{K} e_{c_k}\)</span>，重构 <span class="arithmatex">\(\hat{z} = \text{Decoder}(\hat{h})\)</span>。CARD 在量化前插入可学习可逆非线性变换 <span class="arithmatex">\(T(\cdot)\)</span>，把偏斜分布映射到近似均匀潜空间（"可调尺子"），量化后再用 <span class="arithmatex">\(T^{-1}\)</span> 逆变换。提供两种变体：
-- <strong>Kumaraswamy 参数化变换</strong>：采用 Kumaraswamy 分布的 CDF 作为变换，单调可逆，可灵活建模复杂非均匀分布（图 4 展示其 PDF/CDF）。
-- <strong>Logistic–Logit 变换</strong>：针对推荐场景中近似钟形（bell-shaped）的语义嵌入定制（图 5 对比 T5 与 SigLIP2 编码器嵌入分布均近似钟形）。</p>
-<p><strong>(3) 为什么这样设计</strong>：非均匀变换使码本容量按密度自适应分配——密集区获得更细粒度判别、稀疏区不再浪费容量，从而提升码本利用率与量化精度，并抑制自回归解码中的生成偏置。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: RQ-VAE 总损失由重构损失与量化损失组成：</li>
-</ul>
-<div class="arithmatex">\[\mathcal{L}_{\text{Recon}} = \|z - \hat{z}\|^2, \quad \mathcal{L}_{\text{RQ}} = \sum_{k=1}^{K}\left(\|\text{sg}[r_{k-1}] - e_{c_k}\|_2^2 + \beta\|r_{k-1} - \text{sg}[e_{c_k}]\|_2^2\right)\]</div>
-<p>其中 <span class="arithmatex">\(\text{sg}[\cdot]\)</span> 为 stop-gradient，<span class="arithmatex">\(\beta\)</span> 为 commit 损失权重（原文正文在此处被截断，完整 <span class="arithmatex">\(\beta\)</span> 取值与总损失权重原文未在可提取文本中报告）。
-- <strong>训练负采样策略</strong>: SID 构建阶段为重构式量化训练，不涉及负采样；下游生成式推荐沿用 T5 自回归 next-token 交叉熵（免负采样）。原文未报告额外的难负例挖掘策略。
-- <strong>时间与空间复杂度</strong>: 离线需为每物品渲染卡片并跑 SigLIP2 编码（一次性预处理）；量化训练为 <span class="arithmatex">\(K\)</span> 级码本最近邻查找，复杂度 <span class="arithmatex">\(O(K \cdot N \cdot d)\)</span>；在线推理为 T5 自回归解码（需 Beam Search 约束合法 SID）。原文未报告具体 ms/request 延迟与峰值显存（原文未报告）。</p>
+    A["物品图 + 标题/类目 + Top-K协同邻居缩略图"] --&gt; B["渲染为卡片式视觉语义单元 G_i"]
+    B --&gt; C["SigLIP2 统一编码 z"]
+    C --&gt; D["可逆非均匀变换 d=T(h)"]
+    D --&gt; E["4级残差量化 → SID"]
+    E --&gt; F["T5 自回归生成下一物品SID"]</code></pre>
+<figure class="paper-figure">
+  <img alt="图2：CARD框架概览。CARD通过在图像模态内统一视觉、文本和协同信号，为每个物品构建视觉语义单元。每个单元由SigLIP2编码，并经非均匀残差量化变分自编码器（NU-RQ-VAE）处理，其中非均匀变换和多级残差量化产生离散SID。这些SID用于下游生成式推荐。" src="../../../../../assets/papers/2604.26427v1/figure_2.png" /><figcaption>图2：CARD框架概览。CARD通过在图像模态内统一视觉、文本和协同信号，为每个物品构建视觉语义单元。每个单元由SigLIP2编码，并经非均匀残差量化变分自编码器（NU-RQ-VAE）处理，其中非均匀变换和多级残差量化产生离散SID。这些SID用于下游生成式推荐。</figcaption>
+</figure>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>视觉语义单元（编码前融合）</strong>：痛点是非端到端两阶段下跨模态对齐缺乏下游监督、事后融合易产生语义鸿沟。做法是把三路信号渲染进同一张图，让单一视觉编码器直接建模整体语义，无需显式对齐损失。直觉上，SigLIP2 在大规模图文对上预训练，能从结构化卡片中稳定抽取文本语义（表6 验证 TIGER+Unit-T 与 TIGER+T5 性能相当，说明渲染不引入明显语义损失），从而把"融合"从模型结构问题降级为"输入构造"问题。</p>
+</li>
+<li>
+<p><strong>NU-RQ-VAE 非均匀量化</strong>：痛点是非均匀嵌入下全局重构损失导致密集区码本不够用、稀疏区码本闲置。做法是在量化前插入单调可逆变换 <span class="arithmatex">\(\mathbf{d}=T(\mathbf{h})\)</span>，量化在近似均匀空间进行，解码前用<span class="arithmatex">\(T^{-1}\)</span> 还原：
+$<span class="arithmatex">\(\mathbf{d}=T(\mathbf{h}),\quad c_k=\arg\min_{i}\|\mathbf{r}_{k-1}-\mathbf{e}_i\|_2,\quad \hat{\mathbf{h}}=T^{-1}(\hat{\mathbf{d}})\)</span>$
+提供两个变体：Kumaraswamy CDF <span class="arithmatex">\(F_{\text{KS}}(x;a,b)=1-(1-x^a)^b\)</span>（闭式逆、表达力接近 Beta 但计算更省），以及针对钟形嵌入（图5）的 Scaled Logistic/Logit 逐维变换。直觉是"可调标尺"——按局部密度拉伸/压缩坐标轴，使码字分配与语义密度匹配。</p>
+</li>
+<li>
+<p><strong>训练目标、负采样与推理效率</strong>：量化阶段损失为
+$<span class="arithmatex">\(\mathcal{L}_{\text{overall}}=\mathcal{L}_{\text{Recon}}+\mathcal{L}_{\text{RQ}}+\lambda_{\text{NUQ}}\left\|T^{-1}(T(\mathbf{h}))-\mathbf{h}\right\|_2^2\)</span>$
+其中 NUQ 一致性损失保证变换可逆稳定，<span class="arithmatex">\(\lambda_{\text{NUQ}}\in[0.1,1]\)</span>。生成阶段为 token 级 NLL，<strong>无负采样</strong>（全库 softmax 由 SID 词表隐式承担）。推理为 beam search 逐码解码，开销与 TIGER 同阶，额外成本仅在离线 SID 构建时的变换与逆变换。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文使用 Amazon 域数据集（Clothing、Food 等），表 1 给出统计量（"Avg. len" 为用户交互序列平均长度）。可提取文本中未给出具体数值，下表按原文表格结构保留，具体数字以原文表 1 为准（原文正文提取未包含表 1 数值，故标注"原文表 1"）：</li>
+<li><strong>数据集与预处理</strong>: 三个 Amazon 类目，均做 <code>5-core</code> 过滤，交互序列截断/填充至长度 20（保留最近交互）。</li>
 </ul>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
+<th style="text-align: left;">数据集</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Interactions</th>
+<th style="text-align: center;">稀疏度</th>
+<th style="text-align: left;">场景说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Clothing</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: left;">图像 + 标题/类目 + 协同邻居</td>
+<td style="text-align: left;">Food</td>
+<td style="text-align: center;">14,681</td>
+<td style="text-align: center;">8,713</td>
+<td style="text-align: center;">151,254</td>
+<td style="text-align: center;">99.882%</td>
+<td style="text-align: left;">杂货美食，图文信息丰富</td>
 </tr>
 <tr>
-<td style="text-align: left;">Food</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: left;">图像 + 标题/类目 + 协同邻居</td>
+<td style="text-align: left;">Phones</td>
+<td style="text-align: center;">27,879</td>
+<td style="text-align: center;">10,429</td>
+<td style="text-align: center;">194,439</td>
+<td style="text-align: center;">99.933%</td>
+<td style="text-align: left;">手机配件，类目集中</td>
+</tr>
+<tr>
+<td style="text-align: left;">Clothing</td>
+<td style="text-align: center;">39,387</td>
+<td style="text-align: center;">23,033</td>
+<td style="text-align: center;">278,677</td>
+<td style="text-align: center;">99.969%</td>
+<td style="text-align: left;">服饰鞋包，视觉差异大</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 生成式推荐标准做法为按用户交互序列的 <strong>Leave-One-Out (留一法)</strong>（最后一项测试、倒数第二项验证），原文正文提取未明确复述，具体以原文实验节为准；需注意 LOO 在时序上天然避免未来信息泄露，但存在单正例评估方差大的固有局限。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 生成式推荐通常采用 <strong>Full-Ranking（对全库合法 SID 做约束 Beam Search 排序）</strong>，而非采样负例排序；原文强调"在各种设置下一致超越基线"。</li>
-<li><strong>评价指标与显著性检验</strong>: 常用 <code>Recall@K</code>、<code>NDCG@K</code>（K=5/10）。原文正文提取未报告配对显著性检验（如 <span class="arithmatex">\(p&lt;0.05\)</span>）与多随机种子方差，属可改进点。</li>
+<li><strong>数据划分与防穿越</strong>: <code>Leave-One-Out</code>——每用户最近一次交互作测试、倒数第二次作验证、其余训练。</li>
+<li><strong>排名评测协议</strong>: 无偏 <code>Full-Ranking</code>（全物品集排序），指标 Recall@<span class="arithmatex">\(\{5,10,20\}\)</span>与 NDCG@<span class="arithmatex">\(\{5,10,20\}\)</span>。</li>
+<li><strong>对比基线与超参</strong>: 传统序列模型 GRU4Rec/HGN/BERT4Rec/SASRec，生成式 VQ-Rec/TIGER/LETTER/MQL4GRec/MACRec；NU-RQ-VAE 编解码为 3 层 MLP，<span class="arithmatex">\(K=4\)</span>码本 × 256 码字 × 32 维，T5 编解码各 4 层 6 头（<span class="arithmatex">\(d=64\)</span>），AdamW，学习率 0.001，batch 1024；显著性用配对 t 检验（<span class="arithmatex">\(p\le 0.01\)</span>）。</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>原文声明 CARD 在多个数据集、多种设置下一致优于 TIGER、LETTER、LC-Rec、MQL4GRec、MMQ、MACRec 等基线。由于可提取正文未包含主结果表格的具体数值，下表仅保留结构与结论方向，具体数字以原文表格为准（严禁臆造）：</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
 <th style="text-align: left;">指标</th>
-<th style="text-align: center;">传统/协同过滤基线</th>
-<th style="text-align: center;">序列/图/多模态最强基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;">SASRec</th>
+<th style="text-align: center;">TIGER</th>
+<th style="text-align: center;">LETTER</th>
+<th style="text-align: center;">MQL4GRec</th>
+<th style="text-align: center;">MACRec</th>
+<th style="text-align: center;">CARD<span class="arithmatex">\(_K\)</span></th>
+<th style="text-align: center;">CARD<span class="arithmatex">\(_S\)</span></th>
+<th style="text-align: center;">Improv.%</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Clothing</td>
-<td style="text-align: left;">Recall@10 / NDCG@10</td>
-<td style="text-align: center;">原文表格</td>
-<td style="text-align: center;">原文表格（如 LETTER/MMQ）</td>
-<td style="text-align: center;"><strong>最优</strong></td>
-<td style="text-align: center;">原文表格</td>
+<td style="text-align: left;">Food</td>
+<td style="text-align: left;">R@10</td>
+<td style="text-align: center;">0.0596</td>
+<td style="text-align: center;">0.0617</td>
+<td style="text-align: center;">0.0683</td>
+<td style="text-align: center;">0.0697</td>
+<td style="text-align: center;">0.0779</td>
+<td style="text-align: center;">0.0819</td>
+<td style="text-align: center;"><strong>0.0853</strong></td>
+<td style="text-align: center;">+9.50%</td>
 </tr>
 <tr>
 <td style="text-align: left;">Food</td>
-<td style="text-align: left;">Recall@10 / NDCG@10</td>
-<td style="text-align: center;">原文表格</td>
-<td style="text-align: center;">原文表格</td>
-<td style="text-align: center;"><strong>最优</strong></td>
-<td style="text-align: center;">原文表格</td>
+<td style="text-align: left;">N@10</td>
+<td style="text-align: center;">0.0286</td>
+<td style="text-align: center;">0.0327</td>
+<td style="text-align: center;">0.0362</td>
+<td style="text-align: center;">0.0369</td>
+<td style="text-align: center;">0.0410</td>
+<td style="text-align: center;">0.0428</td>
+<td style="text-align: center;"><strong>0.0462</strong></td>
+<td style="text-align: center;">+12.68%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Phones</td>
+<td style="text-align: left;">R@10</td>
+<td style="text-align: center;">0.0762</td>
+<td style="text-align: center;">0.0794</td>
+<td style="text-align: center;">0.0830</td>
+<td style="text-align: center;">0.0838</td>
+<td style="text-align: center;">0.0850</td>
+<td style="text-align: center;"><strong>0.0904</strong></td>
+<td style="text-align: center;">0.0880</td>
+<td style="text-align: center;">+6.35%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Phones</td>
+<td style="text-align: left;">N@10</td>
+<td style="text-align: center;">0.0405</td>
+<td style="text-align: center;">0.0425</td>
+<td style="text-align: center;">0.0443</td>
+<td style="text-align: center;">0.0441</td>
+<td style="text-align: center;">0.0453</td>
+<td style="text-align: center;"><strong>0.0486</strong></td>
+<td style="text-align: center;">0.0474</td>
+<td style="text-align: center;">+7.28%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Clothing</td>
+<td style="text-align: left;">R@10</td>
+<td style="text-align: center;">0.0223</td>
+<td style="text-align: center;">0.0257</td>
+<td style="text-align: center;">0.0263</td>
+<td style="text-align: center;">0.0273</td>
+<td style="text-align: center;">0.0281</td>
+<td style="text-align: center;">0.0297</td>
+<td style="text-align: center;"><strong>0.0301</strong></td>
+<td style="text-align: center;">+7.12%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Clothing</td>
+<td style="text-align: left;">N@10</td>
+<td style="text-align: center;">0.0102</td>
+<td style="text-align: center;">0.0113</td>
+<td style="text-align: center;">0.0110</td>
+<td style="text-align: center;">0.0135</td>
+<td style="text-align: center;">0.0133</td>
+<td style="text-align: center;"><strong>0.0150</strong></td>
+<td style="text-align: center;">0.0145</td>
+<td style="text-align: center;">+11.11%</td>
 </tr>
 </tbody>
 </table>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文通过消融验证：(a) 视觉语义单元（编码前统一融合）相对模态独立编码 + 后置对齐的增益；(b) NU-RQ-VAE 中非均匀变换模块的贡献，并强调该模块 <strong>plug-and-play</strong>，在不同量化方案（如 RQ-VAE、RQ-KMeans、OPQ 等）下均保持鲁棒。具体下降幅度数值原文正文提取未包含，以原文消融表为准。可提取文本未说明消融是否严格控制参数量对齐。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
+<p>（Improv.% 为最优 CARD 变体相对最强基线 MACRec 的相对提升；所有 CARD 结果在 <span class="arithmatex">\(p\le0.01\)</span> 下显著。）</p>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">变体</th>
+<th style="text-align: center;">Food R@5</th>
+<th style="text-align: center;">Food R@10</th>
+<th style="text-align: center;">Phones R@5</th>
+<th style="text-align: center;">Phones R@10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">CARD<span class="arithmatex">\(_K\)</span> 完整</td>
+<td style="text-align: center;"><strong>0.0520</strong></td>
+<td style="text-align: center;"><strong>0.0819</strong></td>
+<td style="text-align: center;"><strong>0.0596</strong></td>
+<td style="text-align: center;"><strong>0.0904</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o Unit-V（去图像区）</td>
+<td style="text-align: center;">0.0452</td>
+<td style="text-align: center;">0.0711</td>
+<td style="text-align: center;">0.0564</td>
+<td style="text-align: center;">0.0835</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o Unit-T（去文本区）</td>
+<td style="text-align: center;">0.0463</td>
+<td style="text-align: center;">0.0732</td>
+<td style="text-align: center;">0.0557</td>
+<td style="text-align: center;">0.0820</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o Unit-C（去协同区）</td>
+<td style="text-align: center;">0.0491</td>
+<td style="text-align: center;">0.0768</td>
+<td style="text-align: center;">0.0571</td>
+<td style="text-align: center;">0.0863</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o Unit（退化为纯文本）</td>
+<td style="text-align: center;">0.0432</td>
+<td style="text-align: center;">0.0683</td>
+<td style="text-align: center;">0.0542</td>
+<td style="text-align: center;">0.0809</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o NUT（退化为标准 RQ-VAE）</td>
+<td style="text-align: center;">0.0478</td>
+<td style="text-align: center;">0.0745</td>
+<td style="text-align: center;">0.0560</td>
+<td style="text-align: center;">0.0841</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>统一视觉单元是主增益来源，且三路信号互补</strong>：去掉整个单元（w/o Unit）使 Food R@10 从 0.0819 跌至 0.0683（-16.6%），跌幅远超单独去掉任一区域（-6.2% ~ -10.6%），说明图像、文本、协同三区并非冗余，而是共同构成量化友好的语义基底。</li>
+<li><strong>非均匀变换是正交增益且可插拔</strong>：w/o NUT 使 Food R@10 降 9.0%；把变换移植到 R-VQ 与 RQ-VAE 上分别带来最高 +14.26% 与 +15.74% 的相对提升（表5），证明其与量化器无关，是分布层面的通用修正。</li>
+<li><strong>码本利用率与生成偏差同步改善</strong>：有效码字数从 TIGER 的 70、CARD w/o NUT 的 132 提升到 CARD 的 249（图8），生成 SID 的码字频率分布更贴近训练目标分布，直接对应生成偏差的缓解。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>长尾/冷启动表现</strong>: 动机部分指出长尾物品散落稀疏区、码本容量浪费，NU-RQ-VAE 通过分布校正应主要利好长尾与稀疏区物品；原文正文提取未给出分桶数值表。</li>
-<li><strong>关键超参数敏感度</strong>: 协同邻居数 <span class="arithmatex">\(K_{\text{neighbors}}=3\)</span>（经验验证）；码本级数 <span class="arithmatex">\(K\)</span>、码本大小 <span class="arithmatex">\(N\)</span>、commit 权重 <span class="arithmatex">\(\beta\)</span> 的敏感度分析原文正文提取未完整呈现。</li>
-<li><strong>线上 A/B 测试结果</strong>: 原文仅包含离线实验，未报告线上 A/B（原文未报告）。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li>"编码前渲染融合"思路优雅——把跨模态对齐问题转化为单模态（视觉）整体编码问题，规避了监督不足下的对齐失真，可迁移到任意多模态 SID 构建管线。</li>
-<li>非均匀变换作为可插拔前置模块，理论上可套用到任何量化器（VQ/RQ/OPQ），具有较强工程复用价值。</li>
-<li>从"码字使用偏斜 → 生成偏置"的因果链分析清晰，图 1 的可视化证据有说服力。</li>
-<li><strong>局限性与审稿视角批判</strong>:</li>
-<li><strong>评估协议透明度不足</strong>：可提取正文未明确复述数据划分（LOO vs 比例切分）、候选集协议与显著性检验，审稿中需作者补充以排除评估偏差。</li>
-<li><strong>卡片渲染的工程开销</strong>：每物品需渲染图像并跑 SigLIP2 编码，离线预处理成本与存储开销未量化；在线推理依赖 T5 Beam Search，延迟未报告。</li>
-<li><strong>协同信号依赖外部模型</strong>：邻居来自 SASRec 预训练嵌入，存在对上游模型质量的耦合，且 <span class="arithmatex">\(K_{\text{neighbors}}=3\)</span> 的经验设定缺乏敏感性分析。</li>
-<li><strong>理论保证缺失</strong>：非均匀变换"使分布近似均匀"为经验观察（图 5 钟形假设），缺乏对量化误差界的理论分析。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 TIGER（纯文本 RQ-VAE）与 LETTER（协同信号 + 可学习 tokenization），CARD 把融合从"多编码器 + 事后对齐"前移到"输入渲染"；相比 MACRec（跨模态量化 + 多面对齐），CARD 不做显式对齐损失，而是靠统一视觉空间天然消解语义鸿沟，管线更简单。</li>
+<li><strong>可迁移亮点</strong>: (1) 非均匀变换作为即插即用模块，可直接套到任何 VQ/RQ 类 SID 构建器上；(2) "把异构特征渲染成结构化图像再交给 VLM 编码"这一 trick 可迁移到多模态冷启动与跨域物品表征。</li>
+<li><strong>审稿级局限批判</strong>: (1) 卡片布局（区域划分、邻居数 <span class="arithmatex">\(K=3\)</span>、<span class="arithmatex">\(512\times512\)</span> 分辨率）依赖人工先验，论文自认未来需自动化构造，超参敏感度未充分扫描；(2) 离线需为每个物品渲染并过一遍 SigLIP2，物品库大时 SID 构建成本与存储开销显著，论文未给出量化对比；(3) 仅在三个 Amazon 类目上验证，缺少工业级大规模与冷启动分桶实验。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （"编码前视觉融合 + 分布感知可逆量化"组合新颖，且有 PCA 分布与码字频率的实证支撑，但单点技术均有先例）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （三数据集 Full-Ranking + 配对 t 检验 + 双变体消融 + 插拔性实验完整，缺冷启动与长尾分桶分析）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （变换的闭式正逆与一致性损失推导清晰，RQ-VAE 部分复述略多，复杂度分析缺失）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （代码已开源、变换模块即插即用，但离线渲染 + VLM 编码的构建成本是落地主要门槛）</li>
 </ul>
-<h2 id="_1">论文图表</h2>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2604.26427v1/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2604.26427v1/figure_2.png" /><figcaption>图 2</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2604.26427v1/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 4" src="../../../../../assets/papers/2604.26427v1/figure_4.png" /><figcaption>图 4</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 5" src="../../../../../assets/papers/2604.26427v1/figure_5.png" /><figcaption>图 5</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2604.26427v1/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
 
 
 

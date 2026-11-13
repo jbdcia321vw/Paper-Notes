@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4378,12 +4389,18 @@
 <li><strong>互补性胜过同质堆叠</strong>：定性分析显示 Text 与 Audio/Video 分别编码主题与风格（图 2 中 Narrative Precision 0.95 vs Stylistic Variance 0.95），定量上 T+A 组合（0.1938）确实优于同属视觉系的 T+I（0.1897），验证"跨类模态配对"更有效。</li>
 <li><strong>交互信号仍是最强基线</strong>：所有单模态均无法超越 BPR（0.1911），仅双模态 VBPR 以 +1.41% 微弱反超，说明在 M3L 这种保留原始分布的低稀疏数据上，多模态增益是"锦上添花"而非"雪中送炭"——这恰是此前在重度过滤数据上被夸大的效应被还原后的真实图景。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 MMGCN/MMGCL 使用的 ML-10M 变体（仅保留 13.2%/10.8% 交互、2–3 个模态），M3L-10M 交互量提升约 7.6×/9.3× 且补齐视频与音频；相比 CineFinder 使用 ML-20M，本文额外覆盖预告片并公开全部特征与抽取脚本，是首个"映射+特征+代码"三件套齐全的大规模电影多模态基准。</li>
 <li><strong>可迁移亮点</strong>: ① "模态指纹"四维打分（叙事精度/风格方差/空间可分性/类型对齐）可复用于任意多模态推荐数据集的模态价值诊断；② 仅发布不可逆嵌入 + 原始 ID 映射的 non-consumptive 发布范式，为受版权约束的多模态数据共享提供合规模板。</li>
 <li><strong>审稿级局限批判</strong>: ① 定量验证仅停留在 4 个模型、2 个指标、单数据集的"初步验证"级别，未给出 M3L-20M 上的任何结果，基准的"大规模"价值尚未被实证；② 预告片覆盖率仅 71.57%（ML-20M），且依赖 YouTube 链接的长期可用性，数据集存在随时间衰减的风险，维护成本高。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

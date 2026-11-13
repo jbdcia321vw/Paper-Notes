@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][序列与会话推荐] 提出可学习多序列构造+线性注意力，将用户历史解耦为K条主题潜序列以缓解上下文污染，Meta四场景离线NE与线上A/B均显著提升">
+        <meta name="description" content="[SIGIR 2026][序列与会话推荐] 提出可学习多序列构造与线性注意力，缓解单序列上下文污染，Meta 四场景 NE 降 0.3%–0.6%。">
       
       
       
@@ -23,7 +23,7 @@
     
     
 
-  <title>[Paper Note] CMSL: Constructive Multi-Sequence Learning for Recommendation Systems</title>
+  <title>CMSL: Constructive Multi-Sequence Learning for Recommendation Systems</title>
 
     
       <link rel="stylesheet" href="../../../../../assets/stylesheets/main.57a0d79d.min.css">
@@ -108,7 +108,7 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 序列与会话推荐, 精排, 多序列构造, 线性注意力, 上下文污染" />
+<meta name="keywords" content="SIGIR 2026, 序列与会话推荐, 精排, 多序列构造, 线性注意力" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
@@ -121,8 +121,6 @@
 
 <meta property="article:tag" content="线性注意力" />
 
-<meta property="article:tag" content="上下文污染" />
-
 
 
 
@@ -130,11 +128,11 @@
 <meta property="og:site_name" content="RecSys Paper Notes · 推荐系统论文精读库" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/sequential_rec/cmsl_constructive_multi_sequence_learning_for_recommendation_systems/" />
-<meta property="og:title" content="[Paper Note] CMSL: Constructive Multi-Sequence Learning for Recommendation Systems" />
-<meta property="og:description" content="[SIGIR 2026][序列与会话推荐] 提出可学习多序列构造+线性注意力，将用户历史解耦为K条主题潜序列以缓解上下文污染，Meta四场景离线NE与线上A/B均显著提升" />
+<meta property="og:title" content="CMSL: Constructive Multi-Sequence Learning for Recommendation Systems" />
+<meta property="og:description" content="[SIGIR 2026][序列与会话推荐] 提出可学习多序列构造与线性注意力，缓解单序列上下文污染，Meta 四场景 NE 降 0.3%–0.6%。" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="[Paper Note] CMSL: Constructive Multi-Sequence Learning for Recommendation Systems" />
-<meta name="twitter:description" content="[SIGIR 2026][序列与会话推荐] 提出可学习多序列构造+线性注意力，将用户历史解耦为K条主题潜序列以缓解上下文污染，Meta四场景离线NE与线上A/B均显著提升" />
+<meta name="twitter:title" content="CMSL: Constructive Multi-Sequence Learning for Recommendation Systems" />
+<meta name="twitter:description" content="[SIGIR 2026][序列与会话推荐] 提出可学习多序列构造与线性注意力，缓解单序列上下文污染，Meta 四场景 NE 降 0.3%–0.6%。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -158,9 +156,9 @@
 {
   "@context": "https://schema.org",
   "@type": "ScholarlyArticle",
-  "name": "[Paper Note] CMSL: Constructive Multi-Sequence Learning for Recommendation Systems",
-  "headline": "[Paper Note] CMSL: Constructive Multi-Sequence Learning for Recommendation Systems",
-  "description": "[SIGIR 2026][\u5e8f\u5217\u4e0e\u4f1a\u8bdd\u63a8\u8350] \u63d0\u51fa\u53ef\u5b66\u4e60\u591a\u5e8f\u5217\u6784\u9020+\u7ebf\u6027\u6ce8\u610f\u529b\uff0c\u5c06\u7528\u6237\u5386\u53f2\u89e3\u8026\u4e3aK\u6761\u4e3b\u9898\u6f5c\u5e8f\u5217\u4ee5\u7f13\u89e3\u4e0a\u4e0b\u6587\u6c61\u67d3\uff0cMeta\u56db\u573a\u666f\u79bb\u7ebfNE\u4e0e\u7ebf\u4e0aA/B\u5747\u663e\u8457\u63d0\u5347",
+  "name": "CMSL: Constructive Multi-Sequence Learning for Recommendation Systems",
+  "headline": "CMSL: Constructive Multi-Sequence Learning for Recommendation Systems",
+  "description": "[SIGIR 2026][\u5e8f\u5217\u4e0e\u4f1a\u8bdd\u63a8\u8350] \u63d0\u51fa\u53ef\u5b66\u4e60\u591a\u5e8f\u5217\u6784\u9020\u4e0e\u7ebf\u6027\u6ce8\u610f\u529b\uff0c\u7f13\u89e3\u5355\u5e8f\u5217\u4e0a\u4e0b\u6587\u6c61\u67d3\uff0cMeta \u56db\u573a\u666f NE \u964d 0.3%\u20130.6%\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/sequential_rec/cmsl_constructive_multi_sequence_learning_for_recommendation_systems/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/sequential_rec/cmsl_constructive_multi_sequence_learning_for_recommendation_systems/",
   "inLanguage": "zh-CN",
@@ -168,18 +166,17 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u5e8f\u5217\u4e0e\u4f1a\u8bdd\u63a8\u8350, \u7cbe\u6392, \u591a\u5e8f\u5217\u6784\u9020, \u7ebf\u6027\u6ce8\u610f\u529b, \u4e0a\u4e0b\u6587\u6c61\u67d3",
+  "keywords": "SIGIR 2026, \u5e8f\u5217\u4e0e\u4f1a\u8bdd\u63a8\u8350, \u7cbe\u6392, \u591a\u5e8f\u5217\u6784\u9020, \u7ebf\u6027\u6ce8\u610f\u529b",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u5e8f\u5217\u4e0e\u4f1a\u8bdd\u63a8\u8350" },
     { "@type": "Thing", "name": "\u7cbe\u6392" },
     { "@type": "Thing", "name": "\u591a\u5e8f\u5217\u6784\u9020" },
-    { "@type": "Thing", "name": "\u7ebf\u6027\u6ce8\u610f\u529b" },
-    { "@type": "Thing", "name": "\u4e0a\u4e0b\u6587\u6c61\u67d3" }
+    { "@type": "Thing", "name": "\u7ebf\u6027\u6ce8\u610f\u529b" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -212,7 +209,7 @@
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "[Paper Note] CMSL: Constructive Multi-Sequence Learning for Recommendation Systems",
+      "name": "CMSL: Constructive Multi-Sequence Learning for Recommendation Systems",
       "item": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/sequential_rec/cmsl_constructive_multi_sequence_learning_for_recommendation_systems/"
     }
   ]
@@ -572,7 +569,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              [Paper Note] CMSL: Constructive Multi-Sequence Learning for Recommendation Systems
+              CMSL: Constructive Multi-Sequence Learning for Recommendation Systems
             
           </span>
         </div>
@@ -3997,10 +3994,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4008,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4016,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4039,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4069,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4092,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4100,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4116,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4181,9 +4156,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][序列与会话推荐] 提出可学习多序列构造+线性注意力，将用户历史解耦为K条主题潜序列以缓解上下文污染，Meta四场景离线NE与线上A/B均显著提升</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][序列与会话推荐] 提出可学习多序列构造与线性注意力，缓解单序列上下文污染，Meta 四场景 NE 降 0.3%–0.6%。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 序列与会话推荐 · 精排 · 多序列构造 · 线性注意力 · 上下文污染</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 序列与会话推荐 · 精排 · 多序列构造 · 线性注意力</p>
   
 </aside>
   
@@ -4228,13 +4203,6 @@
         <span class="md-tag">线性注意力</span>
       
     
-      
-      
-      
-      
-        <span class="md-tag">上下文污染</span>
-      
-    
   </nav>
 
 
@@ -4242,206 +4210,205 @@
   
 
 
-<h1 id="cmsl-constructive-multi-sequence-learning-for-recommendation-systems">CMSL: Constructive Multi-Sequence Learning for Recommendation Systems (构造式多序列学习推荐系统)</h1>
+<h1 id="cmsl-constructive-multi-sequence-learning-for-recommendation-systems">CMSL: Constructive Multi-Sequence Learning for Recommendation Systems (构造式多序列学习)</h1>
 <ul>
 <li><strong>会议/期刊</strong>: SIGIR 2026</li>
-<li><strong>推荐链路定位</strong>: 精排 (CTR/CVR Ranking) + 召回 (U2U Retrieval，两阶段异步用户模型)</li>
+<li><strong>作者与机构</strong>: Zikun Cui, Renzhi Wu, Junjie Yang 等（Meta MRS / Meta PyTorch / Meta FB Monetization）</li>
+<li><strong>推荐链路定位</strong>: 精排（CTR/CVR）+ 召回（U2U Retrieval）</li>
 <li><strong>研究方向</strong>: 序列与会话推荐 / CTR 预估与特征交叉</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2606.28533v2">https://arxiv.org/abs/2606.28533v2</a></li>
-<li><strong>开源代码</strong>: 暂未开源（原文与预提取均未发现代码链接）</li>
+<li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对序列推荐中"用户历史被当作 LLM 单句 prompt"导致的<strong>上下文污染 (Context Pollution)</strong> 问题，CMSL 提出"上下文工程"新范式：用可学习的多序列构造模块（K 个意图投影头 + 交叉注意力）把原始交互历史在潜空间解耦为 K 条主题一致的潜序列，再用线性时间注意力（SiLU 的二次多项式核近似 + 稀疏大项修正）分别建模，最后经 PMA 摘要与序列压缩回单序列以控制层间爆炸。在 Meta 四个大规模场景的离线 NE 上取得 0.06%–0.62% 的显著下降（&gt;0.03% 即统计显著），并在 surface 5 的 U2U 召回线上 A/B 四项指标全部显著正向（+0.092%~+0.171%）。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>现有序列推荐把用户历史当作 LLM 中的"一句话"做单体建模，但推荐数据缺乏文本的线性语义连贯性，多兴趣混杂导致 <strong>上下文污染 (Context Pollution)</strong>：无关行为争夺同一注意力预算、稀释高意图信号。CMSL 提出"上下文工程"范式——用可学习的多序列构造模块把原始历史在隐空间解耦为 <span class="arithmatex">\(K\)</span>条主题纯净的潜在序列，各自做自注意力，并用线性注意力近似 HSTU 注意力以控制<span class="arithmatex">\(K\)</span> 倍开销。在 Meta 四个十亿级 DAU 场景上，精排 NE 相对下降 0.31%–0.62%（&gt;0.03% 即显著），召回 A/B 四项指标提升 0.09%–0.17%。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 工业序列推荐已从 DLRM 类聚合类别特征范式（Covington 2016、DCN、DLRM）转向"history-as-prompt"范式——把用户交互历史编码为 item ID token 序列，送入自注意力骨干，将 next-item 预测视为自回归续写（HSTU、OneTrans、Longer、InterFormer、OneRec）。该范式统一、易扩展，且随模型规模与上下文长度增长而受益。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>结构统一性缺失</strong>：文本受严格句法与线性语义依赖约束，而用户数字足迹是"噪声马赛克"——重叠兴趣、探索性点击、误触混杂，item 间连贯性远弱于 LLM 训练语料。</li>
-<li><strong>注意力预算竞争</strong>：单序列建模中，无关行为与当前意图争夺同一注意力预算，语义干扰（如"编程教程"与"烹饪视频"被强制计算依赖）制造伪相关与表征瓶颈。</li>
-<li><strong>现有改进方向错位</strong>：HSTU 的 target-aware attention、OneTrans/Longer 的架构与效率优化、InterFormer 的异构特征融合，均在"单条 monolithic 序列"前提下增强注意力/融合/窗口，未触及污染根源。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 为何简单加深网络或常规对比学习无效？因为污染不是随机噪声而是<strong>语义干扰</strong>，增加深度只会让冲突意图在同一 softmax 上下文内继续竞争；且 item ID 是无显式语义的抽象 token，人工按主题切分历史不可行。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者用 Pilot Study（图 1a）证明：向用户历史注入低信号事件会降低性能，而专家驱动的去噪可提升性能；图 1b 进一步显示，即便仅由专家手工切成两条连贯序列，也优于单序列基线。由此提出关键问题——能否把用户历史不当作"待读取的原始 prompt"，而当作"待构造的上下文"？答案是在潜空间做<strong>隐式上下文工程 (Implicit Context Engineering)</strong>。</li>
+<li><strong>主流范式</strong>: HSTU、OneTrans、Longer、InterFormer、OneRec 等沿 LLM 路线，把用户历史表示为单一时间序 token 序列，靠更强的 target-aware 注意力、更长上下文窗口或异构特征融合来"从噪声里捞信号"。</li>
+<li><strong>前人局限</strong>: ① 文本有严格句法与线性语义依赖，而用户足迹是"噪声马赛克"——重叠兴趣、探索性点击、误触混杂，条目间连贯性远弱于 LLM 训练语料；② 单体注意力被迫在同一预算内调和冲突意图（如"编程教程"与"烹饪视频"），产生虚假相关与表征瓶颈，长异构历史上尤为严重。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 图 1(a) 的实证显示，向历史注入低信号事件会掉点，而专家手工去噪反而涨点；图 1(b) 进一步表明，即便仅由专家切成两条连贯序列，也已优于单序列基线——说明<strong>瓶颈不在注意力容量，而在上下文的组织方式</strong>。</li>
+<li><strong>本文切入点</strong>: 把"读一段原始 prompt"改为"构造上下文"：条目 ID 无显式语义、无法人工切分，故用可学习模块在隐空间做<strong>隐式上下文工程</strong>，按 query 自适应地生成多条上下文条件序列。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户 <span class="arithmatex">\(u\)</span> 的交互历史定义为多模态序列集合 <span class="arithmatex">\(\mathcal{X}=\{X^{(1)},X^{(2)},\dots,X^{(B)}\}\)</span>，其中 <span class="arithmatex">\(X^{(b)}=\{x^{(b)}_1,\dots,x^{(b)}_n\}\)</span> 对应一种交互模态（点击/点赞/评论等），<span class="arithmatex">\(n\)</span> 为序列长度，token 经共享 embedding 层映射到 <span class="arithmatex">\(d\)</span> 维。</li>
-<li>非序列特征分两类：稠密特征 <span class="arithmatex">\(v_{\text{dense}}\in\mathbb{R}^m\)</span> 经归一化与线性投影 <span class="arithmatex">\(S_{\text{dense}}=W_d\cdot\text{Norm}(v_{\text{dense}})\)</span>，<span class="arithmatex">\(W_d\in\mathbb{R}^{d\times m}\)</span>；稀疏特征 <span class="arithmatex">\(j\)</span> 各配 embedding 表 <span class="arithmatex">\(T_j\in\mathbb{R}^{V_j\times d}\)</span>，多值特征取 embedding 求和。</li>
-<li>多序列分组压缩：同 surface 的相关序列组 <span class="arithmatex">\(\mathcal{X}_g=\{X^{(1)},\dots,X^{(M)}\}\)</span> 先经序列专属 MLP 打分 <span class="arithmatex">\(s^{(m)}_i=\sigma(\text{MLP}^{(m)}(x^{(m)}_i))\)</span>，再加权求和压缩为单序列 <span class="arithmatex">\(\bar{X}=\sum_{m=1}^{M}(s^{(m)}\cdot X^{(m)})\in\mathbb{R}^{n\times d}\)</span>，以控制后续计算开销。</li>
-<li>输出：最终表征 <span class="arithmatex">\(H\)</span> 送入多任务头做 CTR/CVR 预测；召回侧输出用户 embedding 用于 U2U 检索。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：非序列特征经 K 个意图投影头解耦为 K 组上下文键值 <span class="arithmatex">\(\to\)</span> 以当前序列表征为 query 做交叉注意力构造 K 条潜序列 <span class="arithmatex">\(\to\)</span> 每条序列独立做线性时间自注意力 <span class="arithmatex">\(\to\)</span> PMA 摘要为定长向量并回流至下一层非序列特征 <span class="arithmatex">\(\to\)</span> 序列压缩回单序列 <span class="arithmatex">\(\to\)</span> 堆叠 <span class="arithmatex">\(N\)</span> 层 <span class="arithmatex">\(\to\)</span> 末层摘要拼接后接多任务头。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>输入分两路：非序列特征（稠密特征归一化后线性投影、稀疏特征查表求和）与按模态分组的多条行为序列（click/like/comment 等）。同组序列先经序列专属 MLP 打分做门控求和压缩为单条 <span class="arithmatex">\(\bar{X}=\sum_{m=1}^{M}(s^{(m)}\cdot X^{(m)})\)</span>，避免逐序列独立建模的开销。随后堆叠<span class="arithmatex">\(N\)</span>层 CMSL Block，每层依次执行：多序列构造（由非序列意图投影出<span class="arithmatex">\(K\)</span>组 K/V，对当前序列生成<span class="arithmatex">\(K\)</span> 条潜在序列）→ 每条序列内部独立自注意力 → PMA 摘要出定长向量回注下一层非序列特征 → 序列压缩回单条以防序列数逐层爆炸。末层摘要向量拼接后送入多任务头做 CTR/CVR 预测，同一用户表征亦可用于 U2U 召回。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 多模态交互序列 X + 稠密/稀疏非序列特征"] --&gt; B["序列分组门控压缩: 加权求和为单序列 X̄"]
-    A --&gt; C["K 个意图投影头: 非序列特征解耦为 K 组 Key/Value"]
-    B --&gt; D["多序列构造: 交叉注意力生成 K 条潜序列 X̃(l,k)"]
-    C --&gt; D
-    D --&gt; E["CMSL 线性注意力: 每条序列独立自注意力"]
-    E --&gt; F["序列摘要 PMA: 以 S(l,k) 为 query 池化为 h(l,k)"]
-    F --&gt; G["序列压缩: K 条拼接后 MLP 投影回单序列"]
-    G --&gt;|堆叠 N 层| D
-    F --&gt; H["最终融合: 末层 K 个摘要拼接"]
-    H --&gt; I["多任务头: CTR / CVR 预测 或 用户向量召回"]</code></pre>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>模块一：多序列构造 (Multi-Sequence Construction)</strong>。第 <span class="arithmatex">\(l\)</span> 层用 K 个投影头把非序列表征投影为 K 组上下文特定集合 <span class="arithmatex">\(S^{(l,k)}\)</span>，各自再投影为 key <span class="arithmatex">\(K_{l,k}\)</span> 与 value <span class="arithmatex">\(V_{l,k}\)</span>；对当前序列表征 <span class="arithmatex">\(\bar{X}\)</span> 投影得 query <span class="arithmatex">\(Q_l\)</span>，对每个 <span class="arithmatex">\((K_{l,k},V_{l,k})\)</span> 做多头注意力生成新序列 <span class="arithmatex">\(\tilde{X}^{(l,k)}\)</span>。物理直觉：同一段原始历史被 K 个"上下文透镜"重读，每个透镜只保留与某类意图相关的 token 权重，从而在进入自注意力前就完成意图分流，避免冲突意图共享 softmax 预算。这是与 HSTU 等 target-aware 单序列注意力的本质区别——后者仍在同一序列内竞争。</p>
-<p><strong>模块二：CMSL 线性注意力 (Linear-Time Attention)</strong>。HSTU 注意力无行归一化，形式为 <span class="arithmatex">\(\text{SiLU}(M\circ QK^\top)V\)</span>，其中 <span class="arithmatex">\(M\in\{0,1\}^{n\times n}\)</span> 为因果掩码。多序列构造使计算量再乘 K，故需线性化。作者利用 SiLU 的 Taylor 展开：
-$<span class="arithmatex">\(\text{SiLU}(x^\top y)\approx \tfrac{1}{2}(x^\top y)+\tfrac{1}{4}(x^\top y)^2-\tfrac{1}{48}(x^\top y)^4+\cdots\)</span>$
-并构造二次多项式核特征映射 <span class="arithmatex">\(\phi(x)=[x_1,\dots,x_d,x_1x_2,\dots,x_ix_j,\dots,x_dx_d]\in\mathbb{R}^{d^2+d}\)</span>，可证：
-$<span class="arithmatex">\(\phi(x)^\top\phi(y)\le \text{SiLU}(x^\top y)\le \phi(x)^\top\phi(y)+\mathcal{O}\big((x^\top y)^3\big)\)</span>$
-即 <span class="arithmatex">\(\text{SiLU}(QK^\top)V\approx \phi(Q)\phi(K)^\top V+AV\)</span>，其中 <span class="arithmatex">\(A\)</span> 为仅保留 <span class="arithmatex">\(QK^\top\)</span> 中大值的稀疏矩阵。前项用线性注意力（复杂度 <span class="arithmatex">\(O(n)\)</span>），后项借鉴 native sparse attention 的 kernel 捕获大值项。设计直觉：SiLU 的二次项主导中等相似度交互，可用核技巧线性化；而少数极大相似度项（强信号）若被核近似平滑会失真，故单独用稀疏路径精确保留。</p>
-<p><strong>模块三：序列摘要与压缩 (Summarization &amp; Compression)</strong>。用 PMA 以当前上下文非序列特征 <span class="arithmatex">\(S^{(l,k)}\)</span> 为 query、<span class="arithmatex">\(\bar{X}^{(l,k)}\)</span> 为 K/V 做池化：
-$<span class="arithmatex">\(h^{(l,k)}=\text{PMA}\big(Q=S^{(l,k)},\,K=\bar{X}^{(l,k)},\,V=\bar{X}^{(l,k)}\big)\)</span>$
-摘要向量 <span class="arithmatex">\(h^{(l,k)}\)</span> 作为下一层非序列特征的一部分，实现跨层上下文传播；同时显式摘要抑制原始序列噪声向深层传递。随后将 K 条序列拼接后 MLP 投影回单序列：
-$<span class="arithmatex">\(\bar{X}^{(l)}=\text{MLP}\big([\bar{X}^{(l-1,1)}\|\bar{X}^{(l-1,2)}\|\cdots\|\bar{X}^{(l-1,K)}]\big)\in\mathbb{R}^{n\times d}\)</span>$
-保证每层序列数恒为 1，避免 <span class="arithmatex">\(K^L\)</span> 爆炸，从而可堆叠 <span class="arithmatex">\(N\)</span> 层学习层次化交互。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 原文未给出显式损失公式，仅说明最终表征 <span class="arithmatex">\(H\)</span> 送入多任务头做 CTR/CVR 预测（工业多任务范式，推测为 BCE/多任务加权，<strong>原文未报告具体损失形式与权重</strong>）。</li>
-<li><strong>训练负采样策略</strong>: 原文未报告（工业排序任务通常为全曝光样本 + 多任务标签，召回侧 U2U 检索的负采样细节亦未披露）。</li>
-<li><strong>时间与空间复杂度</strong>: 单序列自注意力为 <span class="arithmatex">\(O(n^2d)\)</span>；CMSL 构造 K 条序列后若用标准注意力为 <span class="arithmatex">\(O(Kn^2d)\)</span>，线性注意力将其降至 <span class="arithmatex">\(O(Knd^2)\)</span>（核映射维度 <span class="arithmatex">\(d^2+d\)</span> 带来常数项，实际以自定义 kernel 优化）。序列压缩保证层间序列数不增长。训练侧：128 张 NVIDIA H100、混合精度、自定义 kernel，每实验 300–500 亿样本。推理侧：surface 2/3/4 采用两阶段架构，将长上下文 CMSL 卸载为<strong>异步上游用户模型</strong>，主排序路径仅消费其产出的用户 embedding，显著降低延迟；surface 1 直接训练 CMSL 排序模型。<strong>原文未报告单次推理延迟 (ms/request) 与峰值显存数值</strong>。</li>
-</ul>
+    A["非序列特征 + 分组压缩后的行为序列"] --&gt; B["多序列构造: K 个意图投影头生成 K/V"]
+    B --&gt; C["K 条序列各自线性注意力"]
+    C --&gt; D["PMA 摘要回注 + 序列压缩回单条"]
+    D --&gt;|堆叠 N 层| B
+    D --&gt; E["多任务头 CTR/CVR 与 U2U 召回表征"]</code></pre>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>意图感知的多序列构造 (Multi-Sequence Construction)</strong>：痛点是单体序列无法分离冲突意图。做法是用 <span class="arithmatex">\(K\)</span>个投影头把第<span class="arithmatex">\(l\)</span>层非序列表征切成<span class="arithmatex">\(K\)</span>组上下文集合<span class="arithmatex">\(S^{(l,k)}\)</span>，各自投影为<span class="arithmatex">\(K_{l,k},V_{l,k}\)</span>，再以当前序列表征为 query 做多头注意力生成<span class="arithmatex">\(\tilde{X}^{(l,k)}\)</span>。直觉是：非序列特征（场景、人口属性、实时上下文）承载"用户此刻处于哪种意图模式"的先验，用它作透镜去"重读"同一段历史，比在序列内部硬切分更可靠，且天然支持 query-time 自适应策展。</p>
+</li>
+<li>
+<p><strong>HSTU 注意力的线性化近似 (Linear-Time Attention)</strong>：痛点是 <span class="arithmatex">\(K\)</span>条序列使二次复杂度再乘<span class="arithmatex">\(K\)</span>。HSTU 注意力无行归一化，形式为<span class="arithmatex">\(\mathrm{SiLU}(M\circ QK^{\top})V\)</span>。作者利用 SiLU 的泰勒展开<span class="arithmatex">\(\mathrm{SiLU}(x^{\top}y)\approx\frac{1}{2}(x^{\top}y)+\frac{1}{4}(x^{\top}y)^2-\frac{1}{48}(x^{\top}y)^4+\cdots\)</span>，构造二次多项式核<span class="arithmatex">\(\phi(x)=[x_1,\dots,x_d,x_1x_2,\dots,x_ix_j,\dots,x_dx_d]\in\mathbb{R}^{d^2+d}\)</span>，得到双边界<span class="arithmatex">\(\phi(x)^{\top}\phi(y)\le\mathrm{SiLU}(x^{\top}y)\le\phi(x)^{\top}\phi(y)+O((x^{\top}y)^3)\)</span>。据此把注意力拆成线性项加稀疏大项：<span class="arithmatex">\(\mathrm{SiLU}(QK^{\top})V\approx\phi(Q)\phi(K)^{\top}V+AV\)</span>，其中<span class="arithmatex">\(A\)</span>仅保留<span class="arithmatex">\(QK^{\top}\)</span> 中的大条目（借鉴 native sparse attention 的核来捕获）。物理直觉：SiLU 的主导贡献来自低阶项，可用核技巧线性化；少数极端大条目单独走稀疏通路，既保住精度又把复杂度降到线性。</p>
+</li>
+<li>
+<p><strong>摘要与压缩的双向信息流 + 训练目标</strong>：PMA 以当前上下文 <span class="arithmatex">\(S^{(l,k)}\)</span>为 query 从序列中抽取与用户当前状态最相关的行为模式，<span class="arithmatex">\(h^{(l,k)}=\mathrm{PMA}(Q=S^{(l,k)},K=\bar{X}^{(l,k)},V=\bar{X}^{(l,k)})\)</span>，抑制冗余历史向下一层传播；压缩则用<span class="arithmatex">\(\bar{X}^{(l)}=\mathrm{MLP}([\bar{X}^{(l-1,1)}\|\cdots\|\bar{X}^{(l-1,K)}])\)</span>把<span class="arithmatex">\(K\)</span> 条并回一条，保证每层序列数恒为 1。总损失为多任务加权（CTR/CVR/评论/点赞等）的交叉熵之和，负样本沿用工业流式训练的自然曝光分布（无额外负采样设计），推理侧在 surface 2/3/4 采用<strong>两阶段异步架构</strong>：长上下文 CMSL 用户模型离线/异步产出用户 embedding，主排序路径只做轻量拼接，从而把重计算移出时延敏感链路。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文未使用公开学术基准，全部为 Meta 生产流量。<strong>原文未报告用户数/物品数/交互数/稀疏度等统计量</strong>，仅说明每实验从生产流量采样 300–500 亿样本，训练于 128×H100。</li>
+<li><strong>数据集与预处理</strong>: 全部为 Meta 生产流量，每实验采样 300–500 亿样本，128 张 H100 混合精度训练并配自定义 kernel。无公开数据集统计表（工业论文特性），序列按共享属性分组后门控压缩。</li>
 </ul>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
+<th style="text-align: left;">场景</th>
+<th style="text-align: left;">任务</th>
+<th style="text-align: left;">评估方式</th>
+<th style="text-align: left;">架构</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Meta Surface 1（排序）</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">300–500 亿训练样本</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">点击/点赞/评论多模态序列 + 稠密/稀疏特征</td>
+<td style="text-align: left;">Surface 1</td>
+<td style="text-align: left;">Comment / Like 参与预测</td>
+<td style="text-align: left;">离线 Train/Eval NE</td>
+<td style="text-align: left;">端到端直接训练 CMSL</td>
 </tr>
 <tr>
-<td style="text-align: left;">Meta Surface 2/3/4（两阶段排序）</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">同上</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">同上，CMSL 作为异步上游用户模型</td>
+<td style="text-align: left;">Surface 2/3/4</td>
+<td style="text-align: left;">CTR / CVR</td>
+<td style="text-align: left;">线上生产模型 Eval NE</td>
+<td style="text-align: left;">两阶段异步用户模型</td>
 </tr>
 <tr>
-<td style="text-align: left;">Meta Surface 5（U2U 召回）</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">同上</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">用户 embedding 用于 U2U 检索</td>
+<td style="text-align: left;">Surface 5</td>
+<td style="text-align: left;">U2U 召回</td>
+<td style="text-align: left;">线上 A/B 四项指标</td>
+<td style="text-align: left;">CMSL 用户 embedding</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 采用<strong>全局时间戳切分</strong>（生产流量按时间划分 train/eval，Table 1 同时报告 Train NE 与 Eval NE），符合工业防数据穿越惯例；具体切分比例<strong>原文未报告</strong>。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 排序任务用 <strong>NE (Normalized Entropy)</strong>，越小越好，作者强调 NE 在 Meta 内部与 A/B 指标高度一致，且 &gt;0.03% 的 NE 改进即视为统计显著。召回任务因离线-线上不一致性强，<strong>直接以线上 A/B 测试评估</strong>，不做离线采样排序。</li>
-<li><strong>评价指标与显著性检验</strong>: 排序 NE（Train/Eval）；召回为 4 项线上参与度指标（Metric 1–4，<strong>原文以匿名代号给出，未披露具体名称</strong>）。显著性以 NE 阈值 0.03% 与 A/B 统计显著为准；<strong>未报告多随机种子方差或配对检验细节</strong>。Embedding 维度 <span class="arithmatex">\(d\)</span>、层数 <span class="arithmatex">\(N\)</span>、序列数 <span class="arithmatex">\(K\)</span>、序列长度 <span class="arithmatex">\(n\)</span> 的具体取值<strong>原文均未报告</strong>。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 采用工业标准的<strong>时间切分</strong>（按样本时间先后划分训练/评估），未使用 Leave-One-Out 或比例随机划分。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 精排侧用 <strong>NE (Normalized Entropy)</strong>，越小越好，作者明确说明 Meta 内部 NE 与 A/B 指标高度一致，且 <strong>NE 改善 &gt;0.03% 即视为统计显著</strong>；召回侧因离线-线上一致性差，<strong>直接以线上 A/B 为准</strong>，不做离线采样排序。</li>
+<li><strong>对比基线与超参设置</strong>: 基线为各场景的<strong>生产环境强序列基线</strong>（HSTU 系单体序列模型），非公开学术基线；序列数 <span class="arithmatex">\(K\)</span>、层数<span class="arithmatex">\(N\)</span>、embedding 维度<span class="arithmatex">\(d\)</span>未在正文披露（工业保密），显著性以 NE 阈值判定而非<span class="arithmatex">\(p\)</span> 值检验。</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>原文未给出与传统/学术基线的同表对比，仅报告相对生产基线的 NE 变化（负值代表更优）：</p>
+<p>表 1：Surface 1 相对生产基线的 NE 变化（%，负值为改善）</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">数据集/场景</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">生产基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对变化</th>
+<th style="text-align: left;">任务</th>
+<th style="text-align: center;">Train NE</th>
+<th style="text-align: center;">Eval NE</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Surface 1 · Comment</td>
-<td style="text-align: left;">Train NE</td>
-<td style="text-align: center;">0（基线）</td>
-<td style="text-align: center;">-0.54%</td>
-<td style="text-align: center;">-0.54%</td>
+<td style="text-align: left;">Comment</td>
+<td style="text-align: center;"><strong>-0.54</strong></td>
+<td style="text-align: center;"><strong>-0.62</strong></td>
 </tr>
 <tr>
-<td style="text-align: left;">Surface 1 · Comment</td>
-<td style="text-align: left;">Eval NE</td>
-<td style="text-align: center;">0（基线）</td>
-<td style="text-align: center;">-0.62%</td>
-<td style="text-align: center;">-0.62%</td>
-</tr>
-<tr>
-<td style="text-align: left;">Surface 1 · Like</td>
-<td style="text-align: left;">Train NE</td>
-<td style="text-align: center;">0（基线）</td>
-<td style="text-align: center;">-0.31%</td>
-<td style="text-align: center;">-0.31%</td>
-</tr>
-<tr>
-<td style="text-align: left;">Surface 1 · Like</td>
-<td style="text-align: left;">Eval NE</td>
-<td style="text-align: center;">0（基线）</td>
-<td style="text-align: center;">-0.33%</td>
-<td style="text-align: center;">-0.33%</td>
-</tr>
-<tr>
-<td style="text-align: left;">Surface 2 · CTR / CVR</td>
-<td style="text-align: left;">Eval NE</td>
-<td style="text-align: center;">0（基线）</td>
-<td style="text-align: center;">-0.12% / -0.10%</td>
-<td style="text-align: center;">-0.12% / -0.10%</td>
-</tr>
-<tr>
-<td style="text-align: left;">Surface 3 · CTR / CVR</td>
-<td style="text-align: left;">Eval NE</td>
-<td style="text-align: center;">0（基线）</td>
-<td style="text-align: center;">-0.09% / -0.06%</td>
-<td style="text-align: center;">-0.09% / -0.06%</td>
-</tr>
-<tr>
-<td style="text-align: left;">Surface 4 · CTR / CVR</td>
-<td style="text-align: left;">Eval NE</td>
-<td style="text-align: center;">0（基线）</td>
-<td style="text-align: center;">-0.10% / -0.13%</td>
-<td style="text-align: center;">-0.10% / -0.13%</td>
+<td style="text-align: left;">Like</td>
+<td style="text-align: center;"><strong>-0.31</strong></td>
+<td style="text-align: center;"><strong>-0.33</strong></td>
 </tr>
 </tbody>
 </table>
-<p>召回侧 Surface 5 线上 A/B（U2U 检索，CMSL 用户 embedding）：Metric 1 <strong>+0.116%</strong>、Metric 2 <strong>+0.158%</strong>、Metric 3 <strong>+0.171%</strong>、Metric 4 <strong>+0.092%</strong>，四项均统计显著。</p>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p><strong>原文未提供标准消融表格</strong>。可提取的对照证据为图 1 的 Pilot Study：(a) 向历史注入低信号事件导致性能下降、专家去噪带来提升，佐证上下文污染真实存在；(b) 专家手工切成两条连贯序列即优于单序列基线，佐证多序列构造方向有效。但 K 值、线性注意力 vs. 精确 HSTU 注意力、PMA 摘要、序列压缩等模块的逐项消融<strong>均未报告</strong>，亦未做参数量对齐或图度数匹配类控制变量。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
+<p>表 2：Surface 2/3/4 注入 CMSL 用户 embedding 后的 Eval NE 变化（%）</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">场景</th>
+<th style="text-align: center;">CTR</th>
+<th style="text-align: center;">CVR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Surface 2</td>
+<td style="text-align: center;"><strong>-0.12</strong></td>
+<td style="text-align: center;"><strong>-0.10</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Surface 3</td>
+<td style="text-align: center;"><strong>-0.09</strong></td>
+<td style="text-align: center;"><strong>-0.06</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Surface 4</td>
+<td style="text-align: center;"><strong>-0.10</strong></td>
+<td style="text-align: center;"><strong>-0.13</strong></td>
+</tr>
+</tbody>
+</table>
+<p>表 3：Surface 5 U2U 召回线上 A/B（相对提升）</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Metric 1</th>
+<th style="text-align: center;">Metric 2</th>
+<th style="text-align: center;">Metric 3</th>
+<th style="text-align: center;">Metric 4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>+0.116%</strong></td>
+<td style="text-align: center;"><strong>+0.158%</strong></td>
+<td style="text-align: center;"><strong>+0.171%</strong></td>
+<td style="text-align: center;"><strong>+0.092%</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<p>原文<strong>未提供标准消融表</strong>，仅以图 1 的动机实验替代组件级验证：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">配置</th>
+<th style="text-align: left;">效果趋势</th>
+<th style="text-align: left;">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">单序列基线</td>
+<td style="text-align: left;">基准</td>
+<td style="text-align: left;">单体历史 + 标准注意力</td>
+</tr>
+<tr>
+<td style="text-align: left;">注入低信号事件</td>
+<td style="text-align: left;">下降</td>
+<td style="text-align: left;">直接印证上下文污染</td>
+</tr>
+<tr>
+<td style="text-align: left;">专家手工切两条连贯序列</td>
+<td style="text-align: left;">优于基线</td>
+<td style="text-align: left;">证明"构造"本身有效，与具体模块无关</td>
+</tr>
+<tr>
+<td style="text-align: left;">完整 CMSL（可学习 <span class="arithmatex">\(K\)</span> 序列）</td>
+<td style="text-align: left;">最优（表 1–3）</td>
+<td style="text-align: left;">隐式上下文工程替代人工切分</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>收益随任务"意图纯度"变化</strong>：Comment 任务 NE 改善 -0.62%，显著大于 Like 的 -0.33%，说明评论行为背后意图更集中、解耦后纯度提升更大；而点赞本身噪声高、多意图混杂，解耦红利被摊薄。</li>
+<li><strong>两阶段异步部署几乎不损失信号</strong>：把 CMSL 移出主排序链路后，Surface 2/3/4 的 CTR/CVR 仍稳定取得 -0.06% 至 -0.13% 的 NE 改善，全部超过 0.03% 显著阈值，证明长上下文用户建模可以"离线重算、在线轻拼"而不牺牲效果。</li>
+<li><strong>召回侧泛化成立</strong>：同一套用户表征迁移到 U2U 召回，四项线上指标全部显著为正（最高 +0.171%），说明多序列解耦学到的是可迁移的用户意图结构，而非仅拟合精排标签。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>用户/物品交互频次分桶表现</strong>: 原文未报告长尾/冷启动分桶分析。</li>
-<li><strong>关键超参数敏感度</strong>: 序列数 <span class="arithmatex">\(K\)</span>、层数 <span class="arithmatex">\(N\)</span>、核映射维度、稀疏注意力阈值等均<strong>未报告敏感度分析</strong>。</li>
-<li><strong>线上 A/B 测试结果</strong>: 有。Surface 5 U2U 召回线上 A/B 四项参与度指标全部显著正向（+0.092%~+0.171%）；Surface 2/3/4 以两阶段异步架构在线评估 NE 收益（-0.06%~-0.13%）。具体实验周期、流量占比、CTR/CVR/GMV/留存等业务指标<strong>原文未披露</strong>。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>问题重构有价值</strong>："上下文污染"从 LLM 迁移到序列推荐，并用 Pilot Study 量化验证，为长异构历史建模提供了新诊断视角。</li>
-<li><strong>隐式上下文工程算子可迁移</strong>：K 头意图投影 + 交叉注意力构造潜序列的"查询时自适应切分"不依赖 item 语义，可迁移到多兴趣召回、会话推荐、跨域序列建模。</li>
-<li><strong>线性注意力近似有理论支撑</strong>：基于 SiLU Taylor 展开的二次核上下界（式 4）+ 稀疏大项修正，是工业级 HSTU 加速的实用方案，可独立复用于其他 SiLU 注意力骨干。</li>
-<li><strong>序列压缩控制层间爆炸</strong>的设计简洁有效，是深层多序列堆叠的必要工程约束。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议不可复现</strong>：无公开数据集、无基线同表对比、无数据集统计量、无超参与架构细节（<span class="arithmatex">\(d\)</span>、<span class="arithmatex">\(N\)</span>、<span class="arithmatex">\(K\)</span>、<span class="arithmatex">\(n\)</span> 全缺），学术审稿视角下可复现性极低；NE 与匿名 Metric 1–4 使结论难以外部核验。</li>
-<li><strong>消融缺失</strong>：核心模块（多序列构造、线性注意力、PMA、压缩）无逐项消融，无法判断收益来自"多序列"还是"更深/更大模型"；未做参数量对齐，存在容量混淆风险。</li>
-<li><strong>理论近似落差</strong>：式 4 仅给出上下界，<span class="arithmatex">\(\mathcal{O}((x^\top y)^3)\)</span> 误差项在长序列高相似度场景的累积影响未分析；稀疏大项 kernel 的召回率与阈值选择未披露。</li>
-<li><strong>K 的语义可解释性未验证</strong>：K 条潜序列是否真对应可辨识主题（如"职业学习"vs"娱乐"）缺乏可视化或探针实验，"纯主题 strand"更多是动机叙事而非实证结论。</li>
-<li><strong>两阶段异步架构的收益归因不清</strong>：Surface 2/3/4 的 NE 增益混合了 CMSL 表征质量与异步用户模型带来的信息时序差，二者未解耦。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: HSTU 用 target-aware 注意力在<strong>单序列内部</strong>挑相关历史，OneTrans/Longer 靠架构与效率扩展上下文窗口，InterFormer 靠异构特征融合增强表达——三者都在"如何更好地读同一条序列"上加码；CMSL 则换瓶颈，在注意力之前<strong>先把一条序列构造成多条</strong>，属于正交且可叠加的改进。相较 SGL/SimGCL 类对比学习增广，本文的"多视图"不是训练期正则，而是推理期真实的多路前向结构。</li>
+<li><strong>可迁移亮点</strong>: ① 用非序列上下文作 query 生成 K/V 去"重读"历史的构造范式，可直接移植到多场景/跨域序列建模；② SiLU 泰勒展开 + 稀疏大项补偿的线性化思路，对任何无行归一化的注意力变体（如 HSTU 系工业 backbone）都适用。</li>
+<li><strong>审稿级局限批判</strong>: ① <strong>可复现性薄弱</strong>——无公开数据集、无开源代码、<span class="arithmatex">\(K\)</span>/<span class="arithmatex">\(N\)</span>/<span class="arithmatex">\(d\)</span>与基线细节均未披露，表 1–3 仅有相对 NE 变化而无绝对值，学术侧无法独立验证；② <strong>缺少组件级消融与复杂度实测</strong>，线性注意力近似误差<span class="arithmatex">\(O((x^{\top}y)^3)\)</span>的实际影响、<span class="arithmatex">\(K\)</span>的敏感度曲线、以及<span class="arithmatex">\(K\)</span> 倍构造带来的显存/吞吐开销均未量化，仅以"已上线"作为工程可行性论据。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐（问题视角与线性注意力近似有巧思，但多兴趣/多序列思路在学术界已有先声）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐（工业规模真实但完全不可复现，无公开基准、无消融、无统计细节）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐（动机与架构叙述清晰，但关键超参、损失、复杂度数值大量缺失）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐（四场景 + 召回线上验证，线性注意力 kernel 与两阶段异步架构对工业界有直接参考价值；但无开源代码，复现门槛高）</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （"从建模序列到构造上下文"的范式转换清晰有力，多序列构造 + SiLU 核线性化组合新颖，但缺少理论层面的解耦可辨识性分析）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （十亿级工业数据与线上 A/B 极具说服力，但无公开数据集、无标准消融表、无绝对值指标，学术可检验性偏弱）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （上下文污染的动机论证与图 1 实证到位，线性注意力近似推导链条完整；但关键超参与基线定义留白较多）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （四场景精排 + 召回全链路落地、两阶段异步架构对时延友好，工程价值极高；可惜未开源，复现门槛高）</li>
 </ul>
 
 

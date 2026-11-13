@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4231,7 +4242,7 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>映射级探针族 D1–D5（把"地址空间质量"拆成可测信号）</strong>：痛点在于单一排序分数无法定位工件缺陷。记物品 <span class="arithmatex">\(i\)</span> 的码序列 <span class="arithmatex">\(z(i)=(z_1(i),\dots,z_L(i))\)</span>，层级前缀 <span class="arithmatex">\(p_\ell(i)\)</span>，全码别名集 <span class="arithmatex">\(A(c)=\{i\in\mathcal{I}: z(i)=c\}\)</span>。D1 利用率报告逐层使用、前缀计数与死码；D2 别名率定义为落入非单例全码桶的物品比例（注意是"物品在别名集中"的画像，而非重复码值个数）；D3 邻域对齐在训练交互上取每物品 top-<span class="arithmatex">\(k\)</span> 有向邻居，统计共享 <span class="arithmatex">\(p_\ell(i)\)</span> 的比例，按边加权平均；D4 按热度分头/中/尾统计全码容量与前缀结构分配；D5 报告 SID 长度、前缀扇出与 trie 式扩张压力。直觉：这些量都是映射的纯函数，无需训练生成器即可暴露结构性缺陷。</p>
+<p><strong>映射级探针族 D1–D5（把"地址空间质量"拆成可测信号）</strong>：痛点在于单一排序分数无法定位工件缺陷。记物品 <span class="arithmatex">\(i\)</span>的码序列<span class="arithmatex">\(z(i)=(z_1(i),\dots,z_L(i))\)</span>，层级前缀<span class="arithmatex">\(p_\ell(i)\)</span>，全码别名集<span class="arithmatex">\(A(c)=\{i\in\mathcal{I}: z(i)=c\}\)</span>。D1 利用率报告逐层使用、前缀计数与死码；D2 别名率定义为落入非单例全码桶的物品比例（注意是"物品在别名集中"的画像，而非重复码值个数）；D3 邻域对齐在训练交互上取每物品 top-<span class="arithmatex">\(k\)</span>有向邻居，统计共享<span class="arithmatex">\(p_\ell(i)\)</span> 的比例，按边加权平均；D4 按热度分头/中/尾统计全码容量与前缀结构分配；D5 报告 SID 长度、前缀扇出与 trie 式扩张压力。直觉：这些量都是映射的纯函数，无需训练生成器即可暴露结构性缺陷。</p>
 </li>
 <li>
 <p><strong>解释指南与机制探针（把信号转成"下一步检查动作"）</strong>：作者明确拒绝通用 pass/fail 阈值，表 1 为每个探针指定后续动作（如 D2 高 → 按热度与共现拆分别名组；D5 大 → 先固定宇宙结构再测服务栈延迟）。同时设计受控机制探针验证探针确实对已知机制敏感：交互限定别名探针中，哈希碰撞的共享用户提升为 1.19x，而共现行升至 3.86x；头部预留容量使头部唯一率 1.000 而尾部唯一率压至 0.028；变长深度下最大深度计数 12,010 对应实际生效 7,914。</p>
@@ -4402,12 +4413,18 @@
 <li><strong>零别名不等于好地址空间</strong>：ReSID/GAOQ 与类别前缀控制组都做到 D2=0.000，但 D3 分别为 0.154 与 0.447，确定性类别前缀反而恢复更多 level-1 共现邻居——学习式或物品唯一地址并不自动带来行为对齐，这是仅看下游分数无法发现的缺口。</li>
 <li><strong>D3 尺度强依赖数据集，但可作为暴露侧代理</strong>：All_Beauty 上类别前缀控制达 0.968，而 GRID 特征文本行仅 0.081–0.090（seed 42–44）；固定重排器探针显示 D3 与 level-1 前缀候选召回秩相关为 Musical 0.976、All_Beauty 1.000，<span class="arithmatex">\(K=20\)</span> 下 Recall/NDCG 秩相关为 0.970/0.952 与 0.657/0.657，故 D3 应相对同数据集控制组解读，且只指示候选暴露而非最终排序质量。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 TIGER 等只报告下游生成指标的工作，本文把被检对象前移到"导出映射"这一工件边界；相比 RecList、Elliot 等评测资源，它不评模型而是评地址空间；相比碰撞感知评测，它把别名、利用率、对齐、分配、结构成本拆成互不替代的五个探针，并显式区分"容量"与"行为对齐"。</li>
 <li><strong>可迁移亮点</strong>: 其一，"适配器 + 校验门 + 探针"的三段式契约可直接迁移到 embedding 量化码本、多模态离散 token 等其他工件审计；其二，用确定性控制组（类别前缀、哈希碰撞）校准指标量纲的做法，值得在缺乏绝对阈值的诊断类工作中推广。</li>
 <li><strong>审稿级局限批判</strong>: 其一，D2 只是映射画像而非因果伤害证据，D3 与固定重排器探针只测候选暴露，D5 不是服务延迟模型，D7 仅有输入钩子无实证结果，结论边界较窄；其二，主对比仅一个同物品数据集（Musical），GRID 行为受控复现而非端到端复现，且相关性分析基于 6–8 行的小样本，作者亦承认非总体估计。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

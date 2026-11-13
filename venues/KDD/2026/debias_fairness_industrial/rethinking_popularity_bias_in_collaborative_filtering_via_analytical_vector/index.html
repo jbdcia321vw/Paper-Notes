@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,20 +4220,20 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/LingFeng-Liu-AI/DDC">https://github.com/LingFeng-Liu-AI/DDC</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>本文指出流行度偏差并非外部混淆因子，而是 BPR 成对排序优化在嵌入空间留下的<strong>内在几何伪影</strong>：物品嵌入沿一条主导“流行度方向” <span class="arithmatex">\(e_{pop}\)</span> 排列，投影幅度与交互频次近乎线性相关（Pearson <span class="arithmatex">\(r=0.99\)</span>）。据此提出 DDC——冻结预训练嵌入，仅学习每用户两个标量 <span class="arithmatex">\(\alpha_u,\beta_u\)</span>，让正样本更新只沿个性化偏好方向 <span class="arithmatex">\(e_{pref}\)</span>、负样本更新只沿 <span class="arithmatex">\(e_{pop}\)</span> 反向校准。在 Amazon-Book/Yelp/Tmall 三数据集、5 个 BPR 骨干上，MRR@10 相对提升 6.0%–29.3%，同时 AvgPop@10 下降 21.4%–47.2%，训练 BPR 损失降至基线的 1.5%–1.8%。</p>
+<p>本文指出流行度偏差并非外部混淆因子，而是 BPR 成对排序优化在嵌入空间留下的<strong>内在几何伪影</strong>：物品嵌入沿一条主导“流行度方向” <span class="arithmatex">\(e_{pop}\)</span>排列，投影幅度与交互频次近乎线性相关（Pearson<span class="arithmatex">\(r=0.99\)</span>）。据此提出 DDC——冻结预训练嵌入，仅学习每用户两个标量<span class="arithmatex">\(\alpha_u,\beta_u\)</span>，让正样本更新只沿个性化偏好方向<span class="arithmatex">\(e_{pref}\)</span>、负样本更新只沿<span class="arithmatex">\(e_{pop}\)</span> 反向校准。在 Amazon-Book/Yelp/Tmall 三数据集、5 个 BPR 骨干上，MRR@10 相对提升 6.0%–29.3%，同时 AvgPop@10 下降 21.4%–47.2%，训练 BPR 损失降至基线的 1.5%–1.8%。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 隐式反馈 CF（MF、LightGCN、DGCF、NCL、LightCCF）几乎统一用 BPR 损失训练，最终打分均为内积 <span class="arithmatex">\(\hat y_{ui}=e_u^\top e_i\)</span>。</li>
 <li><strong>前人局限</strong>: IPS 重加权、DICE/MACR 因果解耦、正则惩罚等宏观方法把流行度偏差当作<strong>外部混淆因子</strong>处理，只治症状；且 IPS/MACR 在本文实验中甚至低于原始 BPR（如 MF-IPS 在 Yelp 上 MRR@10 仅 0.0283 vs. BPR 0.0588），说明重加权假设本身不稳。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 作者发现 BPR 的梯度期望 <span class="arithmatex">\(\mathbb{E}[\Delta e_i]\propto Pop(i)\cdot\mathbb{E}_{u\in\mathcal{U}_i^+}[e_u]\)</span>——热门物品被大量多样用户拉动，其平均用户嵌入依大数定律收敛到<strong>全局均值用户方向</strong>，于是流行度被直接编码为隐空间主轴；冷门物品则被小众用户拉向各自特异方向。图 1 的二维投影与 <span class="arithmatex">\(r=0.99\)</span> 线性拟合定量证实了这一点。</li>
-<li><strong>本文切入点</strong>: 既然偏差源于 BPR 让<strong>同一个</strong> <span class="arithmatex">\(e_u\)</span> 同时承担“表达偏好”与“校准流行度”两个冲突任务，就放松 <span class="arithmatex">\(e_u^{pos}=e_u^{neg}\)</span> 的约束，做方向解耦。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 作者发现 BPR 的梯度期望 <span class="arithmatex">\(\mathbb{E}[\Delta e_i]\propto Pop(i)\cdot\mathbb{E}_{u\in\mathcal{U}_i^+}[e_u]\)</span>——热门物品被大量多样用户拉动，其平均用户嵌入依大数定律收敛到<strong>全局均值用户方向</strong>，于是流行度被直接编码为隐空间主轴；冷门物品则被小众用户拉向各自特异方向。图 1 的二维投影与<span class="arithmatex">\(r=0.99\)</span> 线性拟合定量证实了这一点。</li>
+<li><strong>本文切入点</strong>: 既然偏差源于 BPR 让<strong>同一个</strong> <span class="arithmatex">\(e_u\)</span>同时承担“表达偏好”与“校准流行度”两个冲突任务，就放松<span class="arithmatex">\(e_u^{pos}=e_u^{neg}\)</span> 的约束，做方向解耦。</li>
 </ul>
 <figure class="paper-figure">
   <img alt="图 1：BPR 类 CF 模型中流行度偏差的几何可视化与量化。(a) BPR 类 CF 模型物品嵌入的二维投影。嵌入沿主导流行度方向（e𝑝𝑜𝑝）呈结构化组织。(b) 物品嵌入在 e𝑝𝑜𝑝 上的投影幅度与其实际流行度呈近乎完美的线性相关（Pearson r=0.99），定量证实了该几何偏差。" src="../../../../../assets/papers/2512.10688v6/figure_1.png" /><figcaption>图 1：BPR 类 CF 模型中流行度偏差的几何可视化与量化。(a) BPR 类 CF 模型物品嵌入的二维投影。嵌入沿主导流行度方向（e𝑝𝑜𝑝）呈结构化组织。(b) 物品嵌入在 e𝑝𝑜𝑝 上的投影幅度与其实际流行度呈近乎完美的线性相关（Pearson r=0.99），定量证实了该几何偏差。</figcaption>
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>DDC 是一个<strong>与模型无关的轻量微调阶段</strong>：先正常训练任意 BPR 骨干至收敛并冻结其用户/物品嵌入 <span class="arithmatex">\(e_{u,orig},e_i^*\)</span>；再离线构造两个方向——全局流行度方向 <span class="arithmatex">\(e_{pop}\)</span>（高/低流行度物品质心之差）与每用户个性化偏好方向 <span class="arithmatex">\(e_{pref}^u\)</span>（其历史中预训练打分 top-<span class="arithmatex">\(k\)</span> 物品嵌入的均值）；随后仅优化每用户两个标量 <span class="arithmatex">\((\alpha_u,\beta_u)\)</span>，把正/负项分别投影到偏好/流行度轴上重算 BPR；推理时用 <span class="arithmatex">\(e_u^{final}=e_{u,orig}+\alpha_u^*e_{pop}+\beta_u^*e_{pref}^u\)</span> 与冻结物品嵌入做内积排序，不增加任何维度。</p>
+<p>DDC 是一个<strong>与模型无关的轻量微调阶段</strong>：先正常训练任意 BPR 骨干至收敛并冻结其用户/物品嵌入 <span class="arithmatex">\(e_{u,orig},e_i^*\)</span>；再离线构造两个方向——全局流行度方向<span class="arithmatex">\(e_{pop}\)</span>（高/低流行度物品质心之差）与每用户个性化偏好方向<span class="arithmatex">\(e_{pref}^u\)</span>（其历史中预训练打分 top-<span class="arithmatex">\(k\)</span>物品嵌入的均值）；随后仅优化每用户两个标量<span class="arithmatex">\((\alpha_u,\beta_u)\)</span>，把正/负项分别投影到偏好/流行度轴上重算 BPR；推理时用<span class="arithmatex">\(e_u^{final}=e_{u,orig}+\alpha_u^*e_{pop}+\beta_u^*e_{pref}^u\)</span> 与冻结物品嵌入做内积排序，不增加任何维度。</p>
 <pre class="mermaid"><code>flowchart TD
     A["预训练 BPR 骨干 (MF/LightGCN/DGCF/NCL/LightCCF) 收敛并冻结嵌入"] --&gt; B["构造 e_pop: 高/低流行度物品质心差"]
     A --&gt; C["构造 e_pref^u: 用户历史 top-k 打分物品均值"]
@@ -4233,15 +4244,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>流行度方向与偏好方向的解析构造</strong>：痛点是没有显式“偏差向量”可扣。作者用 <span class="arithmatex">\(\rho=5\%\)</span> 头尾物品质心差定义 <span class="arithmatex">\(e_{pop}=\frac{v_{diff}}{\|v_{diff}\|}\)</span>，<span class="arithmatex">\(v_{diff}=\frac{1}{|\mathcal{I}_{head}|}\sum_{i\in head}e_i-\frac{1}{|\mathcal{I}_{tail}|}\sum_{i\in tail}e_i\)</span>；偏好方向取用户历史中预训练打分 top-<span class="arithmatex">\(k\)</span> 比例物品的嵌入均值并归一化。直觉：前者是 BPR 梯度期望的稳定吸引子，后者用<strong>真实交互行为</strong>而非模型推荐来锚定偏好，避免被偏差二次污染。</p>
+<p><strong>流行度方向与偏好方向的解析构造</strong>：痛点是没有显式“偏差向量”可扣。作者用 <span class="arithmatex">\(\rho=5\%\)</span>头尾物品质心差定义<span class="arithmatex">\(e_{pop}=\frac{v_{diff}}{\|v_{diff}\|}\)</span>，<span class="arithmatex">\(v_{diff}=\frac{1}{|\mathcal{I}_{head}|}\sum_{i\in head}e_i-\frac{1}{|\mathcal{I}_{tail}|}\sum_{i\in tail}e_i\)</span>；偏好方向取用户历史中预训练打分 top-<span class="arithmatex">\(k\)</span> 比例物品的嵌入均值并归一化。直觉：前者是 BPR 梯度期望的稳定吸引子，后者用<strong>真实交互行为</strong>而非模型推荐来锚定偏好，避免被偏差二次污染。</p>
 </li>
 <li>
 <p><strong>非对称方向校正（核心创新）</strong>：痛点在于标准 BPR 梯度 <span class="arithmatex">\(\nabla_{e_u}\mathcal{L}=-w_{uij}(e_i-e_j)\)</span> 中正项被热门物品“污染”、负项被全局流行度主导，二者混在同一更新里。DDC 改写为
 $<span class="arithmatex">\(\mathcal{L}_{DDC}=\sum_{(u,i,j)}-\ln\sigma\big((e_{u,orig}+\beta_u e_{pref}^u)^\top e_i^*-(e_{u,orig}+\alpha_u e_{pop})^\top e_j^*\big)\)</span>$
-即正项只许沿 <span class="arithmatex">\(e_{pref}\)</span> 动、负项只许沿 <span class="arithmatex">\(e_{pop}\)</span> 动。直觉：<span class="arithmatex">\(\beta_u\)</span> 的梯度只依赖正样本对齐，<span class="arithmatex">\(\alpha_u\)</span> 的梯度只依赖负样本校准，两个子问题彻底解耦，优化景观从“折中妥协”变为“各司其职”，故能跳出 BPR 的次优局部极小。</p>
+即正项只许沿 <span class="arithmatex">\(e_{pref}\)</span>动、负项只许沿<span class="arithmatex">\(e_{pop}\)</span>动。直觉：<span class="arithmatex">\(\beta_u\)</span>的梯度只依赖正样本对齐，<span class="arithmatex">\(\alpha_u\)</span> 的梯度只依赖负样本校准，两个子问题彻底解耦，优化景观从“折中妥协”变为“各司其职”，故能跳出 BPR 的次优局部极小。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：损失即上式（含 L2 正则），负采样沿用骨干原有策略（每正样本 1 个均匀负样本），<strong>无需难负采样</strong>；可学习参数仅 <span class="arithmatex">\(2|\mathcal{U}|\)</span> 个标量，微调收敛极快（Yelp 上 LightGCN 损失从 1.5055 降至 0.0267）。推理时 <span class="arithmatex">\(e_u^{final}\)</span> 可离线预计算，在线开销与原始内积检索完全一致，无额外延迟。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：损失即上式（含 L2 正则），负采样沿用骨干原有策略（每正样本 1 个均匀负样本），<strong>无需难负采样</strong>；可学习参数仅 <span class="arithmatex">\(2|\mathcal{U}|\)</span>个标量，微调收敛极快（Yelp 上 LightGCN 损失从 1.5055 降至 0.0267）。推理时<span class="arithmatex">\(e_u^{final}\)</span> 可离线预计算，在线开销与原始内积检索完全一致，无额外延迟。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4289,7 +4300,7 @@ $<span class="arithmatex">\(\mathcal{L}_{DDC}=\sum_{(u,i,j)}-\ln\sigma\big((e_{u
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 采用 RecBole 默认的 <code>比例划分</code>（训练/验证/测试），以验证集 MRR@10 早停（50 轮不升即停），取验证最优模型测测试集。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 采用无偏 <code>Full-Ranking</code>（全库未交互物品排序），指标 Recall@10 / NDCG@10 / MRR@10 / MAP@10，另加 AvgPop@10 度量推荐物品平均流行度。</li>
-<li><strong>对比基线与超参设置</strong>: 骨干 5 个（MF、LightGCN、DGCF、NCL、LightCCF）；去偏基线 7 个（IPS、DICE、MACR、PC、PAAC、DCCL、TPAB），统一在 RecBole 框架、batch=8192、<span class="arithmatex">\(d=64\)</span> 下网格搜索调参；DDC 主实验统一取 <span class="arithmatex">\(k=30\%\)</span>，未做逐数据集调参。</li>
+<li><strong>对比基线与超参设置</strong>: 骨干 5 个（MF、LightGCN、DGCF、NCL、LightCCF）；去偏基线 7 个（IPS、DICE、MACR、PC、PAAC、DCCL、TPAB），统一在 RecBole 框架、batch=8192、<span class="arithmatex">\(d=64\)</span>下网格搜索调参；DDC 主实验统一取<span class="arithmatex">\(k=30\%\)</span>，未做逐数据集调参。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4492,12 +4503,18 @@ $<span class="arithmatex">\(\mathcal{L}_{DDC}=\sum_{(u,i,j)}-\ln\sigma\big((e_{u
 <li><strong>精度与去偏同向而非权衡</strong>：Tmall 上 LightCCF-DDC 在 MRR@10 提升 6.0% 的同时 AvgPop@10 从 1565.37 降至 826.54（-47.2%），LightGCN-DDC 降 39.1%；说明 DDC 不是用新颖性换相关性，而是把模型从流行度驱动的局部极小中解放出来。</li>
 <li><strong>收敛速度揭示几何根源</strong>：Yelp 上 LightGCN 基线 929 轮收敛于损失 1.5055，DDC 微调后降至 0.0267（约 1.8%）；Amazon 上 MF 从 1.2922 降至 0.0191（1.5%）。损失骤降对应 MRR@10 快速超越基线峰值，直接佐证 BPR 原解确为几何偏差造成的次优驻点。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 IPS/DICE/MACR 等宏观重加权或因果解耦方法相比，DDC 不假设外部混淆结构、不引入复杂训练管线，而是直接在嵌入几何层面动刀；与 SGL/SimGCL 等对比学习“追求均匀性”的间接去偏相比，DDC 是<strong>定向</strong>校正单一流行度主轴，参数仅 <span class="arithmatex">\(2|\mathcal{U}|\)</span> 个标量，且可插拔于任意已收敛 BPR 模型。</li>
 <li><strong>可迁移亮点</strong>: (1) “冻结骨干 + 每用户少量标量沿预定义方向微调”是一种极低成本的后处理范式，可迁移到时序去偏、位置去偏等其它已知偏差轴；(2) 用头尾质心差构造偏差方向的做法简单可复用，无需因果图或倾向分估计。</li>
-<li><strong>审稿级局限批判</strong>: (1) <span class="arithmatex">\(e_{pref}^u\)</span> 依赖预训练模型打分选 top-<span class="arithmatex">\(k\)</span>，若骨干偏差极重则偏好方向本身被污染，<span class="arithmatex">\(k\)</span> 的敏感性（MF 最优 0.5、LightGCN 最优 0.3）说明该超参需逐场景调，削弱“免调参”卖点；(2) 实验仅在三个中等规模公开集、<span class="arithmatex">\(d=64\)</span> 下验证，缺少工业级千万物品全库检索的延迟/内存实测与线上 A/B，且未讨论多方向偏差（如位置偏差与流行度耦合）共存时的可分解性。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: (1) <span class="arithmatex">\(e_{pref}^u\)</span>依赖预训练模型打分选 top-<span class="arithmatex">\(k\)</span>，若骨干偏差极重则偏好方向本身被污染，<span class="arithmatex">\(k\)</span>的敏感性（MF 最优 0.5、LightGCN 最优 0.3）说明该超参需逐场景调，削弱“免调参”卖点；(2) 实验仅在三个中等规模公开集、<span class="arithmatex">\(d=64\)</span> 下验证，缺少工业级千万物品全库检索的延迟/内存实测与线上 A/B，且未讨论多方向偏差（如位置偏差与流行度耦合）共存时的可分解性。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

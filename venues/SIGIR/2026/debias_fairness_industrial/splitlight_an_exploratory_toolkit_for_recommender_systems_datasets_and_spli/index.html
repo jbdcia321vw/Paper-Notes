@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 开源数据审计工具，量化过滤/重复/冷启动/切分策略对离线评估的影响，诊断时间泄露与分布漂移。">
+        <meta name="description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 开源数据集与划分审计工具箱，量化时间泄漏、冷启动暴露、重复消费与分布漂移，揭示预处理决策可使 NDCG@10 变动 1.2%–60%。">
       
       
       
@@ -108,20 +108,20 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 去偏公平、可信隐私与工业架构, 离线评估协议与数据切分, 数据审计工具, 时间泄露诊断, 冷启动与分布漂移" />
+<meta name="keywords" content="SIGIR 2026, 去偏公平、可信隐私与工业架构, 评测协议与数据审计, 数据划分, 时间泄漏, 冷启动暴露" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
 
 <meta property="article:tag" content="去偏公平、可信隐私与工业架构" />
 
-<meta property="article:tag" content="离线评估协议与数据切分" />
+<meta property="article:tag" content="评测协议与数据审计" />
 
-<meta property="article:tag" content="数据审计工具" />
+<meta property="article:tag" content="数据划分" />
 
-<meta property="article:tag" content="时间泄露诊断" />
+<meta property="article:tag" content="时间泄漏" />
 
-<meta property="article:tag" content="冷启动与分布漂移" />
+<meta property="article:tag" content="冷启动暴露" />
 
 
 
@@ -131,10 +131,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/splitlight_an_exploratory_toolkit_for_recommender_systems_datasets_and_spli/" />
 <meta property="og:title" content="[Paper Note] SplitLight: An Exploratory Toolkit for Recommender Systems Datasets and Splits" />
-<meta property="og:description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 开源数据审计工具，量化过滤/重复/冷启动/切分策略对离线评估的影响，诊断时间泄露与分布漂移。" />
+<meta property="og:description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 开源数据集与划分审计工具箱，量化时间泄漏、冷启动暴露、重复消费与分布漂移，揭示预处理决策可使 NDCG@10 变动 1.2%–60%。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] SplitLight: An Exploratory Toolkit for Recommender Systems Datasets and Splits" />
-<meta name="twitter:description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 开源数据审计工具，量化过滤/重复/冷启动/切分策略对离线评估的影响，诊断时间泄露与分布漂移。" />
+<meta name="twitter:description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 开源数据集与划分审计工具箱，量化时间泄漏、冷启动暴露、重复消费与分布漂移，揭示预处理决策可使 NDCG@10 变动 1.2%–60%。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +160,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] SplitLight: An Exploratory Toolkit for Recommender Systems Datasets and Splits",
   "headline": "[Paper Note] SplitLight: An Exploratory Toolkit for Recommender Systems Datasets and Splits",
-  "description": "[SIGIR 2026][\u53bb\u504f\u516c\u5e73\u3001\u53ef\u4fe1\u9690\u79c1\u4e0e\u5de5\u4e1a\u67b6\u6784] \u5f00\u6e90\u6570\u636e\u5ba1\u8ba1\u5de5\u5177\uff0c\u91cf\u5316\u8fc7\u6ee4/\u91cd\u590d/\u51b7\u542f\u52a8/\u5207\u5206\u7b56\u7565\u5bf9\u79bb\u7ebf\u8bc4\u4f30\u7684\u5f71\u54cd\uff0c\u8bca\u65ad\u65f6\u95f4\u6cc4\u9732\u4e0e\u5206\u5e03\u6f02\u79fb\u3002",
+  "description": "[SIGIR 2026][\u53bb\u504f\u516c\u5e73\u3001\u53ef\u4fe1\u9690\u79c1\u4e0e\u5de5\u4e1a\u67b6\u6784] \u5f00\u6e90\u6570\u636e\u96c6\u4e0e\u5212\u5206\u5ba1\u8ba1\u5de5\u5177\u7bb1\uff0c\u91cf\u5316\u65f6\u95f4\u6cc4\u6f0f\u3001\u51b7\u542f\u52a8\u66b4\u9732\u3001\u91cd\u590d\u6d88\u8d39\u4e0e\u5206\u5e03\u6f02\u79fb\uff0c\u63ed\u793a\u9884\u5904\u7406\u51b3\u7b56\u53ef\u4f7f NDCG@10 \u53d8\u52a8 1.2%\u201360%\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/splitlight_an_exploratory_toolkit_for_recommender_systems_datasets_and_spli/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/splitlight_an_exploratory_toolkit_for_recommender_systems_datasets_and_spli/",
   "inLanguage": "zh-CN",
@@ -168,18 +168,18 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u53bb\u504f\u516c\u5e73\u3001\u53ef\u4fe1\u9690\u79c1\u4e0e\u5de5\u4e1a\u67b6\u6784, \u79bb\u7ebf\u8bc4\u4f30\u534f\u8bae\u4e0e\u6570\u636e\u5207\u5206, \u6570\u636e\u5ba1\u8ba1\u5de5\u5177, \u65f6\u95f4\u6cc4\u9732\u8bca\u65ad, \u51b7\u542f\u52a8\u4e0e\u5206\u5e03\u6f02\u79fb",
+  "keywords": "SIGIR 2026, \u53bb\u504f\u516c\u5e73\u3001\u53ef\u4fe1\u9690\u79c1\u4e0e\u5de5\u4e1a\u67b6\u6784, \u8bc4\u6d4b\u534f\u8bae\u4e0e\u6570\u636e\u5ba1\u8ba1, \u6570\u636e\u5212\u5206, \u65f6\u95f4\u6cc4\u6f0f, \u51b7\u542f\u52a8\u66b4\u9732",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u53bb\u504f\u516c\u5e73\u3001\u53ef\u4fe1\u9690\u79c1\u4e0e\u5de5\u4e1a\u67b6\u6784" },
-    { "@type": "Thing", "name": "\u79bb\u7ebf\u8bc4\u4f30\u534f\u8bae\u4e0e\u6570\u636e\u5207\u5206" },
-    { "@type": "Thing", "name": "\u6570\u636e\u5ba1\u8ba1\u5de5\u5177" },
-    { "@type": "Thing", "name": "\u65f6\u95f4\u6cc4\u9732\u8bca\u65ad" },
-    { "@type": "Thing", "name": "\u51b7\u542f\u52a8\u4e0e\u5206\u5e03\u6f02\u79fb" }
+    { "@type": "Thing", "name": "\u8bc4\u6d4b\u534f\u8bae\u4e0e\u6570\u636e\u5ba1\u8ba1" },
+    { "@type": "Thing", "name": "\u6570\u636e\u5212\u5206" },
+    { "@type": "Thing", "name": "\u65f6\u95f4\u6cc4\u6f0f" },
+    { "@type": "Thing", "name": "\u51b7\u542f\u52a8\u66b4\u9732" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3997,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4011,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4019,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4072,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4095,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4103,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4119,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4181,9 +4159,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][去偏公平、可信隐私与工业架构] 开源数据审计工具，量化过滤/重复/冷启动/切分策略对离线评估的影响，诊断时间泄露与分布漂移。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][去偏公平、可信隐私与工业架构] 开源数据集与划分审计工具箱，量化时间泄漏、冷启动暴露、重复消费与分布漂移，揭示预处理决策可使 NDCG@10 变动 1.2%–60%。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 去偏公平、可信隐私与工业架构 · 离线评估协议与数据切分 · 数据审计工具 · 时间泄露诊断 · 冷启动与分布漂移</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 去偏公平、可信隐私与工业架构 · 评测协议与数据审计 · 数据划分 · 时间泄漏 · 冷启动暴露</p>
   
 </aside>
   
@@ -4211,28 +4189,28 @@
       
       
       
-        <span class="md-tag">离线评估协议与数据切分</span>
+        <span class="md-tag">评测协议与数据审计</span>
       
     
       
       
       
       
-        <span class="md-tag">数据审计工具</span>
+        <span class="md-tag">数据划分</span>
       
     
       
       
       
       
-        <span class="md-tag">时间泄露诊断</span>
+        <span class="md-tag">时间泄漏</span>
       
     
       
       
       
       
-        <span class="md-tag">冷启动与分布漂移</span>
+        <span class="md-tag">冷启动暴露</span>
       
     
   </nav>
@@ -4242,208 +4220,266 @@
   
 
 
-<h1 id="splitlight-an-exploratory-toolkit-for-recommender-systems-datasets-and-splits">SplitLight: An Exploratory Toolkit for Recommender Systems Datasets and Splits (面向推荐系统数据集与切分的探索性审计工具箱)</h1>
+<h1 id="splitlight-an-exploratory-toolkit-for-recommender-systems-datasets-and-splits">SplitLight: An Exploratory Toolkit for Recommender Systems Datasets and Splits (面向推荐系统数据集与划分的探索性审计工具箱)</h1>
 <ul>
 <li><strong>会议/期刊</strong>: SIGIR 2026</li>
-<li><strong>推荐链路定位</strong>: 离线评估协议与数据准备（Data Preparation / Evaluation Protocol），服务于召回/精排/序列推荐等全链路的可复现评测</li>
-<li><strong>研究方向</strong>: 去偏公平、可信隐私与工业架构 / 序列与会话推荐（评估协议侧）</li>
+<li><strong>作者与机构</strong>: Anna Volodkevich, Dmitry Anikin, Danil Gusak, Anton Klenitskiy, Evgeny Frolov, Alexey Vasilev (SB AI Lab / AI Center / HSE University)</li>
+<li><strong>推荐链路定位</strong>: 离线评测协议与数据准备（贯穿召回至重排的全链路前置环节）</li>
+<li><strong>研究方向</strong>: 去偏公平、可信隐私与工业架构 / 冷启动与长尾推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2602.19339v1">https://arxiv.org/abs/2602.19339v1</a></li>
-<li><strong>开源代码</strong>: <a href="https://github.com/monkey0head/SplitLight">https://github.com/monkey0head/SplitLight</a>（MIT License，含 Streamlit 在线 Demo：https://splitlight.streamlit.app）</li>
+<li><strong>开源代码</strong>: <a href="https://github.com/monkey0head/SplitLight">https://github.com/monkey0head/SplitLight</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>本文针对推荐系统离线评估中"数据准备与切分决策不透明、不可复现"的痛点，提出开源审计工具箱 SplitLight：给定交互日志与切分产物，自动量化核心/时间统计、重复消费模式、时间戳异常，并诊断时间泄露、冷启动暴露与训练-评估分布漂移，支持多切分策略并排对比。在 6 个公开数据集上揭示出如 Diginetica LOO 切分下 89% 目标存在数据泄露、冷物品交互占比随时间从约 20% 升至 40% 等关键问题。本文为工具/资源型论文，不提出新推荐模型，故无模型精度提升指标。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>离线评测中过滤规则、重复处理、冷启动处理与划分策略等"看似微小"的决策会显著重排模型排名，却长期缺乏统一审计工具。本文提出 SplitLight——一个开源 Python 工具箱 + Streamlit 无代码界面，将数据集与划分结果结构化为 <code>train / eval-input / eval-target</code> 三元组，系统诊断时间泄漏、冷启动暴露、重复消费、时间戳碰撞与分布漂移。在 6 个主流数据集上以 SASRec + NDCG@10 验证：保留连续重复可带来最高 +60% 虚高，纳入冷物品使指标下降 1.2%–20%，时间戳碰撞乱序导致最高 9.5% 下降。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 推荐系统离线评估的标准起点是数据预处理与切分（过滤、去重、留一法 LOO、全局时间切分 GTS 等）。主流论文通常只报告"切分类型 + 比例"（如 LOO 或 80/10/10 GTS），但很少披露训练/输入/目标子集的精确边界。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>决策不透明导致排序翻转</strong>：过滤准则、重复交互处理、冷物品处理、目标定义等"看似微小"的选择会显著改变模型排名，偏袒特定算法族（如依赖学习型 embedding 的方法在 warm-start 主导的评估中占优）。</li>
-<li><strong>时间泄露普遍存在</strong>：序列推荐中时间戳碰撞、会话化选择、训练-评估时间重叠会虚高 next-item 指标；LOO 切分下训练与评估时间段高度重叠，未来信息可被利用。</li>
-<li><strong>缺乏统一审计工具</strong>：已有工作分别讨论时间戳碰撞、用户生命周期、切分后数据充分性与评估子集偏斜，但没有形成可操作的"该检查什么"清单，也没有统一工具落地。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 为什么不能靠"多报告几个统计量"解决？因为问题横跨数据集层（核心/时间统计、重复消费）与切分层（泄露、冷启动、分布漂移）两个层面，且需要<strong>并排对比多种切分策略</strong>才能做出可辩护的选择；零散脚本无法保证一致性与可复现性。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者将切分结果形式化为"训练子集 / 评估输入子集 / 评估目标子集 / 排除数据"四元结构（图 2），并据此提炼六大审计维度（核心与时间属性、时间分布、重复消费、泄露指标、冷启动、分布漂移），以 Python 库 + 无代码 Streamlit 界面双形态交付，降低严谨评估的门槛。</li>
+<li><strong>主流范式</strong>: 当前推荐系统离线评测以 <code>(user, item, timestamp)</code> 交互三元组为核心，普遍采用 5-core 过滤 + Leave-One-Out (LOO) 或全局时间划分 (GTS) 构造训练/验证/测试集。</li>
+<li><strong>前人局限</strong>: 其一，划分描述仅报告"LOO 或 80/10/10"远不足以复现——未说明哪些数据作训练、哪些作推理输入、哪些作评测目标、哪些被剔除；其二，现有数据集管理工作 [12,17,23] 只覆盖基础统计报告，未聚焦预处理与划分步骤本身，导致时间戳碰撞 [8]、用户生命周期偏斜 [2,13]、划分后数据充分性与评测子集偏斜 [6,9,19,26] 等已知问题散落各处、无统一"该查什么"清单与工具。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 作者将划分结果形式化为四元结构——训练子集、评测输入子集 (input)、评测目标子集 (target)、被排除数据，并指出<strong>同一划分名称下 input/target 定义不同即可使结果不可比</strong>；同时观察到 ML-1M 中位交互间隔为 0s、时间戳碰撞率高达 52.89%，LOO 下 Diginetica 训练/评测时段 100% 重叠、89% 目标存在泄漏。</li>
+<li><strong>本文切入点</strong>: 不做新模型，而是把"数据准备决策"变成<strong>可测量、可比较、可报告</strong>的审计对象，以工具箱 + 检查清单形式落地。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>交互日志核心表示为三元组 <span class="arithmatex">\((u, i, t)\)</span>：用户 <span class="arithmatex">\(u \in \mathcal{U}\)</span>、物品 <span class="arithmatex">\(i \in \mathcal{I}\)</span>、时间戳 <span class="arithmatex">\(t\)</span>。作者刻意<strong>不要求</strong>评分值、交互类型、上下文与用户/物品侧信息（公开数据集不一致、工业界常为私有），但<strong>强制要求时间戳</strong>，以保证序列有序并防止未来信息泄露。</li>
-<li>输入：原始数据（raw）、预处理数据（preprocessed）、切分后的训练/验证/测试子集；每个评估子集进一步拆为 <strong>input</strong>（推理时提供给模型的历史）与 <strong>target</strong>（待预测真值）。</li>
-<li>输出：各子集的核心/时间统计、分布图、泄露/冷启动/漂移诊断指标、汇总仪表盘与并排对比报告。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流向：原始交互日志 → 预处理与切分（用户自建或 SplitLight 内置工具）→ 对 raw / preprocessed / train / eval-input / eval-target 各子集计算统计与诊断 → 汇总仪表盘（可配置阈值、颜色编码卡片）→ 下钻至各详细页面 → 并排对比不同切分策略并导出审计摘要。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>SplitLight 接收原始交互日志及其派生划分子集（raw / preprocessed / train / val-input / val-target / test-input / test-target），沿三条分析轴输出诊断：<strong>数据集级</strong>（核心统计、时间统计、时间分布、重复消费）、<strong>划分级</strong>（划分统计对比、时间泄漏、冷启动、分布漂移）、<strong>汇总仪表盘</strong>（可配置阈值的红黄绿健康检查卡片，链接至明细页）。所有统计既可对单一子集计算，也可与参考子集（通常为 raw 或 preprocessed）并排对比，从而支持"备选划分策略的并排比较"这一核心诉求。工具同时提供 Python API（可抽取中间结果二次处理）与 Streamlit 无代码界面（降低严谨评测门槛），MIT 协议开源。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 原始交互日志 (user, item, timestamp)"] --&gt; B["预处理与切分: 过滤 / 去重 / LOO 或 GTS"]
-    B --&gt; C["子集结构: Train / Eval-Input / Eval-Target"]
-    C --&gt; D["数据集层审计: 核心统计 / 时间统计 / 重复消费 / 时间戳碰撞"]
-    C --&gt; E["切分层审计: 时间泄露 / 冷启动 / 分布漂移 (KS 统计量)"]
-    D --&gt; F["汇总仪表盘 + 并排切分对比 + 审计报告"]
-    E --&gt; F</code></pre>
-<p>图 1 展示了 SplitLight 在数据准备流水线中的定位：从原始数据到切分子集，审计数据特征、标记问题，并支持并排比较替代切分策略以论证所选评估协议。</p>
+    A["原始交互日志 (user, item, timestamp)"] --&gt; B["预处理与划分管线"]
+    B --&gt; C["划分四元结构: train / input / target / excluded"]
+    C --&gt; D["数据集级审计: 核心统计·时间统计·重复消费"]
+    C --&gt; E["划分级审计: 泄漏·冷启动·分布漂移"]
+    D --&gt; F["汇总仪表盘 + 并排划分对比"]
+    E --&gt; F
+    F --&gt; G["审计报告: 论证评测协议 / 复现 / 外部产物审查"]</code></pre>
 <figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2602.19339v1/figure_1.png" /><figcaption>图 1</figcaption>
+  <img alt="图1：数据准备流程中的SplitLight。从原始数据集到划分后的子集，SplitLight审计数据特征、标记问题，并支持对备选划分策略进行并排比较，以证明所选评估协议的合理性。" src="../../../../../assets/papers/2602.19339v1/figure_1.png" /><figcaption>图1：数据准备流程中的SplitLight。从原始数据集到划分后的子集，SplitLight审计数据特征、标记问题，并支持对备选划分策略进行并排比较，以证明所选评估协议的合理性。</figcaption>
 </figure>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 切分结构形式化（图 2）</strong>：作者主张切分结果必须显式区分四类数据——训练用、推理输入用、评估目标用、排除。对全局时间切分（GTS），按分位数 <span class="arithmatex">\(q\)</span> 划定训练期与评估期；目标定义分两种：<strong>last-item targets</strong>（每用户仅最后一个交互为目标）与 <strong>all-items targets</strong>（评估期内所有交互为目标）。评估输入包含目标之前该用户的全部历史。这一形式化是后续所有诊断的语义基础，也暴露了 LOO 与 GTS 在时间覆盖上的本质差异（图 4）。</p>
-<figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2602.19339v1/figure_2.png" /><figcaption>图 2</figcaption>
-</figure>
-<p><strong>(2) 数据集层审计指标</strong>：
-- 核心统计：交互数、用户数、物品数、物品流行度、序列长度、密度及其分位数/直方图分布。
-- 时间统计：数据集时间跨度（首末交互间隔）、同用户相邻交互时间差、<strong>时间戳碰撞率</strong>（同一用户历史中相同时间戳出现频率，碰撞会使基于时间的切分非确定）、用户/物品生命周期（首末交互间隔）。
-- 重复消费：区分<strong>重复交互</strong>（物品首次出现后的任意再次出现）与<strong>连续重复</strong>（同一物品紧邻出现），按用户统计绝对数与相对占比及分布（图 5）。</p>
-<figure class="paper-figure">
-  <img alt="图 5" src="../../../../../assets/papers/2602.19339v1/figure_5.png" /><figcaption>图 5</figcaption>
-</figure>
-<p><strong>(3) 切分层诊断</strong>：
-- <strong>时间泄露</strong>：检查 (i) 训练与评估子集共享交互；(ii) 时间范围重叠（图 4）；(iii) 受泄露影响的评估目标分布与占比（图 7）。
-- <strong>冷启动</strong>：将验证/测试中未在训练集出现的用户/物品定义为冷用户/冷物品，报告数量、占比及冷交互占比随时间的演化（图 3）。
-- <strong>分布漂移</strong>：将目标 <strong>time-gap</strong>（最后输入交互到目标的时间间隔）分布与参考分布（raw/preprocessed 中全部相邻间隔）对比，用 <strong>Kolmogorov-Smirnov 统计量</strong>量化差异；同理比较目标在用户序列中的<strong>位置分布</strong>，以检测切分引入的系统性偏移。</p>
-<figure class="paper-figure">
-  <img alt="图 4" src="../../../../../assets/papers/2602.19339v1/figure_4.png" /><figcaption>图 4</figcaption>
-</figure>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 本文为工具型论文，<strong>不涉及模型训练</strong>，无损失函数、无负采样策略（原文未报告）。</li>
-<li><strong>训练负采样策略</strong>: 不适用（原文未报告）。</li>
-<li><strong>时间与空间复杂度</strong>: 原文未给出形式化复杂度分析。从实现看，各诊断均为对交互日志的单遍或多遍扫描（计数、分位数、直方图、KS 统计量），复杂度与交互数 <span class="arithmatex">\(|\mathcal{D}|\)</span> 近似线性；Streamlit 界面支持交互式探索，Python 库可提取中间结果供后续处理。原文未报告具体耗时与显存开销。</li>
-</ul>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>划分四元结构形式化（Split Protocol Specification）</strong>：痛点在于"LOO / GTS-q0.9"这类标签无法确定模型推理时看到什么。SplitLight 强制将评测子集拆为 input（推理时喂给模型的历史）与 target（待预测真值），并显式记录 excluded 数据；对 GTS 进一步区分 <strong>last-item target</strong>（每用户仅最后一个交互作目标）与 <strong>all-items target</strong>（评测时段内全部交互作目标）两种定义（图 2）。这一拆分使"训练/评测时段重叠率"与"目标受泄漏比例"成为可计算量，而非口头声明。</p>
+</li>
+<li>
+<p><strong>时间泄漏与冷启动的量化诊断</strong>：泄漏检测三件套为 (i) 训练与评测子集的共享交互数、(ii) 两者时间区间的重叠度、(iii) 受泄漏影响的评测目标占比；冷启动则将 val/test 中未在训练集出现的用户/物品标记为 cold，报告其数量、占比及<strong>随时间的演化曲线</strong>（图 3 显示 Diginetica 冷物品交互占比从近 20% 升至 40%，总体 34.35%）。物理直觉：冷启动比例不受控时，评测会隐性偏向依赖已学习 Embedding 的方法而压制内容/混合方法。</p>
+</li>
+<li>
+<p><strong>分布漂移的 KS 统计量度量与重复消费双口径</strong>：对 target 的 time-gap 分布（最后一条 input 交互到目标的间隔）与参考分布（raw 中全部相邻间隔）计算 Kolmogorov-Smirnov 统计量，同理比较 target 在用户序列中的位置分布，从而量化"划分引入的系统性偏移"。重复消费区分两级：<strong>repeated interactions</strong>（物品首次出现后的任意再次出现）与 <strong>consecutive repeats</strong>（同一物品紧邻重复），后者常为日志伪影（如 Zvuk 中位间隔 0.25s 疑为跳过行为），需单独统计并决定折叠或聚合。</p>
+</li>
+<li>
+<p><strong>训练目标与推理开销</strong>：本文无模型损失函数；工具箱本身为纯统计计算，复杂度对交互数线性，Streamlit 界面支持交互式下钻，工程开销可忽略。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文使用 6 个广泛使用的数据集——3 个评分数据集（MovieLens-1M、MovieLens-20M、Amazon Beauty）、2 个电商点击流数据集（Diginetica、Dressipi）以及 1 个音乐流媒体数据集（原文在 4.1 节末尾被截断，名称未完整给出）。<strong>原文未提供完整的 #Users / #Items / #Interactions 统计表</strong>，故下表仅列数据集与类型，数值标注"原文未报告"：</li>
+<li><strong>数据集与预处理</strong>: 6 个数据集覆盖评分、电商点击流、音乐流媒体三类场景；4.3–4.4 节实验统一施加 <code>5-core</code> 过滤 + 连续重复去除，时间戳碰撞用户保留原始事件顺序。</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">MovieLens-1M (ML-1M)</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">评分数据集，含时间戳</td>
-</tr>
-<tr>
-<td style="text-align: left;">MovieLens-20M (ML-20M)</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">评分数据集，含时间戳</td>
-</tr>
-<tr>
-<td style="text-align: left;">Amazon Beauty</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">评分数据集，含时间戳</td>
-</tr>
-<tr>
-<td style="text-align: left;">Diginetica</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">电商点击流，含时间戳</td>
-</tr>
-<tr>
-<td style="text-align: left;">Dressipi</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">电商点击流，含时间戳</td>
-</tr>
-<tr>
-<td style="text-align: left;">音乐流媒体数据集（名称截断）</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">音乐流媒体，含时间戳</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 案例研究覆盖 <strong>Leave-One-Out (LOO)</strong> 与 <strong>Global Temporal Split (GTS，含分位数 <span class="arithmatex">\(q\)</span> 选择，如 <span class="arithmatex">\(q_{0.9}\)</span>)</strong> 两类切分，并对比 last-item 与 all-items 两种目标定义。SplitLight 的核心用途正是<strong>量化不同切分策略引入的泄露、冷启动与漂移风险</strong>，而非固定采用某一种。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 本文不训练推荐模型、不报告 Recall/NDCG 等排序指标，因此不涉及 Full-Ranking 或 Sampled Ranking 协议（原文未报告）。</li>
-<li><strong>评价指标与显著性检验</strong>: 诊断指标包括时间戳碰撞率、重复/连续重复占比、训练-评估时间重叠率、受泄露影响目标占比、冷用户/冷物品占比、KS 统计量等；<strong>原文未进行配对显著性检验</strong>（工具型论文，无模型对比）。</li>
-</ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
-<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>本文为工具/资源型论文，<strong>不包含推荐模型精度对比表</strong>（原文未报告 Recall/NDCG/AUC 等指标及相对提升）。核心"结果"为案例研究中揭示的数据问题：</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
-<th style="text-align: left;">切分/设置</th>
-<th style="text-align: left;">诊断发现</th>
-<th style="text-align: center;">数值</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Interactions</th>
+<th style="text-align: center;">平均序列长</th>
+<th style="text-align: center;">密度(%)</th>
+<th style="text-align: center;">连续重复(%)</th>
+<th style="text-align: center;">重复交互(%)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Diginetica</td>
-<td style="text-align: left;">LOO</td>
-<td style="text-align: left;">训练与评估子集时间 100% 重叠，大量目标受数据泄露影响</td>
-<td style="text-align: center;">89% 目标存在泄露（图 7）</td>
+<td style="text-align: left;">Beauty</td>
+<td style="text-align: center;">22,363</td>
+<td style="text-align: center;">12,101</td>
+<td style="text-align: center;">198,502</td>
+<td style="text-align: center;">8.88</td>
+<td style="text-align: center;">0.07</td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">0.00</td>
 </tr>
 <tr>
 <td style="text-align: left;">Diginetica</td>
-<td style="text-align: left;">测试目标子集</td>
-<td style="text-align: left;">冷物品交互占比随时间增长</td>
-<td style="text-align: center;">从约 20% 升至 40%，整体 34.35%（图 3）</td>
+<td style="text-align: center;">310,324</td>
+<td style="text-align: center;">122,993</td>
+<td style="text-align: center;">1,235,380</td>
+<td style="text-align: center;">3.98</td>
+<td style="text-align: center;">0.003</td>
+<td style="text-align: center;">5.85</td>
+<td style="text-align: center;">13.62</td>
+</tr>
+<tr>
+<td style="text-align: left;">Dressipi</td>
+<td style="text-align: center;">1,000,000</td>
+<td style="text-align: center;">23,496</td>
+<td style="text-align: center;">4,743,820</td>
+<td style="text-align: center;">4.74</td>
+<td style="text-align: center;">0.02</td>
+<td style="text-align: center;">7.25</td>
+<td style="text-align: center;">13.39</td>
 </tr>
 <tr>
 <td style="text-align: left;">ML-1M</td>
-<td style="text-align: left;">GTS <span class="arithmatex">\(q_{0.9}\)</span></td>
-<td style="text-align: left;">测试目标子集时间跨度占数据集时间跨度比例</td>
-<td style="text-align: center;">近 76%（图 6）</td>
+<td style="text-align: center;">6,040</td>
+<td style="text-align: center;">3,706</td>
+<td style="text-align: center;">1,000,209</td>
+<td style="text-align: center;">165.60</td>
+<td style="text-align: center;">4.47</td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">0.00</td>
+</tr>
+<tr>
+<td style="text-align: left;">ML-20M</td>
+<td style="text-align: center;">138,493</td>
+<td style="text-align: center;">26,744</td>
+<td style="text-align: center;">20,000,263</td>
+<td style="text-align: center;">144.41</td>
+<td style="text-align: center;">0.54</td>
+<td style="text-align: center;">0.00</td>
+<td style="text-align: center;">0.00</td>
+</tr>
+<tr>
+<td style="text-align: left;">Zvuk</td>
+<td style="text-align: center;">20,000</td>
+<td style="text-align: center;">391,322</td>
+<td style="text-align: center;">10,867,482</td>
+<td style="text-align: center;">543.37</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">21.50</td>
+<td style="text-align: center;">68.17</td>
 </tr>
 </tbody>
 </table>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2602.19339v1/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 6" src="../../../../../assets/papers/2602.19339v1/figure_6.png" /><figcaption>图 6</figcaption>
-</figure>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文<strong>未设置传统意义上的模块消融实验</strong>（无模型子模块可移除）。其"对照分析"体现为：对同一数据集并排比较不同切分策略（LOO vs. GTS、last-item vs. all-items 目标）下的统计与诊断差异，以及讨论重复交互折叠/聚合对 RS 性能的影响（4.4 节，原文正文截断处提及）。原文未报告参数量或图拓扑度数的控制变量分析。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
 <ul>
-<li><strong>冷启动分桶</strong>: 图 3 显示 Diginetica 测试目标子集中冷物品交互占比随时间从近 20% 增长至 40%，整体达 34.35%，说明切分策略会显著改变冷/暖交互比例，进而影响对内容型与 embedding 型方法的相对偏好。</li>
-<li><strong>关键超参数敏感度</strong>: 主要"超参"为 GTS 的分位数 <span class="arithmatex">\(q\)</span>（如 <span class="arithmatex">\(q_{0.9}\)</span>）与汇总仪表盘的可配置告警阈值；图 6 表明 <span class="arithmatex">\(q_{0.9}\)</span> 下 ML-1M 测试目标子集时间跨度接近数据集时间跨度的 76%，体现分位数选择对评估期覆盖的强影响。原文未报告系统的超参扫描曲线。</li>
-<li><strong>线上 A/B 测试结果</strong>: 原文仅包含离线数据分析案例，<strong>无线上 A/B 测试</strong>。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 对比三种协议——(i) <strong>GTS-q0.9 + all-items target</strong>（最近 10% 交互为测试、次近 10% 为验证）；(ii) <strong>Leave-One-Out (LOO)</strong>；(iii) <strong>GTS-q0.9 + last-item target</strong>。所有划分在预处理后生成并保持用户内时序。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 采用 SASRec 作为探针模型，指标为 <strong>NDCG@10 (N@10)</strong>，5 个随机种子取平均；默认过滤验证/测试集中的冷物品。未报告显著性检验，属工具演示性质。</li>
+<li><strong>对比基线与超参设置</strong>: 无传统模型基线对比；实验设计为"固定基线配置 + 单因素扰动"：①保留连续重复、②时间戳碰撞不保序（随机打乱）、③不过滤冷物品。</li>
 </ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
+<p>原文以"同一划分下不同数据治理协议"作为对比维度（表 4），核心指标 NDCG@10：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">数据集</th>
+<th style="text-align: center;">LOO 基线</th>
+<th style="text-align: center;">碰撞乱序 (LOO)</th>
+<th style="text-align: center;">GTS-q0.9 基线</th>
+<th style="text-align: center;">保留连续重复 (GTS)</th>
+<th style="text-align: center;">非连续目标 (GTS)</th>
+<th style="text-align: center;">纳入冷物品 (GTS)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Beauty</td>
+<td style="text-align: center;">0.0566</td>
+<td style="text-align: center;">0.0521 (-7.9%)</td>
+<td style="text-align: center;">0.0348</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;"><strong>0.0280</strong> (-19.5%)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Diginetica</td>
+<td style="text-align: center;">0.1663</td>
+<td style="text-align: center;">— (&lt;1% 碰撞)</td>
+<td style="text-align: center;">0.1443</td>
+<td style="text-align: center;"><strong>0.2118</strong> (+46.8%)</td>
+<td style="text-align: center;">0.1364</td>
+<td style="text-align: center;">0.1427 (-1.1%)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Dressipi</td>
+<td style="text-align: center;">0.1318</td>
+<td style="text-align: center;">— (&lt;1% 碰撞)</td>
+<td style="text-align: center;">0.1343</td>
+<td style="text-align: center;"><strong>0.2168</strong> (+61.4%)</td>
+<td style="text-align: center;">0.1225</td>
+<td style="text-align: center;">0.0965 (-28.1%)</td>
+</tr>
+<tr>
+<td style="text-align: left;">ML-1M</td>
+<td style="text-align: center;">0.1861</td>
+<td style="text-align: center;">0.1685 (-9.5%)</td>
+<td style="text-align: center;">0.0905</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">0.0907 (+0.2%)</td>
+</tr>
+<tr>
+<td style="text-align: left;">ML-20M</td>
+<td style="text-align: center;">0.1601</td>
+<td style="text-align: center;">0.1469 (-8.2%)</td>
+<td style="text-align: center;">0.0836</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;"><strong>0.0704</strong> (-15.8%)</td>
+</tr>
+<tr>
+<td style="text-align: left;">Zvuk</td>
+<td style="text-align: center;">0.2594</td>
+<td style="text-align: center;">— (&lt;1% 碰撞)</td>
+<td style="text-align: center;">0.1529</td>
+<td style="text-align: center;"><strong>0.2653</strong> (+73.5%)</td>
+<td style="text-align: center;">0.1247</td>
+<td style="text-align: center;">0.1362 (-10.9%)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<p>以"移除单项治理措施"为消融口径（GTS-q0.9 + last-item target 为参照）：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">配置</th>
+<th style="text-align: left;">受影响数据集</th>
+<th style="text-align: center;">NDCG@10 变化</th>
+<th style="text-align: left;">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">w/o 保序（碰撞乱序）</td>
+<td style="text-align: left;">ML-1M / ML-20M / Beauty</td>
+<td style="text-align: center;">-9.5% / -8.2% / -7.9%</td>
+<td style="text-align: left;">碰撞率 52.89% / 20.96% / 38.99%</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o 去连续重复</td>
+<td style="text-align: left;">Dressipi / Zvuk / Diginetica</td>
+<td style="text-align: center;">+61.4% / +73.5% / +46.8%</td>
+<td style="text-align: left;">虚高，非真实能力</td>
+</tr>
+<tr>
+<td style="text-align: left;">仅评非连续目标</td>
+<td style="text-align: left;">Zvuk / Dressipi / Diginetica</td>
+<td style="text-align: center;">0.1247 / 0.1225 / 0.1364</td>
+<td style="text-align: left;">泛化能力真实暴露</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o 过滤冷物品</td>
+<td style="text-align: left;">Dressipi / Beauty / ML-20M</td>
+<td style="text-align: center;">-28.1% / -19.5% / -15.8%</td>
+<td style="text-align: left;">冷目标占比 32.59% / 22.32% / 28.40%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>连续重复是最大的指标放大器</strong>：在重复率不可忽略的数据集上保留连续重复，NDCG@10 最高虚增 73.5%（Zvuk 0.1529→0.2653）；而一旦把评测限制在非连续目标，性能骤降至 0.1247，说明模型学到的是"记忆短期信号"而非泛化偏好——这直接解释了跨论文结果不可比的根源。</li>
+<li><strong>时间戳碰撞的乱序处理造成稳定但幅度较小的性能损失</strong>：碰撞率越高的数据集损失越大（ML-1M 52.89% 碰撞 → -9.5%），且该效应仅在 LOO 下出现、在 GTS-last-item 下消失，作者归因于 LOO 更易诱发"记忆优于泛化"。</li>
+<li><strong>冷启动暴露与指标下降强相关</strong>：纳入冷物品后 NDCG@10 下降 1.2%–20%（Dressipi 降幅最大，对应 32.59% 冷目标占比）；同时 GTS-q0.9 在 Diginetica/Dressipi 上产生 100% 冷用户、ML-20M 上 82.6%，说明这些数据集天然适合冷启动评测，但若不作声明则评测语义完全漂移。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>切分四元结构形式化</strong>（train / eval-input / eval-target / excluded）具有普适性，可直接作为论文与工业评估文档的强制报告模板，显著提升跨论文可比性。</li>
-<li><strong>KS 统计量量化分布漂移</strong>、<strong>泄露目标占比</strong>、<strong>冷交互时间演化</strong>等诊断算子设计简洁且可迁移到 IR 日志、交易数据等任意含 (user, item, timestamp) 的领域。</li>
-<li><strong>双形态交付</strong>（Python 库 + 无代码 Streamlit）降低工程与审稿场景的使用门槛，MIT 协议开源、附 Demo 与视频，复现价值高。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>缺乏定量"影响评估"</strong>：工具能诊断问题，但案例研究主要展示"问题存在"，未系统量化"不同切分选择导致模型排名翻转多少"（如 Kendall <span class="arithmatex">\(\tau\)</span> 排名相关性），削弱了"必须审计"的说服力。</li>
-<li><strong>数据集统计披露不全</strong>：正文未给出 6 个数据集的完整规模统计表，且第 6 个数据集名称在提取文本中被截断，影响读者对案例覆盖面的判断。</li>
-<li><strong>诊断阈值主观</strong>：汇总仪表盘依赖可配置阈值，但原文未给出推荐默认值或基于社区共识的校准依据，可能导致不同团队报告口径不一。</li>
-<li><strong>无复杂度与性能报告</strong>：未报告在大规模工业日志上的运行耗时与内存开销，"轻量级"主张缺乏实证支撑。</li>
-<li><strong>评估维度有限</strong>：未覆盖负采样协议偏差、流行度偏差等排序评估侧的偏置诊断，与"去偏"主分类的契合度偏工具化而非方法论化。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较数据集管理/基准变异类工作 [12,17,23] 仅报告高层统计，SplitLight 首次把<strong>预处理与划分步骤本身</strong>作为审计对象并给出可执行清单；相较 Dacrema 等对算法复现性的批判，本文把矛头指向"数据侧不可复现"；相较零散的泄漏/碰撞研究 [6,8,9]，本文将其统一进单一工具与四元划分结构。</li>
+<li><strong>可迁移亮点</strong>: ① <code>train / input / target / excluded</code> 四元划分描述可直接作为论文与工业评测文档的强制模板；② 用 KS 统计量对比 target time-gap 与参考分布，是检测"划分引入偏移"的轻量通用手段，可迁移至 CTR 延迟反馈与序列推荐场景。</li>
+<li><strong>审稿级局限批判</strong>: ① 实验仅用 SASRec 单一探针模型与 NDCG@10 单指标，未验证结论在 GNN/生成式推荐架构上的稳健性，也无显著性检验；② 工具输出的是"诊断"而非"修复"，对碰撞/重复/冷启动的最优处理策略仍依赖人工判断，且 Streamlit 界面在大规模工业日志（亿级交互）上的交互式下钻性能未作评估。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐（工具整合与形式化有价值，但各诊断指标多为已有工作的系统化落地）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐（案例揭示的问题真实且重要，但缺定量影响分析与完整数据集统计）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐（切分结构形式化清晰、图表组织良好，复杂度与超参细节略欠）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐（开源、双形态、可直接嵌入数据准备流水线与审稿审计流程）</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （非模型创新，但四元划分形式化与"审计清单"填补了评测协议规范化的空白，理论深度有限）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （6 个异构数据集 + 单因素扰动设计清晰有力，但仅单模型单指标、缺显著性检验）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （划分结构与统计定义表述严谨、图表自解释性强，公式化程度较低属工具论文常态）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （MIT 开源、Python + 无代码双形态、可直接嵌入现有数据管线做上线前健康检查，落地门槛极低）</li>
 </ul>
 
 

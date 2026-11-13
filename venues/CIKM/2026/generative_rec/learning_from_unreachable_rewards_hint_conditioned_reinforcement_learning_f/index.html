@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>从 SFT 检查点 <span class="arithmatex">\(\pi_{\text{sft}}\)</span> 出发，先对每个训练样本做<strong>离线可达性诊断</strong>：对提示长度 <span class="arithmatex">\(h=0,\dots,H_{\max}\)</span> 各采样 <span class="arithmatex">\(G_d\)</span> 条诊断后缀，记录首个使诊断组命中真值的长度 <span class="arithmatex">\(h^\star\)</span>；<span class="arithmatex">\(h^\star=0\)</span> 的样本原样训练，<span class="arithmatex">\(h^\star&gt;0\)</span> 的样本在提示 <span class="arithmatex">\(x_h=[x;p^\star_h]\)</span> 下做后缀 rollout。后训练阶段对完整 ID 计算精确匹配奖励与组内优势，但<strong>只对后缀 token 施加 GRPO</strong>，前缀 token 用 SFT 锚定，二者加权成总损失。推理时无任何提示，按原式生成完整语义 ID。</p>
+<p>从 SFT 检查点 <span class="arithmatex">\(\pi_{\text{sft}}\)</span>出发，先对每个训练样本做<strong>离线可达性诊断</strong>：对提示长度<span class="arithmatex">\(h=0,\dots,H_{\max}\)</span>各采样<span class="arithmatex">\(G_d\)</span>条诊断后缀，记录首个使诊断组命中真值的长度<span class="arithmatex">\(h^\star\)</span>；<span class="arithmatex">\(h^\star=0\)</span>的样本原样训练，<span class="arithmatex">\(h^\star&gt;0\)</span>的样本在提示<span class="arithmatex">\(x_h=[x;p^\star_h]\)</span> 下做后缀 rollout。后训练阶段对完整 ID 计算精确匹配奖励与组内优势，但<strong>只对后缀 token 施加 GRPO</strong>，前缀 token 用 SFT 锚定，二者加权成总损失。推理时无任何提示，按原式生成完整语义 ID。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户历史 x + 目标 SID y*"] --&gt; B["离线可达性诊断 (SFT 检查点, h=0..Hmax)"]
     B --&gt;|"h*=0 可达"| C["原样无提示 rollout"]
@@ -4234,7 +4245,7 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>可达性感知的最短前缀提示 (Reachability-Aware Hint Conditioning)</strong>：痛点是无提示 rollout 组奖励方差为零。定义诊断组 <span class="arithmatex">\(\tilde{y}^{(h)}_j = p^\star_h \oplus \tilde{s}^{(h)}_j\)</span>，可达集 <span class="arithmatex">\(\mathcal{C}(x,y^\star)=\{h: B_h(x,y^\star)=1\}\)</span>，取 <span class="arithmatex">\(h^\star=\min\mathcal{C}\)</span>，且约束 <span class="arithmatex">\(H_{\max}&lt;M\)</span> 保证至少一个 token 留给模型生成。直觉：提示只把生成搬到正确的粗粒度分支，细粒度后缀仍由策略探索，从而把"零优势死样本"转为"后缀补全的可比组"；且提示由 SFT 检查点一次性固定，避免动态提示导致优化目标漂移。</p>
+<p><strong>可达性感知的最短前缀提示 (Reachability-Aware Hint Conditioning)</strong>：痛点是无提示 rollout 组奖励方差为零。定义诊断组 <span class="arithmatex">\(\tilde{y}^{(h)}_j = p^\star_h \oplus \tilde{s}^{(h)}_j\)</span>，可达集<span class="arithmatex">\(\mathcal{C}(x,y^\star)=\{h: B_h(x,y^\star)=1\}\)</span>，取<span class="arithmatex">\(h^\star=\min\mathcal{C}\)</span>，且约束<span class="arithmatex">\(H_{\max}&lt;M\)</span> 保证至少一个 token 留给模型生成。直觉：提示只把生成搬到正确的粗粒度分支，细粒度后缀仍由策略探索，从而把"零优势死样本"转为"后缀补全的可比组"；且提示由 SFT 检查点一次性固定，避免动态提示导致优化目标漂移。</p>
 </li>
 <li>
 <p><strong>提示感知信用分解 (Hint-Aware Credit Decomposition)</strong>：痛点是被提示的前缀并非策略采样动作，若整序列套 GRPO 会把 oracle 上下文误当模型行为给信用；但前缀又承载物品语义与粗到细结构，不能丢弃。故后缀用组相对损失
@@ -4242,7 +4253,7 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{GRPO suffix}}=-\frac{1}{G}\sum_{j
 前缀用锚定损失 <span class="arithmatex">\(\mathcal{L}_{\text{SFT prefix}}=-\mathbb{I}[h&gt;0]\sum_{t=1}^{h}\log\pi_\theta(y^\star_t\mid x,y^\star_{&lt;t})\)</span>。直觉：信用按 token 来源分配——oracle 上下文保语义稳定，采样动作保偏好判别，避免全局 SFT 正则把后缀也"教死"。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}_{\text{HCGRec}}=\mathcal{L}_{\text{GRPO suffix}}+\lambda\mathcal{L}_{\text{SFT prefix}}\)</span>，<span class="arithmatex">\(\lambda\)</span> 默认 0.005。奖励为<strong>精确目标匹配</strong> <span class="arithmatex">\(r=\mathbb{I}[\hat{y}=y^\star]\)</span>（无负采样，组内 16 条采样自比较）；诊断 beam size 16、<span class="arithmatex">\(H_{\max}=3\)</span>、每 prompt 16 条 completion。推理零额外开销（无提示、无 value 模型），仅训练期多一次离线诊断 pass。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}_{\text{HCGRec}}=\mathcal{L}_{\text{GRPO suffix}}+\lambda\mathcal{L}_{\text{SFT prefix}}\)</span>，<span class="arithmatex">\(\lambda\)</span>默认 0.005。奖励为<strong>精确目标匹配</strong><span class="arithmatex">\(r=\mathbb{I}[\hat{y}=y^\star]\)</span>（无负采样，组内 16 条采样自比较）；诊断 beam size 16、<span class="arithmatex">\(H_{\max}=3\)</span>、每 prompt 16 条 completion。推理零额外开销（无提示、无 value 模型），仅训练期多一次离线诊断 pass。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4290,7 +4301,7 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{GRPO suffix}}=-\frac{1}{G}\sum_{j
 <ul>
 <li><strong>数据划分与防穿越</strong>: <code>Leave-One-Out</code>——每用户最后一件测试、倒数第二件验证、其余训练，序列按时间戳构造。</li>
 <li><strong>排名评测协议</strong>: 无偏 <code>Full-Ranking</code>（全物品集排序，非采样负例），生成式方法 beam size 固定 50；报告 HR@{5,10,50} 与 NDCG@{5,10,50}；各变体按 NDCG@10 选检查点后统一读数。</li>
-<li><strong>对比基线与超参</strong>: 序列基线 Caser/GRU4Rec/BERT4Rec/SASRec，生成式 TIGER/LC-Rec，奖励后训练 GRPO Rule-only/MiniOneRec/offline-hint 变体；骨干 Qwen2.5-3B-Instruct 全参 SFT（lr <span class="arithmatex">\(3\times10^{-4}\)</span>），RL lr <span class="arithmatex">\(10^{-5}\)</span>、2 epoch、温度 1.0；所有 RL 变体共享同一 SFT 检查点、语义索引、组大小与奖励。</li>
+<li><strong>对比基线与超参</strong>: 序列基线 Caser/GRU4Rec/BERT4Rec/SASRec，生成式 TIGER/LC-Rec，奖励后训练 GRPO Rule-only/MiniOneRec/offline-hint 变体；骨干 Qwen2.5-3B-Instruct 全参 SFT（lr <span class="arithmatex">\(3\times10^{-4}\)</span>），RL lr<span class="arithmatex">\(10^{-5}\)</span>、2 epoch、温度 1.0；所有 RL 变体共享同一 SFT 检查点、语义索引、组大小与奖励。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4474,14 +4485,20 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{GRPO suffix}}=-\frac{1}{G}\sum_{j
 <ol>
 <li><strong>可达性恢复是主因，信用分解是增益项</strong>：offline-hint 变体已把 Instruments HR@50 从 GRPO 的 0.1681 拉到 0.1941，完整 HCGRec 再提至 0.1985；但增益并非全指标覆盖——Instruments 的 HR@5/NDCG@5 仍由 GRPO Rule-only 略胜（0.1027/0.0911），说明提示主要改善"分支稳定性与广覆盖"，而非极端头部排序。</li>
 <li><strong>零梯度组比例是直接证据</strong>：无提示基线训练末期零方差组占比约 0.55（Arts）/0.63（Instruments），前缀提示后降至约 0.12/0.17，与摘要"70%+ → 20% 以下"一致，证明提示把死样本转为有效组相对比较。</li>
-<li><strong>提示深度呈任务异质性，且锚定需校准</strong>：title-seqrec 的提示深度显著深于 SeqRec，title/desc2index 以浅层为主（图 3），故增益任务相关；<span class="arithmatex">\(\lambda\)</span> 在 0.001–0.01 区间最优，<span class="arithmatex">\(\lambda=0.1\)</span> 时 Instruments HR@50 从 0.1985 崩至 0.1754，印证"前缀锚定是校准旋钮而非缩放旋钮"。</li>
+<li><strong>提示深度呈任务异质性，且锚定需校准</strong>：title-seqrec 的提示深度显著深于 SeqRec，title/desc2index 以浅层为主（图 3），故增益任务相关；<span class="arithmatex">\(\lambda\)</span>在 0.001–0.01 区间最优，<span class="arithmatex">\(\lambda=0.1\)</span> 时 Instruments HR@50 从 0.1985 崩至 0.1754，印证"前缀锚定是校准旋钮而非缩放旋钮"。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 GRC（生成-反思-纠错）和 Rank-GRPO（改信用单元为排名位）相比，HCGRec 在<strong>生成之前</strong>解决可达性，属正交前置干预；与 HiLL/Scaf-GRPO 等通用推理脚手架相比，其提示是语义 ID 前缀树定义的目标前缀、仅训练期使用、且由离线诊断按需触发，并额外引入 token 来源感知的信用分解。</li>
 <li><strong>可迁移亮点</strong>: ① "离线诊断 + 最短前缀"范式可迁移到任何层级码本生成检索（RQ-VAE/VQ 多级 ID、分层分类召回）；② 按 token 来源拆分 SFT/RL 信用的思路可用于 LLM 工具调用、检索增强生成中"外部注入上下文 vs 模型生成动作"的混合训练。</li>
 <li><strong>审稿级局限批判</strong>: ① 诊断依赖 SFT 检查点一次性固定，训练中分布漂移后提示可能不再最短，作者亦将在线可达性估计列为未来工作；② 奖励仅为精确匹配，未验证连续/多目标奖励下的表现，且离线诊断需对每样本做 <span class="arithmatex">\(H_{\max}\times G_d\)</span> 次 beam 采样，训练前开销与数据规模线性相关；③ 主实验存在指标非全面占优（HR@50 在 Arts/Games 仍逊于 TIGER），提升幅度中等。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

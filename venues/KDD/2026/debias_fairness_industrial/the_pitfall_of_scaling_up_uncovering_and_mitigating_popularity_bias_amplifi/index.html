@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4224,12 +4235,12 @@
 <ul>
 <li><strong>主流范式</strong>: 受 Scaling Law 驱动，序列推荐正沿 Transformer 深度/宽度/嵌入维度激进扩容（SASRec++、HSTU 等），工业界已验证扩容带来准确率增益。</li>
 <li><strong>前人局限</strong>: ① 现有去偏方法（重加权 R2Rec/D2LR、因果解耦 MOJITO/TPAB、谱正则 LogDet/ReSN）几乎都面向静态协同过滤，依赖静态用户嵌入，无法适配序列推荐中动态演化的用户偏好；② 它们把模型当黑盒，未触及 Transformer 架构本身在深层堆叠下<strong>内生</strong>放大偏差的机制。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 由 Lemma 3.1，物品流行度主要编码在预测分数矩阵 <span class="arithmatex">\(\hat{Y}\)</span> 的主奇异分量中，其强度由谱范数 <span class="arithmatex">\(\sigma_1(\hat{Y})\)</span> 决定。实验发现深度增加时 <span class="arithmatex">\(\sigma_1^2/\sum_k\sigma_k^2\)</span> 单调上升（谱坍缩），主分量对推荐结果的影响被不成比例放大——这正是偏差放大的直接通道。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 由 Lemma 3.1，物品流行度主要编码在预测分数矩阵 <span class="arithmatex">\(\hat{Y}\)</span>的主奇异分量中，其强度由谱范数<span class="arithmatex">\(\sigma_1(\hat{Y})\)</span>决定。实验发现深度增加时<span class="arithmatex">\(\sigma_1^2/\sum_k\sigma_k^2\)</span> 单调上升（谱坍缩），主分量对推荐结果的影响被不成比例放大——这正是偏差放大的直接通道。</li>
 <li><strong>本文切入点</strong>: 不做全局后处理去偏，而是<strong>逐层约束引发谱坍缩的两个架构源头</strong>（注意力聚合、FFN 投影），从根上给预测谱范数套上上界。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>SPRINT 是一个即插即用的训练期正则框架，不改变任何推理结构。输入为用户历史序列嵌入 <span class="arithmatex">\(X^{(0)}\)</span>，经 <span class="arithmatex">\(L\)</span> 层 Transformer 得到 <span class="arithmatex">\(X^{(L)}\)</span>，与物品嵌入内积得 <span class="arithmatex">\(\hat{Y}=X^{(L)}E^\top\)</span>。关键观察是把 <span class="arithmatex">\(L\)</span> 层输出重写为 <span class="arithmatex">\(X^{(L)}=(S^{(L)}\cdots S^{(1)})X^{(0)}(W^{(1)}\cdots W^{(L)})\)</span>：左侧注意力连乘与右侧 FFN 权重连乘分别对应两条谱范数增长通道。SPRINT 在每层对 <span class="arithmatex">\(S^{(\ell)}\)</span> 的最大列和与 <span class="arithmatex">\(W^{(\ell)}\)</span> 的谱范数施加正则，与推荐损失联合优化，从而在训练中抑制谱坍缩、在推理时保持原有打分与全库排序流程不变。</p>
+<p>SPRINT 是一个即插即用的训练期正则框架，不改变任何推理结构。输入为用户历史序列嵌入 <span class="arithmatex">\(X^{(0)}\)</span>，经<span class="arithmatex">\(L\)</span>层 Transformer 得到<span class="arithmatex">\(X^{(L)}\)</span>，与物品嵌入内积得<span class="arithmatex">\(\hat{Y}=X^{(L)}E^\top\)</span>。关键观察是把<span class="arithmatex">\(L\)</span>层输出重写为<span class="arithmatex">\(X^{(L)}=(S^{(L)}\cdots S^{(1)})X^{(0)}(W^{(1)}\cdots W^{(L)})\)</span>：左侧注意力连乘与右侧 FFN 权重连乘分别对应两条谱范数增长通道。SPRINT 在每层对<span class="arithmatex">\(S^{(\ell)}\)</span>的最大列和与<span class="arithmatex">\(W^{(\ell)}\)</span> 的谱范数施加正则，与推荐损失联合优化，从而在训练中抑制谱坍缩、在推理时保持原有打分与全库排序流程不变。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户历史序列嵌入 X(0)"] --&gt; B["L 层 Transformer: 注意力聚合 S(l) + FFN 投影 W(l)"]
     B --&gt; C["预测分数矩阵 Y = X(L) E^T"]
@@ -4239,17 +4250,17 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>注意力正则（约束最大列和，抑制流行度优先聚合）</strong>：痛点在于流行物品占据超过 75% 的注意力权重，且各层注意力主奇异向量高度对齐（余弦相似度 &gt; 0.8），由 Theorem 3.2 连乘后谱范数随深度<strong>指数增长</strong>。直接算 <span class="arithmatex">\(\|S^{(\ell)}\|_2\)</span> 需 <span class="arithmatex">\(O(|U|\bar n^3)\)</span> 的 SVD 且注意力随输入动态变化不可行，故利用行归一化性质 <span class="arithmatex">\(\|S\|_2\le\sqrt{\|S\|_1\|S\|_\infty}=\sqrt{\|S\|_1}\)</span>，再用 logsumexp 平滑 max 得到可微代理：
+<p><strong>注意力正则（约束最大列和，抑制流行度优先聚合）</strong>：痛点在于流行物品占据超过 75% 的注意力权重，且各层注意力主奇异向量高度对齐（余弦相似度 &gt; 0.8），由 Theorem 3.2 连乘后谱范数随深度<strong>指数增长</strong>。直接算 <span class="arithmatex">\(\|S^{(\ell)}\|_2\)</span>需<span class="arithmatex">\(O(|U|\bar n^3)\)</span>的 SVD 且注意力随输入动态变化不可行，故利用行归一化性质<span class="arithmatex">\(\|S\|_2\le\sqrt{\|S\|_1\|S\|_\infty}=\sqrt{\|S\|_1}\)</span>，再用 logsumexp 平滑 max 得到可微代理：
 $<span class="arithmatex">\(\widetilde{\|S^{(\ell)}\|_1}=\tfrac{1}{\tau}\log\sum_{u,t}\exp\big(\tau\cdot\|S^{(\ell)}_{u,t}\|_1\big),\ \tau=1\)</span>$
-列和直接刻画每个物品在聚合中的总影响力，约束它即阻止少数热门物品主导聚合；复杂度降至 <span class="arithmatex">\(O(|U|\bar n^2)\)</span>。作者特别指出不用 Frobenius 范数，因为 <span class="arithmatex">\(\|S\|_F^2=\sum_k\sigma_k^2\)</span> 会连带压制长尾奇异分量。</p>
+列和直接刻画每个物品在聚合中的总影响力，约束它即阻止少数热门物品主导聚合；复杂度降至 <span class="arithmatex">\(O(|U|\bar n^2)\)</span>。作者特别指出不用 Frobenius 范数，因为<span class="arithmatex">\(\|S\|_F^2=\sum_k\sigma_k^2\)</span> 会连带压制长尾奇异分量。</p>
 </li>
 <li>
-<p><strong>FFN 正则（约束谱范数，抑制低秩化）</strong>：由 Lemma 3.3，梯度下降下奇异值导数 <span class="arithmatex">\(\frac{d}{dt}\sigma_k\propto L\cdot(\sigma_k^2)^{1-1/L}\)</span> 随深度 <span class="arithmatex">\(L\)</span> 单调增大，导致 <span class="arithmatex">\(\sigma_1\)</span> 相对其余奇异值增长更快、表征趋于极端低秩。故对每层权重施加 <span class="arithmatex">\(\|W^{(1)}\cdots W^{(L)}\|_2\le\prod_\ell\|W^{(\ell)}\|_2\)</span> 的上界约束，<span class="arithmatex">\(\|W^{(\ell)}\|_2\)</span> 用单步幂迭代以 <span class="arithmatex">\(O(d^2)\)</span> 估计，多层线性可进一步松弛为逐矩阵约束。</p>
+<p><strong>FFN 正则（约束谱范数，抑制低秩化）</strong>：由 Lemma 3.3，梯度下降下奇异值导数 <span class="arithmatex">\(\frac{d}{dt}\sigma_k\propto L\cdot(\sigma_k^2)^{1-1/L}\)</span>随深度<span class="arithmatex">\(L\)</span>单调增大，导致<span class="arithmatex">\(\sigma_1\)</span>相对其余奇异值增长更快、表征趋于极端低秩。故对每层权重施加<span class="arithmatex">\(\|W^{(1)}\cdots W^{(L)}\|_2\le\prod_\ell\|W^{(\ell)}\|_2\)</span>的上界约束，<span class="arithmatex">\(\|W^{(\ell)}\|_2\)</span>用单步幂迭代以<span class="arithmatex">\(O(d^2)\)</span> 估计，多层线性可进一步松弛为逐矩阵约束。</p>
 </li>
 <li>
 <p><strong>训练目标与开销</strong>：总损失
 $<span class="arithmatex">\(\mathcal{L}_{\text{SPRINT}}=\mathcal{L}_{\text{rec}}+\lambda_{\text{attn}}\sum_{\ell=1}^{L}\log\widetilde{\|S^{(\ell)}\|_1}+\lambda_{\text{ffn}}\sum_{\ell=1}^{L}\log\|W^{(\ell)}\|_2\)</span>$
-取对数把连乘上界转为逐层求和，便于梯度检查点。Theorem 4.1 证明该目标对 <span class="arithmatex">\(\|\hat{Y}\|_2\)</span> 构成严格上界，从而由 Lemma 3.1 保证偏差缓解。额外复杂度 <span class="arithmatex">\(O(L|U|\bar n^2+Ld^2)\)</span>，实测仅约 3% 训练时间；推理零开销，负采样沿用骨干原有策略。</p>
+取对数把连乘上界转为逐层求和，便于梯度检查点。Theorem 4.1 证明该目标对 <span class="arithmatex">\(\|\hat{Y}\|_2\)</span>构成严格上界，从而由 Lemma 3.1 保证偏差缓解。额外复杂度<span class="arithmatex">\(O(L|U|\bar n^2+Ld^2)\)</span>，实测仅约 3% 训练时间；推理零开销，负采样沿用骨干原有策略。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4312,7 +4323,7 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{SPRINT}}=\mathcal{L}_{\text{rec}}
 </table>
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 采用序列推荐标准的 <code>Leave-One-Out</code>（最后一项测试、倒数第二项验证），严格按时间顺序，无未来信息穿越。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 无偏 <code>Full-Ranking</code>（对全库未交互物品排序），报告 NDCG@{5,10}、HR@{5,10}；公平性用 Fair-<span class="arithmatex">\(\alpha\)</span>（Top-1 推荐中底部 <span class="arithmatex">\(\alpha\)</span> 长尾物品曝光比例），主实验 <span class="arithmatex">\(\alpha=0.8\)</span>，ML-20M 因分布极偏改用 Fair-0.95。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 无偏 <code>Full-Ranking</code>（对全库未交互物品排序），报告 NDCG@{5,10}、HR@{5,10}；公平性用 Fair-<span class="arithmatex">\(\alpha\)</span>（Top-1 推荐中底部<span class="arithmatex">\(\alpha\)</span>长尾物品曝光比例），主实验<span class="arithmatex">\(\alpha=0.8\)</span>，ML-20M 因分布极偏改用 Fair-0.95。</li>
 <li><strong>对比基线与超参设置</strong>: 4 类 8 个基线——谱正则 LogDet (NeurIPS'23)/ReSN (WSDM'25)、倾向重加权 R2Rec (WWW'25)/D2LR (SIGIR'25)、时序解耦 MOJITO (SIGIR'23)/TPAB (KDD'25)、分布鲁棒 DROS (SIGIR'23)。骨干为 SASRec++ 与 HSTU，主实验层数扩至 8、嵌入维度 256；规模化实验在 ML-20M 上从 0.05M 扩至 0.34B 非嵌入参数（12 层、1536 维，6912× 扩容）。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4479,12 +4490,18 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{SPRINT}}=\mathcal{L}_{\text{rec}}
 <li><strong>公平性提升并非以准确率为代价</strong>：SPRINT 在 6 数据集上同时刷新准确率与公平性，Figure 5 显示其帕累托前沿严格优于所有基线——这与重加权类方法"压热门换公平"的此消彼长形成鲜明对比，根源在于它压制的是与流行度耦合的主奇异分量而非热门信号本身。</li>
 <li><strong>正则强度存在明确最优区间且鲁棒</strong>：<span class="arithmatex">\(\lambda_{\text{attn}}\)</span>、<span class="arithmatex">\(\lambda_{\text{ffn}}\)</span> 在较宽范围内性能平稳（Figure 9），且训练开销仅约 3%（Figure 7），具备工业部署可行性；在 TIGER/LETTER 生成式骨干上同样稳定增益，说明谱坍缩是 Transformer 架构级通病而非某一骨干特例。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 ReSN/LogDet 的本质区别在于——后者在静态 CF 的用户/物品嵌入空间做全局谱惩罚，无法处理序列推荐中动态演化的用户表征，且不区分架构组件；SPRINT 定位到注意力与 FFN 两条具体谱增长通道做<strong>逐层</strong>约束。与 MOJITO/TPAB 的因果解耦相比，SPRINT 无需构造因果图，且直接作用于偏差放大的生成机制而非事后校正。</li>
 <li><strong>可迁移亮点</strong>: ① 用"行归一化矩阵的 <span class="arithmatex">\(\sqrt{\|S\|_1}\)</span> 上界 + logsumexp 平滑"替代 SVD 估计谱范数，是处理动态输入矩阵谱约束的通用技巧，可迁移到任意注意力型推荐/检索模型；② 把多层连乘的谱上界取对数转为逐层求和，天然兼容梯度检查点与分布式训练。</li>
 <li><strong>审稿级局限批判</strong>: ① 理论推导假设 FFN 恒等激活与注意力跨层奇异向量对齐（<span class="arithmatex">\(\epsilon\)</span>-扰动），真实非线性与多头设置下界仅"至多差常数因子"，理论紧度有限；② 公平性仅在 Top-1 曝光比例上主评，未讨论用户侧公平（不同活跃度用户的效用差异）与多样性/新颖性等更细粒度生态指标；③ 规模化实验仅在 ML-20M 单数据集完成，0.34B 结论的跨域泛化性证据偏薄。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

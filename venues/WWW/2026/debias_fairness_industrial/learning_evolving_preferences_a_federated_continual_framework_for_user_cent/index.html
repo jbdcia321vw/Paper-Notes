@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4224,12 +4235,12 @@
 <ul>
 <li><strong>主流范式</strong>: 联邦推荐（PFedRec、FedRAP、GPFedRec）以用户为客户端、只上传参数/嵌入，在隐私约束下做个性化；会话推荐（DMI-GNN、HearInt、MiaSRec）在中心化场景建模多兴趣与意图解耦。</li>
 <li><strong>前人局限</strong>: ① 联邦方法假设用户行为静态、依赖固定数据快照，忽略偏好的连续演化，模型随会话累积而<strong>时间遗忘</strong>；② 直接聚合参数被少数大数据客户端主导，异构分布下<strong>跨用户协同关系</strong>无法被有效刻画，个性化与协同相互掣肘。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 用户对物品语义的认知（由表征模块 <span class="arithmatex">\(f_\phi\)</span> 承载）在时间上高度稳定，而决策逻辑（由预测模块 <span class="arithmatex">\(p_\psi\)</span> 承载）高度个性化；同时不同用户存在可复用的<strong>时序意图模式</strong>（如"探索→决策"的转移节律）。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 用户对物品语义的认知（由表征模块 <span class="arithmatex">\(f_\phi\)</span>承载）在时间上高度稳定，而决策逻辑（由预测模块<span class="arithmatex">\(p_\psi\)</span> 承载）高度个性化；同时不同用户存在可复用的<strong>时序意图模式</strong>（如"探索→决策"的转移节律）。</li>
 <li><strong>本文切入点</strong>: 表征模块共享 + 预测模块私有，用自蒸馏锁住时间连续性、用原型检索补足跨用户协同，二者解耦且互不干扰。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>每个用户为一个客户端，本地模型拆为共享表征模块 <span class="arithmatex">\(f_\phi\)</span>（Transformer 编码会话）与私有预测模块 <span class="arithmatex">\(p_\psi\)</span>（MLP）。第 <span class="arithmatex">\(t\)</span> 轮：客户端先用当前 <span class="arithmatex">\(\phi^{(t)}\)</span> 计算本会话原型 <span class="arithmatex">\(h_u^{(t)}=f_\phi(\mathcal{R}_u^{(t)})\)</span> 上传服务器；服务器并入动态知识库 <span class="arithmatex">\(\mathrm{KB}^{(t)}\)</span>，为每个客户端检索 top-<span class="arithmatex">\(k\)</span> 相似原型并融合为 <span class="arithmatex">\(\rho_u^{(t)}\)</span> 下发；客户端将 <span class="arithmatex">\(h_u^{(t)}\|\rho_u^{(t)}\)</span> 拼接送入 <span class="arithmatex">\(p_\psi\)</span> 预测，同时以 <span class="arithmatex">\(f_\phi^{(t-1)}\)</span> 为教师做自蒸馏；训练后仅上传 <span class="arithmatex">\(\phi_u^{(t)}\)</span> 做 FedAvg。推理时仅需一次前向 + 一次原型拼接，无额外解码开销。</p>
+<p>每个用户为一个客户端，本地模型拆为共享表征模块 <span class="arithmatex">\(f_\phi\)</span>（Transformer 编码会话）与私有预测模块<span class="arithmatex">\(p_\psi\)</span>（MLP）。第<span class="arithmatex">\(t\)</span>轮：客户端先用当前<span class="arithmatex">\(\phi^{(t)}\)</span>计算本会话原型<span class="arithmatex">\(h_u^{(t)}=f_\phi(\mathcal{R}_u^{(t)})\)</span>上传服务器；服务器并入动态知识库<span class="arithmatex">\(\mathrm{KB}^{(t)}\)</span>，为每个客户端检索 top-<span class="arithmatex">\(k\)</span>相似原型并融合为<span class="arithmatex">\(\rho_u^{(t)}\)</span>下发；客户端将<span class="arithmatex">\(h_u^{(t)}\|\rho_u^{(t)}\)</span>拼接送入<span class="arithmatex">\(p_\psi\)</span>预测，同时以<span class="arithmatex">\(f_\phi^{(t-1)}\)</span>为教师做自蒸馏；训练后仅上传<span class="arithmatex">\(\phi_u^{(t)}\)</span> 做 FedAvg。推理时仅需一次前向 + 一次原型拼接，无额外解码开销。</p>
 <pre class="mermaid"><code>flowchart TD
     A["客户端会话序列 R_u^(t)"] --&gt; B["共享表征模块 f_phi^(t)"]
     B --&gt; C["本地原型 h_u^(t)"]
@@ -4250,10 +4261,10 @@ $<span class="arithmatex">\(\mathcal{L}_{dist}=\mathrm{MSE}\big(f_\phi^{(t)}(\ma
 直觉：约束的是"对同一输入的语义解释"而非"对旧样本的记忆"，因此零存储成本即可实现隐式时序正则，且不引入旧物品分布偏差。</p>
 </li>
 <li>
-<p><strong>跨用户原型迁移 (IUPR)</strong>：痛点是参数聚合被大数据客户端主导、无法表达细粒度用户关系。服务器维护 <span class="arithmatex">\(\mathrm{KB}^{(t)}=\mathrm{KB}^{(t-1)}\cup\{h_u^{(t)}\}_{u=1}^{N}\)</span>，按余弦相似度为客户端 <span class="arithmatex">\(u\)</span> 检索 top-<span class="arithmatex">\(k\)</span> 邻居原型 <span class="arithmatex">\(H_u^{(t)}\)</span>，经融合函数 <span class="arithmatex">\(\mathcal{M}(\cdot)\)</span>（均值或降维）得 <span class="arithmatex">\(\rho_u^{(t)}\)</span>，预测改为 <span class="arithmatex">\(\hat{y}^{(t)}=p_\psi(h_u^{(t)}\|\rho_u^{(t)})\)</span>。直觉：原型是会话级意图的压缩摘要，比原始参数更鲁棒、更隐私友好（不上传可识别信息），且"检索而非聚合"避免了异构性下的均值坍缩。</p>
+<p><strong>跨用户原型迁移 (IUPR)</strong>：痛点是参数聚合被大数据客户端主导、无法表达细粒度用户关系。服务器维护 <span class="arithmatex">\(\mathrm{KB}^{(t)}=\mathrm{KB}^{(t-1)}\cup\{h_u^{(t)}\}_{u=1}^{N}\)</span>，按余弦相似度为客户端<span class="arithmatex">\(u\)</span>检索 top-<span class="arithmatex">\(k\)</span>邻居原型<span class="arithmatex">\(H_u^{(t)}\)</span>，经融合函数<span class="arithmatex">\(\mathcal{M}(\cdot)\)</span>（均值或降维）得<span class="arithmatex">\(\rho_u^{(t)}\)</span>，预测改为<span class="arithmatex">\(\hat{y}^{(t)}=p_\psi(h_u^{(t)}\|\rho_u^{(t)})\)</span>。直觉：原型是会话级意图的压缩摘要，比原始参数更鲁棒、更隐私友好（不上传可识别信息），且"检索而非聚合"避免了异构性下的均值坍缩。</p>
 </li>
 <li>
-<p><strong>训练目标与效率</strong>：总目标 <span class="arithmatex">\(\min_{\phi,\{\psi_u\}}\sum_u \alpha_u\big(\mathcal{L}_{rec}+\lambda\mathcal{L}_{dist}\big)\)</span>，<span class="arithmatex">\(\mathcal{L}_{rec}\)</span> 为会话内下一物品的交叉熵（隐式反馈正负样本），无额外负采样设计；<span class="arithmatex">\(\lambda=10\)</span> 最优。效率侧支持滑窗裁剪知识库与降低原型传输频率（间隔 3 轮）以换取近似无损的性能。</p>
+<p><strong>训练目标与效率</strong>：总目标 <span class="arithmatex">\(\min_{\phi,\{\psi_u\}}\sum_u \alpha_u\big(\mathcal{L}_{rec}+\lambda\mathcal{L}_{dist}\big)\)</span>，<span class="arithmatex">\(\mathcal{L}_{rec}\)</span>为会话内下一物品的交叉熵（隐式反馈正负样本），无额外负采样设计；<span class="arithmatex">\(\lambda=10\)</span> 最优。效率侧支持滑窗裁剪知识库与降低原型传输频率（间隔 3 轮）以换取近似无损的性能。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4518,15 +4529,21 @@ $<span class="arithmatex">\(\mathcal{L}_{dist}=\mathrm{MSE}\big(f_\phi^{(t)}(\ma
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>IUPR 是更"硬"的增益来源，TASD 是更"稳"的增益来源</strong>：去掉 IUPR 后 Tmall HR@10 从 0.3074 跌至 0.2520（−18.0%）、NDCG@10 从 0.1947 跌至 0.1412（−27.5%），跌幅远超去掉 TASD（−4.8% / −4.5%）；说明在数据稀疏的 Tmall 上，跨用户原型补足的信息量比时序正则更关键，而 TASD 的贡献在会话数最多的 XING 上最明显（HR@10 −5.2%）。</li>
-<li><strong>TASD 的收益并非单调，存在"稳定性—可塑性"权衡</strong>：LastFM 上去掉 TASD 后 NDCG@10 反而微升（0.1944→0.1967），说明该数据集偏好漂移快、过强的历史对齐会抑制适应；这与超参分析中 <span class="arithmatex">\(\lambda=10\)</span> 最优、<span class="arithmatex">\(\lambda\)</span> 过大性能回落的结论一致，印证了正则强度需按漂移速率调节。</li>
-<li><strong>原型数量 <span class="arithmatex">\(k\)</span> 呈倒 U 型，且抗遗忘性可被直接观测</strong>：<span class="arithmatex">\(k\)</span> 从 1 增至中等值性能上升、过大则因噪声原型下降；图 2(a) 追踪各客户端<strong>首个会话</strong>在训练轮次上的 HR，基线（SASRec/GRU4Rec/TiSASRec/MiaSRec）随会话累积持续下滑，而 FCUCR 保持高位；图 2(b)(c) 显示原型增强后正负样本预测概率分布明显分离，而 Fed-SASRec 的负样本概率大量堆积在 0.5 附近，判别力不足。</li>
+<li><strong>TASD 的收益并非单调，存在"稳定性—可塑性"权衡</strong>：LastFM 上去掉 TASD 后 NDCG@10 反而微升（0.1944→0.1967），说明该数据集偏好漂移快、过强的历史对齐会抑制适应；这与超参分析中 <span class="arithmatex">\(\lambda=10\)</span>最优、<span class="arithmatex">\(\lambda\)</span> 过大性能回落的结论一致，印证了正则强度需按漂移速率调节。</li>
+<li><strong>原型数量 <span class="arithmatex">\(k\)</span>呈倒 U 型，且抗遗忘性可被直接观测</strong>：<span class="arithmatex">\(k\)</span> 从 1 增至中等值性能上升、过大则因噪声原型下降；图 2(a) 追踪各客户端<strong>首个会话</strong>在训练轮次上的 HR，基线（SASRec/GRU4Rec/TiSASRec/MiaSRec）随会话累积持续下滑，而 FCUCR 保持高位；图 2(b)(c) 显示原型增强后正负样本预测概率分布明显分离，而 Fed-SASRec 的负样本概率大量堆积在 0.5 附近，判别力不足。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 PFedRec/FedRAP/GPFedRec 的本质差异在于它们只做<strong>空间维度的客户端个性化</strong>、假设数据静态，FCUCR 显式引入<strong>时间维度的持续学习</strong>；与 F3CRC 相比，本文进一步处理了会话流式到达与跨客户端"空间遗忘"，且以原型检索替代参数聚合，规避异构性下的聚合坍缩；与 Fed-DMI-GNN/HearInt 等图结构会话模型相比，本文不依赖跨会话图构建，通信开销更低且天然隐私友好。</li>
 <li><strong>可迁移亮点</strong>: ① "在新数据上对齐旧模型输出"的<strong>无回放自蒸馏</strong>可直接迁移到任何存储受限的端侧增量推荐；② <strong>原型检索替代参数聚合</strong>的思路可迁移到多场景/跨域推荐中的知识迁移，用会话级摘要做软邻居检索比全局 FedAvg 更能保留长尾客户端信号。</li>
-<li><strong>审稿级局限批判</strong>: ① 用户规模极小（391–1,746 客户端），与工业级百万级客户端的通信与知识库检索开销（top-<span class="arithmatex">\(k\)</span> 全库相似度计算为 <span class="arithmatex">\(O(N\cdot|\mathrm{KB}|)\)</span>）未被评估，缺乏真实大规模或线上 A/B 证据；② 原型知识库跨轮累积存在<strong>隐私侧信道风险</strong>（会话级表征可能被反演），文中仅用 LDP 加噪做了附录级验证，未给出形式化隐私预算与效用权衡曲线；③ 所有基线均为作者自行改造的 <code>Fed-</code> 版本，缺少与原论文中心化结果的对照，公平性存疑。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 用户规模极小（391–1,746 客户端），与工业级百万级客户端的通信与知识库检索开销（top-<span class="arithmatex">\(k\)</span>全库相似度计算为<span class="arithmatex">\(O(N\cdot|\mathrm{KB}|)\)</span>）未被评估，缺乏真实大规模或线上 A/B 证据；② 原型知识库跨轮累积存在<strong>隐私侧信道风险</strong>（会话级表征可能被反演），文中仅用 LDP 加噪做了附录级验证，未给出形式化隐私预算与效用权衡曲线；③ 所有基线均为作者自行改造的 <code>Fed-</code> 版本，缺少与原论文中心化结果的对照，公平性存疑。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

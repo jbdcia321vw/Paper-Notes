@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 <li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>直播内容时刻变化，同一房间在不同时刻对用户价值差异巨大，而精排模型在打分时只能看到"已发生"的内容，无法感知用户真正在意的"后续内容是否精彩"。本文把 30 秒直播切片经 LLM 多模态编码后用 K-Means 量化为 Semantic ID (Sid) 序列，用 Transformer 编码器理解作者历史内容、解码器自回归预测下一段 Sid，将编码输出 <span class="arithmatex">\(\hat{I}\)</span> 与预测输出 <span class="arithmatex">\(\hat{D}\)</span> 作为前瞻特征注入 MMoE 多任务精排。离线 AUC/GAUC 全面正增益（GAUC 最高 +0.65%），线上 A/B 曝光 +0.457%、送礼次数 +2.48%、送礼人数 +1.011%。</p>
+<p>直播内容时刻变化，同一房间在不同时刻对用户价值差异巨大，而精排模型在打分时只能看到"已发生"的内容，无法感知用户真正在意的"后续内容是否精彩"。本文把 30 秒直播切片经 LLM 多模态编码后用 K-Means 量化为 Semantic ID (Sid) 序列，用 Transformer 编码器理解作者历史内容、解码器自回归预测下一段 Sid，将编码输出 <span class="arithmatex">\(\hat{I}\)</span>与预测输出<span class="arithmatex">\(\hat{D}\)</span> 作为前瞻特征注入 MMoE 多任务精排。离线 AUC/GAUC 全面正增益（GAUC 最高 +0.65%），线上 A/B 曝光 +0.457%、送礼次数 +2.48%、送礼人数 +1.011%。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 工业直播推荐沿用 FM/DIN 式特征交叉精排，近期工作（FARM、LARM）引入短视频跨域信息与 LLM 语义 embedding 来增强内容理解。</li>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>每 30 秒对直播间做一次 LLM 多模态语义编码（作者信息、画面、语音、评论），得到片段 embedding 序列 <span class="arithmatex">\(L_e\)</span>；用 K-Means（<span class="arithmatex">\(N{=}20000\)</span>）构建码本将每段量化为 Sid，并对连续重复 Sid 做"去重序列 <span class="arithmatex">\(L'_c\)</span> + 频次序列 <span class="arithmatex">\(W_c\)</span>"压缩；取最近 <span class="arithmatex">\(l{=}100\)</span> 段送入 Transformer 编码器得到作者内容表征 <span class="arithmatex">\(\hat{I}\)</span>，解码器以 [BOS] 为 query 交叉注意力预测下一段 Sid 表征 <span class="arithmatex">\(\hat{D}\)</span>；二者经 stop-gradient 后与 uId/aId 拼接进入 MMoE 多任务精排，输出 CTR/WTR/LVTR/GTR。训练时预测任务与排序任务联合优化，推理时对作者最新 Sid 序列前向一次即得前瞻特征。</p>
+<p>每 30 秒对直播间做一次 LLM 多模态语义编码（作者信息、画面、语音、评论），得到片段 embedding 序列 <span class="arithmatex">\(L_e\)</span>；用 K-Means（<span class="arithmatex">\(N{=}20000\)</span>）构建码本将每段量化为 Sid，并对连续重复 Sid 做"去重序列<span class="arithmatex">\(L'_c\)</span>+ 频次序列<span class="arithmatex">\(W_c\)</span>"压缩；取最近<span class="arithmatex">\(l{=}100\)</span>段送入 Transformer 编码器得到作者内容表征<span class="arithmatex">\(\hat{I}\)</span>，解码器以 [BOS] 为 query 交叉注意力预测下一段 Sid 表征<span class="arithmatex">\(\hat{D}\)</span>；二者经 stop-gradient 后与 uId/aId 拼接进入 MMoE 多任务精排，输出 CTR/WTR/LVTR/GTR。训练时预测任务与排序任务联合优化，推理时对作者最新 Sid 序列前向一次即得前瞻特征。</p>
 <pre class="mermaid"><code>flowchart TD
     A["直播流 30s 切片 + LLM 多模态编码"] --&gt; B["K-Means 量化 → Sid 序列 (去重+频次压缩)"]
     B --&gt; C["Transformer Encoder → 历史内容表征 I"]
@@ -4243,15 +4254,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>语义量化与序列压缩（Sid 化）</strong>：LLM 片段 embedding 维度高、稠密且存储昂贵，直接用下游成本高。本文用 K-Means 聚类中心作为码本 <span class="arithmatex">\(\mathcal{C}=\text{K-Means}(E,N)\)</span>，每段取最近码字 <span class="arithmatex">\(c=\text{NearestCode}(e,\mathcal{C})\)</span> 作为 Sid；针对直播内容长时间不变导致序列信息密度低的问题，压缩为去重序列 <span class="arithmatex">\(L'_c\)</span> 与频次序列 <span class="arithmatex">\(W_c\)</span>，embedding 为 <span class="arithmatex">\(\text{EmbLookup}(\hat{\mathcal{C}},I)+\text{EmbLookup}(\hat{\mathcal{F}},W)\)</span>。直觉：离散码字把"跳舞/唱歌/游戏"等语义类别聚合，既降存储又让相似内容共享统计强度。</p>
+<p><strong>语义量化与序列压缩（Sid 化）</strong>：LLM 片段 embedding 维度高、稠密且存储昂贵，直接用下游成本高。本文用 K-Means 聚类中心作为码本 <span class="arithmatex">\(\mathcal{C}=\text{K-Means}(E,N)\)</span>，每段取最近码字<span class="arithmatex">\(c=\text{NearestCode}(e,\mathcal{C})\)</span>作为 Sid；针对直播内容长时间不变导致序列信息密度低的问题，压缩为去重序列<span class="arithmatex">\(L'_c\)</span>与频次序列<span class="arithmatex">\(W_c\)</span>，embedding 为<span class="arithmatex">\(\text{EmbLookup}(\hat{\mathcal{C}},I)+\text{EmbLookup}(\hat{\mathcal{F}},W)\)</span>。直觉：离散码字把"跳舞/唱歌/游戏"等语义类别聚合，既降存储又让相似内容共享统计强度。</p>
 </li>
 <li>
-<p><strong>前瞻预测（Foresight Prediction）</strong>：精排看不到未来内容是根本痛点。编码器做自注意力 <span class="arithmatex">\(I^{i+1}=I^i+\text{SelfAttention}(I^i)\)</span> 后接 FFN；解码器以可学习 [BOS] 为初始 query 做交叉注意力 <span class="arithmatex">\(D^{i+1}=D^i+\text{CrossAttention}(D^i,\hat{I},\hat{I})\)</span>，输出 <span class="arithmatex">\(\hat{D}\)</span> 与码本做点积多分类 <span class="arithmatex">\(p=\text{Softmax}(\hat{D}\mathcal{C}^\top)\)</span>，损失为
+<p><strong>前瞻预测（Foresight Prediction）</strong>：精排看不到未来内容是根本痛点。编码器做自注意力 <span class="arithmatex">\(I^{i+1}=I^i+\text{SelfAttention}(I^i)\)</span>后接 FFN；解码器以可学习 [BOS] 为初始 query 做交叉注意力<span class="arithmatex">\(D^{i+1}=D^i+\text{CrossAttention}(D^i,\hat{I},\hat{I})\)</span>，输出<span class="arithmatex">\(\hat{D}\)</span>与码本做点积多分类<span class="arithmatex">\(p=\text{Softmax}(\hat{D}\mathcal{C}^\top)\)</span>，损失为
 $<span class="arithmatex">\(\mathcal{L}_{pred}=-\sum\log P(\hat{c}_{l+1}\mid[\text{BOS}],I).\)</span>$
 直觉：下一段 Sid 是否属于 highlight 类别，直接决定用户下一时间窗的互动意愿，因此"预测未来"比"理解现在"更贴近留存目标。</p>
 </li>
 <li>
-<p><strong>特征精炼与流式训练</strong>：<span class="arithmatex">\(\hat{I}\)</span>（作者长期内容融合）与 <span class="arithmatex">\(\hat{D}\)</span>（未来内容预测）经 stop-gradient 后拼接进 MMoE：<span class="arithmatex">\(\hat{y}=\text{MultiTask}(\text{Concat}[uId,aId,\text{sg}(\hat{I}),\text{sg}(\hat{D})])\)</span>，排序损失为多任务交叉熵 <span class="arithmatex">\(\mathcal{L}_{rank}\)</span>。stop-gradient 截断排序梯度回传，避免排序信号污染生成式预测的表征空间；流式训练中维护每个作者的近期 Sid 库，训练时以最后一段为目标、前 <span class="arithmatex">\(l\)</span> 段为上下文，推理时对最新序列前向一次，开销仅为一次短序列 Transformer 前向，可在线部署。</p>
+<p><strong>特征精炼与流式训练</strong>：<span class="arithmatex">\(\hat{I}\)</span>（作者长期内容融合）与<span class="arithmatex">\(\hat{D}\)</span>（未来内容预测）经 stop-gradient 后拼接进 MMoE：<span class="arithmatex">\(\hat{y}=\text{MultiTask}(\text{Concat}[uId,aId,\text{sg}(\hat{I}),\text{sg}(\hat{D})])\)</span>，排序损失为多任务交叉熵<span class="arithmatex">\(\mathcal{L}_{rank}\)</span>。stop-gradient 截断排序梯度回传，避免排序信号污染生成式预测的表征空间；流式训练中维护每个作者的近期 Sid 库，训练时以最后一段为目标、前<span class="arithmatex">\(l\)</span> 段为上下文，推理时对最新序列前向一次，开销仅为一次短序列 Transformer 前向，可在线部署。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4283,7 +4294,7 @@ $<span class="arithmatex">\(\mathcal{L}_{pred}=-\sum\log P(\hat{c}_{l+1}\mid[\te
 <ul>
 <li><strong>数据划分与防穿越</strong>: 采用工业在线流式训练 + 离线回放评估，按时间顺序构造样本（未明确 Leave-One-Out 或比例划分细节），Sid 序列严格只取当前时刻之前的历史片段，避免未来信息穿越。</li>
 <li><strong>排名评测协议</strong>: 离线采用 AUC 与 GAUC（按用户分组加权，衡量用户间偏好区分度），非 Full-Ranking 列表指标；线上采用标准 A/B 测试，报告核心指标（曝光、观看次数、观看时长）与互动指标（点赞、关注、送礼次数、送礼人数）的相对提升及置信区间。</li>
-<li><strong>对比基线与超参</strong>: 基线为<strong>基础精排模型</strong>（工业 MMoE 多任务）及其逐级加特征变体（+<span class="arithmatex">\(\hat{I}\)</span>、+<span class="arithmatex">\(\hat{D}\)</span>）；Sid 预测对比三种规则策略（Last-1、Max-Freq、Max-Weight）；码本大小 <span class="arithmatex">\(N{=}20000\)</span>，上下文长度 <span class="arithmatex">\(l{=}100\)</span>，切片粒度 30 秒。</li>
+<li><strong>对比基线与超参</strong>: 基线为<strong>基础精排模型</strong>（工业 MMoE 多任务）及其逐级加特征变体（+<span class="arithmatex">\(\hat{I}\)</span>、+<span class="arithmatex">\(\hat{D}\)</span>）；Sid 预测对比三种规则策略（Last-1、Max-Freq、Max-Weight）；码本大小<span class="arithmatex">\(N{=}20000\)</span>，上下文长度<span class="arithmatex">\(l{=}100\)</span>，切片粒度 30 秒。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4428,19 +4439,25 @@ $<span class="arithmatex">\(\mathcal{L}_{pred}=-\sum\log P(\hat{c}_{l+1}\mid[\te
 </tr>
 </tbody>
 </table>
-<p>（注：原文以逐级加特征形式呈现，<span class="arithmatex">\(\hat{D}\)</span> 增益为在 <span class="arithmatex">\(\hat{I}\)</span> 基础上的增量。）</p>
+<p>（注：原文以逐级加特征形式呈现，<span class="arithmatex">\(\hat{D}\)</span>增益为在<span class="arithmatex">\(\hat{I}\)</span> 基础上的增量。）</p>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>前瞻预测是主要增益来源，历史内容理解增益有限</strong>：单独加 <span class="arithmatex">\(\hat{I}\)</span> 时 CTR AUC 为 +0.00%、LVTR AUC 甚至 −0.01%，说明基础精排已充分建模了"已发生内容"；而叠加 <span class="arithmatex">\(\hat{D}\)</span> 后所有指标全面转正，WTR GAUC 提升 +0.65%，验证"评估未来内容而非当前内容"才是直播场景的增量信息源。</li>
+<li><strong>前瞻预测是主要增益来源，历史内容理解增益有限</strong>：单独加 <span class="arithmatex">\(\hat{I}\)</span>时 CTR AUC 为 +0.00%、LVTR AUC 甚至 −0.01%，说明基础精排已充分建模了"已发生内容"；而叠加<span class="arithmatex">\(\hat{D}\)</span> 后所有指标全面转正，WTR GAUC 提升 +0.65%，验证"评估未来内容而非当前内容"才是直播场景的增量信息源。</li>
 <li><strong>GAUC 增益系统性大于 AUC</strong>：如 CTR 上 AUC +0.05% 而 GAUC +0.24%，说明前瞻特征主要改善的是<strong>用户间偏好区分度</strong>，即帮助模型对不同用户推送不同演化阶段的直播间，而非整体打分偏移。</li>
 <li><strong>模型化 Sid 预测远优于规则外推</strong>：本文预测准确率 21.35%，是 Max-Weight 规则（9.03%）的 2.4 倍、Last-1（8.32%）的 2.6 倍，证明 Transformer 编解码确实学到了内容演化规律而非简单复制；线上送礼次数 +2.48% 也印证 highlight 预测与营收指标强相关（案例中送礼集中于跳舞/唱歌片段）。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 FARM/LARM 仅用归档内容做跨域或 LLM 语义增强，本文首次把"未来内容"作为显式建模对象；相比 LiveForesighter 用商品序列间接反映未来，本文的 Sid 序列覆盖全内容类型且连续演化，预测粒度更细、更通用。</li>
 <li><strong>可迁移亮点</strong>: ①"去重序列 + 频次序列"的压缩编码可直接迁移到任何长时稳定内容的序列建模（如长视频、播客）；②stop-gradient 隔离生成式预测与排序任务的梯度，是生成式特征注入精排的通用工程范式。</li>
 <li><strong>审稿级局限批判</strong>: ①实验完全基于单一工业平台私有数据，无公开数据集复现，Sid 码本 <span class="arithmatex">\(N{=}20000\)</span> 与 30 秒粒度的敏感性未做消融；②预测准确率仅 21.35%，前瞻信号噪声较大，且线上增益置信区间（如曝光 [−0.76%, +1.71%]）跨越零，统计显著性存疑；③LLM 每 30 秒编码一次的全量作者开销与在线推理延迟未量化。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

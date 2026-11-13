@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,17 +4220,17 @@
 <li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>现有推理增强序列推荐（ReaRec、LARES）把"推理空间"与"预测空间"耦合在同一 <span class="arithmatex">\(d\)</span> 维状态上，推理深度受限且需 RL 多阶段训练。RecRec 借鉴 TRM 的双状态递归范式：Context Compressor 用 <span class="arithmatex">\(R\)</span> 个可学习 query 把骨干隐状态蒸馏为 <span class="arithmatex">\(R\)</span> 个潜在兴趣 <span class="arithmatex">\(\mathbf{M}\)</span>，Recursive Reasoner 在独立的推理态 <span class="arithmatex">\(\mathbf{S}\)</span> 上"先想后写"地迭代精炼 <span class="arithmatex">\(\mathbf{M}\)</span>，两阶段纯监督训练 + 深监督使推理深度可在推理时自由外推。四个数据集 Full-Ranking 下 NDCG@10 相对最优推理基线最高提升 14.8%（Steam），且三个数据集上增益可延伸至训练深度之外。</p>
+<p>现有推理增强序列推荐（ReaRec、LARES）把"推理空间"与"预测空间"耦合在同一 <span class="arithmatex">\(d\)</span>维状态上，推理深度受限且需 RL 多阶段训练。RecRec 借鉴 TRM 的双状态递归范式：Context Compressor 用<span class="arithmatex">\(R\)</span>个可学习 query 把骨干隐状态蒸馏为<span class="arithmatex">\(R\)</span>个潜在兴趣<span class="arithmatex">\(\mathbf{M}\)</span>，Recursive Reasoner 在独立的推理态<span class="arithmatex">\(\mathbf{S}\)</span>上"先想后写"地迭代精炼<span class="arithmatex">\(\mathbf{M}\)</span>，两阶段纯监督训练 + 深监督使推理深度可在推理时自由外推。四个数据集 Full-Ranking 下 NDCG@10 相对最优推理基线最高提升 14.8%（Steam），且三个数据集上增益可延伸至训练深度之外。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: SASRec/BERT4Rec 单次前向编码历史、从末位隐状态一次性出分；ReaRec 把推理 token 拼进输入序列反复前向，LARES 用共享 block 迭代全部 <span class="arithmatex">\(L\)</span> 个隐状态并配 GRPO 强化学习后训练。</li>
 <li><strong>前人局限</strong>: ① 三者最终预测都坍缩为单个 <span class="arithmatex">\(d\)</span> 维向量，推理算力再大也无法扩展预测态容量；② 推理态即预测态，中间计算直接扰动用于打分的表征；③ ReaRec 的推理位置编码固定步数，LARES 要突破训练深度必须引入 RL 阶段，训练链路重。</li>
 <li><strong>核心洞察 (Key Insight)</strong>: 推理与预测应是两个空间——TRM 在组合任务上证明"共享权重 block + 双状态（scratchpad/answer）+ 逐步 detached 深监督"可让每步学会"改进任意输入"，从而外推到更多步数；该范式尚未被引入推荐。</li>
-<li><strong>本文切入点</strong>: 把"答案态"换成 <span class="arithmatex">\(R\)</span> 个潜在兴趣（多向量预测态），"草稿态"换成专用推理态 <span class="arithmatex">\(\mathbf{S}\)</span>，用注意力路由替代 TRM 的拼接 MLP，纯监督两阶段替代 RL。</li>
+<li><strong>本文切入点</strong>: 把"答案态"换成 <span class="arithmatex">\(R\)</span>个潜在兴趣（多向量预测态），"草稿态"换成专用推理态<span class="arithmatex">\(\mathbf{S}\)</span>，用注意力路由替代 TRM 的拼接 MLP，纯监督两阶段替代 RL。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>骨干（SASRec/BERT4Rec）编码历史得 <span class="arithmatex">\(\mathbf{H}\in\mathbb{R}^{L\times d}\)</span>；Context Compressor 以 <span class="arithmatex">\(R\)</span> 个无位置编码的可学习 query 经 cross-attn→self-attn→FFN 蒸馏出初始潜在兴趣 <span class="arithmatex">\(\mathbf{M}^0\in\mathbb{R}^{R\times d}\)</span>。Recursive Reasoner 以单个共享权重 Transformer block 交替更新两个同形状状态：推理态 <span class="arithmatex">\(\mathbf{S}\)</span>（只做中间计算、永不直接解码）与兴趣态 <span class="arithmatex">\(\mathbf{M}\)</span>（唯一用于打分）。每个 reasoning step 先做 <span class="arithmatex">\(n\)</span> 次 <span class="arithmatex">\(\mathbf{S}\)</span> 内层传递（关注 <span class="arithmatex">\([\mathbf{H};\mathbf{M}]\)</span>），再经 GRU 门把候选更新写入 <span class="arithmatex">\(\mathbf{M}\)</span>。训练分两阶段：阶段 1 联合训练骨干+Compressor（含 IDR）；阶段 2 冻结前两者、只训 Reasoner，采用 <span class="arithmatex">\(K\)</span> 轮深监督、每轮 <span class="arithmatex">\(T\)</span> 步、仅末步反传（1-step BPTT），训练总深度 <span class="arithmatex">\(N=K\times T=9\)</span>。推理时 <span class="arithmatex">\(N\)</span> 可任意设定。</p>
+<p>骨干（SASRec/BERT4Rec）编码历史得 <span class="arithmatex">\(\mathbf{H}\in\mathbb{R}^{L\times d}\)</span>；Context Compressor 以<span class="arithmatex">\(R\)</span>个无位置编码的可学习 query 经 cross-attn→self-attn→FFN 蒸馏出初始潜在兴趣<span class="arithmatex">\(\mathbf{M}^0\in\mathbb{R}^{R\times d}\)</span>。Recursive Reasoner 以单个共享权重 Transformer block 交替更新两个同形状状态：推理态<span class="arithmatex">\(\mathbf{S}\)</span>（只做中间计算、永不直接解码）与兴趣态<span class="arithmatex">\(\mathbf{M}\)</span>（唯一用于打分）。每个 reasoning step 先做<span class="arithmatex">\(n\)</span>次<span class="arithmatex">\(\mathbf{S}\)</span>内层传递（关注<span class="arithmatex">\([\mathbf{H};\mathbf{M}]\)</span>），再经 GRU 门把候选更新写入<span class="arithmatex">\(\mathbf{M}\)</span>。训练分两阶段：阶段 1 联合训练骨干+Compressor（含 IDR）；阶段 2 冻结前两者、只训 Reasoner，采用<span class="arithmatex">\(K\)</span>轮深监督、每轮<span class="arithmatex">\(T\)</span>步、仅末步反传（1-step BPTT），训练总深度<span class="arithmatex">\(N=K\times T=9\)</span>。推理时<span class="arithmatex">\(N\)</span> 可任意设定。</p>
 <pre class="mermaid"><code>flowchart TD
     A["交互序列 → 骨干 → H (L×d)"] --&gt; B["Context Compressor: R 个 query 交叉注意力 → M0"]
     B --&gt; C["Recursive Reasoner: S 内层 n 次关注 [H;M] → GRU 门更新 M"]
@@ -4233,15 +4244,15 @@
 <li>
 <p><strong>双状态解耦 + 注意力路由的 Reasoner（打破单 <span class="arithmatex">\(d\)</span> 维瓶颈）</strong>：痛点是推理态与预测态共享表征、互相掣肘。核心算子为
 $<span class="arithmatex">\(\mathbf{S}\leftarrow\text{Reasoner}(\mathbf{S},[\mathbf{H};\mathbf{M}])\ \text{重复 } n \text{ 次};\quad \hat{\mathbf{M}}=\text{Reasoner}(\mathbf{M},\mathbf{S}),\ \mathbf{M}\leftarrow\text{GRU}(\hat{\mathbf{M}},\mathbf{M}_{\text{prev}})\)</span>$
-其中 Q 与外部 KV 使用独立 LayerNorm，注意力输出投影与 FFN 输出零初始化使 Reasoner 起步为恒等映射。直觉：<span class="arithmatex">\(\mathbf{S}\)</span> 不参与打分，故其表征幅度可自由演化以承载"深度思考"，而 <span class="arithmatex">\(\mathbf{M}\)</span> 必须与 item embedding 保持点积兼容；GRU 门（借鉴 Slot Attention）控制每步承诺多少推理成果，避免大步跳跃。<span class="arithmatex">\(\mathbf{S}^0\)</span> 取固定截断正态随机张量而非可学习参数——因为每轮前 <span class="arithmatex">\(T-1\)</span> 步无梯度，可学习初值永远拿不到更新信号。</p>
+其中 Q 与外部 KV 使用独立 LayerNorm，注意力输出投影与 FFN 输出零初始化使 Reasoner 起步为恒等映射。直觉：<span class="arithmatex">\(\mathbf{S}\)</span>不参与打分，故其表征幅度可自由演化以承载"深度思考"，而<span class="arithmatex">\(\mathbf{M}\)</span>必须与 item embedding 保持点积兼容；GRU 门（借鉴 Slot Attention）控制每步承诺多少推理成果，避免大步跳跃。<span class="arithmatex">\(\mathbf{S}^0\)</span>取固定截断正态随机张量而非可学习参数——因为每轮前<span class="arithmatex">\(T-1\)</span> 步无梯度，可学习初值永远拿不到更新信号。</p>
 </li>
 <li>
-<p><strong>Interest Diversity Regularizer (IDR)（防止多兴趣坍缩）</strong>：所有 query 关注同一 <span class="arithmatex">\(\mathbf{H}\)</span>，无约束时互相余弦相似度实测达 0.82–0.90，<span class="arithmatex">\(R\)</span> 个兴趣退化为同一方向。IDR 最小化 <span class="arithmatex">\(\mathbf{M}^0\)</span> 兴趣间平均非对角余弦：
+<p><strong>Interest Diversity Regularizer (IDR)（防止多兴趣坍缩）</strong>：所有 query 关注同一 <span class="arithmatex">\(\mathbf{H}\)</span>，无约束时互相余弦相似度实测达 0.82–0.90，<span class="arithmatex">\(R\)</span>个兴趣退化为同一方向。IDR 最小化<span class="arithmatex">\(\mathbf{M}^0\)</span> 兴趣间平均非对角余弦：
 $<span class="arithmatex">\(\mathcal{L}_{\text{IDR}}=\frac{1}{R(R-1)}\sum_{r\neq r'}\hat{\mathbf{m}}_r^\top\hat{\mathbf{m}}_{r'}\)</span>$
 启用后相似度降至 0.14–0.75，Reasoner 才有"可分辨的多个兴趣"可精炼。</p>
 </li>
 <li>
-<p><strong>Log-Mean-Exp 池化与训练目标</strong>：<span class="arithmatex">\(R\)</span> 个兴趣各自与 item embedding 内积除以温度 <span class="arithmatex">\(\tau=0.07\)</span> 得 <span class="arithmatex">\(s_r(v)\)</span>，用 <span class="arithmatex">\(s(v)=\log\frac{1}{R}\sum_r\exp(s_r(v))\)</span> 聚合——软最大值让最相关兴趣主导排序，同时梯度仍流向全部 <span class="arithmatex">\(R\)</span> 个兴趣（对比 max 池化会饿死其余槽位）。总损失 <span class="arithmatex">\(\mathcal{L}^{(k)}_2=-\log\hat{y}_{v^+}(\mathbf{M}^{(k)})+\lambda_{\text{IDR}}\mathcal{L}_{\text{IDR}}\)</span>，阶段 1 同式作用于 <span class="arithmatex">\(\mathbf{M}^0\)</span>。<strong>负采样</strong>：全库 softmax 交叉熵，无显式负采样；<strong>推理开销</strong>：每步仅 1 层 block、<span class="arithmatex">\(n=3\)</span> 次内层传递，<span class="arithmatex">\(N\)</span> 可调，<span class="arithmatex">\(N=0\)</span> 即退化为阶段 1 基线。</p>
+<p><strong>Log-Mean-Exp 池化与训练目标</strong>：<span class="arithmatex">\(R\)</span>个兴趣各自与 item embedding 内积除以温度<span class="arithmatex">\(\tau=0.07\)</span>得<span class="arithmatex">\(s_r(v)\)</span>，用<span class="arithmatex">\(s(v)=\log\frac{1}{R}\sum_r\exp(s_r(v))\)</span>聚合——软最大值让最相关兴趣主导排序，同时梯度仍流向全部<span class="arithmatex">\(R\)</span>个兴趣（对比 max 池化会饿死其余槽位）。总损失<span class="arithmatex">\(\mathcal{L}^{(k)}_2=-\log\hat{y}_{v^+}(\mathbf{M}^{(k)})+\lambda_{\text{IDR}}\mathcal{L}_{\text{IDR}}\)</span>，阶段 1 同式作用于<span class="arithmatex">\(\mathbf{M}^0\)</span>。<strong>负采样</strong>：全库 softmax 交叉熵，无显式负采样；<strong>推理开销</strong>：每步仅 1 层 block、<span class="arithmatex">\(n=3\)</span>次内层传递，<span class="arithmatex">\(N\)</span>可调，<span class="arithmatex">\(N=0\)</span> 即退化为阶段 1 基线。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4302,7 +4313,7 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{IDR}}=\frac{1}{R(R-1)}\sum_{r\neq
 <ul>
 <li><strong>数据划分与防穿越</strong>: S-Shop/V-Shop 用官方<strong>全局时间戳切分</strong>；MicroLens/Steam 无绝对时间戳，采用每用户序列 80%/90% 位置的<strong>相对时间比例切分</strong>。</li>
 <li><strong>排名评测协议</strong>: 无偏 <strong>Full-Ranking</strong>（全库未交互物品排序），报告 NDCG@{10,20} 与 Recall@{10,20}。</li>
-<li><strong>对比基线与超参</strong>: 非推理基线 SASRec、BERT4Rec；推理增强基线 ERL(B/S)、PRL(B/S)（ReaRec 两变体）、LARES。统一 <span class="arithmatex">\(d=256\)</span>、batch 2048、AdamW lr <span class="arithmatex">\(10^{-3}\)</span>、patience 10、<span class="arithmatex">\(\tau=0.07\)</span>；RecRec 取 <span class="arithmatex">\(R=8\)</span>、Compressor/Reasoner 各 1 层 2 头、FFN 512、<span class="arithmatex">\(T=3,K=3,n=3\)</span>；显著性用 paired <span class="arithmatex">\(t\)</span>-test <span class="arithmatex">\(p&lt;0.05\)</span>。</li>
+<li><strong>对比基线与超参</strong>: 非推理基线 SASRec、BERT4Rec；推理增强基线 ERL(B/S)、PRL(B/S)（ReaRec 两变体）、LARES。统一 <span class="arithmatex">\(d=256\)</span>、batch 2048、AdamW lr<span class="arithmatex">\(10^{-3}\)</span>、patience 10、<span class="arithmatex">\(\tau=0.07\)</span>；RecRec 取<span class="arithmatex">\(R=8\)</span>、Compressor/Reasoner 各 1 层 2 头、FFN 512、<span class="arithmatex">\(T=3,K=3,n=3\)</span>；显著性用 paired<span class="arithmatex">\(t\)</span>-test<span class="arithmatex">\(p&lt;0.05\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4459,19 +4470,25 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{IDR}}=\frac{1}{R(R-1)}\sum_{r\neq
 </tr>
 </tbody>
 </table>
-<p><span class="arithmatex">\(R\)</span> 扫描（N@20）：<span class="arithmatex">\(R=1\)</span> 在四数据集全面垫底（S-Shop 0.0990 / Steam 0.0520）；最优 <span class="arithmatex">\(R\)</span> 依数据集而异（V-Shop、MicroLens 取 4，Steam 取 8，S-Shop 取 16 得 0.1095），默认 <span class="arithmatex">\(R=8\)</span> 距各数据集最优在 5% 以内。</p>
+<p><span class="arithmatex">\(R\)</span>扫描（N@20）：<span class="arithmatex">\(R=1\)</span>在四数据集全面垫底（S-Shop 0.0990 / Steam 0.0520）；最优<span class="arithmatex">\(R\)</span>依数据集而异（V-Shop、MicroLens 取 4，Steam 取 8，S-Shop 取 16 得 0.1095），默认<span class="arithmatex">\(R=8\)</span> 距各数据集最优在 5% 以内。</p>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>推理态解耦是主要增益来源，而非"多算几步"</strong>：Steam 上 w/o Reasoner 仅 0.0496，Full 达 0.0621（+25%），而 Frozen S 已能拿回 0.0581——说明让 <span class="arithmatex">\(\mathbf{S}\)</span> 真正迭代演化（而非仅靠 <span class="arithmatex">\(\mathbf{M}\)</span> 自身更新）贡献了大部分收益；GRU 门只调节吸收幅度，去掉后 Steam 仅掉 0.0018。</li>
+<li><strong>推理态解耦是主要增益来源，而非"多算几步"</strong>：Steam 上 w/o Reasoner 仅 0.0496，Full 达 0.0621（+25%），而 Frozen S 已能拿回 0.0581——说明让 <span class="arithmatex">\(\mathbf{S}\)</span>真正迭代演化（而非仅靠<span class="arithmatex">\(\mathbf{M}\)</span> 自身更新）贡献了大部分收益；GRU 门只调节吸收幅度，去掉后 Steam 仅掉 0.0018。</li>
 <li><strong>IDR 是"多兴趣"生效的前提条件</strong>：去掉 IDR 后 Steam N@20 从 0.0621 跌至 0.0538（−13%），兴趣间余弦进入 &gt;0.8 坍缩区；图 5 显示 NDCG 增益与余弦下降幅度同步，即 Reasoner 的收益依赖"有可分辨的兴趣可精炼"。</li>
-<li><strong>深监督带来推理深度外推，但收益呈强边际递减</strong>：<span class="arithmatex">\(N\)</span> 从 0→1 一步即拿下主要增益（S-Shop 0.0966→0.103，Steam 0.0496→0.058）；S-Shop/V-Shop/Steam 的最优 <span class="arithmatex">\(N\)</span> 分别为 15/12/16，均超过训练深度 9（如 Steam 0.0621→0.0622），而 MicroLens 在 <span class="arithmatex">\(N\approx4\)</span> 饱和后回落，说明短序列场景（Avg.L=5.12）过度推理反而引入噪声。</li>
+<li><strong>深监督带来推理深度外推，但收益呈强边际递减</strong>：<span class="arithmatex">\(N\)</span>从 0→1 一步即拿下主要增益（S-Shop 0.0966→0.103，Steam 0.0496→0.058）；S-Shop/V-Shop/Steam 的最优<span class="arithmatex">\(N\)</span>分别为 15/12/16，均超过训练深度 9（如 Steam 0.0621→0.0622），而 MicroLens 在<span class="arithmatex">\(N\approx4\)</span> 饱和后回落，说明短序列场景（Avg.L=5.12）过度推理反而引入噪声。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 ReaRec 的本质区别是推理不再寄生在输入序列上（避免推理 token 累积导致注意力开销增长、且位置编码锁死步数）；与 LARES 的区别是推理只作用于 <span class="arithmatex">\(R\)</span> 个压缩兴趣而非全部 <span class="arithmatex">\(L\)</span> 个隐状态，且完全免去 GRPO 强化学习阶段；与多兴趣推荐（ComiRec 类）的区别是兴趣由递归推理动态精炼而非静态聚类产出。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 ReaRec 的本质区别是推理不再寄生在输入序列上（避免推理 token 累积导致注意力开销增长、且位置编码锁死步数）；与 LARES 的区别是推理只作用于 <span class="arithmatex">\(R\)</span>个压缩兴趣而非全部<span class="arithmatex">\(L\)</span> 个隐状态，且完全免去 GRPO 强化学习阶段；与多兴趣推荐（ComiRec 类）的区别是兴趣由递归推理动态精炼而非静态聚类产出。</li>
 <li><strong>可迁移亮点</strong>: ① "零初始化 + 恒等起步"的 Reasoner block 可直接插入任何序列骨干做即插即用增强；② Log-Mean-Exp 池化兼顾"软最大主导 + 全槽位梯度"的技巧可迁移到任意多向量召回/打分场景。</li>
-<li><strong>审稿级局限批判</strong>: ① 推理时 <span class="arithmatex">\(N\)</span> 需人工扫描（图 3 显示最优 <span class="arithmatex">\(N\)</span> 数据集相关，MicroLens 还会退化），缺少 halting 机制，线上需为每场景调参；② 阶段 2 冻结骨干与 Compressor，Reasoner 无法反向影响历史编码，且 <span class="arithmatex">\(R\)</span> 的最优值随数据集漂移（4/8/16），默认 <span class="arithmatex">\(R=8\)</span> 在 S-Shop 上损失约 3.4% NDCG，泛化到新场景需额外搜索。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 推理时 <span class="arithmatex">\(N\)</span>需人工扫描（图 3 显示最优<span class="arithmatex">\(N\)</span>数据集相关，MicroLens 还会退化），缺少 halting 机制，线上需为每场景调参；② 阶段 2 冻结骨干与 Compressor，Reasoner 无法反向影响历史编码，且<span class="arithmatex">\(R\)</span>的最优值随数据集漂移（4/8/16），默认<span class="arithmatex">\(R=8\)</span> 在 S-Shop 上损失约 3.4% NDCG，泛化到新场景需额外搜索。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

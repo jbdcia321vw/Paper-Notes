@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>OSA 以 SASRec 为 CF 编码器，对用户历史 <span class="arithmatex">\(H_u^{&lt;t}\)</span> 输出用户表征 <span class="arithmatex">\(\mathbf{u}^{&lt;t}\)</span>，与目标物品嵌入 <span class="arithmatex">\(\mathbf{e}_i\)</span> 拼接成<strong>交互级</strong>表征 <span class="arithmatex">\(\mathbf{z}_{u,i}=[\mathbf{u}^{&lt;t-1};\mathbf{e}_i]\in\mathbb{R}^{2d_{rec}}\)</span>——注意粒度是"某用户对某物品的一次交互"，而非用户级或物品级向量。该表征经两层 GELU MLP 投影为 <span class="arithmatex">\(\mathbf{v}_{u,i}\in\mathbb{R}^{d_{llm}}\)</span>，作为 <code>[InterEmb]</code> 占位符嵌入混合提示（历史中每条交互附带其评分文本），LLM 在候选集内生成下一物品标题。训练时同时优化自回归生成损失与锚定对齐损失，LLM 主干冻结、仅训练投影器与 LoRA。</p>
+<p>OSA 以 SASRec 为 CF 编码器，对用户历史 <span class="arithmatex">\(H_u^{&lt;t}\)</span>输出用户表征<span class="arithmatex">\(\mathbf{u}^{&lt;t}\)</span>，与目标物品嵌入<span class="arithmatex">\(\mathbf{e}_i\)</span>拼接成<strong>交互级</strong>表征<span class="arithmatex">\(\mathbf{z}_{u,i}=[\mathbf{u}^{&lt;t-1};\mathbf{e}_i]\in\mathbb{R}^{2d_{rec}}\)</span>——注意粒度是"某用户对某物品的一次交互"，而非用户级或物品级向量。该表征经两层 GELU MLP 投影为<span class="arithmatex">\(\mathbf{v}_{u,i}\in\mathbb{R}^{d_{llm}}\)</span>，作为 <code>[InterEmb]</code> 占位符嵌入混合提示（历史中每条交互附带其评分文本），LLM 在候选集内生成下一物品标题。训练时同时优化自回归生成损失与锚定对齐损失，LLM 主干冻结、仅训练投影器与 LoRA。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户交互历史 + 评分"] --&gt; B["SASRec 编码 → 交互级表征 z"]
     B --&gt; C["MLP 投影 → v"]
@@ -4419,14 +4430,20 @@
 <ol>
 <li><strong>序数结构本身比"有锚点"更重要</strong>：打乱锚点顺序（w/o ordinal structure）在 ML-1M 上掉至 0.5583，比随机初始化锚点（0.5515）几乎同样差，说明收益并非来自"多了一个对齐目标"，而是来自锚点间正确的序数几何；两者均低于完整模型 4–8 个点。</li>
 <li><strong>交互级粒度是刚需</strong>：把 <span class="arithmatex">\(\mathbf{z}_{u,i}\)</span> 换成纯物品嵌入（Item-only Rep.）在 Scientific 上暴跌至 0.3310（−23.7%），因为物品级向量无法承载"同一物品被不同用户以不同强度评价"的差异，而这正是序数语义的载体。</li>
-<li><strong>强度加权与对齐损失互补且不可替代</strong>：去掉 <span class="arithmatex">\(\gamma\)</span> 仅损失 0.5–1.8 个点，但去掉整个 <span class="arithmatex">\(\mathcal{L}_{align}\)</span> 在 Games 上掉 6.7 个点，说明"对齐"是主干、"加权"是精修；同时成对评测中基线常收敛到 0.5 随机水平，证明二值化确实摧毁了 subtle 区分能力。</li>
+<li><strong>强度加权与对齐损失互补且不可替代</strong>：去掉 <span class="arithmatex">\(\gamma\)</span>仅损失 0.5–1.8 个点，但去掉整个<span class="arithmatex">\(\mathcal{L}_{align}\)</span> 在 Games 上掉 6.7 个点，说明"对齐"是主干、"加权"是精修；同时成对评测中基线常收敛到 0.5 随机水平，证明二值化确实摧毁了 subtle 区分能力。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: LLaRA 把 CF 嵌入作为额外 token 注入提示，本质是"拼接"；A-LLMRec 做表征对齐但目标仍是隐式反馈；本文的区别在于对齐的<strong>目标物</strong>是 LLM 自带语义的评分词元，而非另一个可学习向量，因此对齐结果对 LLM 天然可解释。相较纯 CF 的 SASRec，OSA 在 Scientific 上提升 62.8%，说明稀疏场景下序数先验的补益最大。</li>
 <li><strong>可迁移亮点</strong>: ①"用 LLM 词元嵌入当免费语义锚点"这一技巧可推广到任何有序离散属性（价格档位、停留时长分桶、年龄分段）；②强度感知加权 <span class="arithmatex">\(w(r)=1+\gamma|r-3|\)</span> 可直接移植到对比学习中的样本重加权。</li>
 <li><strong>审稿级局限批判</strong>: 其一，评测采用 1 正 19 负的采样排序而非全库 Full-Ranking，且仅报告 Hit@1，缺少 NDCG@K 等排序质量指标，绝对数值可能被候选集规模放大；其二，锚点依赖 LLM 对数字词元的先验，对评分语义非数值化（如 "like/dislike" 文本标签）或评分分布严重偏斜的场景，锚点间距是否仍有意义缺乏验证；此外 3B 模型 + LoRA 的推理成本未与 CF-only 基线做延迟对比。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

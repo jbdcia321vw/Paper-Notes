@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>框架分三段闭环：<strong>数据采集</strong>（S&amp;P 500 分层抽样出 10 只覆盖 11 个 GICS 行业、按 <span class="arithmatex">\(\beta\)</span> 分低/中/高三档的股票；10 名用户经 MiFID II/FINRA 合规问卷建档，并在自研资产模拟器中做 30 天、23 步的增量买入决策）→ <strong>偏好反解与对话实例化</strong>（逆优化估出 <span class="arithmatex">\((\lambda_i,\gamma_i)\)</span>，把静态画像 verbalize 成 4 轮 onboarding 访谈，再把每步决策转写为"三方专家顾问 + 用户"的多轮对话）→ <strong>LLM 重排评测</strong>（模型读入 <span class="arithmatex">\(I_{i,t}=(P_i,H^i_{1:t-1},M_t)\)</span>，对候选集 <span class="arithmatex">\(S_t\)</span> 输出排序 <span class="arithmatex">\(\pi_{i,t}\)</span>，在四视图上算 uNDCG/MRR/HR/EAS）。</p>
+<p>框架分三段闭环：<strong>数据采集</strong>（S&amp;P 500 分层抽样出 10 只覆盖 11 个 GICS 行业、按 <span class="arithmatex">\(\beta\)</span>分低/中/高三档的股票；10 名用户经 MiFID II/FINRA 合规问卷建档，并在自研资产模拟器中做 30 天、23 步的增量买入决策）→ <strong>偏好反解与对话实例化</strong>（逆优化估出<span class="arithmatex">\((\lambda_i,\gamma_i)\)</span>，把静态画像 verbalize 成 4 轮 onboarding 访谈，再把每步决策转写为"三方专家顾问 + 用户"的多轮对话）→ <strong>LLM 重排评测</strong>（模型读入<span class="arithmatex">\(I_{i,t}=(P_i,H^i_{1:t-1},M_t)\)</span>，对候选集<span class="arithmatex">\(S_t\)</span>输出排序<span class="arithmatex">\(\pi_{i,t}\)</span>，在四视图上算 uNDCG/MRR/HR/EAS）。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户问卷画像 + 30天模拟交易轨迹"] --&gt; B["逆优化反解风险偏好 (λ_i, γ_i)"]
     B --&gt; C["四视图参考排序: y_user / y_util / y_mom / y_safe"]
@@ -4245,10 +4256,10 @@
 <li>
 <p><strong>逆优化隐偏好锚定（Latent Preference Grounding）</strong>：痛点是"真实效用函数不可观测"，若直接给模型则评测失去意义。作者假设用户按均值-方差-回撤三段效用决策：
 $<span class="arithmatex">\(U^{(s)}_{i,t}=\tilde\mu_{s,t}-\lambda_i\tilde\sigma^2_{s,t}-\gamma_i\widetilde{\text{Drawdown}}_{s,t}\)</span>$
-其中三项均在 7 日窗口上做横截面标准化。再以 Gumbel 噪声下的 Multinomial Logit 建模选择概率 <span class="arithmatex">\(P(s^*|\lambda_i,\gamma_i,M_t)\)</span>，最小化带 <span class="arithmatex">\(\ell_2\)</span> 正则的负对数似然 <span class="arithmatex">\(\mathcal{L}_i\)</span> 反解 <span class="arithmatex">\((\lambda_i,\gamma_i)\)</span>。直觉：把"人怎么选"翻译成"人多怕波动、多怕回撤"两个可解释标量，且该标量<strong>只用于造参考视图、绝不进入 prompt</strong>，保证评测无泄漏。人工校验中用户对参数自然语言摘要的吻合度打分达 <strong>7.8/9</strong>。</p>
+其中三项均在 7 日窗口上做横截面标准化。再以 Gumbel 噪声下的 Multinomial Logit 建模选择概率 <span class="arithmatex">\(P(s^*|\lambda_i,\gamma_i,M_t)\)</span>，最小化带<span class="arithmatex">\(\ell_2\)</span>正则的负对数似然<span class="arithmatex">\(\mathcal{L}_i\)</span>反解<span class="arithmatex">\((\lambda_i,\gamma_i)\)</span>。直觉：把"人怎么选"翻译成"人多怕波动、多怕回撤"两个可解释标量，且该标量<strong>只用于造参考视图、绝不进入 prompt</strong>，保证评测无泄漏。人工校验中用户对参数自然语言摘要的吻合度打分达 <strong>7.8/9</strong>。</p>
 </li>
 <li>
-<p><strong>四视图参考与 EAS 诊断指标</strong>：痛点是单一 label 无法区分"理性"与"模仿"。作者用同一套 <span class="arithmatex">\((\lambda_i,\gamma_i)\)</span> 派生四个排序：<span class="arithmatex">\(y_{util}\)</span> 按完整 <span class="arithmatex">\(U\)</span> 排、<span class="arithmatex">\(y_{safe}\)</span> 按个性化风险惩罚 <span class="arithmatex">\(R^{(s)}_{i,t}=\lambda_i\tilde\sigma^2_{s,t}+\gamma_i\widetilde{\text{Drawdown}}_{s,t}\)</span> 排、<span class="arithmatex">\(y_{mom}\)</span> 按近期累计收益排、<span class="arithmatex">\(y_{user}\)</span> 为真实选择。评测侧除 uNDCG（以 <span class="arithmatex">\(U\)</span> 为 relevance 的 NDCG）与 MRR/HR@K 外，引入 <strong>Expert Alignment Score</strong>：<span class="arithmatex">\(\text{EAS}^{(e)}_{i,t}(m)=\tau(\pi^m_{i,t},\pi^e_{i,t})\)</span>，用 Kendall <span class="arithmatex">\(\tau\)</span> 度量模型排序与三类专家排序的一致性。直觉：<span class="arithmatex">\(\tau(\text{Utility})\)</span> 与 <span class="arithmatex">\(\tau(\text{Momentum})\)</span> 的差值、<span class="arithmatex">\(\tau(\text{Risk})\)</span> 的绝对水平，共同刻画模型是"真理性"还是"顺动量"。</p>
+<p><strong>四视图参考与 EAS 诊断指标</strong>：痛点是单一 label 无法区分"理性"与"模仿"。作者用同一套 <span class="arithmatex">\((\lambda_i,\gamma_i)\)</span>派生四个排序：<span class="arithmatex">\(y_{util}\)</span>按完整<span class="arithmatex">\(U\)</span>排、<span class="arithmatex">\(y_{safe}\)</span>按个性化风险惩罚<span class="arithmatex">\(R^{(s)}_{i,t}=\lambda_i\tilde\sigma^2_{s,t}+\gamma_i\widetilde{\text{Drawdown}}_{s,t}\)</span>排、<span class="arithmatex">\(y_{mom}\)</span>按近期累计收益排、<span class="arithmatex">\(y_{user}\)</span>为真实选择。评测侧除 uNDCG（以<span class="arithmatex">\(U\)</span>为 relevance 的 NDCG）与 MRR/HR@K 外，引入 <strong>Expert Alignment Score</strong>：<span class="arithmatex">\(\text{EAS}^{(e)}_{i,t}(m)=\tau(\pi^m_{i,t},\pi^e_{i,t})\)</span>，用 Kendall<span class="arithmatex">\(\tau\)</span>度量模型排序与三类专家排序的一致性。直觉：<span class="arithmatex">\(\tau(\text{Utility})\)</span>与<span class="arithmatex">\(\tau(\text{Momentum})\)</span>的差值、<span class="arithmatex">\(\tau(\text{Risk})\)</span> 的绝对水平，共同刻画模型是"真理性"还是"顺动量"。</p>
 </li>
 <li>
 <p><strong>训练目标、负采样与推理效率</strong>：本文为<strong>基准资源论文，无模型训练</strong>，LLM 以 zero-shot / 统一接口推理（LM Evaluation Harness，最大输入 8,192 token、最大生成长度 126 token），因此不存在负采样策略；候选集仅 10 只股票，评测为<strong>全候选 Full-Ranking</strong>，推理开销主要来自平均 4,320 token 的纵向上下文（最长 7,252 token）。</p>
@@ -4281,7 +4292,7 @@ $<span class="arithmatex">\(U^{(s)}_{i,t}=\tilde\mu_{s,t}-\lambda_i\tilde\sigma^
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 非传统 train/test 划分，而是<strong>纵向时间步前缀展开</strong>（prefix-conditioned）：第 <span class="arithmatex">\(t\)</span> 步实例只可见 <span class="arithmatex">\(H_{1:t-1}\)</span> 与 7 日市场快照 <span class="arithmatex">\(M_t\)</span>，天然防未来信息泄漏。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 非传统 train/test 划分，而是<strong>纵向时间步前缀展开</strong>（prefix-conditioned）：第 <span class="arithmatex">\(t\)</span>步实例只可见<span class="arithmatex">\(H_{1:t-1}\)</span>与 7 日市场快照<span class="arithmatex">\(M_t\)</span>，天然防未来信息泄漏。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: <strong>Full-Ranking</strong>（对 10 只候选股票全排序，无负采样）；Random 基线由每实例 1,000 次均匀随机置换取均值给出。</li>
 <li><strong>对比基线与超参设置</strong>: 7 个 LLM——GPT-5.2、GPT-4o、DeepSeek-V3.2、Qwen3-235B-A22B-Instruct、Qwen2.5-72B-Instruct、Llama-3.3-70B-Instruct、金融域模型 Llama3-XuanYuan3-70B-Chat；统一 8,192 输入 / 126 输出 token；报告 ±标准差。</li>
 </ul>
@@ -4356,7 +4367,7 @@ $<span class="arithmatex">\(U^{(s)}_{i,t}=\tilde\mu_{s,t}-\lambda_i\tilde\sigma^
 </tr>
 </tbody>
 </table>
-<p>专家对齐（Kendall <span class="arithmatex">\(\tau\)</span>）：Llama-3.3-70B 在 <span class="arithmatex">\(\tau\)</span>(Utility)=<strong>0.74</strong>、<span class="arithmatex">\(\tau\)</span>(Momentum)=<strong>0.73</strong> 双高但 <span class="arithmatex">\(\tau\)</span>(Risk) 仅 0.17；DeepSeek-V3.2 最均衡（0.51 / 0.49 / <strong>0.26</strong>）；XuanYuan3 三项均最低（0.47 / 0.46 / 0.15）。</p>
+<p>专家对齐（Kendall <span class="arithmatex">\(\tau\)</span>）：Llama-3.3-70B 在<span class="arithmatex">\(\tau\)</span>(Utility)=<strong>0.74</strong>、<span class="arithmatex">\(\tau\)</span>(Momentum)=<strong>0.73</strong> 双高但<span class="arithmatex">\(\tau\)</span>(Risk) 仅 0.17；DeepSeek-V3.2 最均衡（0.51 / 0.49 / <strong>0.26</strong>）；XuanYuan3 三项均最低（0.47 / 0.46 / 0.15）。</p>
 <h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
 <p>本文无组件消融，等价实验为<strong>对话历史有无</strong>的对照（图 3，<span class="arithmatex">\(\Delta\)</span>uNDCG）：</p>
 <table>
@@ -4424,15 +4435,21 @@ $<span class="arithmatex">\(U^{(s)}_{i,t}=\tilde\mu_{s,t}-\lambda_i\tilde\sigma^
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>效用与行为严重脱钩</strong>：Llama-3.3-70B 拿下最高 uNDCG 0.97，但 HR@1 仅 0.36，比 XuanYuan3 的 0.54 低 18 个点——说明"按理性效用排得好"完全不能推出"能复现用户真实选择"，单一行为指标会系统性误判模型优劣。</li>
-<li><strong>动量与效用存在上下文共线性</strong>：Llama-3.3-70B 的 <span class="arithmatex">\(\tau\)</span>(Utility)=0.74 与 <span class="arithmatex">\(\tau\)</span>(Momentum)=0.73 几乎重合，而 <span class="arithmatex">\(\tau\)</span>(Risk) 骤降至 0.17，证明趋势市中高动量资产天然主导效用计算，模型难以把"下行保护"从"增长信号"中解耦。</li>
+<li><strong>动量与效用存在上下文共线性</strong>：Llama-3.3-70B 的 <span class="arithmatex">\(\tau\)</span>(Utility)=0.74 与<span class="arithmatex">\(\tau\)</span>(Momentum)=0.73 几乎重合，而<span class="arithmatex">\(\tau\)</span>(Risk) 骤降至 0.17，证明趋势市中高动量资产天然主导效用计算，模型难以把"下行保护"从"增长信号"中解耦。</li>
 <li><strong>对话历史是双刃剑</strong>：Adaptive 类模型在 1–10 步获得显著正增益后普遍进入平台期（边际收益递减，排序更多由即时 <span class="arithmatex">\(M_t\)</span> 决定）；而 XuanYuan3 这类金融域微调模型引入历史后 uNDCG 反而下降，暴露其把"用户噪声行为"误当"稳定偏好"的过拟合倾向。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 REASONER / RecBench 等以 relevance 为唯一监督的通用基准，本文首次引入<strong>用户特定效用</strong>作为规范性参考；相较 FAR-Trans 等金融数据集只做收益预测，本文把监督信号换成"风险偏好锚定的决策质量"；相较 CEREAL / LLM-REDIAL 的对话推荐，本文额外提供<strong>纵向 23 步 + 四视图冲突诊断</strong>，能定位失配来源而非只报一个分数。</li>
 <li><strong>可迁移亮点</strong>: ① "逆优化反解隐偏好 → 生成不泄漏的规范参考视图"这一范式可直接迁移到电商长期 LTV、内容平台的健康度评测；② EAS（Kendall <span class="arithmatex">\(\tau\)</span> 对多专家排序）是一种低成本、可解释的"模型行为画像"工具，适合诊断推荐模型是追热门还是真个性化。</li>
 <li><strong>审稿级局限批判</strong>: ① <strong>规模极小</strong>——仅 10 用户、10 股票、230 实例，统计功效有限，<span class="arithmatex">\(\pm\)</span>0.03 的方差下多数模型间差异不显著；② 对话由规则化模板生成而非真人采集（虽 plausibility 8.1/9），且效用函数被限定为均值-方差-回撤三段式，可能低估真实投资者的非理性维度；③ 候选集仅 10 只，Full-Ranking 难度远低于工业级全库检索，结论外推需谨慎。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

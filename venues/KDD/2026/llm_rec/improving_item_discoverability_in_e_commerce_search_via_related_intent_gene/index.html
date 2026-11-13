@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>系统采用 <strong>generate-then-retrieve</strong> 范式：给定查询 <span class="arithmatex">\(q\)</span>，生成器输出 <span class="arithmatex">\(C\)</span> 个轮播（生产环境 <span class="arithmatex">\(C=9\)</span>），每个轮播含一个自然语言标题 <span class="arithmatex">\(t_i\)</span> 与 <span class="arithmatex">\(K=5\)</span> 个意图词 <span class="arithmatex">\(e_i=(e_{i,1},\dots,e_{i,K})\)</span>；每个意图词再逐条送入既有检索引擎落地为商品列表，与标题共同构成展示轮播。精确匹配商品仍由传统检索栈处理，二者互不干扰。生成侧分两级：头部约 1 万高频查询（覆盖约 60% 流量）由 GPT-3.5 Turbo 离线标注并缓存；尾部查询由 LoRA 微调的 Qwen3-30B-Instruct 实时生成，将覆盖提升至约 80%；剩余约 20% 极长尾（单字符、混语种、错拼严重）直接回退纯检索、不展示轮播。</p>
+<p>系统采用 <strong>generate-then-retrieve</strong> 范式：给定查询 <span class="arithmatex">\(q\)</span>，生成器输出<span class="arithmatex">\(C\)</span>个轮播（生产环境<span class="arithmatex">\(C=9\)</span>），每个轮播含一个自然语言标题<span class="arithmatex">\(t_i\)</span>与<span class="arithmatex">\(K=5\)</span>个意图词<span class="arithmatex">\(e_i=(e_{i,1},\dots,e_{i,K})\)</span>；每个意图词再逐条送入既有检索引擎落地为商品列表，与标题共同构成展示轮播。精确匹配商品仍由传统检索栈处理，二者互不干扰。生成侧分两级：头部约 1 万高频查询（覆盖约 60% 流量）由 GPT-3.5 Turbo 离线标注并缓存；尾部查询由 LoRA 微调的 Qwen3-30B-Instruct 实时生成，将覆盖提升至约 80%；剩余约 20% 极长尾（单字符、混语种、错拼严重）直接回退纯检索、不展示轮播。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户查询 q"] --&gt; B{"头部 or 尾部?"}
     B --&gt;|头部 ~60%| C["GPT-3.5 离线缓存标注"]
@@ -4281,7 +4292,7 @@
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 评估查询取自 30% 验证集，与训练集无重叠；端到端评估集按<strong>会话级</strong>聚合，对会话内第 <span class="arithmatex">\(n\)</span> 次购买施加位置衰减权重 <span class="arithmatex">\(w(n)=1/\log_2(2+n)\)</span>，商品映射到高层品类（如 Mild Gouda Cheese → cheese）以降低稀疏性。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 评估查询取自 30% 验证集，与训练集无重叠；端到端评估集按<strong>会话级</strong>聚合，对会话内第 <span class="arithmatex">\(n\)</span>次购买施加位置衰减权重<span class="arithmatex">\(w(n)=1/\log_2(2+n)\)</span>，商品映射到高层品类（如 Mild Gouda Cheese → cheese）以降低稀疏性。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 非传统 Full-Ranking 或 Sampled Ranking，而是<strong>品类级购买预测</strong>——检索商品的高层品类若落在该会话加权购买品类集合内即判为 relevant，计算 Precision / Recall / F1。该协议刻意排除精确匹配与 top-10 已曝光商品，以隔离"用户想要但系统没给"的隐式需求。</li>
 <li><strong>对比基线与超参设置</strong>: 基线为线上系统 Prod.（GPT-3.5 缓存，仅覆盖头部）、教师 GPT-5.1、学生 Qwen3-30B；生成质量侧用 GPT-5 作 judge，对标题（Relevance/Quality/Safety/Coherence）与意图（Relevance/Diversity/Novelty）打二元通过/不通过。</li>
 </ul>
@@ -4455,12 +4466,18 @@
 <li><strong>蒸馏学生在尾部反超教师</strong>：尾部 F1 上 Qwen3 为 0.179 vs GPT-5.1 的 0.168，且 Intent Novelty 更高（0.888 vs 0.868）。作者归因于蒸馏数据中混入的元数据剥离样本与 LoRA 对领域分布的适配，使小模型在稀疏查询上更"敢"生成非平凡意图；但需注意教师与 judge 同属 GPT 家族，该结论存在同源偏置风险。</li>
 <li><strong>意图新颖性直接转化为下游召回</strong>：定性案例中，Prod. 对 cranberry juice 只产出同品类果汁（orange/apple/grape juice），而 Qwen3 生成 "Office hydration station" 并带出 snack containers、coffee pods 等非显式互补品。这一语义跃迁与端到端 Recall 的提升方向一致，构成"生成质量—检索效用"的因果链证据。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比经典 query expansion，本文扩展的是<strong>意图空间</strong>而非词汇空间，输出是可检索的离散意图词而非改写查询；相比 co-purchase graph 类互补推荐，本文从查询直接推理关系，不依赖共现密度，因而在尾部与新兴供给上具备天然优势，且与图信号可叠加而非互斥；相比通用 LLM4Rec 的指令微调路线，本文的核心贡献是把"成本-覆盖"曲线工程化，用缓存 + 蒸馏把 LLM 挡在用户热路径之外。</li>
 <li><strong>可迁移亮点</strong>: (1) <strong>生成与检索解耦</strong>——LLM 只产出意图词，落地交给既有索引，使缓存、回退、灰度发布全部可行，幻觉词最多导致空轮播而非错误结果；(2) <strong>蒸馏时混入元数据剥离样本</strong>，是解决"教师见过富特征、学生线上拿不到"这一普遍性上下文缺口的简洁手段，可直接迁移到任何 LLM 蒸馏到在线小模型的场景。</li>
 <li><strong>审稿级局限批判</strong>: (1) <strong>评估存在双重偏置</strong>——端到端指标来自被现有系统塑造的日志，虽排除精确匹配与 top-10 以缓解反事实偏置但未消除；同时教师（GPT-5.1）与 judge（GPT-5）同源，可能系统性偏袒教师风格输出，作者自己也承认需跨家族 judge 审计。(2) <strong>缺少关键对照与线上验证</strong>——未与 item-item 共购图、经典 query rewriting 做头对头比较，因而无法量化 LLM 意图生成的边际价值；全文无大规模 A/B，对 basket size、长尾供给曝光等商业指标的影响仍是开放问题。此外，幻觉品牌名目前仅靠"检索为空则轮播不展示"被动兜底，缺少生成前的品牌词表校验。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

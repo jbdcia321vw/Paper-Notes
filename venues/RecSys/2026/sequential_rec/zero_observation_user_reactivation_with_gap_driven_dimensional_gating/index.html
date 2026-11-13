@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,17 +4220,17 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/jdding/DeltaGate">jdding/DeltaGate</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>现有序列推荐把"最后一次观测状态"当作当前状态，但回流用户可能已静默数月乃至数年，历史表征可靠性未知。本文定义 <strong>Zero-Observation Reactivation</strong> 问题：用户有 gap 前历史，平台在宏观间隔 <span class="arithmatex">\(\Delta t\)</span> 内零观测。作者提出 <strong>DeltaGate</strong>——冻结骨干、仅训练 66K 参数的输出层逐维门控，以 <span class="arithmatex">\(\log(1+\Delta t)\)</span> 与个性化历史联合决定每个隐维在"历史"与"零初始化全局先验"间的插值权重。在三个 Amazon 类目、用户级 Leave-One-Out + 自然 gap 分桶、全库 Full-Ranking 协议下，&gt;365d 桶 DG-SASRec 的 Hit@10 从 0.031 升至 0.047（+51.6%），DG-BERT4Rec 从 0.025 升至 0.046（+84%）。</p>
+<p>现有序列推荐把"最后一次观测状态"当作当前状态，但回流用户可能已静默数月乃至数年，历史表征可靠性未知。本文定义 <strong>Zero-Observation Reactivation</strong> 问题：用户有 gap 前历史，平台在宏观间隔 <span class="arithmatex">\(\Delta t\)</span>内零观测。作者提出 <strong>DeltaGate</strong>——冻结骨干、仅训练 66K 参数的输出层逐维门控，以<span class="arithmatex">\(\log(1+\Delta t)\)</span> 与个性化历史联合决定每个隐维在"历史"与"零初始化全局先验"间的插值权重。在三个 Amazon 类目、用户级 Leave-One-Out + 自然 gap 分桶、全库 Full-Ranking 协议下，&gt;365d 桶 DG-SASRec 的 Hit@10 从 0.031 升至 0.047（+51.6%），DG-BERT4Rec 从 0.025 升至 0.046（+84%）。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: SASRec/GRU4Rec/BERT4Rec 等序列模型编码观测到的有序历史，取末位隐状态作为用户表征直接打分；TiSASRec 等时间感知模型只建模<strong>序列内部</strong>的 item 间间隔。</li>
 <li><strong>前人局限</strong>: ① 所有基线均未对"最后一次交互之后的无观测间隔"做任何重校准，导致 gap 越长、表征越陈旧，性能单调下滑；② 序列内时间建模（TiSASRec）在宏观 gap 下几乎无效——Movies &amp; TV 的 &gt;365d 桶仅 0.025 vs SASRec 0.021，无法弥合与短 gap 桶（0.067）的鸿沟。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 表征的不同维度可能编码<strong>时间稳定性不同</strong>的兴趣。作者做受控诊断：固定 <span class="arithmatex">\(h_{pers}\)</span> 只变 <span class="arithmatex">\(\Delta t\)</span>，训练后的门控呈现维度特异响应——维度 115 的历史权重从 0.00 升至 0.97，维度 37 从 1.00 降至 0.49（图 2）。这说明"整体衰减"是错误假设，应做<strong>逐维路由</strong>。</li>
-<li><strong>本文切入点</strong>: 不改骨干、不重训，只在输出层加一个由 <span class="arithmatex">\(\Delta t\)</span> 与 <span class="arithmatex">\(h_{pers}\)</span> 共同条件化的逐维门，把不可靠维度平滑地交给全局先验。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 表征的不同维度可能编码<strong>时间稳定性不同</strong>的兴趣。作者做受控诊断：固定 <span class="arithmatex">\(h_{pers}\)</span>只变<span class="arithmatex">\(\Delta t\)</span>，训练后的门控呈现维度特异响应——维度 115 的历史权重从 0.00 升至 0.97，维度 37 从 1.00 降至 0.49（图 2）。这说明"整体衰减"是错误假设，应做<strong>逐维路由</strong>。</li>
+<li><strong>本文切入点</strong>: 不改骨干、不重训，只在输出层加一个由 <span class="arithmatex">\(\Delta t\)</span>与<span class="arithmatex">\(h_{pers}\)</span> 共同条件化的逐维门，把不可靠维度平滑地交给全局先验。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入用户 gap 前序列 <span class="arithmatex">\(\mathcal{S}_{pre}\)</span>，经任一冻结骨干（SASRec 因果注意力 / GRU4Rec 循环 / BERT4Rec 双向 + 末尾追加 <code>[MASK]</code> 取末层隐状态）得到 <span class="arithmatex">\(h_{pers}\in\mathbb{R}^d\)</span>；同时独立观测到间隔 <span class="arithmatex">\(\Delta t\)</span>（天）。二者拼接送入两层 MLP 生成逐维门 <span class="arithmatex">\(g\in(0,1)^d\)</span>，与零初始化的可学习全局先验 <span class="arithmatex">\(h_{global}\)</span> 做 Hadamard 插值得 <span class="arithmatex">\(h_{final}\)</span>，再用<strong>冻结的</strong> item 嵌入矩阵打分。训练仅更新门 MLP 与 <span class="arithmatex">\(h_{global}\)</span>，骨干完全不动。</p>
+<p>输入用户 gap 前序列 <span class="arithmatex">\(\mathcal{S}_{pre}\)</span>，经任一冻结骨干（SASRec 因果注意力 / GRU4Rec 循环 / BERT4Rec 双向 + 末尾追加 <code>[MASK]</code> 取末层隐状态）得到<span class="arithmatex">\(h_{pers}\in\mathbb{R}^d\)</span>；同时独立观测到间隔<span class="arithmatex">\(\Delta t\)</span>（天）。二者拼接送入两层 MLP 生成逐维门<span class="arithmatex">\(g\in(0,1)^d\)</span>，与零初始化的可学习全局先验<span class="arithmatex">\(h_{global}\)</span>做 Hadamard 插值得<span class="arithmatex">\(h_{final}\)</span>，再用<strong>冻结的</strong> item 嵌入矩阵打分。训练仅更新门 MLP 与<span class="arithmatex">\(h_{global}\)</span>，骨干完全不动。</p>
 <pre class="mermaid"><code>flowchart TD
     A["gap 前序列 S_pre"] --&gt; B["冻结骨干 (SASRec/GRU4Rec/BERT4Rec)"]
     B --&gt; C["h_pers"]
@@ -4234,11 +4245,11 @@
 <ol>
 <li><strong>间隔条件化的逐维门控（Gap-Driven Dimensional Gating）</strong>：痛点是把陈旧表征整体丢弃或整体保留都过于粗暴。核心算子为
 $<span class="arithmatex">\(g=\sigma\big(\mathrm{MLP}([\log(1+\Delta t)\,\|\,h_{pers}])\big),\quad h_{final}=g\odot h_{pers}+(1-g)\odot h_{global}\)</span>$
-用 <span class="arithmatex">\(\log(1+\Delta t)\)</span> 而非原始天数，是为把 30 到 2000+ 天的跨度压缩到可比区间。由于 <span class="arithmatex">\(h_{pers}\)</span> 也进入门控输入，<strong>相同 gap 的两个用户可得到不同门向量</strong>，实现用户条件化保留。</li>
-<li><strong>零初始化全局先验作为"安全回退端点"</strong>：<span class="arithmatex">\(h_{global}\)</span> 初始化为 <span class="arithmatex">\(\mathbf{0}\)</span> 并在插件训练中与门同步更新，充当所有用户共享的兜底画像。作者在 §4.3 给出理论对比：标量门 <span class="arithmatex">\(g\in(0,1)\)</span> 只能让输出落在 <span class="arithmatex">\(h_{pers}\)</span> 与 <span class="arithmatex">\(h_{global}\)</span> 连成的一维线段上，无法"保留一部分维度、替换另一部分"；线性拼接 <span class="arithmatex">\(W[h_{pers}\|\log(1+\Delta t)]+b\)</span> 只给隐状态加一个加性方向，不直接参数化逐维保留系数。Hadamard 混合是唯一能表达逐维路由的形式。</li>
+用 <span class="arithmatex">\(\log(1+\Delta t)\)</span>而非原始天数，是为把 30 到 2000+ 天的跨度压缩到可比区间。由于<span class="arithmatex">\(h_{pers}\)</span> 也进入门控输入，<strong>相同 gap 的两个用户可得到不同门向量</strong>，实现用户条件化保留。</li>
+<li><strong>零初始化全局先验作为"安全回退端点"</strong>：<span class="arithmatex">\(h_{global}\)</span>初始化为<span class="arithmatex">\(\mathbf{0}\)</span>并在插件训练中与门同步更新，充当所有用户共享的兜底画像。作者在 §4.3 给出理论对比：标量门<span class="arithmatex">\(g\in(0,1)\)</span>只能让输出落在<span class="arithmatex">\(h_{pers}\)</span>与<span class="arithmatex">\(h_{global}\)</span>连成的一维线段上，无法"保留一部分维度、替换另一部分"；线性拼接<span class="arithmatex">\(W[h_{pers}\|\log(1+\Delta t)]+b\)</span> 只给隐状态加一个加性方向，不直接参数化逐维保留系数。Hadamard 混合是唯一能表达逐维路由的形式。</li>
 <li><strong>训练目标、负采样与推理效率</strong>：插件以<strong>全库交叉熵</strong>训练（非采样 softmax），
 $<span class="arithmatex">\(\mathcal{L}=-\sum_u \log\frac{\exp(\hat{y}_{u,i_u})}{\sum_{j\in\mathcal{I}}\exp(\hat{y}_{u,j})},\quad \hat{y}_j=h_{final}^\top e_j+b_j\)</span>$
-即<strong>免负采样</strong>、直接在全 item 词表上归一化。推理开销 <span class="arithmatex">\(O(d^2)\)</span>（门 MLP）+ <span class="arithmatex">\(O(d)\)</span>（Hadamard），与序列长度 <span class="arithmatex">\(N\)</span>、层数 <span class="arithmatex">\(L\)</span> 无关；参数量 66,304（<span class="arithmatex">\(d=128\)</span>，隐层 <span class="arithmatex">\(2d=256\)</span>），相对 1.7M–3.0M 的骨干仅 2–4% 开销。</li>
+即<strong>免负采样</strong>、直接在全 item 词表上归一化。推理开销 <span class="arithmatex">\(O(d^2)\)</span>（门 MLP）+<span class="arithmatex">\(O(d)\)</span>（Hadamard），与序列长度<span class="arithmatex">\(N\)</span>、层数<span class="arithmatex">\(L\)</span>无关；参数量 66,304（<span class="arithmatex">\(d=128\)</span>，隐层<span class="arithmatex">\(2d=256\)</span>），相对 1.7M–3.0M 的骨干仅 2–4% 开销。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4283,9 +4294,9 @@ $<span class="arithmatex">\(\mathcal{L}=-\sum_u \log\frac{\exp(\hat{y}_{u,i_u})}
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: <strong>用户级时序 Leave-One-Out</strong>——每用户时间上最后一次交互为目标 <span class="arithmatex">\(i_{target}\)</span>，之前为 <span class="arithmatex">\(\mathcal{S}_{pre}\)</span>，要求 <span class="arithmatex">\(|\mathcal{S}_{pre}|\ge 5\)</span>；<span class="arithmatex">\(\Delta t=t_{target}-t_k\)</span> 由自然间隔确定，预测时不可得的交互被屏蔽。随后按 <span class="arithmatex">\(\Delta t\)</span> 分五桶：<code>&lt;30d / 30–90d / 90–180d / 180–365d / &gt;365d</code>。<strong>注意</strong>：该协议不做全局时间戳切分，因此无法消除多年跨度内的目录漂移（作者在 §6 自认此局限）。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: <strong>用户级时序 Leave-One-Out</strong>——每用户时间上最后一次交互为目标 <span class="arithmatex">\(i_{target}\)</span>，之前为<span class="arithmatex">\(\mathcal{S}_{pre}\)</span>，要求<span class="arithmatex">\(|\mathcal{S}_{pre}|\ge 5\)</span>；<span class="arithmatex">\(\Delta t=t_{target}-t_k\)</span>由自然间隔确定，预测时不可得的交互被屏蔽。随后按<span class="arithmatex">\(\Delta t\)</span> 分五桶：<code>&lt;30d / 30–90d / 90–180d / 180–365d / &gt;365d</code>。<strong>注意</strong>：该协议不做全局时间戳切分，因此无法消除多年跨度内的目录漂移（作者在 §6 自认此局限）。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 无偏 <strong>Full-Ranking</strong>，在完整 item 词表 <span class="arithmatex">\(\mathcal{I}\)</span> 上排序，明确规避采样指标对负采样协议的敏感性。指标 Hit@10 与 NDCG@10，5 个随机种子取均值 ± 标准差。</li>
-<li><strong>对比基线与超参设置</strong>: SASRec、GRU4Rec、BERT4Rec、TiSASRec 四个序列基线，外加 <strong>TimeConcat</strong>（把 <span class="arithmatex">\(\log(1+\Delta t)\)</span> 拼进 SASRec 输入、端到端重训全部 ~2.6M 参数）作为端到端对照。统一 <span class="arithmatex">\(d=128\)</span>、batch 128、最大序列长 50、Adam lr <span class="arithmatex">\(10^{-3}\)</span>、dropout 0.2；插件模式下先训骨干再冻结。显著性用配对检验，<span class="arithmatex">\(p&lt;0.01\)</span> 标 <code>**</code>。<strong>需警惕</strong>：checkpoint 按留出集四个非活跃桶的平均 Hit@10 选取，而该留出集同时被报告，故结果属"历史协议下的描述性估计"而非无偏终测。</li>
+<li><strong>对比基线与超参设置</strong>: SASRec、GRU4Rec、BERT4Rec、TiSASRec 四个序列基线，外加 <strong>TimeConcat</strong>（把 <span class="arithmatex">\(\log(1+\Delta t)\)</span>拼进 SASRec 输入、端到端重训全部 ~2.6M 参数）作为端到端对照。统一<span class="arithmatex">\(d=128\)</span>、batch 128、最大序列长 50、Adam lr<span class="arithmatex">\(10^{-3}\)</span>、dropout 0.2；插件模式下先训骨干再冻结。显著性用配对检验，<span class="arithmatex">\(p&lt;0.01\)</span> 标 <code>**</code>。<strong>需警惕</strong>：checkpoint 按留出集四个非活跃桶的平均 Hit@10 选取，而该留出集同时被报告，故结果属"历史协议下的描述性估计"而非无偏终测。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4462,12 +4473,18 @@ $<span class="arithmatex">\(\mathcal{L}=-\sum_u \log\frac{\exp(\hat{y}_{u,i_u})}
 <li><strong>冻结骨干是门控可解释性的前提</strong>：DeltaGate E2E 虽绝对精度更高（0.057），但 82.0% 的门值饱和到 &gt;0.9——骨干自己吸收了时间信息，门退化为恒等映射；冻结骨干后门才成为唯一的时间适配通道，维度 115/37 的反向轨迹才可观测。同时插件以 1/40 参数换来 0.245 的 Gain/1M，是 TimeConcat（0.018）的 13.6 倍。</li>
 <li><strong>不塌缩为流行度推荐器</strong>：目录覆盖率在三个数据集上全面上升（VG 43.97%→59.75%，CDs 46.71%→67.73%，Movies 51.63%→73.37%）；&gt;365d 桶的独占命中数分别为 278/581/1019，均多于 SASRec 的 106/129/403，且独占命中的平均训练频次在 CDs 与 Movies 上更低（更偏长尾），说明唤醒的是被旧表征压制的物品而非热门头部。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 <strong>TiSASRec</strong> 的本质区别在于建模对象——TiSASRec 建模序列<strong>内部</strong> item 间间隔，本文建模<strong>末次交互之后</strong>的无观测 gap，二者正交且可叠加；与 <strong>TimeConcat</strong> 的区别在于参数与副作用——后者端到端重训 2.6M 参数并造成 139.7% 嵌入漂移，本文 66K 参数、零漂移；与 <strong>SIM/TWIN/Mamba4Rec</strong> 等长序列模型相比，本文不追求"用更多历史"，而追问"历史还剩多少可信度"。</li>
 <li><strong>可迁移亮点</strong>: ① "冻结骨干 + 零初始化先验 + 逐维门"是极轻量的<strong>分布漂移适配模板</strong>，可直接迁移到季节性商品回流、跨场景切换、模型版本升级后的表征校准；② 用"固定表征、只变单一标量输入"的受控诊断来验证门控敏感性，是一种低成本、可复用的可解释性实验范式。</li>
-<li><strong>审稿级局限批判</strong>: ① <strong>评估协议存在乐观偏差</strong>——checkpoint 依据被报告的留出集选取，且自然 gap 分桶无法剥离多年跨度内的目录/流行度漂移，缺少真正的全局时间戳切分或线上 A/B 验证；② <strong>单一共享先验容量不足</strong>，无法为偏好稳定性不同的用户群提供差异化兜底画像，且 <span class="arithmatex">\(h_{global}\)</span> 训练后固定，快速换代的目录下需周期性刷新；③ 仅 ID-only 特征，稀疏历史用户的 <span class="arithmatex">\(h_{pers}\)</span> 质量差会与陈旧性叠加放大误差。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① <strong>评估协议存在乐观偏差</strong>——checkpoint 依据被报告的留出集选取，且自然 gap 分桶无法剥离多年跨度内的目录/流行度漂移，缺少真正的全局时间戳切分或线上 A/B 验证；② <strong>单一共享先验容量不足</strong>，无法为偏好稳定性不同的用户群提供差异化兜底画像，且 <span class="arithmatex">\(h_{global}\)</span>训练后固定，快速换代的目录下需周期性刷新；③ 仅 ID-only 特征，稀疏历史用户的<span class="arithmatex">\(h_{pers}\)</span> 质量差会与陈旧性叠加放大误差。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

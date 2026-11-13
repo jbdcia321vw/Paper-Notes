@@ -3991,20 +3991,32 @@
 
 
 <h1 id="id">✨ 生成式推荐与离散语义 ID</h1>
-<p><strong>KDD 2026</strong> · <strong>8</strong> 篇论文解读</p>
+<p><strong>KDD 2026</strong> · <strong>13</strong> 篇论文解读</p>
 <blockquote>
 <p><strong>方向说明</strong>：RQ-VAE/VQ 残差量化码本、TIGER 自回归生成式检索、扩散/流匹配生成推荐 (Diffusion/Flow Rec)</p>
 </blockquote>
-<p>📌 <strong>同领域跨会议浏览：</strong> <a href="../../../CIKM/2026/generative_rec/">CIKM 2026 (7)</a> · <a href="../../../RecSys/2026/generative_rec/">RecSys 2026 (8)</a> · <a href="../../../SIGIR/2026/generative_rec/">SIGIR 2026 (19)</a> · <a href="../../../WSDM/2026/generative_rec/">WSDM 2026 (2)</a> · <a href="../../../WWW/2026/generative_rec/">WWW (TheWebConf) 2026 (1)</a></p>
-<p>🔥 <strong>高频主题：</strong> 生成式推荐与离散语义ID ×5 · 生成式端到端 ×4 · 生成式推荐 ×3 · 精排 ×2 · 语义ID ×2</p>
+<p>📌 <strong>同领域跨会议浏览：</strong> <a href="../../../AAAI/2026/generative_rec/">AAAI (RecSys Track) 2026 (5)</a> · <a href="../../../CIKM/2026/generative_rec/">CIKM 2026 (14)</a> · <a href="../../../ECIR/2026/generative_rec/">ECIR 2026 (1)</a> · <a href="../../../ICDM/2026/generative_rec/">ICDM 2026 (2)</a> · <a href="../../../IJCAI/2026/generative_rec/">IJCAI (RecSys Track) 2026 (1)</a> · <a href="../../../RecSys/2026/generative_rec/">RecSys 2026 (12)</a> · <a href="../../../SIGIR/2026/generative_rec/">SIGIR 2026 (19)</a> · <a href="../../../SIGIR-AP/2026/generative_rec/">SIGIR-AP 2026 (1)</a> · <a href="../../../WSDM/2026/generative_rec/">WSDM 2026 (3)</a> · <a href="../../../WWW/2026/generative_rec/">WWW (TheWebConf) 2026 (6)</a></p>
+<p>🔥 <strong>高频主题：</strong> 生成式推荐与离散语义ID ×10 · 生成式端到端 ×6 · 生成式推荐 ×3 · 精排 ×3 · 语义ID ×3</p>
 <dl>
-<dt><strong><a href="beyond_interleaving_causal_attention_reformulations_for_generative_recommen/">Beyond Interleaving: Causal Attention Reformulations for Generative Recommender Systems</a></strong></dt>
+<dt><strong><a href="apao_bridging_the_training_inference_gap_in_generative_recommendation_via_a/">APAO: Bridging the Training-Inference Gap in Generative Recommendation via Adaptive Prefix-Aware Optimization</a></strong></dt>
 <dd>
-<p>揭示交错式生成推荐是相似度加权动作池化的低效代理，提出 AttnLFA/AttnMVP 显式编码 item→action 因果，序列长度减半、训练提速 23%/12% 且 NE 全面下降</p>
+<p>揭示 Beam Search 剪枝与 teacher-forcing 训练的前缀级不一致，用自适应最差前缀损失对齐训练与推理，全库排序下 Recall@20 最高提升 13.3%。</p>
+</dd>
+<dt><strong><a href="breaking_the_likelihood_trap_consistent_generative_recommendation_with_grap/">Breaking the Likelihood Trap: Consistent Generative Recommendation with Graph-structured Model</a></strong></dt>
+<dd>
+<p>用有向无环图解码器扩展非自回归生成空间，并以 Gumbel-Softmax 打通评估器梯度，破解似然陷阱，快手线上 Views +0.78%。</p>
 </dd>
 <dt><strong><a href="collaborative_memory_augmentation_for_generative_recommendation/">Collaborative Memory Augmentation for Generative Recommendation</a></strong></dt>
 <dd>
 <p>为生成式推荐引入跨用户协同记忆库，用可学习查询token压缩序列、目标感知检索与门控交叉注意力融合，Full-Ranking下NDCG@5最高提升23.7%。</p>
+</dd>
+<dt><strong><a href="flowtime_towards_continuous_generative_watch_time_prediction_via_flow_based/">FlowTime: Towards Continuous Generative Watch Time Prediction via Flow-based Personalized Priors</a></strong></dt>
+<dd>
+<p>提出连续生成式回归新范式，用一步VAE+归一化流个性化先验建模多峰观看时长分布，KuaiRec MAE降0.676%、线上播放时长+1.044%。</p>
+</dd>
+<dt><strong><a href="forge_forming_semantic_identifiers_for_generative_retrieval_in_industrial_d/">FORGE: Forming Semantic Identifiers for Generative Retrieval in Industrial Datasets</a></strong></dt>
+<dd>
+<p>系统化拆解 SID 构建全流程（多模态特征/量化编码/冲突后处理），提出免训练的 Embedding HitRate 与 Gini 系数代理指标，淘宝线上交易量 +0.35%。</p>
 </dd>
 <dt><strong><a href="hi_sam_a_hierarchical_structure_aware_multi_modal_framework_for_large_scale/">Hi-SAM: A Hierarchical Structure-Aware Multi-modal Framework for Large-Scale Recommendation</a></strong></dt>
 <dd>
@@ -4013,6 +4025,10 @@
 <dt><strong><a href="hierarchical_residual_policy_optimization_for_generative_recommendations/">Hierarchical Residual Policy Optimization for Generative Recommendations</a></strong></dt>
 <dd>
 <p>将物品级反馈分解为 SID 前缀残差信用，用 RRPO 做保守 token 级策略优化，KuaiSim 会话回报 10.53 vs 8.14，线上 IAA Target Cost 最高 +3.49%。</p>
+</dd>
+<dt><strong><a href="pcr_ca_parallel_codebook_representations_with_contrastive_alignment_for_mul/">PCR-CA: Parallel Codebook Representations with Contrastive Alignment for Multiple-Category App Recommendation</a></strong></dt>
+<dd>
+<p>用并行码本VQ-AE替代RQ-VAE层级量化建模多类别App语义，配合用户/物品双层对比对齐与双流注意力，微软商店线上CTR+10.52%。</p>
 </dd>
 <dt><strong><a href="reasoning_over_semantic_ids_enhances_generative_recommendation/">Reasoning over Semantic IDs Enhances Generative Recommendation</a></strong></dt>
 <dd>
@@ -4025,6 +4041,10 @@
 <dt><strong><a href="uncertainty_aware_generative_recommendation/">Uncertainty-aware Generative Recommendation</a></strong></dt>
 <dd>
 <p>将生成置信度与样本难度转化为GRPO奖励与梯度权重，并显式对齐置信度token，稳定训练并支持风险感知推荐。</p>
+</dd>
+<dt><strong><a href="understanding_generative_recommendation_with_semantic_ids_from_a_model_scal/">Understanding Generative Recommendation with Semantic IDs from a Model-scaling View</a></strong></dt>
+<dd>
+<p>揭示 SID 式生成推荐在编码器/量化器/RS 三轴扩展均快速饱和，归因于 SID 语义容量瓶颈，并证明 Text-based GR 具备更优扩展性且 CF 能力随规模提升。</p>
 </dd>
 <dt><strong><a href="vectorizing_the_trie_efficient_constrained_decoding_for_llm_based_generativ/">Vectorizing the Trie: Efficient Constrained Decoding for LLM-based Generative Retrieval on Accelerators</a></strong></dt>
 <dd>

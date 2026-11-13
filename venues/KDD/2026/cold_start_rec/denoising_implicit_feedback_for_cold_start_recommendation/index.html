@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>对样本流中每个 <span class="arithmatex">\((u,i,\tilde y_{ui})\)</span>：先经多模态推理服务取冷物品 <span class="arithmatex">\(i\)</span> 的内容向量，向 item-to-item ANN 服务检索 top-<span class="arithmatex">\(k\)</span> 内容相似热物品及其相似度 <span class="arithmatex">\(S_i\)</span>；再由 Embedding 服务实时取这些热物品的协同表征 <span class="arithmatex">\(E_i\)</span>，与用户兴趣表征 <span class="arithmatex">\(e_u\)</span> 内积得到 <span class="arithmatex">\(k\)</span> 个伪标签；置信加权聚合为单一伪标签 <span class="arithmatex">\(y^p_{ui}\)</span>；同时用相对熵与冷启动状态估计样本不确定性 <span class="arithmatex">\(t_{ui}\)</span>，换算权重 <span class="arithmatex">\(w\)</span> 后将 <span class="arithmatex">\(y^p_{ui}\)</span> 与原标签 <span class="arithmatex">\(\tilde y_{ui}\)</span> 混合为软标签 <span class="arithmatex">\(y^c_{ui}\)</span>，最后以交叉熵训练双塔。全流程在近线流式系统中增量更新。</p>
+<p>对样本流中每个 <span class="arithmatex">\((u,i,\tilde y_{ui})\)</span>：先经多模态推理服务取冷物品<span class="arithmatex">\(i\)</span>的内容向量，向 item-to-item ANN 服务检索 top-<span class="arithmatex">\(k\)</span>内容相似热物品及其相似度<span class="arithmatex">\(S_i\)</span>；再由 Embedding 服务实时取这些热物品的协同表征<span class="arithmatex">\(E_i\)</span>，与用户兴趣表征<span class="arithmatex">\(e_u\)</span>内积得到<span class="arithmatex">\(k\)</span>个伪标签；置信加权聚合为单一伪标签<span class="arithmatex">\(y^p_{ui}\)</span>；同时用相对熵与冷启动状态估计样本不确定性<span class="arithmatex">\(t_{ui}\)</span>，换算权重<span class="arithmatex">\(w\)</span>后将<span class="arithmatex">\(y^p_{ui}\)</span>与原标签<span class="arithmatex">\(\tilde y_{ui}\)</span>混合为软标签<span class="arithmatex">\(y^c_{ui}\)</span>，最后以交叉熵训练双塔。全流程在近线流式系统中增量更新。</p>
 <pre class="mermaid"><code>flowchart TD
     A["样本流 (u, i, ỹ)"] --&gt; B["多模态内容向量 + item-to-item ANN 检索 top-k 热物品"]
     B --&gt; C["热物品协同表征 E_i × 用户表征 e_u → k 个伪标签"]
@@ -4246,7 +4257,7 @@
 <li>
 <p><strong>内容近邻伪标签生成 (Pseudo-labeling via Content-Similar Warm Items)</strong>：痛点是用冷物品自身预测做伪标签不可信。改为取 top-<span class="arithmatex">\(k\)</span> 内容相似热物品的协同表征与用户表征内积，保持与样本标签同构（同为内积打分）：
 $<span class="arithmatex">\(\big[y^p_{ui,1},\dots,y^p_{ui,k}\big]=e_u\cdot\big[e^1_i,e^2_i,\dots,e^k_i\big]\)</span>$
-直觉：热物品表征已被充分训练，其与用户的交互倾向可迁移到内容同质的冷物品上。作者进一步用 kNN 非参回归理论证明：只要热物品池 <span class="arithmatex">\(N_{warm}\)</span> 足够大，伪标签误差上界为 <span class="arithmatex">\(\mathcal{O}\big(L(k/N_{warm})^{\alpha/d}\big)+\mathcal{O}(\sigma'_u/\sqrt{k})\)</span>，<strong>无需强相似性假设</strong>即可逼近真标签。</p>
+直觉：热物品表征已被充分训练，其与用户的交互倾向可迁移到内容同质的冷物品上。作者进一步用 kNN 非参回归理论证明：只要热物品池 <span class="arithmatex">\(N_{warm}\)</span>足够大，伪标签误差上界为<span class="arithmatex">\(\mathcal{O}\big(L(k/N_{warm})^{\alpha/d}\big)+\mathcal{O}(\sigma'_u/\sqrt{k})\)</span>，<strong>无需强相似性假设</strong>即可逼近真标签。</p>
 </li>
 <li>
 <p><strong>置信加权聚合 (Confidence Modeling)</strong>：不同相似度应体现不同引导强度，故以 softmax 温度加权替代均值池化：
@@ -4254,7 +4265,7 @@ $<span class="arithmatex">\(c^j_i=\frac{\exp(s^j_i/\tau)}{\sum_{z=1}^{k}\exp(s^z
 线上观测相似度普遍 &gt;0.9，<span class="arithmatex">\(\tau=0.3\)</span> 用于放大区分度。</p>
 </li>
 <li>
-<p><strong>不确定性估计与软标签纠正 (Uncertainty-Guided Correction)</strong>：纠正过度会污染热物品训练。以相对熵 <span class="arithmatex">\(r_{ui}=-\tilde y\log\hat y-(1-\tilde y)\log(1-\hat y)\)</span> 度量预测失配，以冷启动状态 <span class="arithmatex">\(\gamma_i=e^{-\alpha g_i}\)</span>（<span class="arithmatex">\(g_i\)</span> 为交互数）度量冷物品先验噪声倾向，二者相乘得 <span class="arithmatex">\(t_{ui}=r_{ui}\gamma_i\)</span>，再归一化为 <span class="arithmatex">\(w=t/(t+1)\)</span>，最终 <span class="arithmatex">\(y^c_{ui}=w\,y^p_{ui}+(1-w)\tilde y_{ui}\)</span>。理论侧 Theorem 2.2 证明 MSE 最优权重恰为 <span class="arithmatex">\(w^*=\lambda/(\lambda+1)\)</span>（<span class="arithmatex">\(\lambda\)</span> 为噪声比），与式 (7) 形式一致，<span class="arithmatex">\(t_{ui}\)</span> 即该噪声比的有效估计量。<strong>训练目标</strong>为交叉熵 <span class="arithmatex">\(\mathcal{L}=-\sum y^c\log\hat y+(1-y^c)\log(1-\hat y)\)</span>；负采样沿用双塔 in-batch 范式，无额外负采样开销；推理时仅用户塔实时前向 + ANN 检索，伪标签仅在训练期生效，<strong>在线零额外延迟</strong>。</p>
+<p><strong>不确定性估计与软标签纠正 (Uncertainty-Guided Correction)</strong>：纠正过度会污染热物品训练。以相对熵 <span class="arithmatex">\(r_{ui}=-\tilde y\log\hat y-(1-\tilde y)\log(1-\hat y)\)</span>度量预测失配，以冷启动状态<span class="arithmatex">\(\gamma_i=e^{-\alpha g_i}\)</span>（<span class="arithmatex">\(g_i\)</span>为交互数）度量冷物品先验噪声倾向，二者相乘得<span class="arithmatex">\(t_{ui}=r_{ui}\gamma_i\)</span>，再归一化为<span class="arithmatex">\(w=t/(t+1)\)</span>，最终<span class="arithmatex">\(y^c_{ui}=w\,y^p_{ui}+(1-w)\tilde y_{ui}\)</span>。理论侧 Theorem 2.2 证明 MSE 最优权重恰为<span class="arithmatex">\(w^*=\lambda/(\lambda+1)\)</span>（<span class="arithmatex">\(\lambda\)</span>为噪声比），与式 (7) 形式一致，<span class="arithmatex">\(t_{ui}\)</span>即该噪声比的有效估计量。<strong>训练目标</strong>为交叉熵<span class="arithmatex">\(\mathcal{L}=-\sum y^c\log\hat y+(1-y^c)\log(1-\hat y)\)</span>；负采样沿用双塔 in-batch 范式，无额外负采样开销；推理时仅用户塔实时前向 + ANN 检索，伪标签仅在训练期生效，<strong>在线零额外延迟</strong>。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4533,12 +4544,18 @@ $<span class="arithmatex">\(c^j_i=\frac{\exp(s^j_i/\tau)}{\sum_{z=1}^{k}\exp(s^z
 <li><strong>噪声鲁棒性</strong>：在 20%–80% 随机噪声注入下，DIF 在 Amazon-Baby/Sports × NeuMF/LightGCN 四组设置中全程领先 DECL/RINCE/MWUF，且噪声比越高优势越明显（图 3）。</li>
 <li><strong>线上 A/B（快手，2025.01.12–01.16，亿级用户）</strong>：有效观看 +2.327%、观看时长 +2.921%、长播 +2.688%、点赞 +2.921%、评论 +2.435%、关注 +2.790%、分享 +0.876%，仅短播 −2.030%（长播上升、短播下降，符合"去 clickbait 噪声"的预期方向）。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: DECL/RINCE 依赖模型自身 loss/预测分做样本筛选或对比鲁棒损失，在冷物品上判据与噪声特征混淆；MWUF 用元网络在热特征空间生成冷物品初始表征，但只解决初始化、不处理标签噪声。DIF 的本质差异是<strong>把信息源从"模型对冷物品的预测"换成"模型对内容近邻热物品的预测"</strong>，并用不确定性控制纠正幅度，同时给出可落地的流式工程方案。</li>
 <li><strong>可迁移亮点</strong>: ①"用近邻已收敛表征为未收敛样本生成伪标签"可迁移到新用户冷启动、跨域新场景冷启；②<span class="arithmatex">\(t=r\cdot\gamma\)</span> 的"失配度 × 成熟度"乘积式不确定性门控，可直接复用到任何需要"只对欠训练样本做激进干预"的场景（如蒸馏、自训练）。</li>
 <li><strong>审稿级局限批判</strong>: ①冷/热划分按交互数第 20 百分位而非时间切分，且 8:1:1 随机划分存在未来交互泄漏，冷启动评估的严格性弱于 Leave-One-Out 或全局时间戳切分；②伪标签质量强依赖多模态内容表征与 item-to-item ANN 服务的覆盖率，论文未报告相似度分布下界与检索失败率，也未给出 <span class="arithmatex">\(k\)</span>、<span class="arithmatex">\(\tau\)</span>、<span class="arithmatex">\(\alpha\)</span> 的敏感性曲线；③TikTok 冷物品 NDCG 未达最优（0.00117 vs RINCE 0.00125），作者自承方法偏召回优化而非排序。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

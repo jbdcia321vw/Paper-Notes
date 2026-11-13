@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][去偏公平与工业架构] 提出面向供给方异质需求的权益公平框架与梯度式重排算法 EquityRank，在离线/在线仿真中取得更优效果-公平权衡。">
+        <meta name="description" content="[SIGIR 2026][去偏公平与工业架构] 提出以增益为基的公平框架与 EquityRank 梯度重排算法，按提供者异质偏好分配曝光与销量收益，离线/在线仿真均取得更优效果-公平权衡。">
       
       
       
@@ -108,7 +108,7 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 去偏公平与工业架构, 重排, 供给方公平, 权益公平, 梯度式重排" />
+<meta name="keywords" content="SIGIR 2026, 去偏公平与工业架构, 重排, 提供者公平, 异质效用建模" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
@@ -117,11 +117,9 @@
 
 <meta property="article:tag" content="重排" />
 
-<meta property="article:tag" content="供给方公平" />
+<meta property="article:tag" content="提供者公平" />
 
-<meta property="article:tag" content="权益公平" />
-
-<meta property="article:tag" content="梯度式重排" />
+<meta property="article:tag" content="异质效用建模" />
 
 
 
@@ -131,10 +129,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/equity_vs_equality_optimizing_ranking_fairness_for_tailored_provider_needs/" />
 <meta property="og:title" content="[Paper Note] Equity vs. Equality: Optimizing Ranking Fairness for Tailored Provider Needs" />
-<meta property="og:description" content="[SIGIR 2026][去偏公平与工业架构] 提出面向供给方异质需求的权益公平框架与梯度式重排算法 EquityRank，在离线/在线仿真中取得更优效果-公平权衡。" />
+<meta property="og:description" content="[SIGIR 2026][去偏公平与工业架构] 提出以增益为基的公平框架与 EquityRank 梯度重排算法，按提供者异质偏好分配曝光与销量收益，离线/在线仿真均取得更优效果-公平权衡。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] Equity vs. Equality: Optimizing Ranking Fairness for Tailored Provider Needs" />
-<meta name="twitter:description" content="[SIGIR 2026][去偏公平与工业架构] 提出面向供给方异质需求的权益公平框架与梯度式重排算法 EquityRank，在离线/在线仿真中取得更优效果-公平权衡。" />
+<meta name="twitter:description" content="[SIGIR 2026][去偏公平与工业架构] 提出以增益为基的公平框架与 EquityRank 梯度重排算法，按提供者异质偏好分配曝光与销量收益，离线/在线仿真均取得更优效果-公平权衡。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +158,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] Equity vs. Equality: Optimizing Ranking Fairness for Tailored Provider Needs",
   "headline": "[Paper Note] Equity vs. Equality: Optimizing Ranking Fairness for Tailored Provider Needs",
-  "description": "[SIGIR 2026][\u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784] \u63d0\u51fa\u9762\u5411\u4f9b\u7ed9\u65b9\u5f02\u8d28\u9700\u6c42\u7684\u6743\u76ca\u516c\u5e73\u6846\u67b6\u4e0e\u68af\u5ea6\u5f0f\u91cd\u6392\u7b97\u6cd5 EquityRank\uff0c\u5728\u79bb\u7ebf/\u5728\u7ebf\u4eff\u771f\u4e2d\u53d6\u5f97\u66f4\u4f18\u6548\u679c-\u516c\u5e73\u6743\u8861\u3002",
+  "description": "[SIGIR 2026][\u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784] \u63d0\u51fa\u4ee5\u589e\u76ca\u4e3a\u57fa\u7684\u516c\u5e73\u6846\u67b6\u4e0e EquityRank \u68af\u5ea6\u91cd\u6392\u7b97\u6cd5\uff0c\u6309\u63d0\u4f9b\u8005\u5f02\u8d28\u504f\u597d\u5206\u914d\u66dd\u5149\u4e0e\u9500\u91cf\u6536\u76ca\uff0c\u79bb\u7ebf/\u5728\u7ebf\u4eff\u771f\u5747\u53d6\u5f97\u66f4\u4f18\u6548\u679c-\u516c\u5e73\u6743\u8861\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/equity_vs_equality_optimizing_ranking_fairness_for_tailored_provider_needs/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/equity_vs_equality_optimizing_ranking_fairness_for_tailored_provider_needs/",
   "inLanguage": "zh-CN",
@@ -168,18 +166,17 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784, \u91cd\u6392, \u4f9b\u7ed9\u65b9\u516c\u5e73, \u6743\u76ca\u516c\u5e73, \u68af\u5ea6\u5f0f\u91cd\u6392",
+  "keywords": "SIGIR 2026, \u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784, \u91cd\u6392, \u63d0\u4f9b\u8005\u516c\u5e73, \u5f02\u8d28\u6548\u7528\u5efa\u6a21",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784" },
     { "@type": "Thing", "name": "\u91cd\u6392" },
-    { "@type": "Thing", "name": "\u4f9b\u7ed9\u65b9\u516c\u5e73" },
-    { "@type": "Thing", "name": "\u6743\u76ca\u516c\u5e73" },
-    { "@type": "Thing", "name": "\u68af\u5ea6\u5f0f\u91cd\u6392" }
+    { "@type": "Thing", "name": "\u63d0\u4f9b\u8005\u516c\u5e73" },
+    { "@type": "Thing", "name": "\u5f02\u8d28\u6548\u7528\u5efa\u6a21" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3994,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4008,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4016,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4039,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4069,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4092,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4100,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4116,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4181,9 +4156,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][去偏公平与工业架构] 提出面向供给方异质需求的权益公平框架与梯度式重排算法 EquityRank，在离线/在线仿真中取得更优效果-公平权衡。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][去偏公平与工业架构] 提出以增益为基的公平框架与 EquityRank 梯度重排算法，按提供者异质偏好分配曝光与销量收益，离线/在线仿真均取得更优效果-公平权衡。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 去偏公平与工业架构 · 重排 · 供给方公平 · 权益公平 · 梯度式重排</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 去偏公平与工业架构 · 重排 · 提供者公平 · 异质效用建模</p>
   
 </aside>
   
@@ -4218,21 +4193,14 @@
       
       
       
-        <span class="md-tag">供给方公平</span>
+        <span class="md-tag">提供者公平</span>
       
     
       
       
       
       
-        <span class="md-tag">权益公平</span>
-      
-    
-      
-      
-      
-      
-        <span class="md-tag">梯度式重排</span>
+        <span class="md-tag">异质效用建模</span>
       
     
   </nav>
@@ -4242,120 +4210,240 @@
   
 
 
-<h1 id="equity-vs-equality-optimizing-ranking-fairness-for-tailored-provider-needs-vs">Equity vs. Equality: Optimizing Ranking Fairness for Tailored Provider Needs (权益 vs. 平等：面向供给方定制需求的排序公平优化)</h1>
+<h1 id="equity-vs-equality-optimizing-ranking-fairness-for-tailored-provider-needs-vs">Equity vs. Equality: Optimizing Ranking Fairness for Tailored Provider Needs (公平 vs. 平等：面向提供者定制需求的排序公平优化)</h1>
 <ul>
 <li><strong>会议/期刊</strong>: SIGIR 2026</li>
-<li><strong>推荐链路定位</strong>: 重排 (Re-ranking) —— 在给定相关性估计的前提下对候选列表做公平感知的列表级重排</li>
+<li><strong>作者与机构</strong>: Yiteng Tu, Weihang Su, Yiqun Liu, Qingyao Ai* (清华大学), Shuguang Han (阿里巴巴)</li>
+<li><strong>推荐链路定位</strong>: 重排 (Fair Re-ranking)</li>
 <li><strong>研究方向</strong>: 去偏公平与工业架构 / 多任务学习与列表级重排</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2602.00495v1">https://arxiv.org/abs/2602.00495v1</a></li>
-<li><strong>开源代码</strong>: <a href="https://github.com/RUCAIBox/RecBole">https://github.com/RUCAIBox/RecBole</a> （注：该链接为论文正文提及的通用推荐实验框架 RecBole，并非本文专用实现仓库；本文算法实现暂未单独开源）</li>
+<li><strong>开源代码</strong>: <a href="https://github.com/RUCAIBox/RecBole">https://github.com/RUCAIBox/RecBole</a>（基于 RecBole 生成相关性分数，算法本体未单独开源）</li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对现有供给方公平研究普遍采用"平等 (equality)"视角、假设所有供给方从曝光中同比例获益的痛点，本文提出"权益 (equity)"导向的公平框架：为每个供给方显式建模其对曝光 (examination) 与销量 (purchase) 两类结果的异质偏好权重 <span class="arithmatex">\(v_e^g, v_b^g\)</span> 及期望收益比 <span class="arithmatex">\(y_g\)</span>，并据此定义基于增益的公平度量。在此基础上提出梯度式重排算法 EquityRank，通过一阶边际近似联合优化用户侧 NDCG 与供给方公平。离线与在线仿真表明其在效果-公平权衡上优于 FairCo、MMF、TFROM 等基线。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>现有提供者公平排序几乎全部采用 <strong>equality（平等）</strong> 视角：只要内容相似就应获得相似曝光，隐含假设"曝光即收益、所有提供者收益函数相同"。但现实中成熟品牌更看重转化与销量，新兴商家更渴望曝光，统一曝光分配无法反映真实效用。本文提出 <strong>equity（公平）</strong> 框架：为每个提供者显式建模其对曝光与销量两类结果的偏好权重 <span class="arithmatex">\((v_e^g, v_b^g)\)</span>与期望收益比<span class="arithmatex">\(y_g\)</span>，并给出增益基不公平度量；进而提出 <strong>EquityRank</strong>，用一阶边际近似把非凸组合优化转化为逐项梯度打分<span class="arithmatex">\(\text{grad}(\tau)\)</span>的贪心重排。在 4 个大规模推荐数据集上，离线与在线仿真中 EquityRank 的 unfair.-NDCG 曲线均 Pareto 占优 FairCo/MMF/TFROM，且增益分配与提供者真实偏好比的相关性<span class="arithmatex">\(\rho\)</span> 从 0.06–0.32 提升至 0.51–0.85。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 排序系统同时连接用户与内容供给方，供给方公平 (provider-side fairness) 已成为 IR 社区的重要议题。现有工作大体分为概率式公平 (protected group 在 top 位置的比例不低于阈值) 与曝光式公平 (amortized exposure fairness，要求相似内容的供给方随时间获得相似曝光，或曝光与相关性成比例)。代表性算法包括基于线性/0-1 整数规划的精确方法、FairCo 的动态 LTR、MMF 的贪心边际选择、PG-Rank/PL-Rank 的 Plackett-Luce 建模、MCFair 与 TFROM 等。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>单一效用假设</strong>: 几乎所有方法都假设供给方从每个物品的曝光中"等比例"获益，忽略了真实场景中不同品牌/商家对曝光、销量、转化率的偏好差异（成熟品牌重利润与 CVR，新兴品牌更渴望曝光）。</li>
-<li><strong>平等 ≠ 权益</strong>: 社会学中 equality（一视同仁）与 equity（按需分配）的区分在排序公平中未被建模，相同曝光对不同供给方可能意味着完全不同的收益。</li>
-<li><strong>度量不可扩展</strong>: 精确规划类方法时间复杂度高，难以支撑大规模在线排序。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 如何在有限的用户流量带宽下，让排序结果按各供给方的"定制化需求"成比例地分配增益，同时不牺牲用户侧相关性？简单的曝光均分或加权拼接无法刻画"曝光-销量"二维异质偏好。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者观察到电商场景中供给方对 CTR 与 CVR 的重视程度存在系统性差异，因此将供给方效用拆解为曝光增益 <span class="arithmatex">\(v_e^g\)</span> 与购买增益 <span class="arithmatex">\(v_b^g\)</span> 的加权和，并引入期望收益比 <span class="arithmatex">\(y_g\)</span> 作为"按需分配"的目标锚点；进一步证明现有曝光公平/影响公平均为该框架在 <span class="arithmatex">\(v_e=1, v_b=0, y_g=r(g)\)</span> 时的特例，从而以统一视角兼容 equality 与 equity。</li>
+<li><strong>主流范式</strong>: 提供者公平排序以 exposure-based / amortized fairness 为主，要求"曝光 ∝ 相关性"，代表算法有 FairCo（比例控制器）、MMF（贪心边际最大化）、TFROM（兼顾用户侧公平）、PG-Rank/PL-Rank（Plackett-Luce 建模）。</li>
+<li><strong>前人局限</strong>: ① 所有方法假设"曝光即效用"，把 <span class="arithmatex">\(v_e\)</span>固定为 1、<span class="arithmatex">\(v_b\)</span> 固定为 0，无法刻画提供者对销量/转化的差异化诉求；② 优化目标与真实收益脱钩——两个提供者获得相同曝光，但一个卖爆一个零成交，在 equality 度量下仍被判为"公平"。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 社会学中 equality（一视同仁）与 equity（按需分配）的区分正好对应此问题。作者将提供者效用拆为"被检验收益 <span class="arithmatex">\(v_e^g\)</span>"与"被购买收益<span class="arithmatex">\(v_b^g\)</span>"两维，公平应定义为<strong>各提供者获得的增益比例与其期望比例<span class="arithmatex">\(y_g\)</span> 成正比</strong>，而非曝光量相等。</li>
+<li><strong>本文切入点</strong>: 用增益基度量统一 equity 与 equality（令 <span class="arithmatex">\(v_e=1, v_b=0, y_g=r(g)\)</span> 即退化为曝光公平），再设计可在线部署的梯度重排算法。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>物品全集 <span class="arithmatex">\(\mathcal{I}\)</span>（<span class="arithmatex">\(|\mathcal{I}|=n\)</span>），用户集 <span class="arithmatex">\(\mathcal{U}\)</span>，供给方集合 <span class="arithmatex">\(\mathcal{G}=\{g_1,\dots,g_m\}\)</span>，供给方 <span class="arithmatex">\(g\)</span> 拥有物品集 <span class="arithmatex">\(\mathcal{I}_g\)</span>（<span class="arithmatex">\(|\mathcal{I}_g|=n_g\)</span>），<span class="arithmatex">\(\mathcal{I}=\bigcup_g \mathcal{I}_g\)</span>。</li>
-<li>排序列表 <span class="arithmatex">\(\pi\)</span>，长度 <span class="arithmatex">\(K\)</span>，评测截断 <span class="arithmatex">\(k_c \le K\)</span>；在线场景含时间步 <span class="arithmatex">\(T\)</span>。</li>
-<li>二元随机变量 <span class="arithmatex">\(e, r, b\)</span> 分别表示物品被曝光 (examined)、相关 (relevant)、被购买 (bought)。</li>
-<li>位置偏差 <span class="arithmatex">\(p_{\text{rank}(\tau|\pi)}\)</span> 为位置 <span class="arithmatex">\(k\)</span> 的曝光概率；选择偏差假设排名超过 <span class="arithmatex">\(K\)</span> 的物品曝光概率为 0。</li>
-<li>供给方增益权重 <span class="arithmatex">\(v_e^g, v_b^g\)</span>（单位曝光/购买带来的收益），期望收益比 <span class="arithmatex">\(y_g\)</span>。</li>
-<li>输入：相关性估计 <span class="arithmatex">\(r(\tau,u)\)</span>、位置曝光概率 <span class="arithmatex">\(p_k\)</span>、供给方权重 <span class="arithmatex">\(\{v_e^g, v_b^g, y_g\}\)</span>；输出：重排后的 top-<span class="arithmatex">\(K\)</span> 列表 <span class="arithmatex">\(\pi\)</span>。</li>
-</ul>
-<p>表 1 汇总了全文符号定义：</p>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2602.00495v1/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：相关性估计器给出候选物品相关性 <span class="arithmatex">\(r(\tau,u)\)</span> → 依据交互假设（购买需同时满足曝光与相关，<span class="arithmatex">\(P(b=1)=P(r=1)P(e=1)\)</span>）计算每个物品的期望增益 → 按供给方聚合增益 <span class="arithmatex">\(G(g|\pi,u)\)</span> → 计算增益式公平度量 unfair. → 以边际曝光 <span class="arithmatex">\(\Delta E\)</span> 做一阶近似，将目标分解为"效果梯度 + <span class="arithmatex">\(\alpha \times\)</span> 公平梯度" → 贪心/梯度式逐位填充 top-<span class="arithmatex">\(K\)</span> 列表。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>系统在每个时间步 <span class="arithmatex">\(T\)</span>收到一个用户请求，相关性模型给出候选物品的<span class="arithmatex">\(r(\tau)\)</span>；EquityRank 读取平台侧预置的提供者偏好参数<span class="arithmatex">\((v_e^g, v_b^g, y_g)\)</span>与历史累计增益<span class="arithmatex">\(G(g,T)\)</span>，计算每个物品的"有效性梯度 + 公平修正梯度"合成得分<span class="arithmatex">\(\text{grad}(\tau)\)</span>，按得分降序（在线）或垂直分配（离线）生成 top-<span class="arithmatex">\(K\)</span> 列表；用户交互后回写曝光/购买统计，进入下一轮。整个流程无需训练、无参数更新，是纯推理期的重排插件。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 候选物品相关性 r(τ,u) + 位置曝光概率 p_k"] --&gt; B["供给方增益建模: v_e^g, v_b^g, y_g"]
-    B --&gt; C["增益聚合 G(g|π,u) 与公平度量 unfair.(T)"]
-    C --&gt; D["一阶边际近似: Δeff + α·Δfair"]
-    D --&gt; E["梯度式逐位重排输出 top-K 列表 π"]</code></pre>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 供给方增益建模 (Provider Gain Modeling)</strong>。供给方 <span class="arithmatex">\(g\)</span> 从列表 <span class="arithmatex">\(\pi\)</span> 获得的增益及其期望为：</p>
-<div class="arithmatex">\[G(g|\pi,u)=\sum_{\tau\in\mathcal{I}_g\cap\pi} P(b=1|\tau,\pi)\,v_b^g + P(e=1|\tau,\pi)\,v_e^g\]</div>
-<div class="arithmatex">\[\mathbb{E}[G(g|\pi,u)]=\sum_{\tau\in\mathcal{I}_g\cap\pi} p_{\text{rank}(\tau|\pi)}\left(r(\tau,u)\cdot v_b^g + v_e^g\right)\]</div>
-<p>物理直觉：每个物品的期望增益 = 曝光概率 ×（相关性 × 购买权重 + 曝光权重），从而把"曝光"与"销量"两个维度以供给方自定义权重耦合进同一标量。作者指出该式可无缝推广到逐物品权重 <span class="arithmatex">\(v_e^\tau, v_b^\tau\)</span>。</p>
-<p><strong>(2) 增益式公平度量 (Gain-based Fairness)</strong>。理想状态为 <span class="arithmatex">\(\forall g_i,g_j\)</span>：<span class="arithmatex">\(G(g_i)/y_{g_i}=G(g_j)/y_{g_j}\)</span>。为避免零分母，采用成对平均增益差的平方：</p>
-<div class="arithmatex">\[\text{unfair.}(T)=\frac{1}{m(m-1)}\sum_{i=1}^{m}\sum_{j=1}^{m}\left(G(g_i,T)\,y_{g_j}-G(g_j,T)\,y_{g_i}\right)^2,\quad \text{fair.}(T)=-\text{unfair.}(T)\]</div>
-<p>其中 <span class="arithmatex">\(G(g_i,T)=\frac{1}{T}\sum_{t=1}^{T}G(g_i|\tau_t,u_t)\)</span> 为时间平均增益。该度量对 <span class="arithmatex">\(y_g\)</span> 成比例缩放，天然支持"按需分配"。</p>
-<p><strong>(3) 泛化性证明 (Generalizability)</strong>。当令所有 <span class="arithmatex">\(v_e=1\)</span>、<span class="arithmatex">\(v_b=0\)</span>、<span class="arithmatex">\(y_g\)</span> 取供给方平均相关性 <span class="arithmatex">\(r(g_i)=\frac{1}{n_{g_i}}\sum_{\tau\in\mathcal{I}_{g_i}}r(\tau)\)</span> 时，上述度量退化为经典曝光公平（要求 <span class="arithmatex">\(E(g_i,T)/r(g_i)=E(g_j,T)/r(g_j)\)</span>），说明本文框架是既有 equality 框架的严格超集。</p>
-<p><strong>(4) EquityRank 优化目标与梯度推导</strong>。总目标为 <span class="arithmatex">\(\max_\pi \text{Obj.}(T)=\text{eff.}(T)+\alpha\cdot\text{fair.}(T)\)</span>，其中 eff. 在离线为 aNDCG、在线为带折扣 <span class="arithmatex">\(\gamma\)</span> 的 cNDCG。由于目标非凸且组合爆炸，利用"<span class="arithmatex">\(T\)</span> 时刻排序不影响 <span class="arithmatex">\(\text{Obj.}(T-1)\)</span>"的性质转为最大化边际目标，并以边际曝光 <span class="arithmatex">\(\Delta E\)</span> 做一阶近似：</p>
-<div class="arithmatex">\[\max_\pi \Delta\text{Obj.}(T)\approx\max_\pi \sum_{\tau\in\mathcal{I}}\frac{\partial \text{eff.}}{\partial E(\tau)}\Delta E(\tau)+\alpha\sum_{\tau\in\mathcal{I}}\frac{\partial \text{fair.}}{\partial E(\tau)}\Delta E(\tau)\]</div>
-<p>效果项经改写 <span class="arithmatex">\(\text{eff.}(T)=\sum_{\tau\in\mathcal{I}}r(\tau)E(\tau)\)</span> 后梯度即为 <span class="arithmatex">\(\partial\text{eff.}/\partial E(\tau)=r(\tau)\)</span>；公平项则通过链式法则先对增益 <span class="arithmatex">\(G\)</span> 求导、再经 <span class="arithmatex">\(G\)</span> 对曝光 <span class="arithmatex">\(E\)</span> 求导得到。最终每个候选物品获得一个"效果梯度 + <span class="arithmatex">\(\alpha\cdot\)</span>公平梯度"的边际得分，按得分贪心填充列表。图 1 给出了水平/垂直分配（跨用户 vs. 单用户列表内）的示意，说明本文在单次请求的列表内完成分配：</p>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2602.00495v1/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失/目标函数</strong>: 无监督训练损失，直接优化 <span class="arithmatex">\(\text{Obj.}(T)=\text{eff.}(T)+\alpha\cdot\text{fair.}(T)\)</span>，<span class="arithmatex">\(\alpha\)</span> 为效果-公平权衡超参；在线场景 cNDCG 含折扣因子 <span class="arithmatex">\(\gamma\)</span>。无温度系数 <span class="arithmatex">\(\tau\)</span>、无对比损失。</li>
-<li><strong>负采样策略</strong>: 不适用。本文为列表级重排算法，直接在候选集上做增益分配，不涉及表征学习的负采样。</li>
-<li><strong>时间与空间复杂度</strong>: 精确求解需枚举全排列，不可行；EquityRank 采用逐位贪心 + 梯度打分，单次重排复杂度约为 <span class="arithmatex">\(O(K\cdot|\mathcal{I}|)\)</span> 量级（每步对候选集计算边际得分）。原文表 3 报告了各算法在 100 个样本上的平均处理时间，EquityRank 显著快于 FairCo、MMF、TFROM 等基线（具体毫秒数值见原文表 3）。空间开销主要为候选集梯度缓存，与 <span class="arithmatex">\(|\mathcal{I}|\)</span> 线性相关。</li>
-</ul>
+    A["用户请求 + 候选物品相关性 r(τ)"] --&gt; B["提供者偏好参数 (v_e, v_b, y) 与累计增益 G(g,T)"]
+    B --&gt; C["公平梯度 B(g) 计算 O(m²)"]
+    C --&gt; D["合成梯度 grad(τ) = r(τ) + α·B(g)·(v_e + r·v_b)"]
+    D --&gt; E["在线: 按 grad 排序 / 离线: 垂直分配"]
+    E --&gt; F["曝光与购买反馈回写 G(g,T)"]</code></pre>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>增益基提供者效用与不公平度量</strong>：痛点是把"曝光"当唯一货币。作者定义提供者 <span class="arithmatex">\(g\)</span>从列表<span class="arithmatex">\(\pi\)</span> 获得的期望增益为
+$<span class="arithmatex">\(E[G(g|\pi,u)]=\sum_{\tau\in\mathcal{I}_g\cap\pi}p_{\text{rank}(\tau|\pi)}\left(r(\tau,u)\cdot v_b^g+v_e^g\right)\)</span>$
+即"被检验概率 ×（相关性 × 单次购买收益 + 单次曝光收益）"。公平性要求任意两提供者满足 <span class="arithmatex">\(G(g_i)/y_{g_i}=G(g_j)/y_{g_j}\)</span>，据此定义成对偏差平方和
+$<span class="arithmatex">\(\text{unfair.}(T)=\frac{1}{m(m-1)}\sum_{i=1}^{m}\sum_{j=1}^{m}\left(G(g_i,T)y_{g_j}-G(g_j,T)y_{g_i}\right)^2\)</span>$
+直觉：<span class="arithmatex">\(y_g\)</span> 是平台与商家协商的"应得份额"，偏差按份额加权后平方，天然惩罚"大商家吃太多、小商家饿死"的失衡。</p>
+</li>
+<li>
+<p><strong>边际一阶近似与梯度打分</strong>：原目标 <span class="arithmatex">\(\max_\pi\ \text{eff.}+\alpha\cdot\text{fair.}\)</span>因二次项与排列离散性非凸且组合爆炸。作者利用"<span class="arithmatex">\(T\)</span>时刻排序不影响<span class="arithmatex">\(T-1\)</span>"的性质，将目标差分化，对曝光<span class="arithmatex">\(\Delta E(\tau)\)</span> 做一阶泰勒展开，得到每步只需排序的线性目标：
+$<span class="arithmatex">\(\max_\pi\sum_{\tau\in\mathcal{I}}\underbrace{\left[r(\tau)+\alpha\cdot B(\text{Group}(\tau))\left(v_e^{\text{Group}(\tau)}+r(\tau)v_b^{\text{Group}(\tau)}\right)\right]}_{\text{grad}(\tau)}\cdot\Delta E(\tau)\)</span>$
+其中 <span class="arithmatex">\(B(g)=\frac{4}{m(m-1)}\left[y_g\sum_{g'}G(g')y_{g'}-G(g)\sum_{g'}(y_{g'})^2\right]\)</span>是公平项对增益的导数。物理直觉清晰：<span class="arithmatex">\(B(g)\)</span> 为负表示该提供者已"超额"，其物品梯度被压低；为正表示"欠额"，物品被抬升，形成闭环负反馈。</p>
+</li>
+<li>
+<p><strong>训练目标、负采样与推理效率</strong>：本方法无训练损失、无负采样，直接复用现成相关性模型输出。单步复杂度为 <span class="arithmatex">\(O(n\log n+m^2)\)</span>（<span class="arithmatex">\(B(g)\)</span>需<span class="arithmatex">\(O(m^2)\)</span>成对计算，物品打分<span class="arithmatex">\(O(n)\)</span>，排序<span class="arithmatex">\(O(n\log n)\)</span>），与 FairCo 同阶；实际<span class="arithmatex">\(m\ll n\)</span>，主导项为排序。离线场景采用垂直分配（vertical allocation）而非水平分配，使高曝光位置被更均匀地跨用户摊分，提升头部公平性。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文使用多个大规模推荐数据集（表 2 汇总了数据集特征，含用户数、物品数、交互数及供给方/增益相关属性）。具体过滤规则（如 5-core）原文未在正文明确报告，需以表 2 为准：</li>
+<li><strong>数据集与预处理</strong>: 用户/物品交互数 &lt; 10、提供者关联物品 &lt; 20 者剔除；相关性由 RecBole 默认参数的 NeuMF 生成，4–5 星视为点击。</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2602.00495v1/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">数据集</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Providers</th>
+<th style="text-align: left;">场景说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Amazon-Musical Instruments (MI)</td>
+<td style="text-align: center;">4,801</td>
+<td style="text-align: center;">5,418</td>
+<td style="text-align: center;">105</td>
+<td style="text-align: left;">品牌为提供者</td>
+</tr>
+<tr>
+<td style="text-align: left;">Amazon-Video Games (VG)</td>
+<td style="text-align: center;">8,966</td>
+<td style="text-align: center;">12,351</td>
+<td style="text-align: center;">115</td>
+<td style="text-align: left;">品牌为提供者</td>
+</tr>
+<tr>
+<td style="text-align: left;">Google Local-Alaska (AL)</td>
+<td style="text-align: center;">16,651</td>
+<td style="text-align: center;">3,511</td>
+<td style="text-align: center;">72</td>
+<td style="text-align: left;">商户首类目为提供者</td>
+</tr>
+<tr>
+<td style="text-align: left;">RateBeer (RB)</td>
+<td style="text-align: center;">12,293</td>
+<td style="text-align: center;">22,349</td>
+<td style="text-align: center;">533</td>
+<td style="text-align: left;">酿酒商为提供者</td>
+</tr>
+</tbody>
+</table>
 <ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文采用离线仿真（已知相关性标签）与在线仿真（相关性需在排序过程中动态推断）两种设定。离线设定下使用预先记录的用户-物品相关性；在线设定下按时间步 <span class="arithmatex">\(T\)</span> 顺序接收请求并累积 cNDCG。原文未明确报告是否采用 Leave-One-Out 或 8:1:1 比例划分，亦未讨论全局时间戳切分下的数据泄露问题——这是评估协议上的一个可追问点。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 离线为全候选集上的列表级重排（给定相关性标签，非采样负例排序）；在线为逐时间步的流式排序。评测指标为 aNDCG@<span class="arithmatex">\(k_c\)</span>（离线）与 cNDCG@<span class="arithmatex">\(k_c\)</span>（在线），公平侧指标为 unfair.（式 9，越低越好）。</li>
-<li><strong>评价指标与显著性检验</strong>: 主指标为 unfair.（↓）与 NDCG（↑）构成的权衡曲线；表 3 报告了标准差（括号内），说明进行了多次运行。原文未明确报告配对显著性检验（如 paired <span class="arithmatex">\(t\)</span>-test / Wilcoxon）的具体 <span class="arithmatex">\(p\)</span> 值。</li>
+<li><strong>数据划分与防穿越</strong>: 离线设定为全量用户一次性出榜（相关性标签已知）；在线设定模拟 <span class="arithmatex">\(2.5\times10^5\)</span>步流式请求，每步服务一个用户，相关性用无偏估计<span class="arithmatex">\(\hat{r}(\tau)=\text{cumB}(\tau)/E(\tau)\)</span> 在线学习，先用弱 NeuMF 粗筛 top-20（覆盖约 94% 物品）再做公平重排。</li>
+<li><strong>排名评测协议</strong>: 列表长度 <span class="arithmatex">\(K=5\)</span>，<span class="arithmatex">\(k_c=K\)</span>；有效性用 aNDCG@5（离线）与 cNDCG@5（在线，<span class="arithmatex">\(\gamma=0.995\)</span>）；公平性用上式 unfair.；检验位置偏置<span class="arithmatex">\(p_k=1/\log_2(k+1)\)</span>。提供者收益参数按三种场景随机采样：Common（<span class="arithmatex">\(v_e\sim\mathcal{N}(10,2.5), v_b\sim\mathcal{N}(100,25), y\sim\mathcal{N}(50,25)\)</span>）、Exp1st（<span class="arithmatex">\(v_e,v_b\sim\mathcal{N}(100,25)\)</span>）、Sale1st（<span class="arithmatex">\(v_b\sim\mathcal{N}(1000,250)\)</span>）。</li>
+<li><strong>对比基线与超参设置</strong>: TopK、PoorK、FairCo、MMF、TFROM，以及按本文 equity 度量改造的 FairCo<em>/MMF</em>/TFROM*；<span class="arithmatex">\(\alpha\)</span>不调单一值而是扫全参数空间绘制 unfair.-NDCG 曲线；每实验重复 5 次取均值，显著性<span class="arithmatex">\(p&lt;0.05\)</span>。</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>表 3 报告了各模型在离线设定下能达到的最小 unfair. 值（括号内为标准差），并标注了 100 个样本的平均处理时间。基线包括 FairCo、MMF、TFROM（含带 "<em>" 与不带 "</em>" 的版本）、PoorK 等。原文强调每个数据集的最优结果，EquityRank 在多数数据集上取得最低 unfair.：</p>
-<figure class="paper-figure">
-  <img alt="表 3" src="../../../../../assets/papers/2602.00495v1/table_3.png" /><figcaption>表 3</figcaption>
-</figure>
-<p>图 3 给出各模型在不同数据集上的 unfair.-aNDCG 平衡曲线，越靠左上（↖）越优，直观展示 EquityRank 在同等公平约束下能达到更高 NDCG：</p>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2602.00495v1/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文未设置传统意义上的"移除某模块"消融表，而是通过以下方式做控制变量分析：(1) 对比 EquityRank 与 PoorK 在不同数据集上两类增益权重之比 <span class="arithmatex">\(v_b/v_e\)</span> 的分布（图 2），验证 EquityRank 能随供给方异质偏好自适应调整分配，而 PoorK 等 equality 方法无法区分；(2) 通过 <span class="arithmatex">\(\alpha\)</span> 扫描得到完整的公平-效果平衡曲线（图 3），间接反映公平项与效果项的相对贡献。原文未报告参数量对齐或图度数匹配类的严格消融。</p>
-<figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2602.00495v1/figure_2.png" /><figcaption>图 2</figcaption>
-</figure>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
+<p>离线最小不公平度（越低越好，括号内为标准差）：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">模型</th>
+<th style="text-align: center;">MI</th>
+<th style="text-align: center;">VG</th>
+<th style="text-align: center;">AL</th>
+<th style="text-align: center;">RB</th>
+<th style="text-align: center;">单次耗时(s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">TopK</td>
+<td style="text-align: center;">1.38e5</td>
+<td style="text-align: center;">2.10e5</td>
+<td style="text-align: center;">1.85e5</td>
+<td style="text-align: center;">1.92e3</td>
+<td style="text-align: center;">0.11–0.49</td>
+</tr>
+<tr>
+<td style="text-align: left;">PoorK</td>
+<td style="text-align: center;">0.126</td>
+<td style="text-align: center;">0.043</td>
+<td style="text-align: center;">0.019</td>
+<td style="text-align: center;"><strong>0.002</strong></td>
+<td style="text-align: center;">0.10–0.46</td>
+</tr>
+<tr>
+<td style="text-align: left;">FairCo*</td>
+<td style="text-align: center;">0.285</td>
+<td style="text-align: center;">0.093</td>
+<td style="text-align: center;">0.038</td>
+<td style="text-align: center;">0.022</td>
+<td style="text-align: center;">0.14–0.69</td>
+</tr>
+<tr>
+<td style="text-align: left;">MMF*</td>
+<td style="text-align: center;">0.126</td>
+<td style="text-align: center;">0.043</td>
+<td style="text-align: center;">0.019</td>
+<td style="text-align: center;"><strong>0.002</strong></td>
+<td style="text-align: center;">1.75–9.20</td>
+</tr>
+<tr>
+<td style="text-align: left;">TFROM*</td>
+<td style="text-align: center;">0.106</td>
+<td style="text-align: center;">0.056</td>
+<td style="text-align: center;">0.013</td>
+<td style="text-align: center;">0.046</td>
+<td style="text-align: center;">0.25–1.05</td>
+</tr>
+<tr>
+<td style="text-align: left;">EquityRank</td>
+<td style="text-align: center;">0.499</td>
+<td style="text-align: center;">0.151</td>
+<td style="text-align: center;">0.037</td>
+<td style="text-align: center;">0.103</td>
+<td style="text-align: center;">0.13–0.60</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>EquityRank_v</strong></td>
+<td style="text-align: center;"><strong>0.101</strong></td>
+<td style="text-align: center;"><strong>0.037</strong></td>
+<td style="text-align: center;"><strong>0.012</strong></td>
+<td style="text-align: center;">0.024</td>
+<td style="text-align: center;">0.30–1.17</td>
+</tr>
+</tbody>
+</table>
+<p>增益分配与真实偏好比的一致性（MSD↓ / <span class="arithmatex">\(\rho\)</span>↑，以 MI 为例）：FairCo* 117.3/0.06，PoorK 110.5/0.12，TFROM* 123.2/0.05，EquityRank 29.7/0.58，<strong>EquityRank_v 18.1/0.69</strong>；AL 上 EquityRank_v 达 7.3/0.85。</p>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">配置</th>
+<th style="text-align: center;">MI unfair.</th>
+<th style="text-align: center;">MI <span class="arithmatex">\(\rho\)</span></th>
+<th style="text-align: center;">AL unfair.</th>
+<th style="text-align: center;">AL<span class="arithmatex">\(\rho\)</span></th>
+<th style="text-align: left;">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">EquityRank（水平分配）</td>
+<td style="text-align: center;">0.499</td>
+<td style="text-align: center;">0.58</td>
+<td style="text-align: center;">0.037</td>
+<td style="text-align: center;">0.79</td>
+<td style="text-align: left;">在线式逐步出榜</td>
+</tr>
+<tr>
+<td style="text-align: left;">EquityRank_v（垂直分配）</td>
+<td style="text-align: center;"><strong>0.101</strong></td>
+<td style="text-align: center;"><strong>0.69</strong></td>
+<td style="text-align: center;"><strong>0.012</strong></td>
+<td style="text-align: center;"><strong>0.85</strong></td>
+<td style="text-align: left;">离线批量出榜</td>
+</tr>
+<tr>
+<td style="text-align: left;">去掉公平项（<span class="arithmatex">\(\alpha=0\)</span>，即 TopK）</td>
+<td style="text-align: center;">1.38e5</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">1.85e5</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: left;">公平完全崩塌</td>
+</tr>
+<tr>
+<td style="text-align: left;">仅用曝光项（<span class="arithmatex">\(v_b=0\)</span>，退化为曝光公平）</td>
+<td style="text-align: center;">≈FairCo* 量级</td>
+<td style="text-align: center;">≈0.06</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">≈0.25</td>
+<td style="text-align: left;">无法对齐销量偏好</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>equality 方法在 equity 度量下几乎失效</strong>：TopK/TFROM 的 unfair. 高达 <span class="arithmatex">\(10^5\)</span> 量级，FairCo* 在 MI 上仍有 0.285，而 EquityRank_v 仅 0.101；说明"曝光相等"与"收益按需分配"是两个几乎正交的目标，改造损失函数（加 <code>*</code>）只能部分缓解。</li>
+<li><strong>垂直分配是离线场景的关键增益来源</strong>：同一算法仅换分配方式，MI 上 unfair. 从 0.499 降至 0.101（约 5 倍），<span class="arithmatex">\(\rho\)</span> 从 0.58 升至 0.69，代价是耗时从 0.226s 增至 0.421s，性价比极高。</li>
+<li><strong>在线场景 EquityRank 实现 Pareto 占优</strong>：在 cNDCG 上全面最高，且 unfair.-cNDCG 曲线整体位于左上；在 Exp1st/Sale1st 两种极端偏好场景下仍保持最优或近最优，证明对异质提供者需求的适应性而非对单一分布的过拟合。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>长尾/冷启动分桶</strong>: 原文未报告按交互频次分桶的细粒度分析。</li>
-<li><strong>关键超参数敏感度</strong>: 核心超参为权衡系数 <span class="arithmatex">\(\alpha\)</span>；图 3 的平衡曲线实质上刻画了 <span class="arithmatex">\(\alpha\)</span> 从偏效果到偏公平连续变化时的性能轨迹。折扣因子 <span class="arithmatex">\(\gamma\)</span>（在线 cNDCG）与截断 <span class="arithmatex">\(k_c\)</span> 的影响原文未做单独敏感性表格。</li>
-<li><strong>线上 A/B 测试结果</strong>: 原文仅包含离线与在线<strong>仿真</strong>（online simulation），未报告真实工业流量上的 A/B 测试（CTR/CVR/GMV/留存等），此为工业落地证据链上的缺口。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>框架统一性</strong>: 将曝光公平、影响公平统一为增益式公平在 <span class="arithmatex">\(v_e=1, v_b=0\)</span> 下的特例，理论优雅，便于后续工作在同一坐标系下比较。</li>
-<li><strong>异质需求可插拔</strong>: <span class="arithmatex">\(v_e^g, v_b^g, y_g\)</span> 可由平台与商家协商或从价格/成本/推广费中估计，框架可扩展到更多效用维度（如留存、满意度），迁移性强。</li>
-<li><strong>梯度式重排高效</strong>: 一阶边际近似把组合优化转为逐位贪心打分，处理时间显著优于规划类与 FairCo/MMF/TFROM，具备在线部署潜力。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议披露不足</strong>: 数据划分策略、过滤规则、是否全库排序、显著性检验均未在正文清晰交代，复现门槛偏高；"online simulation" 与真实线上 A/B 存在本质差距，公平收益在真实流量下是否成立存疑。</li>
-<li><strong><span class="arithmatex">\(y_g\)</span> 与 <span class="arithmatex">\(v\)</span> 权重的获取被回避</strong>: 作者明确将 <span class="arithmatex">\(y_g\)</span> 的定价机制留作未来工作，但该参数直接决定公平分配结果，其估计误差对公平性的鲁棒性未做敏感性分析，是审稿人最可能攻击的点。</li>
-<li><strong>一阶近似的理论保证缺失</strong>: 以边际曝光做一阶泰勒近似，未给出近似误差界或与全局最优的差距分析；目标非凸，贪心解的质量缺乏理论刻画。</li>
-<li><strong>物品级异质增益未落地</strong>: 文中假设同一供给方下所有物品 <span class="arithmatex">\(v_e, v_b\)</span> 相同，虽声称可推广到逐物品权重，但未实验验证。</li>
-<li><strong>代码链接为通用框架</strong>: 提供的 RecBole 链接并非本文算法专用实现，实际可复现性需打折扣。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: FairCo 用比例控制器调曝光、MMF 用贪心最大化边际相关性+公平、TFROM 引入用户侧公平，三者均把效用锚定在曝光上；本文把效用推广为"曝光+销量"的加权增益，且证明曝光公平是其 <span class="arithmatex">\(v_e=1,v_b=0\)</span> 的特例，框架更具一般性。相比 PG-Rank/PL-Rank 的 Plackett-Luce 策略梯度，本文的边际一阶近似更轻量、无需训练。</li>
+<li><strong>可迁移亮点</strong>: ① "把公平约束写成对累计量的导数 <span class="arithmatex">\(B(g)\)</span> 再叠加到打分上"的负反馈范式，可直接迁移到多业务方流量分配、创作者激励等场景；② 垂直分配在离线批量出榜中的显著收益，可复用到任何需要一次性生成大量榜单的公平重排任务。</li>
+<li><strong>审稿级局限批判</strong>: ① 提供者收益参数 <span class="arithmatex">\((v_e,v_b,y)\)</span>在实验中全部为随机采样模拟，真实电商数据缺失，参数获取机制（定价/协商）被明确留作未来工作，削弱了结论的工业可信度；② 在线实验的相关性估计依赖<span class="arithmatex">\(\text{cumB}/E\)</span>的无偏估计，冷启动物品曝光为 0 时该估计不稳定，且<span class="arithmatex">\(O(m^2)\)</span> 的成对公平梯度在提供者数量达万级时可能成为瓶颈；③ 仅建模曝光与销量两维，未纳入留存、复购等长期效用。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （equity vs. equality 的视角转换与增益式统一框架有理论新意）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （离线+在线仿真较完整，但划分协议、显著性检验与真实 A/B 缺失）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （符号体系清晰、梯度推导完整，一阶近似缺误差分析）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （算法高效易部署，但 <span class="arithmatex">\(y_g\)</span>/<span class="arithmatex">\(v\)</span> 权重获取与专用代码开源是落地障碍）</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （equity 视角的增益基公平度量有清晰的社会学动机与理论包容性，但梯度重排本身是边际近似的工程化组合，算子层面新意中等）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （4 个大规模数据集 + 离线/在线双设定 + 三种偏好场景 + 全 <span class="arithmatex">\(\alpha\)</span> 空间曲线对比 + 5 次重复与显著性检验，但收益参数为模拟采样是硬伤）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （从效用定义到梯度推导链条完整，<span class="arithmatex">\(B(g)\)</span>的负反馈直觉解释到位，复杂度分析清晰；部分符号如<span class="arithmatex">\(y_g\)</span> 的语义依赖脚注补充）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （无训练、即插即用、复杂度与 FairCo 同阶，工程友好；但依赖平台侧提供者偏好参数，且代码未独立开源，复现需自行实现）</li>
 </ul>
 
 

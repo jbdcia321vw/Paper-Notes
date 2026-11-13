@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入用户交互历史 <span class="arithmatex">\(H_u=\{(i_k,r_k,t_k)\}_{k=1}^n\)</span>，目标是学习映射 <span class="arithmatex">\(f: H_u \to \mathcal{P}_u(T)=\langle I_{meta}, A_{dom}, G_{policy}(T)\rangle\)</span>，其中 <span class="arithmatex">\(A_{dom}\)</span> 为任务无关的领域接地属性集，<span class="arithmatex">\(G_{policy}(T)\)</span> 为任务 <span class="arithmatex">\(T\)</span> 特定的决策策略。流水线分三阶段：Stage 1 并行多路抽取构造高召回候选池；Stage 2 在显式上下文 <span class="arithmatex">\(C=\langle D_{info}, T_{desc}, E_{shot}\rangle\)</span> 下做语义去重与词汇接地；Stage 3 实例化任务决策路径并用反事实扰动把属性映射到具体决策节点。全程无参数训练，仅靠 prompt 编排，推理时画像可离线预生成并缓存。</p>
+<p>输入用户交互历史 <span class="arithmatex">\(H_u=\{(i_k,r_k,t_k)\}_{k=1}^n\)</span>，目标是学习映射<span class="arithmatex">\(f: H_u \to \mathcal{P}_u(T)=\langle I_{meta}, A_{dom}, G_{policy}(T)\rangle\)</span>，其中<span class="arithmatex">\(A_{dom}\)</span>为任务无关的领域接地属性集，<span class="arithmatex">\(G_{policy}(T)\)</span>为任务<span class="arithmatex">\(T\)</span>特定的决策策略。流水线分三阶段：Stage 1 并行多路抽取构造高召回候选池；Stage 2 在显式上下文<span class="arithmatex">\(C=\langle D_{info}, T_{desc}, E_{shot}\rangle\)</span> 下做语义去重与词汇接地；Stage 3 实例化任务决策路径并用反事实扰动把属性映射到具体决策节点。全程无参数训练，仅靠 prompt 编排，推理时画像可离线预生成并缓存。</p>
 <pre class="mermaid"><code>flowchart TD
     A["交互历史 H_u (日志/评分/评论)"] --&gt; B["Stage1: N=3 并行高召回抽取 → 原始属性池 A_raw"]
     B --&gt; C["Stage2: 上下文 C 下语义合并去重 → 领域接地属性 A_dom"]
@@ -4241,13 +4252,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>多路并行高召回抽取（Ensemble Extraction）</strong>：单次 LLM 生成随机性大、易漏隐式偏好。本文并行跑 <span class="arithmatex">\(N=3\)</span> 次抽取并取并集 <span class="arithmatex">\(A_{raw}=\bigcup_{j=1}^{3} \text{LLM}(H_u \mid \text{Prompt}_{ext})\)</span>，刻意接受冗余与噪声以换召回率；预实验显示属性召回在 2–3 次后饱和，故 <span class="arithmatex">\(N=3\)</span> 是成本-覆盖的甜点。直觉：把"去噪"职责从抽取阶段后移到合并阶段，避免早期剪枝误杀长尾偏好。</p>
+<p><strong>多路并行高召回抽取（Ensemble Extraction）</strong>：单次 LLM 生成随机性大、易漏隐式偏好。本文并行跑 <span class="arithmatex">\(N=3\)</span>次抽取并取并集<span class="arithmatex">\(A_{raw}=\bigcup_{j=1}^{3} \text{LLM}(H_u \mid \text{Prompt}_{ext})\)</span>，刻意接受冗余与噪声以换召回率；预实验显示属性召回在 2–3 次后饱和，故<span class="arithmatex">\(N=3\)</span> 是成本-覆盖的甜点。直觉：把"去噪"职责从抽取阶段后移到合并阶段，避免早期剪枝误杀长尾偏好。</p>
 </li>
 <li>
-<p><strong>上下文感知语义合并（Context-Aware Consolidation）</strong>：原始属性与数据集词表存在 paraphrase 与词汇错配。以 <span class="arithmatex">\(C=\langle D_{info}, T_{desc}, E_{shot}\rangle\)</span>（数据集 schema、任务族与粒度要求、单条示例校准术语）为条件执行 <span class="arithmatex">\(A_{dom}=\text{LLM}(A_{raw}\mid C,\text{Prompt}_{merge})\)</span>，完成同义归并与数据集原生概念接地。这是"域泛化"的关键：换域只需换 <span class="arithmatex">\(C\)</span>，无需重写属性表。</p>
+<p><strong>上下文感知语义合并（Context-Aware Consolidation）</strong>：原始属性与数据集词表存在 paraphrase 与词汇错配。以 <span class="arithmatex">\(C=\langle D_{info}, T_{desc}, E_{shot}\rangle\)</span>（数据集 schema、任务族与粒度要求、单条示例校准术语）为条件执行<span class="arithmatex">\(A_{dom}=\text{LLM}(A_{raw}\mid C,\text{Prompt}_{merge})\)</span>，完成同义归并与数据集原生概念接地。这是"域泛化"的关键：换域只需换<span class="arithmatex">\(C\)</span>，无需重写属性表。</p>
 </li>
 <li>
-<p><strong>反事实属性-步骤映射（Counterfactual Trait-to-Step Mapping）</strong>：这是全文最核心的增量。对任务 <span class="arithmatex">\(T\)</span> 先实例化有序决策路径 <span class="arithmatex">\(\Pi(T)=[s_1,\dots,s_m]\)</span>（硬过滤 → 权衡比较 → 最终选择/打分）；随后对属性 <span class="arithmatex">\(a\)</span> 构造最小扰动变体 <span class="arithmatex">\(a'\)</span>（否定或弱化），生成反事实画像 <span class="arithmatex">\(A_{dom}^{(a\leftarrow a')}\)</span>，在同一实例上重跑 Agent：若判别选中集合变化、排序次序变化或评分变化超阈值，则判定 <span class="arithmatex">\(a\)</span> 对步骤 <span class="arithmatex">\(s_j\)</span> 有因果影响并保留，否则降权或合并。直觉：用"改一个属性看输出是否翻转"筛掉与决策无关的噪声属性，使画像从"描述性文本"升级为"可执行、可解释的策略"。</p>
+<p><strong>反事实属性-步骤映射（Counterfactual Trait-to-Step Mapping）</strong>：这是全文最核心的增量。对任务 <span class="arithmatex">\(T\)</span>先实例化有序决策路径<span class="arithmatex">\(\Pi(T)=[s_1,\dots,s_m]\)</span>（硬过滤 → 权衡比较 → 最终选择/打分）；随后对属性<span class="arithmatex">\(a\)</span>构造最小扰动变体<span class="arithmatex">\(a'\)</span>（否定或弱化），生成反事实画像<span class="arithmatex">\(A_{dom}^{(a\leftarrow a')}\)</span>，在同一实例上重跑 Agent：若判别选中集合变化、排序次序变化或评分变化超阈值，则判定<span class="arithmatex">\(a\)</span>对步骤<span class="arithmatex">\(s_j\)</span> 有因果影响并保留，否则降权或合并。直觉：用"改一个属性看输出是否翻转"筛掉与决策无关的噪声属性，使画像从"描述性文本"升级为"可执行、可解释的策略"。</p>
 </li>
 </ol>
 <p><strong>训练目标与推理开销</strong>：无训练损失（training-free），全部为 prompt 级推理；主要开销在 Stage 3 的反事实重跑（每属性一次前向），但画像可离线一次性生成并缓存，在线仿真阶段零额外成本。</p>
@@ -4461,12 +4472,18 @@
 <li><strong>无画像 Agent 的"安全评分"陷阱</strong>：No Profile 与纯交互上下文在 RMSE 上表现不差（Book 1.0145），但 JSD 高达 0.2758，图 2(a) 显示其评分几乎全部落在 3–5 区间——低逐点误差来自保守中性打分而非个性化表达；画像条件化后 Agent 才敢表达负向偏好，宏观分布对齐显著改善。</li>
 <li><strong>结构化画像解耦了历史长度敏感性</strong>：纯交互 prompt 在历史长度 15 时达峰 0.641，缩到 10 骤降 10.4%、扩到 25 降 4.7%（"lost-in-the-middle"）；APG4RecSim 在仅 5 条历史时即达约 0.62，且箱线图四分位距最窄，实现稀疏数据下的"热启动"与跨长度稳定。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 RecAgent（固定人格/兴趣/行为五类角色）和 Agent4Rec（taste + rationale 混合记忆）的本质区别在于——前两者把画像当作<strong>静态属性抽取</strong>问题，本文把画像当作<strong>任务条件化的策略编译</strong>问题，用反事实检验建立属性与决策步骤的因果链接；相较 UserIP-Tuning 的软提示向量，本文输出的是可读、可解释的自然语言策略，可直接供标准 LLM Agent 使用。</li>
 <li><strong>可迁移亮点</strong>: ① "高召回抽取 → 上下文接地合并"两段式可作为任意 LLM 结构化抽取任务的通用去噪模板；② 反事实属性扰动筛选可直接迁移到可解释推荐的理由生成与特征重要性归因。</li>
 <li><strong>审稿级局限批判</strong>: ① <strong>参数化记忆污染</strong>——表 5 显示仅给 Popularity 单属性时判别达 0.4900，去偏采样后暴跌至 0.3990，说明 ML-1M 等公开基准已被 LLM 记住，性能部分来自全局统计先验而非画像推理，评测效度存疑；② <strong>反事实映射的随机性与成本</strong>——每属性一次 LLM 前向，属性多时开销线性增长，且 LLM 反事实推理本身不稳定，缺少统计置信度校准；③ 实验刻意剥离 memory/planning 模块以隔离画像质量，与真实端到端 Agent 系统的交互效应未验证。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

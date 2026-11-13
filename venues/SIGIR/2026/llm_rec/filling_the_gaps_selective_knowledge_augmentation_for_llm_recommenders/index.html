@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>KnowSA_CKP 分两阶段闭环：<strong>离线知识打分</strong>——对每个物品 <span class="arithmatex">\(t\)</span> 从其交互历史中按流行度分层采样上下文窗口 <span class="arithmatex">\(\tilde{W}_t\)</span>，构造含随机干扰项与语义干扰项的比较集 <span class="arithmatex">\(C(t)\)</span>，用内容中性标识符（[A]/[B]）提示 LLM 选 top-1，聚合选择似然得 <span class="arithmatex">\(K(t)\)</span>；<strong>在线选择性增强</strong>——用 APS 选出 top-<span class="arithmatex">\(K_{aug}\)</span> 个最需补知识的物品，为其追加文本属性，并用 RMS 匹配 top-<span class="arithmatex">\(K_{ref}\)</span> 个"LLM 已懂且语义/行为相关"的参考物品标题作为激活锚点，最后拼装 prompt 交由 LLM 输出候选排序。所有分数离线预计算，在线仅查表。</p>
+<p>KnowSA_CKP 分两阶段闭环：<strong>离线知识打分</strong>——对每个物品 <span class="arithmatex">\(t\)</span>从其交互历史中按流行度分层采样上下文窗口<span class="arithmatex">\(\tilde{W}_t\)</span>，构造含随机干扰项与语义干扰项的比较集<span class="arithmatex">\(C(t)\)</span>，用内容中性标识符（[A]/[B]）提示 LLM 选 top-1，聚合选择似然得<span class="arithmatex">\(K(t)\)</span>；<strong>在线选择性增强</strong>——用 APS 选出 top-<span class="arithmatex">\(K_{aug}\)</span>个最需补知识的物品，为其追加文本属性，并用 RMS 匹配 top-<span class="arithmatex">\(K_{ref}\)</span> 个"LLM 已懂且语义/行为相关"的参考物品标题作为激活锚点，最后拼装 prompt 交由 LLM 输出候选排序。所有分数离线预计算，在线仅查表。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户历史 H_u + 候选集 C_u"] --&gt; B["离线: CKP 比较式知识探测 → K(t)"]
     B --&gt; C["APS 选增强目标 + RMS 选参考物品"]
@@ -4228,7 +4239,7 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>比较式知识探测 CKP（替代逐物品似然 DKP）</strong>：DKP 直接算标题 token 似然，受词汇偏置与长度偏置污染，且与排序任务不对齐。CKP 构造 <span class="arithmatex">\(C(t)=\{t\}\cup C_{rand}\cup C_{sem}\)</span>（<span class="arithmatex">\(n\)</span> 个均匀随机 + <span class="arithmatex">\(m\)</span> 个 SBERT 语义近邻作 hard negative），打乱顺序并赋中性 ID，用 list-wise 选择似然打分：
+<p><strong>比较式知识探测 CKP（替代逐物品似然 DKP）</strong>：DKP 直接算标题 token 似然，受词汇偏置与长度偏置污染，且与排序任务不对齐。CKP 构造 <span class="arithmatex">\(C(t)=\{t\}\cup C_{rand}\cup C_{sem}\)</span>（<span class="arithmatex">\(n\)</span>个均匀随机 +<span class="arithmatex">\(m\)</span> 个 SBERT 语义近邻作 hard negative），打乱顺序并赋中性 ID，用 list-wise 选择似然打分：
 $<span class="arithmatex">\(P_{\text{LLM}}(t|P_w^{CKP})=\frac{\phi(z_t)}{\phi(z_t)+\sum_{j\in C(t)\setminus\{t\}}\phi(z_j)},\quad K(t)=\frac{1}{|\tilde{W}_t|}\sum_{w\in\tilde{W}_t}P_{\text{LLM}}(t|P_w^{CKP})\)</span>$
 直觉：语义干扰项逼迫模型"只有在真正具备判别知识时才把概率集中到目标上"，中性 ID 剥离表层偏置，top-1 而非全排序避免了自回归位置导致的概率虚高。</p>
 </li>
@@ -4237,7 +4248,7 @@ $<span class="arithmatex">\(P_{\text{LLM}}(t|P_w^{CKP})=\frac{\phi(z_t)}{\phi(z_
 $<span class="arithmatex">\(\text{APS}(i)=(1-k(i))\cdot f(i)\cdot r(i),\quad r(i)=\exp(-\lambda\cdot\text{pos}(i))\)</span>$
 即知识亏缺 × 交互频次 × 时间近因性，保证长历史（如 ML-1M 平均 161.8）下预算花在刀刃上。RMS 则为目标 <span class="arithmatex">\(t\)</span> 挑参考物品：
 $<span class="arithmatex">\(\text{RMS}(t,r)=k(r)\cdot s(t,r)\cdot c(t,r)\)</span>$
-要求参考物品"LLM 已懂（<span class="arithmatex">\(k(r)\)</span> 高）× 语义相似 × 协同共现高"，且只注入其<strong>标题</strong>而非全文——利用 LLM 已有参数知识做低成本激活。上下文感知变体再乘 SASRec 的 <span class="arithmatex">\(\cos(h_u,e_r)\)</span> 做个性化。</p>
+要求参考物品"LLM 已懂（<span class="arithmatex">\(k(r)\)</span>高）× 语义相似 × 协同共现高"，且只注入其<strong>标题</strong>而非全文——利用 LLM 已有参数知识做低成本激活。上下文感知变体再乘 SASRec 的<span class="arithmatex">\(\cos(h_u,e_r)\)</span> 做个性化。</p>
 </li>
 <li>
 <p><strong>训练目标、负采样与推理效率</strong>：全程<strong>无微调、无对比损失</strong>，仅前向似然计算。离线打分用流行度三分位分层采样，ML-1M 上仅需 1% 窗口即达 101.9× 加速（表 7）。在线相比 Uniform-Meta，Steam 上 token 开销从 +414.3% 降至 +99.0%，延迟仅 +4.1%。</p>
@@ -4444,12 +4455,18 @@ $<span class="arithmatex">\(\text{RMS}(t,r)=k(r)\cdot s(t,r)\cdot c(t,r)\)</span
 <li><strong>APS 的价值随历史长度放大</strong>：ML-1M（平均 161.8 项历史）上去掉 APS 暴跌至 0.087（-48.2%），而 A-Gift（平均 4.0 项）仅降至 0.072；说明长上下文下"增强谁"的优先级排序是刚需，短序列场景则相对不敏感。</li>
 <li><strong>增强不是"提权"而是"澄清"</strong>：增强目标在 top-1 中的出现频次从 393 降至 375（A-Beauty/Qwen-7B），同时 LTC@10 长尾覆盖率优于 Uniform，证明模型是在获得判别力后<strong>主动拒绝</strong>不合适的候选，而非被额外信息诱导偏好；GPT-4o 自问自答 -5.1% 与 Qwen-32B+KnowSA_CKP +38.0% 的对比进一步说明离线打分不可被在线自省替代。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 Uniform-Meta/Wiki（如 LLMRec 类工作）的无差别注入，本文首次把"增强预算分配"形式化为可离线计算的知识缺口估计问题；相比 SeaKR/EigValLaplacian 等 Adaptive RAG 代理，CKP 从"物品语义熟悉度"转向"用户历史条件下的协同判别力"，是任务对齐的本质差异；相比 LLM 微调路线（TALLRec 等），保持零训练、可插拔。</li>
 <li><strong>可迁移亮点</strong>: ① "中性 ID + top-1 选择似然"是消除 token 级表层偏置的通用探针技巧，可直接用于 LLM 的 item 难度估计、课程采样或蒸馏样本加权；② "只注入参考物品标题而非全文"的锚点激活思路，可迁移到任何受上下文预算约束的 RAG 式推荐 prompt。</li>
 <li><strong>审稿级局限批判</strong>: ① 评测仅用 20 候选的 Sampled Ranking 与 Recall@1，未报告 Full-Ranking 或 NDCG@10，绝对数值偏低且对负采样分布敏感；② 离线 CKP 需对每个物品的多个窗口做前向推理，物品库达百万级时预计算成本与存储仍是瓶颈（论文仅验证 4K 量级物品），且 <span class="arithmatex">\(K_{aug}\)</span>、<span class="arithmatex">\(\lambda\)</span> 对上下文预算较敏感。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

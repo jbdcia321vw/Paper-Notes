@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>给定自然语言查询 <span class="arithmatex">\(Q\)</span> 与结构化过滤器集 <span class="arithmatex">\(\mathcal{F}\)</span>，三个共享同一 LLM 骨干的专家智能体各自输出长度 <span class="arithmatex">\(k=10\)</span> 的排序城市列表；Moderator 依据外部知识库（200 城目录）做目录校验、计算三类接地诊断（success / reliability / hallucination），以逆序折扣线性标量化累计城市得分，选出集体提案 <span class="arithmatex">\(\Phi_t\)</span> 与集体拒绝集 <span class="arithmatex">\(\Phi'_t\)</span>，并把结构化反馈广播给各智能体；智能体在下一轮<strong>只允许替换至多 3 个城市</strong>（保留 <span class="arithmatex">\(\geq k-3\)</span> 个），循环至理想收敛或耐心停滞即停。智能体之间<strong>不直接通信</strong>，全部协调经由 Moderator 的共享状态完成。</p>
+<p>给定自然语言查询 <span class="arithmatex">\(Q\)</span>与结构化过滤器集<span class="arithmatex">\(\mathcal{F}\)</span>，三个共享同一 LLM 骨干的专家智能体各自输出长度<span class="arithmatex">\(k=10\)</span>的排序城市列表；Moderator 依据外部知识库（200 城目录）做目录校验、计算三类接地诊断（success / reliability / hallucination），以逆序折扣线性标量化累计城市得分，选出集体提案<span class="arithmatex">\(\Phi_t\)</span>与集体拒绝集<span class="arithmatex">\(\Phi'_t\)</span>，并把结构化反馈广播给各智能体；智能体在下一轮<strong>只允许替换至多 3 个城市</strong>（保留<span class="arithmatex">\(\geq k-3\)</span> 个），循环至理想收敛或耐心停滞即停。智能体之间<strong>不直接通信</strong>，全部协调经由 Moderator 的共享状态完成。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户查询 Q + 过滤器 F"] --&gt; B["三角色智能体并行提案&lt;br/&gt;Personalization / Popularity / Sustainability"]
     B --&gt; C["Moderator: 目录接地 + 诊断打分&lt;br/&gt;success / reliability / hallucination"]
@@ -4233,15 +4244,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>逆序折扣的多目标标量化打分（Rank-discounted Scalarization）</strong>：痛点在于多目标融合若交给 LLM 会不可复现。Moderator 对城市 <span class="arithmatex">\(c\)</span> 在轮次 <span class="arithmatex">\(t\)</span> 的增量贡献定义为
+<p><strong>逆序折扣的多目标标量化打分（Rank-discounted Scalarization）</strong>：痛点在于多目标融合若交给 LLM 会不可复现。Moderator 对城市 <span class="arithmatex">\(c\)</span>在轮次<span class="arithmatex">\(t\)</span> 的增量贡献定义为
 $<span class="arithmatex">\(\Delta s_{a_i}(c,t)=\frac{1}{\mathrm{rank}_{a_i,t}(c)}\big(\lambda_r r_{a_i,t}+\lambda_d d_{a_i,t}-\lambda_h h_{a_i,t}\big),\quad s(c,t)=s(c,t-1)+\sum_{a_i}\mathbb{I}[c\in L_{a_i,t}]\Delta s_{a_i}(c,t)\)</span>$
-其中 <span class="arithmatex">\(r\)</span> 为角色过滤器满足率、<span class="arithmatex">\(d\)</span> 为跨轮列表稳定性、<span class="arithmatex">\(h\)</span> 为越界/被拒比例，<span class="arithmatex">\(\lambda\)</span> 全部固定为 1 以避免在评测集上调参。直觉：<strong>多智能体、多轮次的重复背书</strong>自然放大长尾候选，而幻觉项直接做减法惩罚，权衡策略完全透明可审计。</p>
+其中 <span class="arithmatex">\(r\)</span>为角色过滤器满足率、<span class="arithmatex">\(d\)</span>为跨轮列表稳定性、<span class="arithmatex">\(h\)</span>为越界/被拒比例，<span class="arithmatex">\(\lambda\)</span> 全部固定为 1 以避免在评测集上调参。直觉：<strong>多智能体、多轮次的重复背书</strong>自然放大长尾候选，而幻觉项直接做减法惩罚，权衡策略完全透明可审计。</p>
 </li>
 <li>
-<p><strong>拒绝集与两种投票策略（Aggressive vs. Majority）</strong>：痛点在于 LLM 会反复回吐已被否定的热门城市。对上一轮集体提案中的城市统计"省略票" <span class="arithmatex">\(v_t(c)=\sum_{a_i}\mathbb{I}[c\notin L_{a_i,t}]\)</span>，拒绝集按 <span class="arithmatex">\(\Phi'_t=\Phi'_{t-1}\cup\{c\in\Phi_{t-1}: v_t(c)\geq\tau\}\)</span> 单调累积，<span class="arithmatex">\(\tau=1\)</span> 为 Aggressive、<span class="arithmatex">\(\tau=2\)</span> 为 Majority。拒绝集对智能体与 Moderator 同时生效，形成<strong>硬性探索压力</strong>，这是把推荐质量推向长尾的物理机制。</p>
+<p><strong>拒绝集与两种投票策略（Aggressive vs. Majority）</strong>：痛点在于 LLM 会反复回吐已被否定的热门城市。对上一轮集体提案中的城市统计"省略票" <span class="arithmatex">\(v_t(c)=\sum_{a_i}\mathbb{I}[c\notin L_{a_i,t}]\)</span>，拒绝集按<span class="arithmatex">\(\Phi'_t=\Phi'_{t-1}\cup\{c\in\Phi_{t-1}: v_t(c)\geq\tau\}\)</span>单调累积，<span class="arithmatex">\(\tau=1\)</span>为 Aggressive、<span class="arithmatex">\(\tau=2\)</span> 为 Majority。拒绝集对智能体与 Moderator 同时生效，形成<strong>硬性探索压力</strong>，这是把推荐质量推向长尾的物理机制。</p>
 </li>
 <li>
-<p><strong>耐心早停与训练/推理开销</strong>：无训练、无负采样，全部为推理期编排。终止条件为理想收敛 <span class="arithmatex">\(S(\Phi_t)=1\)</span> 或 <span class="arithmatex">\(t\geq T_{\min}=3\)</span> 后在窗口 <span class="arithmatex">\(p=2\)</span> 内提升小于 <span class="arithmatex">\(\epsilon=0.005\)</span>。每轮成本为 <span class="arithmatex">\(|\mathcal{A}|=3\)</span> 次并行 LLM 调用加一次确定性 Moderator 扫描，墙钟时间约等于最慢智能体调用加 Moderator 开销。</p>
+<p><strong>耐心早停与训练/推理开销</strong>：无训练、无负采样，全部为推理期编排。终止条件为理想收敛 <span class="arithmatex">\(S(\Phi_t)=1\)</span>或<span class="arithmatex">\(t\geq T_{\min}=3\)</span>后在窗口<span class="arithmatex">\(p=2\)</span>内提升小于<span class="arithmatex">\(\epsilon=0.005\)</span>。每轮成本为<span class="arithmatex">\(|\mathcal{A}|=3\)</span> 次并行 LLM 调用加一次确定性 Moderator 扫描，墙钟时间约等于最慢智能体调用加 Moderator 开销。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4272,8 +4283,8 @@ $<span class="arithmatex">\(\Delta s_{a_i}(c,t)=\frac{1}{\mathrm{rank}_{a_i,t}(c
 </table>
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 无训练阶段，故无传统划分；采用<strong>分层采样 + 查询生成模型与评测骨干解耦</strong>（排除 Gemini 生成的查询）来防止风格泄漏。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 非交互日志场景，采用<strong>目录接地的约束满足率</strong>作为相关性代理——Moderator Success <span class="arithmatex">\(S(\Phi_t)=\frac{1}{|\Phi_t|}\sum_{c}\frac{|\mathcal{M}(c)\cap\mathcal{F}|}{|\mathcal{F}|}\)</span>，辅以 Gini、归一化熵、目录覆盖率与智能体可靠性/幻觉率；显著性用配对 <span class="arithmatex">\(t\)</span> 检验 + Bonferroni 校正（<span class="arithmatex">\(m=3\)</span>，<span class="arithmatex">\(\alpha_{\text{corr}}\approx0.017\)</span>）。</li>
-<li><strong>对比基线与超参设置</strong>: RandRec、TopPop、MILP（结构化输入上界参考）、SASI（单智能体单轮）、MASI（多智能体单轮）；6 个骨干（Claude、Gemini、GPT-OSS-20b、Gemma-12b、Olmo-7b、Gemma-4b），temperature 0.5、top-<span class="arithmatex">\(p\)</span> 0.95，<span class="arithmatex">\(k=10\)</span>，<span class="arithmatex">\(T_{\max}=10\)</span>。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 非交互日志场景，采用<strong>目录接地的约束满足率</strong>作为相关性代理——Moderator Success <span class="arithmatex">\(S(\Phi_t)=\frac{1}{|\Phi_t|}\sum_{c}\frac{|\mathcal{M}(c)\cap\mathcal{F}|}{|\mathcal{F}|}\)</span>，辅以 Gini、归一化熵、目录覆盖率与智能体可靠性/幻觉率；显著性用配对<span class="arithmatex">\(t\)</span>检验 + Bonferroni 校正（<span class="arithmatex">\(m=3\)</span>，<span class="arithmatex">\(\alpha_{\text{corr}}\approx0.017\)</span>）。</li>
+<li><strong>对比基线与超参设置</strong>: RandRec、TopPop、MILP（结构化输入上界参考）、SASI（单智能体单轮）、MASI（多智能体单轮）；6 个骨干（Claude、Gemini、GPT-OSS-20b、Gemma-12b、Olmo-7b、Gemma-4b），temperature 0.5、top-<span class="arithmatex">\(p\)</span>0.95，<span class="arithmatex">\(k=10\)</span>，<span class="arithmatex">\(T_{\max}=10\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4393,12 +4404,18 @@ $<span class="arithmatex">\(\Delta s_{a_i}(c,t)=\frac{1}{\mathrm{rank}_{a_i,t}(c
 <li><strong>拒绝策略是"稳定性—多样性"的显式旋钮</strong>：Aggressive 下 M-Early 对 MASI 的胜率赔率高达 4.89–23.05（Gemma-4b 23.05），但 Majority 下 Gemini/GPT-OSS/Gemma 系列的 M-Early vs MASI 未达 Bonferroni 阈值，证明<strong>严格拒绝是多样性增益的必要条件</strong>。</li>
 <li><strong>接地反馈可替代 logit 级约束</strong>：Gemini 的智能体幻觉率从第 1 轮 0.002 降至第 2 轮 0.000093 并最终归零，Gemma-4b 从 0.0017 降至 0.000056——纯靠结构化输出 + Moderator 后验校验即可收敛到零幻觉，无需模型侧约束解码。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 MACRec/MATCHA 等 manager-centric 多智能体，本文的 Moderator <strong>不是 LLM</strong>，从而把"角色分工的收益"与"多一个模型的收益"解耦，可做干净消融；相比 MMR/xQuAD 等后处理重排，本文解决的是<strong>上游可行候选集的生成与修复</strong>，重排只是其下游一环；相比 MILP，本文在自然语言输入下达到其接地成功率的约 90%（0.66 vs. 0.73），但换来显著更低的集中度（Gini 0.64 vs. 0.78）与更高覆盖率（81.5% vs. 48%）。</li>
 <li><strong>可迁移亮点</strong>: ① "确定性 Moderator + 单调累积拒绝集"可作为任意 LLM 生成式推荐的<strong>接地与去偏插件</strong>，无需重训；② 逆序折扣的"多智能体重复背书"计分天然偏向长尾，可迁移到内容平台的长尾扶持场景。</li>
 <li><strong>审稿级局限批判</strong>: ① <strong>成本与延迟</strong>：本地开源模型 10 轮累计墙钟超 2000 秒（Gemma-4b 2299.6s），且小模型因无效输出更多反而比大模型更慢，工业部署需重估；② <strong>评测效度</strong>：以约束满足率代理相关性、无真实用户日志与在线 A/B，且 MILP 上界未被超越，多样性结论仅在 SynthTRIPs 单一合成基准上成立；③ 打分函数为启发式标量化，<span class="arithmatex">\(\lambda\)</span> 固定为 1 未做敏感性分析，弱候选可能因所在列表整体较强而获得诊断加成。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

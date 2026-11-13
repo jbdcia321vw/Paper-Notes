@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4220,7 +4231,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为多模态原始特征（视觉/文本/音频）与隐式交互矩阵。先经两层 MLP 投影到统一 <span class="arithmatex">\(d\)</span> 维空间，并额外用 DCT 提取谱域特征（低频编码全局结构、高频编码局部细节），拼接后 <span class="arithmatex">\(\ell_2\)</span> 归一化得初始节点表征。预处理阶段构建物品-物品图：语义图（各模态空间 KNN + 低/高频带 KNN + 跨模态混合频带 KNN）与共现图（<span class="arithmatex">\(\bm{C}=\bm{R}^\top\bm{R}\)</span> 后 top-k + softmax）相加融合，再经 NCER 重加权得最终邻接 <span class="arithmatex">\(\bm{S}_{\text{NCER}}\)</span> 并缓存到磁盘。训练时该图被三处复用：(1) 内容引导扩展 UI 图 <span class="arithmatex">\(\bar{\bm{R}}=\gamma\bm{R}+(1-\gamma)\bm{R}\bm{S}_{\text{filtered}}\)</span>，在扩展图上做残差加权 LightGCN 传播并经跨模态注意力融合用户表征；(2) 物品-物品传播后经 RIG 门控注入物品表征；(3) INA 用图邻居构造折扣软正样本增强 BPR。推理时内积排序全库物品。</p>
+<p>输入为多模态原始特征（视觉/文本/音频）与隐式交互矩阵。先经两层 MLP 投影到统一 <span class="arithmatex">\(d\)</span>维空间，并额外用 DCT 提取谱域特征（低频编码全局结构、高频编码局部细节），拼接后<span class="arithmatex">\(\ell_2\)</span>归一化得初始节点表征。预处理阶段构建物品-物品图：语义图（各模态空间 KNN + 低/高频带 KNN + 跨模态混合频带 KNN）与共现图（<span class="arithmatex">\(\boldsymbol{C}=\boldsymbol{R}^\top\boldsymbol{R}\)</span>后 top-k + softmax）相加融合，再经 NCER 重加权得最终邻接<span class="arithmatex">\(\boldsymbol{S}_{\text{NCER}}\)</span>并缓存到磁盘。训练时该图被三处复用：(1) 内容引导扩展 UI 图<span class="arithmatex">\(\bar{\boldsymbol{R}}=\gamma\boldsymbol{R}+(1-\gamma)\boldsymbol{R}\boldsymbol{S}_{\text{filtered}}\)</span>，在扩展图上做残差加权 LightGCN 传播并经跨模态注意力融合用户表征；(2) 物品-物品传播后经 RIG 门控注入物品表征；(3) INA 用图邻居构造折扣软正样本增强 BPR。推理时内积排序全库物品。</p>
 <pre class="mermaid"><code>flowchart TD
     A["多模态原始特征 + 交互矩阵 R"] --&gt; B["MLP投影 + DCT谱特征拼接"]
     B --&gt; C["语义图(空间/谱域KNN) + 共现图 融合"]
@@ -4238,19 +4249,19 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>NCER 邻域一致性边重加权（图去噪）</strong>：痛点是对所有边均匀处理，噪声边与真实边无法区分。将融合图二值化为 <span class="arithmatex">\(\bm{B}\)</span>，用矩阵乘 <span class="arithmatex">\(\bm{B}\bm{B}^\top\)</span> 高效算共享邻居数，一致性分 <span class="arithmatex">\(c_{ij}=|\mathcal{N}(i)\cap\mathcal{N}(j)|/k\)</span>，再重加权
+<p><strong>NCER 邻域一致性边重加权（图去噪）</strong>：痛点是对所有边均匀处理，噪声边与真实边无法区分。将融合图二值化为 <span class="arithmatex">\(\boldsymbol{B}\)</span>，用矩阵乘<span class="arithmatex">\(\boldsymbol{B}\boldsymbol{B}^\top\)</span>高效算共享邻居数，一致性分<span class="arithmatex">\(c_{ij}=|\mathcal{N}(i)\cap\mathcal{N}(j)|/k\)</span>，再重加权
 $<span class="arithmatex">\(\hat{s}_{ij}=s^{\text{fused}}_{ij}\cdot(1+\kappa\cdot c_{ij}),\quad \kappa&gt;0\)</span>$
-直觉：若 <span class="arithmatex">\(i,j\)</span> 共享大量邻居，该边被多条独立证据路径支撑（三元闭包），应放大；孤立边更可能是噪声伪影。理论上（Thm 5.2）当真实边平均一致性 <span class="arithmatex">\(\bar{c}_{S^*}&gt;\bar{c}_N\)</span> 时，噪声-信号谱比严格下降。该步仅在预处理执行一次，训练零开销。</p>
+直觉：若 <span class="arithmatex">\(i,j\)</span>共享大量邻居，该边被多条独立证据路径支撑（三元闭包），应放大；孤立边更可能是噪声伪影。理论上（Thm 5.2）当真实边平均一致性<span class="arithmatex">\(\bar{c}_{S^*}&gt;\bar{c}_N\)</span> 时，噪声-信号谱比严格下降。该步仅在预处理执行一次，训练零开销。</p>
 </li>
 <li>
-<p><strong>RIG 残差物品-物品门控（表征增强）</strong>：固定残差 <span class="arithmatex">\(\bm{e}_i=\bm{e}^{\text{UI}}_i+\bm{h}_i\)</span> 对噪声特征物品有害。改为学习逐物品标量门：
-$<span class="arithmatex">\(\bm{e}_i=\bm{e}^{\text{UI}}_i+\sigma\big(\bm{W}_2\,\text{ReLU}(\bm{W}_1[\bm{e}^{\text{UI}}_i;\bm{h}_i])\big)\bm{h}_i\)</span>$
-门输入同时含协同信号与语义邻域信号，端到端由 BPR 优化。Thm 5.3 证明：当 <span class="arithmatex">\(\bm{e}_u^\top\bm{h}_i&gt;0\)</span>（II 信号有益）梯度推高 <span class="arithmatex">\(g_i\)</span>，反之压低，故不会坍缩到全 0/全 1 的退化区间。与跨模态注意力不同，RIG 是"跨物品、固定传播路径"的粒度。</p>
+<p><strong>RIG 残差物品-物品门控（表征增强）</strong>：固定残差 <span class="arithmatex">\(\boldsymbol{e}_i=\boldsymbol{e}^{\text{UI}}_i+\boldsymbol{h}_i\)</span> 对噪声特征物品有害。改为学习逐物品标量门：
+$<span class="arithmatex">\(\boldsymbol{e}_i=\boldsymbol{e}^{\text{UI}}_i+\sigma\big(\boldsymbol{W}_2\,\text{ReLU}(\boldsymbol{W}_1[\boldsymbol{e}^{\text{UI}}_i;\boldsymbol{h}_i])\big)\boldsymbol{h}_i\)</span>$
+门输入同时含协同信号与语义邻域信号，端到端由 BPR 优化。Thm 5.3 证明：当 <span class="arithmatex">\(\boldsymbol{e}_u^\top\boldsymbol{h}_i&gt;0\)</span>（II 信号有益）梯度推高<span class="arithmatex">\(g_i\)</span>，反之压低，故不会坍缩到全 0/全 1 的退化区间。与跨模态注意力不同，RIG 是"跨物品、固定传播路径"的粒度。</p>
 </li>
 <li>
-<p><strong>INA 邻居 BPR 增强（优化增强）与总损失</strong>：正样本 <span class="arithmatex">\(p\)</span> 的 top-k 图邻居 <span class="arithmatex">\(j\)</span> 视为<strong>折扣软正样本</strong>（比观测交互置信度低但高于随机负样本）：
-$<span class="arithmatex">\(\mathcal{L}_{\text{INA}}=-\frac{\delta}{|\mathcal{B}_{\text{valid}}|}\sum_{(u,p,n')\in\mathcal{B}_{\text{valid}}}\log\sigma(\bm{e}_u^\top\bm{e}_j-\bm{e}_u^\top\bm{e}_{n'})\)</span>$
-关键区别于跨图对齐（如 BM3/SLMRec 的对比对齐）：INA 与 BPR <strong>同向</strong>推，不会像强制 UI/II 表征对齐那样破坏 CF 信号。总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{\text{BPR}}+\lambda_{\text{INA}}\mathcal{L}_{\text{INA}}+\lambda_{\text{CL}}\mathcal{L}_{\text{CL}}\)</span>，其中 <span class="arithmatex">\(\mathcal{L}_{\text{CL}}\)</span> 为用户级+物品级 InfoNCE 跨模态对齐（<span class="arithmatex">\(\tau_{cl}=0.2\)</span>）。负采样为标准均匀随机负样本；INA 邻居查表预处理缓存，每 batch 仅 <span class="arithmatex">\(O(B)\)</span> 开销。</p>
+<p><strong>INA 邻居 BPR 增强（优化增强）与总损失</strong>：正样本 <span class="arithmatex">\(p\)</span>的 top-k 图邻居<span class="arithmatex">\(j\)</span> 视为<strong>折扣软正样本</strong>（比观测交互置信度低但高于随机负样本）：
+$<span class="arithmatex">\(\mathcal{L}_{\text{INA}}=-\frac{\delta}{|\mathcal{B}_{\text{valid}}|}\sum_{(u,p,n')\in\mathcal{B}_{\text{valid}}}\log\sigma(\boldsymbol{e}_u^\top\boldsymbol{e}_j-\boldsymbol{e}_u^\top\boldsymbol{e}_{n'})\)</span>$
+关键区别于跨图对齐（如 BM3/SLMRec 的对比对齐）：INA 与 BPR <strong>同向</strong>推，不会像强制 UI/II 表征对齐那样破坏 CF 信号。总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{\text{BPR}}+\lambda_{\text{INA}}\mathcal{L}_{\text{INA}}+\lambda_{\text{CL}}\mathcal{L}_{\text{CL}}\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{\text{CL}}\)</span>为用户级+物品级 InfoNCE 跨模态对齐（<span class="arithmatex">\(\tau_{cl}=0.2\)</span>）。负采样为标准均匀随机负样本；INA 邻居查表预处理缓存，每 batch 仅<span class="arithmatex">\(O(B)\)</span> 开销。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4306,7 +4317,7 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{INA}}=-\frac{\delta}{|\mathcal{B}
 <ul>
 <li><strong>数据划分与防穿越</strong>: 沿用 MMRec/DiffMM 既有划分协议（非本文新设），按验证集 Recall@20 选最优模型后报告测试集结果。</li>
 <li><strong>排名评测协议</strong>: 全库排序（Full-Ranking），指标 Recall@{10,20}、NDCG@{10,20}，对全体测试用户取平均。</li>
-<li><strong>对比基线与超参</strong>: 通用推荐 4 个（LightGCN、SimGCL、LayerGCN、NLGCL）+ 多模态推荐 13 个（MMGCN、DualGNN、LATTICE、SLMRec、BM3、MMSSL、FREEDOM、LGMRec、DiffMM、SMORE、HPMRec、MENTOR、COHESION）。嵌入维度 <span class="arithmatex">\(d=64\)</span>，batch=2048；<span class="arithmatex">\(k\in\{5,10,15,20\}\)</span>，<span class="arithmatex">\(\kappa,\gamma,\delta,\lambda_{\text{INA}}\in\{0.2,0.4,0.6,0.8\}\)</span>，<span class="arithmatex">\(\lambda_{\text{CL}}\in\{10^{-5},10^{-4},10^{-3}\}\)</span>，<span class="arithmatex">\(\tau=0.2\)</span>；<span class="arithmatex">\(t\)</span> 检验 <span class="arithmatex">\(p&lt;0.05\)</span> 显著性。</li>
+<li><strong>对比基线与超参</strong>: 通用推荐 4 个（LightGCN、SimGCL、LayerGCN、NLGCL）+ 多模态推荐 13 个（MMGCN、DualGNN、LATTICE、SLMRec、BM3、MMSSL、FREEDOM、LGMRec、DiffMM、SMORE、HPMRec、MENTOR、COHESION）。嵌入维度 <span class="arithmatex">\(d=64\)</span>，batch=2048；<span class="arithmatex">\(k\in\{5,10,15,20\}\)</span>，<span class="arithmatex">\(\kappa,\gamma,\delta,\lambda_{\text{INA}}\in\{0.2,0.4,0.6,0.8\}\)</span>，<span class="arithmatex">\(\lambda_{\text{CL}}\in\{10^{-5},10^{-4},10^{-3}\}\)</span>，<span class="arithmatex">\(\tau=0.2\)</span>；<span class="arithmatex">\(t\)</span>检验<span class="arithmatex">\(p&lt;0.05\)</span> 显著性。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4516,12 +4527,18 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{INA}}=-\frac{\delta}{|\mathcal{B}
 <li><strong>CG-UI 与 RW 存在协同而非叠加</strong>：单独移除二者分别掉 1.7%/1.3%（Clothing），联合移除掉 4.6%，说明内容引导扩展引入的虚拟边必须配合残差加权传播才能防止深层噪声放大——扩展与抑制是一对耦合设计。</li>
 <li><strong>稀疏与冷启动场景增益最大，且效率反超</strong>：最稀疏用户组 (0-5] 上领先幅度最大；冷启动（20% 物品移出训练）Baby R@20 达 0.0663 vs COHESION 0.0631；效率上 Baby 每 epoch 3.18s/1.08GB，远低于 COHESION 的 4.47s/2.89GB 与 HPMRec 的 21.03s/8.58GB，因构图全部预处理缓存。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 LATTICE/SMORE 的"构图即用、固定聚合"，本文把图质量治理（NCER）与图的多阶段复用解耦；相比 BM3/SLMRec 的跨图对比对齐（强制 UI/II 表征一致，可能破坏 CF 信号），INA 以同向软正样本方式增强监督，理论上给出更紧的 PAC-Bayes 泛化界（Thm 5.5）；相比 COHESION 的复合图卷积，本文以单图+轻量门控取得更优精度与更低开销。</li>
-<li><strong>可迁移亮点</strong>: (1) 用 <span class="arithmatex">\(\bm{B}\bm{B}^\top\)</span> 矩阵乘一次性算共享邻居数做边重加权，<span class="arithmatex">\(O(|I|k^2)\)</span> 预处理成本极低，可直接迁移到任何 KNN 物品图去噪；(2) "软正样本折扣 BPR"与主损失同向，避免对比对齐与排序目标的梯度冲突，适用于任何带辅助图的召回模型。</li>
+<li><strong>可迁移亮点</strong>: (1) 用 <span class="arithmatex">\(\boldsymbol{B}\boldsymbol{B}^\top\)</span>矩阵乘一次性算共享邻居数做边重加权，<span class="arithmatex">\(O(|I|k^2)\)</span> 预处理成本极低，可直接迁移到任何 KNN 物品图去噪；(2) "软正样本折扣 BPR"与主损失同向，避免对比对齐与排序目标的梯度冲突，适用于任何带辅助图的召回模型。</li>
 <li><strong>审稿级局限批判</strong>: (1) 理论部分依赖"真实边邻域重叠高于噪声边"的社区结构假设，对特征高度同质（如快消品）的数据集该假设可能不成立，NCER 收益存疑；(2) 内容引导 UI 扩展引入虚拟边，本质是隐式反馈的"伪造"，在需要严格因果无偏评估或曝光日志审计的工业场景中可能引入不可追溯的偏差，论文未做去偏验证；(3) 超参较多（<span class="arithmatex">\(k,\kappa,\gamma,\delta,\lambda_{\text{INA}},\lambda_{\text{CL}}\)</span> 六组），虽敏感性分析显示较平稳，但跨域迁移仍需重调。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

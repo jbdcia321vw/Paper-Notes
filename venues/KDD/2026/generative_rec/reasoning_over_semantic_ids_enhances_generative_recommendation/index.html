@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为用户历史交互的 SID 扁平序列与指令 prompt，模型先生成语言推理序列 <span class="arithmatex">\(\tau\)</span>，再自回归生成下一物品的 <span class="arithmatex">\(L\)</span> 个 SID token。训练分三阶段闭环：① 富化 SID-语言对齐（多任务 SFT + 教师合成语料预训练），把 itemic token 锚定到语义与行为语境；② 冷启动推理激活（1 epoch SFT）强制"先推理后推荐"格式；③ GRPO 强化学习，以推荐命中与格式合法性为奖励，让模型自探索高效推理路径。推理时单次前向解码即可输出推理+推荐。</p>
+<p>输入为用户历史交互的 SID 扁平序列与指令 prompt，模型先生成语言推理序列 <span class="arithmatex">\(\tau\)</span>，再自回归生成下一物品的<span class="arithmatex">\(L\)</span> 个 SID token。训练分三阶段闭环：① 富化 SID-语言对齐（多任务 SFT + 教师合成语料预训练），把 itemic token 锚定到语义与行为语境；② 冷启动推理激活（1 epoch SFT）强制"先推理后推荐"格式；③ GRPO 强化学习，以推荐命中与格式合法性为奖励，让模型自探索高效推理路径。推理时单次前向解码即可输出推理+推荐。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户历史 SID 序列 + 指令"] --&gt; B["富化 SID-语言对齐&lt;br/&gt;多任务SFT + 教师合成语料"]
     B --&gt; C["冷启动推理激活&lt;br/&gt;1 epoch SFT"]
@@ -4244,12 +4255,12 @@
 <p><strong>富化 SID-语言对齐（Enriched Alignment）</strong>：痛点是对齐语料格式单一、SID 与词 token 关联重复贫乏。做法是用 GPT-4o-mini 教师从两视角合成语料：item-centric（将物品元数据扩写为含 SID 的结构化段落）与 user-centric（推断交互动机、生成混合 SID-语言的推理描述），并与多任务目标（SID↔标题双向翻译、SID/文本双表征的物品预测）及通用推理数据混合训练。直觉：让 SID token 在多样语义与行为语境中反复出现，从而"继承"LLM 的世界知识与推理能力。</p>
 </li>
 <li>
-<p><strong>GRPO 结果驱动推理强化</strong>：痛点是推荐推理无显式标注、无法直接监督。定义奖励 <span class="arithmatex">\(R_\theta(\tau,y)=R_{sr}(y,i_{T+1})+\lambda R_f(y)\)</span>，其中步进式规则奖励按最长正确前缀 <span class="arithmatex">\(m\)</span> 平滑给分：
+<p><strong>GRPO 结果驱动推理强化</strong>：痛点是推荐推理无显式标注、无法直接监督。定义奖励 <span class="arithmatex">\(R_\theta(\tau,y)=R_{sr}(y,i_{T+1})+\lambda R_f(y)\)</span>，其中步进式规则奖励按最长正确前缀<span class="arithmatex">\(m\)</span> 平滑给分：
 $<span class="arithmatex">\(R_{sr}(y,i_{T+1})=\frac{1}{2^{L-m}}\)</span>$
-格式奖励 <span class="arithmatex">\(R_f\)</span> 校验生成 SID 是否映射到真实目录物品。对每个上下文采样 <span class="arithmatex">\(K\)</span> 条轨迹做组内归一化优势 <span class="arithmatex">\(\hat{A}_k\)</span>，用带 clip 与 KL 正则的 GRPO 目标更新。直觉：无需"正确推理长什么样"，只需"哪种推理导致正确推荐"，即可把概率质量推向有效轨迹。</p>
+格式奖励 <span class="arithmatex">\(R_f\)</span>校验生成 SID 是否映射到真实目录物品。对每个上下文采样<span class="arithmatex">\(K\)</span>条轨迹做组内归一化优势<span class="arithmatex">\(\hat{A}_k\)</span>，用带 clip 与 KL 正则的 GRPO 目标更新。直觉：无需"正确推理长什么样"，只需"哪种推理导致正确推荐"，即可把概率质量推向有效轨迹。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：总目标为三阶段串联（对齐 SFT 交叉熵 → 激活 SFT → GRPO 代理目标），全程无负采样（生成式全库解码，天然免负采样）；GRPO rollout 数 16、KL 系数 <span class="arithmatex">\(1\times10^{-3}\)</span>、batch 256、学习率 <span class="arithmatex">\(5\times10^{-7}\)</span>、<span class="arithmatex">\(\lambda=0.1\)</span>。推理开销为一次自回归解码（推理序列 + <span class="arithmatex">\(L\)</span> 个 SID token），显著低于逐物品文本生成。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：总目标为三阶段串联（对齐 SFT 交叉熵 → 激活 SFT → GRPO 代理目标），全程无负采样（生成式全库解码，天然免负采样）；GRPO rollout 数 16、KL 系数 <span class="arithmatex">\(1\times10^{-3}\)</span>、batch 256、学习率<span class="arithmatex">\(5\times10^{-7}\)</span>、<span class="arithmatex">\(\lambda=0.1\)</span>。推理开销为一次自回归解码（推理序列 +<span class="arithmatex">\(L\)</span> 个 SID token），显著低于逐物品文本生成。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4460,12 +4471,18 @@ $<span class="arithmatex">\(R_{sr}(y,i_{T+1})=\frac{1}{2^{L-m}}\)</span>$
 <li><strong>推理收益与 LLM 领域知识强相关</strong>：Games（语义丰富）相对 R²ec 提升 10.7%，而 Industrial（LLM 知识弱）仅 3.5%，同一趋势在 R²ec 上复现，证明推理效果取决于可调用的语义知识量。</li>
 <li><strong>RL 让推理"变短变准"</strong>：训练中平均推理长度先降后稳而 Recall@10 持续上升，说明教师生成的冗余推理被 RL 剪除；同时混入通用推理数据使 GSM8K 从 0.0060 恢复至 0.5430，有效缓解灾难性遗忘。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 TIGER/LCRec 仅做 SID 生成、无推理，本文引入显式推理链；相比 R²ec 依赖文本物品与人工推理标注，本文以 SID 为输出空间并用结果奖励免标注激发推理；相比 ReaRec 的隐式推理，本文推理显式可读、可解释。</li>
 <li><strong>可迁移亮点</strong>: ① "强教师合成混合 SID-语言语料"可迁移到任意新 token 词表注入场景；② 用"最长正确前缀平滑奖励 + 格式合法性奖励"做生成式推荐的 RL 奖励设计，可直接复用到其他 SID 生成模型。</li>
 <li><strong>审稿级局限批判</strong>: ① 骨干仅 1.7B、数据为学术规模，未验证 scaling 后收益是否持续；② 推理序列增加解码长度，在线延迟与吞吐未量化；③ 富化语料依赖 GPT-4o-mini，存在教师偏差与复现成本。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

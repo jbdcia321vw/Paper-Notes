@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入特征（用户画像、物品属性、交叉统计、行为序列）经 Embedding 拼接为 <span class="arithmatex">\(x\in\mathbb{R}^{d_{in}}\)</span>。SSR 层将其解耦为 <span class="arithmatex">\(b\)</span> 个独立"净化视图"，每个视图 <span class="arithmatex">\(\phi_i\)</span> 严格分两阶段：先由稀疏过滤器 <span class="arithmatex">\(\mathcal{F}_i\)</span> 做维度级硬筛选得到 <span class="arithmatex">\(h_i\)</span>，再由视图内稠密融合 <span class="arithmatex">\(M_i\)</span> 在低维子空间建模高阶交互得到 <span class="arithmatex">\(z_i\)</span>。中间层将各视图输出 LayerNorm 后拼接送入下一层；最后一层改为<strong>均值聚合</strong> <span class="arithmatex">\(\bar z=\frac{1}{b}\sum_i \text{LN}(z_i)\)</span>，既把各视图拉向共享语义空间、又使预测头输入维度固定为 <span class="arithmatex">\(d_v\)</span> 不随视图数线性膨胀。训练端到端，推理为标准前向打分。</p>
+<p>输入特征（用户画像、物品属性、交叉统计、行为序列）经 Embedding 拼接为 <span class="arithmatex">\(x\in\mathbb{R}^{d_{in}}\)</span>。SSR 层将其解耦为<span class="arithmatex">\(b\)</span>个独立"净化视图"，每个视图<span class="arithmatex">\(\phi_i\)</span>严格分两阶段：先由稀疏过滤器<span class="arithmatex">\(\mathcal{F}_i\)</span>做维度级硬筛选得到<span class="arithmatex">\(h_i\)</span>，再由视图内稠密融合<span class="arithmatex">\(M_i\)</span>在低维子空间建模高阶交互得到<span class="arithmatex">\(z_i\)</span>。中间层将各视图输出 LayerNorm 后拼接送入下一层；最后一层改为<strong>均值聚合</strong><span class="arithmatex">\(\bar z=\frac{1}{b}\sum_i \text{LN}(z_i)\)</span>，既把各视图拉向共享语义空间、又使预测头输入维度固定为<span class="arithmatex">\(d_v\)</span> 不随视图数线性膨胀。训练端到端，推理为标准前向打分。</p>
 <pre class="mermaid"><code>flowchart TD
     A["Embedding 拼接 x ∈ R^d_in"] --&gt; B["多视图稀疏过滤 F_i&lt;br/&gt;SSR-S: 固定索引切片 / SSR-D: ICS 竞争稀疏"]
     B --&gt; C["视图内稠密融合 z_i = σ(h_i V_i + b_i)"]
@@ -4241,17 +4252,17 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>SSR-S 静态随机过滤器（零 FLOP 结构稀疏）</strong>：痛点是用 Top-k 等"逻辑稀疏"虽把无用特征乘零，但物理计算图仍为 <span class="arithmatex">\(O(d^2)\)</span> 宽。SSR-S 令 <span class="arithmatex">\(\mathcal{F}_i\)</span> 为固定二值选择矩阵 <span class="arithmatex">\(M_i\in\{0,1\}^{d_{in}\times d_v}\)</span>（每列严格 one-hot），视图内无放回采样、视图间独立采样形成 Feature Bagging 式多样性：
+<p><strong>SSR-S 静态随机过滤器（零 FLOP 结构稀疏）</strong>：痛点是用 Top-k 等"逻辑稀疏"虽把无用特征乘零，但物理计算图仍为 <span class="arithmatex">\(O(d^2)\)</span>宽。SSR-S 令<span class="arithmatex">\(\mathcal{F}_i\)</span>为固定二值选择矩阵<span class="arithmatex">\(M_i\in\{0,1\}^{d_{in}\times d_v}\)</span>（每列严格 one-hot），视图内无放回采样、视图间独立采样形成 Feature Bagging 式多样性：
 $<span class="arithmatex">\(h_i = x M_i \quad(\text{实现为 zero-FLOP 的并行 gather 索引切片})\)</span>$
 由于在计算前就切片输入索引，维度选择成本与推理成本解耦，未选维度在源头被物理阻断。</p>
 </li>
 <li>
 <p><strong>ICS 迭代竞争稀疏（可微动态过滤）</strong>：痛点在于 Top-k 的离散截断不可微（STE 存在梯度失配），Soft Top-k/NeuralSort 需 <span class="arithmatex">\(O(N\log N)\)</span> 排序。ICS 把稀疏化建模为连续动力系统：特征强度视为"生命力"，均值场构成全局抑制力，强者存活、弱者收敛到真零：
 $<span class="arithmatex">\(x^{(t+1)}=\text{ReLU}\big(x^{(t)}-\alpha_t\cdot\mu^{(t)}\big),\quad \mu^{(t)}=\tfrac{1}{d_v}\textstyle\sum_j x_j^{(t)}\)</span>$
-其中 <span class="arithmatex">\(\alpha_t\)</span> 为每轮可学习灭绝率。多轮迭代（<span class="arithmatex">\(T=5\)</span>）必要，因为噪声逐步熄灭时 <span class="arithmatex">\(\mu^{(t)}\)</span> 持续精化，实现"先粗滤后细调"的非线性稀疏化；单步阈值化依赖静态噪声底估计。由于 <span class="arithmatex">\(\alpha_t&gt;0,\mu^{(t)}\ge 0\)</span>，系统满足 <span class="arithmatex">\(|x^{(t+1)}|_1\le|x^{(t)}|_1\)</span> 单调能量衰减，故引入可学习缩放 <span class="arithmatex">\(\gamma\odot x^{(T)}\)</span> 补偿信号衰减、稳定数值动态范围。复杂度 <span class="arithmatex">\(O(T\cdot N)\)</span> 严格线性。</p>
+其中 <span class="arithmatex">\(\alpha_t\)</span>为每轮可学习灭绝率。多轮迭代（<span class="arithmatex">\(T=5\)</span>）必要，因为噪声逐步熄灭时<span class="arithmatex">\(\mu^{(t)}\)</span>持续精化，实现"先粗滤后细调"的非线性稀疏化；单步阈值化依赖静态噪声底估计。由于<span class="arithmatex">\(\alpha_t&gt;0,\mu^{(t)}\ge 0\)</span>，系统满足<span class="arithmatex">\(|x^{(t+1)}|_1\le|x^{(t)}|_1\)</span>单调能量衰减，故引入可学习缩放<span class="arithmatex">\(\gamma\odot x^{(T)}\)</span>补偿信号衰减、稳定数值动态范围。复杂度<span class="arithmatex">\(O(T\cdot N)\)</span> 严格线性。</p>
 </li>
 <li>
-<p><strong>视图内块对角融合与训练目标</strong>：融合等价于块对角权重 <span class="arithmatex">\(W_{block}=\text{diag}(V_1,\dots,V_b)\)</span>，强制视图间语义隔离，参数量 <span class="arithmatex">\(O(b\cdot d_v^2)\)</span> 相比全连接 <span class="arithmatex">\(O((b d_v)^2)\)</span> 降低 <span class="arithmatex">\(1/b\)</span> 倍，使同等算力下可显著扩容。总损失为 CTR/CVR 任务的加权交叉熵（工业双任务 click/pay），无额外对比或正则项；负采样即曝光日志天然负例，无显式负采样设计。</p>
+<p><strong>视图内块对角融合与训练目标</strong>：融合等价于块对角权重 <span class="arithmatex">\(W_{block}=\text{diag}(V_1,\dots,V_b)\)</span>，强制视图间语义隔离，参数量<span class="arithmatex">\(O(b\cdot d_v^2)\)</span>相比全连接<span class="arithmatex">\(O((b d_v)^2)\)</span>降低<span class="arithmatex">\(1/b\)</span> 倍，使同等算力下可显著扩容。总损失为 CTR/CVR 任务的加权交叉熵（工业双任务 click/pay），无额外对比或正则项；负采样即曝光日志天然负例，无显式负采样设计。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4312,7 +4323,7 @@ $<span class="arithmatex">\(x^{(t+1)}=\text{ReLU}\big(x^{(t)}-\alpha_t\cdot\mu^{
 <ul>
 <li><strong>数据划分与防穿越</strong>: 公开集标准随机划分 8:1:1；工业集采用<strong>基于时间的切分</strong>（最近一天作验证与测试）以模拟线上。</li>
 <li><strong>排名评测协议</strong>: 采用 AUC / LogLoss，工业集额外报告 GAUC（缓解用户活跃度偏差，聚焦用户内排序）；pay 任务在全样本空间评估。效率侧报告主干参数量（剔除 Embedding 表）与单次前向 FLOPs。</li>
-<li><strong>对比基线与超参</strong>: 四组基线——经典稠密（DeepFM、DCN v2）、注意力/动态（AutoInt、MMoE）、特征选择 AutoML（AutoFIS、AFN）、SOTA 可扩展架构（Wukong、RankMixer）。Embedding 维度统一 16，Adam + batch 1024 + early stopping，ICS 迭代 <span class="arithmatex">\(T=5\)</span>、<span class="arithmatex">\(\alpha_t\)</span> 初始 0.1、<span class="arithmatex">\(\gamma\)</span> 初始全 1；显著性 <span class="arithmatex">\(p&lt;0.05\)</span>。</li>
+<li><strong>对比基线与超参</strong>: 四组基线——经典稠密（DeepFM、DCN v2）、注意力/动态（AutoInt、MMoE）、特征选择 AutoML（AutoFIS、AFN）、SOTA 可扩展架构（Wukong、RankMixer）。Embedding 维度统一 16，Adam + batch 1024 + early stopping，ICS 迭代 <span class="arithmatex">\(T=5\)</span>、<span class="arithmatex">\(\alpha_t\)</span>初始 0.1、<span class="arithmatex">\(\gamma\)</span>初始全 1；显著性<span class="arithmatex">\(p&lt;0.05\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4539,19 +4550,25 @@ $<span class="arithmatex">\(x^{(t+1)}=\text{ReLU}\big(x^{(t)}-\alpha_t\cdot\mu^{
 </tr>
 </tbody>
 </table>
-<p>ICS 敏感性（Avazu）：<span class="arithmatex">\(T=1\)</span> 稀疏度 76.4%/AUC 0.7821 → <span class="arithmatex">\(T=5\)</span> 稀疏度 91.0%/AUC 0.7835；<span class="arithmatex">\(\alpha_t\in[0.1,0.5]\)</span> 区间稀疏度 80.4%→94.5% 而 AUC 稳定在 0.7828–0.7835；去掉 <span class="arithmatex">\(\gamma\)</span> 降至 0.7832。</p>
+<p>ICS 敏感性（Avazu）：<span class="arithmatex">\(T=1\)</span>稀疏度 76.4%/AUC 0.7821 →<span class="arithmatex">\(T=5\)</span>稀疏度 91.0%/AUC 0.7835；<span class="arithmatex">\(\alpha_t\in[0.1,0.5]\)</span>区间稀疏度 80.4%→94.5% 而 AUC 稳定在 0.7828–0.7835；去掉<span class="arithmatex">\(\gamma\)</span> 降至 0.7832。</p>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>增益来自结构而非容量</strong>：SSR-S 以 57M 参数（RankMixer 的 56%）、1.4G FLOPs（44%）取得 Click AUC 0.6644，反超 101M/3.2G 的 RankMixer 0.6621；Avazu 上更以约一半参数与 FLOPs 提升 +0.55pt AUC，证明显式稀疏过滤本身即是收益来源。</li>
 <li><strong>稀疏过滤是 scaling 的关键开关</strong>：移除稀疏过滤导致最大跌幅（Avazu −0.50pt、工业 −0.37pt），远超移除多视图（−0.22/−0.15）；且 Dropout 替代 SSR-S 反而暴跌 0.32–0.45pt，说明收益不是正则化效应而是学到了有意义的稀疏结构。图 4 显示 Dense MLP 在 5M→900M 参数区间过早饱和，而 SSR 轨迹更陡、差距随规模拉大。</li>
 <li><strong>动态样本自适应与可微性是二阶增益</strong>：静态 SSR-S 换为动态 ICS 提升 0.12–0.23pt，Top-k(STE) 换 ICS 提升 0.18–0.29pt；ICS 训练动态显示 Layer 2 收敛稀疏度（~90%）高于 Layer 1（~75%），深层更选择性；视图间投影余弦相似度持续偏低，无需显式多样性正则即自然分化。线上 A/B（两周，对比同参 RankMixer）延迟持平 25ms，CTR +2.1%、人均订单 +3.2%、GMV +3.5%。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 AutoInt/AFN 的本质区别在于后者 Softmax 权重严格为正、计算图仍全连接，噪声无法阻断；与 AutoFIS 的区别是"先稠密后剪枝"vs"边学边滤"，SSR 在融合前硬截断；与 RankMixer/Wukong 相比，SSR 用块对角多视图替代全局稠密混合，把参数预算投向高信噪比子空间，因而在同等算力下 scaling 曲线更陡。</li>
 <li><strong>可迁移亮点</strong>: ① "filter-then-fuse" 的块对角多视图分解可直接嵌入任意 MLP 主干，以 <span class="arithmatex">\(1/b\)</span> 参数复杂度换取扩容空间；② ICS 的均值场竞争抑制是可微 Top-k 的线性复杂度替代品，可迁移至特征选择、MoE 路由与序列稀疏注意力。</li>
 <li><strong>审稿级局限批判</strong>: ① 静态 SSR-S 的随机索引固定后不可学习，特征域语义（如 ID 类 vs 统计类）未被利用，可能切掉稀有但高价值维度；② 动态 ICS 引入 <span class="arithmatex">\(T\)</span> 轮迭代与投影矩阵，SSR-D 的 FLOPs（2.0G）已高于 SSR-S 近 3 倍，且论文未报告训练吞吐与显存开销；③ 评估集中于 CTR/CVR 单点任务，缺少与序列建模、生成式推荐的组合验证，Criteo 上增益仅 +0.04% 亦说明饱和场景下收益有限。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

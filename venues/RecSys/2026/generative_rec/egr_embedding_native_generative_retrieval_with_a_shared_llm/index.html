@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>物品路径将元数据（Title/Brand/Category/Image）序列化为固定 prompt，经共享 LLM 主干 <span class="arithmatex">\(f_\theta\)</span> 与两层 MLP 投影头 <span class="arithmatex">\(h_\phi\)</span> 得到 L2 归一化向量 <span class="arithmatex">\(z_i\)</span>，直接写入 ANN 索引；用户路径将按时间排序的 (转化类型 token, 物品文本) 事件序列编码为查询向量 <span class="arithmatex">\(q_u\)</span>。两条路径共享全部参数，训练时 IRL 与 NIP 两个对比损失在同一主干上联合优化，推理时仅需一次查询编码 + 一次 ANN 搜索。</p>
+<p>物品路径将元数据（Title/Brand/Category/Image）序列化为固定 prompt，经共享 LLM 主干 <span class="arithmatex">\(f_\theta\)</span>与两层 MLP 投影头<span class="arithmatex">\(h_\phi\)</span>得到 L2 归一化向量<span class="arithmatex">\(z_i\)</span>，直接写入 ANN 索引；用户路径将按时间排序的 (转化类型 token, 物品文本) 事件序列编码为查询向量<span class="arithmatex">\(q_u\)</span>。两条路径共享全部参数，训练时 IRL 与 NIP 两个对比损失在同一主干上联合优化，推理时仅需一次查询编码 + 一次 ANN 搜索。</p>
 <pre class="mermaid"><code>flowchart TD
     A["物品元数据 Title/Brand/Category/Image"] --&gt; C["共享 LLM 主干 + MLP 投影头"]
     B["用户历史 转化token+物品序列"] --&gt; C
@@ -4254,7 +4265,7 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{NIP}}=\text{InfoNCE}\big(q_u,\ \t
 stop-gradient 阻止逐样本的目标拉拽扰动已索引的物品空间——这是"共享主干"能稳定工作的关键闸门；由于参数共享，NIP 梯度仍可经历史分支回传并间接影响未来物品嵌入。</p>
 </li>
 <li>
-<p><strong>联合训练与调度</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{\text{IRL}}+\lambda_t\mathcal{L}_{\text{NIP}}\)</span>。前 10% 步仅开 IRL（<span class="arithmatex">\(\lambda_t=0\)</span>）为物品空间提供初始共参与结构，随后 <span class="arithmatex">\(\lambda_t\)</span> 从 0.1 线性升至 1.0。负采样全部为 in-batch（无 hard negative 挖掘、免采样器）；推理侧物品离线索引、查询向量按天预计算，单请求仅一次 ANN 检索，物品编码器加宽不增加每请求成本。</p>
+<p><strong>联合训练与调度</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{\text{IRL}}+\lambda_t\mathcal{L}_{\text{NIP}}\)</span>。前 10% 步仅开 IRL（<span class="arithmatex">\(\lambda_t=0\)</span>）为物品空间提供初始共参与结构，随后<span class="arithmatex">\(\lambda_t\)</span> 从 0.1 线性升至 1.0。负采样全部为 in-batch（无 hard negative 挖掘、免采样器）；推理侧物品离线索引、查询向量按天预计算，单请求仅一次 ANN 检索，物品编码器加宽不增加每请求成本。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4310,7 +4321,7 @@ stop-gradient 阻止逐样本的目标拉拽扰动已索引的物品空间——
 <ul>
 <li><strong>数据划分与防穿越</strong>: Amazon 采用 <code>Leave-One-Out</code>（末位交互为测试、倒数第二为验证）；Snap DPA 按用户序列留出 1M 条做评测，其余训练。</li>
 <li><strong>排名评测协议</strong>: 离线统一报告 <code>R@10</code>；Amazon 遵循 TIGER 设定的全库排序协议，Snap 数据按公司政策仅披露相对数值。</li>
-<li><strong>对比基线与超参</strong>: 基线含 BERT4Rec、SASRec、TIGER、HSTU；主干 Qwen3-VL-Embedding 2B，last-token pooling，投影至 <span class="arithmatex">\(d=512\)</span>，LoRA <span class="arithmatex">\(r=128,\alpha=256\)</span>（约 41M 可训练参数），AdamW lr <span class="arithmatex">\(2\times10^{-5}\)</span>，8×H100、per-GPU batch 64、最大历史长度 20（约 460 token）。</li>
+<li><strong>对比基线与超参</strong>: 基线含 BERT4Rec、SASRec、TIGER、HSTU；主干 Qwen3-VL-Embedding 2B，last-token pooling，投影至 <span class="arithmatex">\(d=512\)</span>，LoRA<span class="arithmatex">\(r=128,\alpha=256\)</span>（约 41M 可训练参数），AdamW lr<span class="arithmatex">\(2\times10^{-5}\)</span>，8×H100、per-GPU batch 64、最大历史长度 20（约 460 token）。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4448,12 +4459,18 @@ stop-gradient 阻止逐样本的目标拉拽扰动已索引的物品空间——
 <li><strong>stop-gradient 是共享主干的稳定器</strong>：去掉后掉至 95.3%，印证逐样本目标拉拽会污染已索引物品空间；调度上 <code>Sequential</code> 暴跌 25.6%，证明 IRL 与 NIP 的<strong>重叠期</strong>不可省。</li>
 <li><strong>冷启动几乎无损、多模态白捡</strong>：目标物品在训练输入中频次为 0 的样本占测试集 31.3%，其 R@10 仍达头部桶的 94.9%（仅差 5.1%）；同主干下加入商品图像带来 +6.9% 相对提升，且训练数据从 10K 到 10M 用户 R@10 单调增长 27% 未见饱和。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 对比 TIGER/PLUM 等 SID 方法，EGR 彻底移除量化器、ID 词表与 grounding 层，新物品编码即可入库；对比 PinRec 的两模型设计，EGR 以共享主干 + 联合训练取代"先冻物品再训查询"，把对齐从后验问题变为联合优化问题；对比 SASRec/HSTU，物品表征来自内容编码器而非可学习 ID 参数，天然支持冷启与多模态。</li>
 <li><strong>可迁移亮点</strong>: ① 目标侧 stop-gradient + 共享主干的组合，可迁移到任何"索引侧与查询侧共享参数"的对比检索场景；② 意图 token（view/cart/purchase）前置序列化，是低成本注入行为强度信号的通用技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① 主实验仅 4 个基线且 Beauty 上对 HSTU 仅 +0.5%（0.0655 vs. 0.0652），公共基准的说服力偏弱，工业结论主要依赖不可复现的 Snap 私有数据；② 查询向量按天预计算，会话内意图漂移无法响应，且 2B 主干 + 每日全量物品重编码的算力成本未做量化对比；③ 冷启动分层实验仅按目标频次切桶，作者亦承认未隔离混杂因素，94.9% 的结论应谨慎外推。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

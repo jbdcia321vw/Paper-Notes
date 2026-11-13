@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4223,8 +4234,8 @@
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 工业界沿用 召回→粗排→精排→重排 的多级判别式漏斗，各阶段优化局部目标；GR（TIGER/OneRec）则把全链路统一为对层次化 SID 的自回归解码。</li>
-<li><strong>前人局限</strong>: ① 判别式模型以 <span class="arithmatex">\(p(y|f,u)\)</span> 直接访问物品特征向量 <span class="arithmatex">\(f\)</span> 做显式交叉，而 GR 只解码 <span class="arithmatex">\(\prod_l p(s_l|s_{&lt;l},u)\)</span>，<strong>在见到任何物品特征前就必须锁定生成路径</strong>；② 推荐是天然的一对多映射（同一行为序列对应多个合法目标），生成不确定性被放大，而判别式靠特征交叉消解该冲突。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 由贝叶斯定理 <span class="arithmatex">\(p(y|f,u)\propto p(f|y,u)p(y|u)\)</span>，按判别分数排序等价于按生成后验 <span class="arithmatex">\(p(f|y,u)=\prod_k p(f_k|f_{&lt;k},y,u)\)</span> 排序——<strong>具备完整特征访问的生成模型与判别模型表达力等价</strong>，实际差距只来自 SID 压缩丢弃的结构化属性（类目、卖家、品牌）。</li>
+<li><strong>前人局限</strong>: ① 判别式模型以 <span class="arithmatex">\(p(y|f,u)\)</span>直接访问物品特征向量<span class="arithmatex">\(f\)</span>做显式交叉，而 GR 只解码<span class="arithmatex">\(\prod_l p(s_l|s_{&lt;l},u)\)</span>，<strong>在见到任何物品特征前就必须锁定生成路径</strong>；② 推荐是天然的一对多映射（同一行为序列对应多个合法目标），生成不确定性被放大，而判别式靠特征交叉消解该冲突。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 由贝叶斯定理 <span class="arithmatex">\(p(y|f,u)\propto p(f|y,u)p(y|u)\)</span>，按判别分数排序等价于按生成后验<span class="arithmatex">\(p(f|y,u)=\prod_k p(f_k|f_{&lt;k},y,u)\)</span> 排序——<strong>具备完整特征访问的生成模型与判别模型表达力等价</strong>，实际差距只来自 SID 压缩丢弃的结构化属性（类目、卖家、品牌）。</li>
 <li><strong>本文切入点</strong>: 不做全特征序列解码（延迟不可接受），而是<strong>选择性恢复被 SID 压缩丢弃最严重的粗粒度属性</strong>，以 <span class="arithmatex">\(m\)</span> 步额外解码为代价逼近理论上界。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
@@ -4245,13 +4256,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>Chain-of-Attribute（CoA，核心创新）</strong>：SID 压缩把类目/卖家/品牌折叠为隐变量，解码时不可见。CoA 将分解式改为 <span class="arithmatex">\(p(s|u)=p(a|u)\cdot\prod_{l=0}^{L-1}p(s_l|a,s_{&lt;l},u)\)</span>，先"猜测"属性 <span class="arithmatex">\(a\)</span> 再条件生成 SID。由于同属性物品在 SID 语义空间相邻，条件熵严格下降：<span class="arithmatex">\(\Delta H_l=H(s_l|s_{&lt;l},u)-H(s_l|a,s_{&lt;l},u)=I(a;s_l|s_{&lt;l},u)\ge 0\)</span>，且逐层错误率 <span class="arithmatex">\(\epsilon_l\to\epsilon'_l&lt;\epsilon_l\)</span> 使级联失败概率 <span class="arithmatex">\(1-\prod_l(1-\epsilon'_l)\)</span> 单调下降——这就是 beam search 更稳、端到端误差衰减的物理直觉。CoA 作用于<strong>解码层</strong>（物品侧语义），与 cross-attention 作用于<strong>表征层</strong>（用户侧偏好）互补。</p>
+<p><strong>Chain-of-Attribute（CoA，核心创新）</strong>：SID 压缩把类目/卖家/品牌折叠为隐变量，解码时不可见。CoA 将分解式改为 <span class="arithmatex">\(p(s|u)=p(a|u)\cdot\prod_{l=0}^{L-1}p(s_l|a,s_{&lt;l},u)\)</span>，先"猜测"属性<span class="arithmatex">\(a\)</span>再条件生成 SID。由于同属性物品在 SID 语义空间相邻，条件熵严格下降：<span class="arithmatex">\(\Delta H_l=H(s_l|s_{&lt;l},u)-H(s_l|a,s_{&lt;l},u)=I(a;s_l|s_{&lt;l},u)\ge 0\)</span>，且逐层错误率<span class="arithmatex">\(\epsilon_l\to\epsilon'_l&lt;\epsilon_l\)</span>使级联失败概率<span class="arithmatex">\(1-\prod_l(1-\epsilon'_l)\)</span> 单调下降——这就是 beam search 更稳、端到端误差衰减的物理直觉。CoA 作用于<strong>解码层</strong>（物品侧语义），与 cross-attention 作用于<strong>表征层</strong>（用户侧偏好）互补。</p>
 </li>
 <li>
-<p><strong>Capacity-constrained SID（抑制马太效应）</strong>：标准 RQ-KMeans 只约束 item 数量均衡，但曝光长尾使 top 10% 的 <span class="arithmatex">\((s_0,s_1)\)</span> 组合吃掉 87.9% 曝光（相对 <span class="arithmatex">\(s_0\)</span> 层 33.2% 放大 2.6 倍），高频 token 路径在 beam search 中被反复生成。改为带曝光权重的容量约束聚类：<span class="arithmatex">\(V_k=\sum_{i:z_i=k}w_i\)</span>，约束 <span class="arithmatex">\(V_k\le\tau C_{cap}\)</span>（<span class="arithmatex">\(C_{cap}=\frac{1}{K}\sum_i w_i\)</span>，<span class="arithmatex">\(\tau=1.05\)</span>），用"最近中心分配 → 超载簇贪心迁移至欠载簇"两阶段求解，把 top-1% token 曝光占比从 57.33% 压到 26.04%。</p>
+<p><strong>Capacity-constrained SID（抑制马太效应）</strong>：标准 RQ-KMeans 只约束 item 数量均衡，但曝光长尾使 top 10% 的 <span class="arithmatex">\((s_0,s_1)\)</span>组合吃掉 87.9% 曝光（相对<span class="arithmatex">\(s_0\)</span>层 33.2% 放大 2.6 倍），高频 token 路径在 beam search 中被反复生成。改为带曝光权重的容量约束聚类：<span class="arithmatex">\(V_k=\sum_{i:z_i=k}w_i\)</span>，约束<span class="arithmatex">\(V_k\le\tau C_{cap}\)</span>（<span class="arithmatex">\(C_{cap}=\frac{1}{K}\sum_i w_i\)</span>，<span class="arithmatex">\(\tau=1.05\)</span>），用"最近中心分配 → 超载簇贪心迁移至欠载簇"两阶段求解，把 top-1% token 曝光占比从 57.33% 压到 26.04%。</p>
 </li>
 <li>
-<p><strong>Conditional Decoding Context + 训练目标</strong>：Task-Conditioned BOS 用可学习嵌入联合编码行为目标（click/purchase/cart）× 场景（feed/search/flash sale），解决多场景混训的分布冲突；Content Summary 用 <span class="arithmatex">\(M=3\)</span> 个哈希函数共享一张嵌入表显式建模笛卡尔积交叉 <span class="arithmatex">\(c_t=\Vert_{i=1}^{M}\mathbf{E}_{hash}(H_i(path_{&lt;t})\bmod S)\)</span>，避免 <span class="arithmatex">\(4000^2\approx16\)</span>M 参数爆炸。总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{RFT}+\lambda_{DPO}\mathcal{L}_{DPO}\)</span>（<span class="arithmatex">\(\lambda\)</span> 比 20:3，<span class="arithmatex">\(\beta=0.1\)</span>），RFT 按 batch 内归一化优势 <span class="arithmatex">\(\tilde{A}_i\)</span> 对 NTP 样本重加权 <span class="arithmatex">\((1+\lambda\tilde{A}_i)\)</span>，DPO 用 purchase≻click≻exposure 构造同请求内偏好对，并对前缀施加 <strong>layer-wise stop-gradient</strong> 只更新最后一层 SID Rank Head。训练用 teacher forcing + 全库 beam search 推理，无负采样。</p>
+<p><strong>Conditional Decoding Context + 训练目标</strong>：Task-Conditioned BOS 用可学习嵌入联合编码行为目标（click/purchase/cart）× 场景（feed/search/flash sale），解决多场景混训的分布冲突；Content Summary 用 <span class="arithmatex">\(M=3\)</span>个哈希函数共享一张嵌入表显式建模笛卡尔积交叉<span class="arithmatex">\(c_t=\Vert_{i=1}^{M}\mathbf{E}_{hash}(H_i(path_{&lt;t})\boldsymbol{o}d S)\)</span>，避免<span class="arithmatex">\(4000^2\approx16\)</span>M 参数爆炸。总损失<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{RFT}+\lambda_{DPO}\mathcal{L}_{DPO}\)</span>（<span class="arithmatex">\(\lambda\)</span>比 20:3，<span class="arithmatex">\(\beta=0.1\)</span>），RFT 按 batch 内归一化优势<span class="arithmatex">\(\tilde{A}_i\)</span>对 NTP 样本重加权<span class="arithmatex">\((1+\lambda\tilde{A}_i)\)</span>，DPO 用 purchase≻click≻exposure 构造同请求内偏好对，并对前缀施加 <strong>layer-wise stop-gradient</strong> 只更新最后一层 SID Rank Head。训练用 teacher forcing + 全库 beam search 推理，无负采样。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4283,7 +4294,7 @@
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 按 9 天生产日志的时间顺序切分（全局时间戳切分），训练/评估严格按时间隔离。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 无偏 <strong>Full-Ranking</strong>——推理时对全库做 Beam Search，报告 BS Hit Ratio@K（K=50/100/200），并额外单列订单（purchase）样本子集；辅以 teacher-forcing 下的 Token Hit Ratio@3 衡量 token 分布学习质量。</li>
-<li><strong>对比基线与超参设置</strong>: SASRec（判别式序列检索，用其表征在 SID 码本上近邻检索）、TIGER（Encoder-Decoder 生成式）、OneRec-V2（Decoder-Only + cross-attention）。<span class="arithmatex">\(d_{model}=256\)</span>、行为序列 <span class="arithmatex">\(T=200\)</span>、多模态 SID 序列 <span class="arithmatex">\(L_{mm}=100\)</span>、3 层 8 头 cross-attention、MMoE-FFN 4 专家、AdamW lr=<span class="arithmatex">\(3\times10^{-4}\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: SASRec（判别式序列检索，用其表征在 SID 码本上近邻检索）、TIGER（Encoder-Decoder 生成式）、OneRec-V2（Decoder-Only + cross-attention）。<span class="arithmatex">\(d_{model}=256\)</span>、行为序列<span class="arithmatex">\(T=200\)</span>、多模态 SID 序列<span class="arithmatex">\(L_{mm}=100\)</span>、3 层 8 头 cross-attention、MMoE-FFN 4 专家、AdamW lr=<span class="arithmatex">\(3\times10^{-4}\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4438,12 +4449,18 @@
 <li><strong>容量约束 SID 的收益来自码本均衡而非单纯聚类质量</strong>：替换为 RQ-KMeans 后 HR@50 掉 5.6 个点，且 top-1% token 曝光占比从 26.04% 反弹至 57.33%，说明长尾物品的可达性被高频 token 路径挤占，均衡负载直接转化为召回增益。</li>
 <li><strong>多场景混训 + Task-Cond. BOS 存在协同</strong>：混训本身已比单场景模型 +0.9/+1.6/+3.0（HR@50/100/200），再加场景条件 BOS 又额外 +0.5/+2.4/+2.0，证明跨场景知识迁移与场景去冲突是正交收益；线上端到端延迟 110ms vs 传统四级漏斗 266ms，统一模型同时拿到效果与效率。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 TIGER/OneRec-V2 的本质区别在于<strong>解码时是否携带物品侧信号</strong>——前者纯 SID 自回归，本文用属性前缀把判别式的特征交叉搬进生成轨迹；与 GRACE 的 Chain-of-Thought tokenization 相比，CoA 的差异不在"是否前缀属性"这一工程选择，而在于给出贝叶斯上界 + 互信息熵减 <span class="arithmatex">\(\Delta H_l=I(a;s_l|s_{&lt;l},u)\)</span> 的理论刻画，并明确其为延迟感知的近似（<span class="arithmatex">\(m\)</span> 步额外解码换特征覆盖）。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 TIGER/OneRec-V2 的本质区别在于<strong>解码时是否携带物品侧信号</strong>——前者纯 SID 自回归，本文用属性前缀把判别式的特征交叉搬进生成轨迹；与 GRACE 的 Chain-of-Thought tokenization 相比，CoA 的差异不在"是否前缀属性"这一工程选择，而在于给出贝叶斯上界 + 互信息熵减 <span class="arithmatex">\(\Delta H_l=I(a;s_l|s_{&lt;l},u)\)</span>的理论刻画，并明确其为延迟感知的近似（<span class="arithmatex">\(m\)</span> 步额外解码换特征覆盖）。</li>
 <li><strong>可迁移亮点</strong>: ① 曝光加权容量约束量化可直接用于任何 RQ-VAE/VQ 语义 ID 构建，缓解码本坍缩；② 哈希 Content Summary 用 <span class="arithmatex">\(M\times S\times d_{hash}\)</span> 参数显式建模 token 笛卡尔积，可迁移到任何层次化解码的生成式检索；③ layer-wise stop-gradient 让 DPO 只更新末层，避免偏好对齐破坏前缀条件分布。</li>
-<li><strong>审稿级局限批判</strong>: ① 全部实验基于 Shopee 单一平台私有日志，无公开数据集复现，且 CoA 属性链依赖电商类目体系，在内容/短视频等弱结构化域的可迁移性未验证；② 理论上界假设"完整特征访问"，而 CoA 只恢复 3 个粗粒度属性，<span class="arithmatex">\(I(a;s_l|s_{&lt;l},u)\)</span> 仅作定性论证，未给出与判别式模型差距的定量闭合度；③ 容量约束聚类的贪心修复为启发式，<span class="arithmatex">\(\tau\)</span> 与 <span class="arithmatex">\(C_{cap}\)</span> 对长尾分布漂移的敏感性、以及 <span class="arithmatex">\(m\)</span> 步属性解码在超长尾类目上的延迟开销均缺少分析。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 全部实验基于 Shopee 单一平台私有日志，无公开数据集复现，且 CoA 属性链依赖电商类目体系，在内容/短视频等弱结构化域的可迁移性未验证；② 理论上界假设"完整特征访问"，而 CoA 只恢复 3 个粗粒度属性，<span class="arithmatex">\(I(a;s_l|s_{&lt;l},u)\)</span>仅作定性论证，未给出与判别式模型差距的定量闭合度；③ 容量约束聚类的贪心修复为启发式，<span class="arithmatex">\(\tau\)</span>与<span class="arithmatex">\(C_{cap}\)</span>对长尾分布漂移的敏感性、以及<span class="arithmatex">\(m\)</span> 步属性解码在超长尾类目上的延迟开销均缺少分析。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

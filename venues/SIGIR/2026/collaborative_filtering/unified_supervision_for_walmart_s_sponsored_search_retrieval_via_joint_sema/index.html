@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4246,13 +4257,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>分级相关性主监督（Relevance-Primary Labeling）</strong>：痛点是用互动定义正负会把"高曝光低相关"项推成正样本。本文将 5 级评分线性映射到 <span class="arithmatex">\([-1,1]\)</span>：<span class="arithmatex">\(rel\_score(q,i)=(Rel(q,i)-2)/2\)</span>，并以 <span class="arithmatex">\(Rel\in\{3,4\}\)</span> 划正、<span class="arithmatex">\(\{0,1,2\}\)</span> 划负。级联教师模型按"最便宜优先、置信度早停、未定则多数投票+末级破平"运行，使全候选集获得稠密语义标签——这正是解决互动稀疏的关键：<strong>相关性标签不依赖曝光</strong>。</p>
+<p><strong>分级相关性主监督（Relevance-Primary Labeling）</strong>：痛点是用互动定义正负会把"高曝光低相关"项推成正样本。本文将 5 级评分线性映射到 <span class="arithmatex">\([-1,1]\)</span>：<span class="arithmatex">\(rel\_score(q,i)=(Rel(q,i)-2)/2\)</span>，并以<span class="arithmatex">\(Rel\in\{3,4\}\)</span>划正、<span class="arithmatex">\(\{0,1,2\}\)</span> 划负。级联教师模型按"最便宜优先、置信度早停、未定则多数投票+末级破平"运行，使全候选集获得稠密语义标签——这正是解决互动稀疏的关键：<strong>相关性标签不依赖曝光</strong>。</p>
 </li>
 <li>
-<p><strong>多通道检索先验与难负挖掘（Multi-Channel Retrieval Prior）</strong>：痛点是对抗曝光偏差需要"系统已知的失败模式"。对通道 <span class="arithmatex">\(s\)</span> 的排名 <span class="arithmatex">\(r_s\)</span> 做对数压缩 <span class="arithmatex">\(\pi_s=\max(0,1-\log(\max(1,r_s))/\log(R_s))\)</span>，跨通道取 <span class="arithmatex">\(\pi=\max_s \pi_s\)</span>，一致率 <span class="arithmatex">\(C=c(q,i)/|\mathcal{S}|\)</span>。正样本侧 <span class="arithmatex">\(\pi,C\)</span> 强化生产系统已验证的高置信项；负样本侧 <span class="arithmatex">\(\pi\)</span> 直接标识"排得高但不相关"的难负，再叠加词面重叠 <span class="arithmatex">\(\kappa_1\pi+\kappa_2\cdot token\_sim\)</span> 做课程式加权采样——把模型容量压向系统真实错误边界。</p>
+<p><strong>多通道检索先验与难负挖掘（Multi-Channel Retrieval Prior）</strong>：痛点是对抗曝光偏差需要"系统已知的失败模式"。对通道 <span class="arithmatex">\(s\)</span>的排名<span class="arithmatex">\(r_s\)</span>做对数压缩<span class="arithmatex">\(\pi_s=\max(0,1-\log(\max(1,r_s))/\log(R_s))\)</span>，跨通道取<span class="arithmatex">\(\pi=\max_s \pi_s\)</span>，一致率<span class="arithmatex">\(C=c(q,i)/|\mathcal{S}|\)</span>。正样本侧<span class="arithmatex">\(\pi,C\)</span>强化生产系统已验证的高置信项；负样本侧<span class="arithmatex">\(\pi\)</span>直接标识"排得高但不相关"的难负，再叠加词面重叠<span class="arithmatex">\(\kappa_1\pi+\kappa_2\cdot token\_sim\)</span> 做课程式加权采样——把模型容量压向系统真实错误边界。</p>
 </li>
 <li>
-<p><strong>互动仅作相关项内偏好 + 训练目标</strong>：互动分 <span class="arithmatex">\(E_{raw}=\log(1+\sum\lambda_k c_k)\)</span>（<span class="arithmatex">\(\lambda\)</span>=1.5/0.3/0.1/0.01），query 内归一化后 sigmoid 平滑 <span class="arithmatex">\(\tilde E=\sigma(8(E-0.5))\)</span>。最终正样本目标 <span class="arithmatex">\(y_{rel\text{-}rank\text{-}eng}=\text{clip}(0.85\cdot y_{rel\text{-}rank}+0.15\cdot\tilde E,0,1)\)</span>，权重 <span class="arithmatex">\(\alpha,\beta,\gamma=0.6/0.3/0.1\)</span>、<span class="arithmatex">\(\mu_{rel}/\lambda_{eng}=0.85/0.15\)</span> 均由验证集交叉验证确定。互动权重被刻意压低（0.15），物理直觉是：它只应在"已相关"的窄集合内做 tie-breaking，避免流行度回流主导梯度。训练用 Cosine Similarity Loss + CachedMNR 对比损失，负样本目标取归一化相关性分；推理为纯双塔内积 + FAISS ANN，无额外在线开销。</p>
+<p><strong>互动仅作相关项内偏好 + 训练目标</strong>：互动分 <span class="arithmatex">\(E_{raw}=\log(1+\sum\lambda_k c_k)\)</span>（<span class="arithmatex">\(\lambda\)</span>=1.5/0.3/0.1/0.01），query 内归一化后 sigmoid 平滑<span class="arithmatex">\(\tilde E=\sigma(8(E-0.5))\)</span>。最终正样本目标<span class="arithmatex">\(y_{rel\text{-}rank\text{-}eng}=\text{clip}(0.85\cdot y_{rel\text{-}rank}+0.15\cdot\tilde E,0,1)\)</span>，权重<span class="arithmatex">\(\alpha,\beta,\gamma=0.6/0.3/0.1\)</span>、<span class="arithmatex">\(\mu_{rel}/\lambda_{eng}=0.85/0.15\)</span> 均由验证集交叉验证确定。互动权重被刻意压低（0.15），物理直觉是：它只应在"已相关"的窄集合内做 tie-breaking，避免流行度回流主导梯度。训练用 Cosine Similarity Loss + CachedMNR 对比损失，负样本目标取归一化相关性分；推理为纯双塔内积 + FAISS ANN，无额外在线开销。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4367,12 +4378,18 @@
 <li><strong>互动监督确实提升了高互动商品占比且不牺牲相关性</strong>：在 query 内互动百分位 50% 阈值处，Top-25 中高互动商品占比提升 <strong>14.3pp</strong>，90% 阈值处提升 <strong>7.0pp</strong>；同时 Avg Rel@25 仍从 3.263 升至 3.277，证明"相关且热门"可兼得，而非用流行度换相关性。</li>
 <li><strong>定性结果揭示两种失败模式的互补性</strong>：仅相关性监督（Var-1）会召回"相关但互动处于后 10%"的冷门商品，而统一监督（Var-2）召回"相关且互动前 1%"的商品——后者往往具备促销、快速配送、SNAP-EBT 资格、高评分卖家等下游排序真正在意的属性，说明该框架实质是在召回阶段就对齐了精排目标。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与既有"互动主导 + 相关性阈值过滤"的工业方案（如以点击/购买构造正样本、再用相关性剔除假阳性）本质不同——本文把相关性升为<strong>定义正负的主信号</strong>，互动降为<strong>相关集内的偏好微调</strong>；与纯蒸馏+难负挖掘的学术路线（cross-encoder → bi-encoder distillation + HNM）相比，本文额外注入生产多通道排名先验，使难负挖掘直接对准线上系统的真实错误边界，而非随机/批内负样本。</li>
-<li><strong>可迁移亮点</strong>: ① "相关性定义可召回集合、互动精炼集合内排序"的主次反转原则，可直接迁移到广告召回、冷启动场景；② 用多通道排名先验 <span class="arithmatex">\(\pi\)</span> 与一致率 <span class="arithmatex">\(C\)</span> 同时做正样本强化与难负挖掘，是一种零额外标注的工业级 HNM 技巧。</li>
+<li><strong>可迁移亮点</strong>: ① "相关性定义可召回集合、互动精炼集合内排序"的主次反转原则，可直接迁移到广告召回、冷启动场景；② 用多通道排名先验 <span class="arithmatex">\(\pi\)</span>与一致率<span class="arithmatex">\(C\)</span> 同时做正样本强化与难负挖掘，是一种零额外标注的工业级 HNM 技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① 实验仅在生产系统与两个内部变体间对比，缺少公开数据集与学术 SOTA 基线，且未单独消融排名先验/一致率/词面重叠各分量，归因颗粒度不足；② 相关性标签依赖 LLM 级联教师模型，存在教师偏差与推理成本，且线上 A/B 中营收/GMV/CVR 均未达统计显著，长期业务收益证据偏弱。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

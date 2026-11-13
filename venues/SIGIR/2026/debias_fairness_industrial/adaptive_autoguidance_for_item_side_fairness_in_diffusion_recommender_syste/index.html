@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>沿用 DiffRec 的隐式反馈扩散范式：用户交互向量 <span class="arithmatex">\(x_0\)</span> 前向加噪至 <span class="arithmatex">\(x_T\)</span>，去噪器反向重建。核心改动在<strong>采样/训练的融合环节</strong>：每一步同时调用主模型 <span class="arithmatex">\(f_1\)</span> 与冻结的弱模型 <span class="arithmatex">\(f_0\)</span>（DiffRec 早期 checkpoint），二者输出 <span class="arithmatex">\(z_1,z_0\)</span> 连同三个差异信号送入自适应自引导网络 AAN，输出该步权重 <span class="arithmatex">\(w\)</span>，融合得 <span class="arithmatex">\(z_{AG}=wz_1+(1-w)z_0\)</span>，再据此计算反向后验均值更新样本。训练时主模型与 AAN 联合优化，弱模型冻结；流行度正则通过重要性采样间接影响优化。</p>
+<p>沿用 DiffRec 的隐式反馈扩散范式：用户交互向量 <span class="arithmatex">\(x_0\)</span>前向加噪至<span class="arithmatex">\(x_T\)</span>，去噪器反向重建。核心改动在<strong>采样/训练的融合环节</strong>：每一步同时调用主模型<span class="arithmatex">\(f_1\)</span>与冻结的弱模型<span class="arithmatex">\(f_0\)</span>（DiffRec 早期 checkpoint），二者输出<span class="arithmatex">\(z_1,z_0\)</span>连同三个差异信号送入自适应自引导网络 AAN，输出该步权重<span class="arithmatex">\(w\)</span>，融合得<span class="arithmatex">\(z_{AG}=wz_1+(1-w)z_0\)</span>，再据此计算反向后验均值更新样本。训练时主模型与 AAN 联合优化，弱模型冻结；流行度正则通过重要性采样间接影响优化。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户交互向量 x0 / 加噪 xt"] --&gt; B["主模型 f1 与冻结弱模型 f0"]
     B --&gt; C["差异信号 d1,d2,d3 + 长尾加成"]
@@ -4242,17 +4253,17 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>自适应自引导网络 AAN（逐步权重预测）</strong>：固定权重 <span class="arithmatex">\(w\)</span> 无法适配去噪轨迹上各步的可靠性差异。AAN 以 <span class="arithmatex">\([z_1,z_0,d_t^{(1)},d_t^{(2)},d_t^{(3)}]\)</span> 为输入，其中 <span class="arithmatex">\(d_t^{(1)}=\|z_1-z_0\|_1\)</span>（差异幅度）、<span class="arithmatex">\(d_t^{(2)}=\|z_1\|_2/(\|z_0\|_2+\epsilon)\)</span>（相对激活强度）、<span class="arithmatex">\(d_t^{(3)}=H_\tau(z_0)-H_\tau(z_1)\)</span>（温度平滑后的预测熵差）。最终权重为
+<p><strong>自适应自引导网络 AAN（逐步权重预测）</strong>：固定权重 <span class="arithmatex">\(w\)</span>无法适配去噪轨迹上各步的可靠性差异。AAN 以<span class="arithmatex">\([z_1,z_0,d_t^{(1)},d_t^{(2)},d_t^{(3)}]\)</span>为输入，其中<span class="arithmatex">\(d_t^{(1)}=\|z_1-z_0\|_1\)</span>（差异幅度）、<span class="arithmatex">\(d_t^{(2)}=\|z_1\|_2/(\|z_0\|_2+\epsilon)\)</span>（相对激活强度）、<span class="arithmatex">\(d_t^{(3)}=H_\tau(z_0)-H_\tau(z_1)\)</span>（温度平滑后的预测熵差）。最终权重为
 $<span class="arithmatex">\(w=\big[1+(w_{\max}-1)\cdot\sigma(\mathrm{MLP}(u))\big]\big(1+\eta\,\sigma(s_{\text{tail}})\big),\)</span>$
 其中 <span class="arithmatex">\(s_{\text{tail}}=z_1^\top m_{\text{tail}}\)</span> 度量当前推荐对长尾物品的激活强度。直觉：熵差与范数比刻画"谁更可信"，长尾加成项则在推荐偏向长尾时进一步放大引导强度，形成闭环。</p>
 </li>
 <li>
-<p><strong>三分量流行度正则 <span class="arithmatex">\(\mathcal{L}_{pop}\)</span></strong>：将物品按交互量分为 High/Mid/Low 三桶（各占 20%/60%/20% 交互），对每个用户 Top-K 推荐计算桶分布 <span class="arithmatex">\(r_u\)</span>，目标分布 <span class="arithmatex">\(T=\gamma\bar{H}+(1-\gamma)Q\)</span>，<span class="arithmatex">\(\gamma=1-\bar{H}_h\)</span> 自适应地在"用户历史偏好"与"全局公平先验 <span class="arithmatex">\(Q\)</span>"间权衡。损失为
+<p><strong>三分量流行度正则 <span class="arithmatex">\(\mathcal{L}_{pop}\)</span></strong>：将物品按交互量分为 High/Mid/Low 三桶（各占 20%/60%/20% 交互），对每个用户 Top-K 推荐计算桶分布<span class="arithmatex">\(r_u\)</span>，目标分布<span class="arithmatex">\(T=\gamma\bar{H}+(1-\gamma)Q\)</span>，<span class="arithmatex">\(\gamma=1-\bar{H}_h\)</span>自适应地在"用户历史偏好"与"全局公平先验<span class="arithmatex">\(Q\)</span>"间权衡。损失为
 $<span class="arithmatex">\(\mathcal{L}_{pop}=[r_u^h-T^h]_+ + [T^\ell-r_u^\ell]_+ + [H(T)-H(\bar{r})]_+,\)</span>$
-三项分别惩罚头部过曝、长尾欠曝与整体分布熵失衡。关键工程点：<span class="arithmatex">\(\mathcal{L}_{pop}\)</span> <strong>不直接反传梯度</strong>，而是作为重要性采样权重，使偏置更严重的去噪步被更频繁采样，从而间接放大 <span class="arithmatex">\(\mathcal{L}_{base}\)</span> 与 <span class="arithmatex">\(\mathcal{L}_{AG}\)</span> 的纠偏作用。</p>
+三项分别惩罚头部过曝、长尾欠曝与整体分布熵失衡。关键工程点：<span class="arithmatex">\(\mathcal{L}_{pop}\)</span><strong>不直接反传梯度</strong>，而是作为重要性采样权重，使偏置更严重的去噪步被更频繁采样，从而间接放大<span class="arithmatex">\(\mathcal{L}_{base}\)</span>与<span class="arithmatex">\(\mathcal{L}_{AG}\)</span> 的纠偏作用。</p>
 </li>
 <li>
-<p><strong>训练目标与推理开销</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{base}+\lambda_{AG}\mathcal{L}_{AG}+\lambda_{pop}\mathcal{L}_{pop}\)</span>，其中 <span class="arithmatex">\(\mathcal{L}_{AG}=\mathbb{E}\|z_{AG}-x_0\|_2^2\)</span>。无负采样（扩散重建范式天然规避 BPR 式负采样）。推理时每步需<strong>两次前向</strong>（主+弱）加一次 MLP，计算开销约为 DiffRec 的 2 倍，是本文明确的落地短板。</p>
+<p><strong>训练目标与推理开销</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{base}+\lambda_{AG}\mathcal{L}_{AG}+\lambda_{pop}\mathcal{L}_{pop}\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{AG}=\mathbb{E}\|z_{AG}-x_0\|_2^2\)</span>。无负采样（扩散重建范式天然规避 BPR 式负采样）。推理时每步需<strong>两次前向</strong>（主+弱）加一次 MLP，计算开销约为 DiffRec 的 2 倍，是本文明确的落地短板。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4299,8 +4310,8 @@ $<span class="arithmatex">\(\mathcal{L}_{pop}=[r_u^h-T^h]_+ + [T^\ell-r_u^\ell]_
 </table>
 <ul>
 <li><strong>数据划分与防穿越</strong>: 每用户交互按时间排序后 <code>7:1:2</code> 比例划分 train/val/test，属时序切分，无未来信息泄漏。</li>
-<li><strong>排名评测协议</strong>: Top-<span class="arithmatex">\(K\)</span> 全库排序（Full-Ranking），报告 <span class="arithmatex">\(K=50\)</span>（物品侧公平的常用口径）；精度用 NDCG@50↑，公平用 APLT@50↑（长尾占比）、ΔExp@50↓（头尾曝光差）、Cov@50↑、Gini@50↓，并给出公平-精度权衡指标 <span class="arithmatex">\(T_m=\text{公平提升}/\text{精度损失}\)</span>。</li>
-<li><strong>对比基线与超参</strong>: Random/MostPop、LightGCN、MultiVAE、DiffRec、C-DiffRec、CFG-DiffRec、AG-DiffRec（本文提出的首个自引导扩散推荐基线）。统一 DiffRec 搜索空间，最多 100 epoch，以验证集 Recall@20 早停；<span class="arithmatex">\(w_{\max}\in[2,4]\)</span>、<span class="arithmatex">\(\tau\in[2,3]\)</span>、<span class="arithmatex">\(\lambda_{AG},\lambda_{pop}\in[0.2,1.0]\)</span>、<span class="arithmatex">\(\eta\in[0.4,0.8]\)</span>；配对 t 检验 <span class="arithmatex">\(p\le0.05/0.01\)</span>。</li>
+<li><strong>排名评测协议</strong>: Top-<span class="arithmatex">\(K\)</span>全库排序（Full-Ranking），报告<span class="arithmatex">\(K=50\)</span>（物品侧公平的常用口径）；精度用 NDCG@50↑，公平用 APLT@50↑（长尾占比）、ΔExp@50↓（头尾曝光差）、Cov@50↑、Gini@50↓，并给出公平-精度权衡指标<span class="arithmatex">\(T_m=\text{公平提升}/\text{精度损失}\)</span>。</li>
+<li><strong>对比基线与超参</strong>: Random/MostPop、LightGCN、MultiVAE、DiffRec、C-DiffRec、CFG-DiffRec、AG-DiffRec（本文提出的首个自引导扩散推荐基线）。统一 DiffRec 搜索空间，最多 100 epoch，以验证集 Recall@20 早停；<span class="arithmatex">\(w_{\max}\in[2,4]\)</span>、<span class="arithmatex">\(\tau\in[2,3]\)</span>、<span class="arithmatex">\(\lambda_{AG},\lambda_{pop}\in[0.2,1.0]\)</span>、<span class="arithmatex">\(\eta\in[0.4,0.8]\)</span>；配对 t 检验<span class="arithmatex">\(p\le0.05/0.01\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4501,14 +4512,20 @@ $<span class="arithmatex">\(\mathcal{L}_{pop}=[r_u^h-T^h]_+ + [T^\ell-r_u^\ell]_
 <ol>
 <li><strong>公平与精度并非零和</strong>：Onion 上 A2G-DiffRec 同时把 APLT 从 .1489 提到 .1607（+7.92%）、NDCG 从 .1043 提到 .1048（+0.48%），<span class="arithmatex">\(T_m\)</span> 为负值，说明在稀疏度最高的数据集上自适应引导反而起到了正则化作用。</li>
 <li><strong>固定权重自引导极不稳定</strong>：AG-DiffRec 在 ML1M 上公平指标全面最优（APLT .1245），但在 FTKY/Onion 上公平与精度双双垫底（Onion NDCG 掉 15%），印证了"逐步自适应"是鲁棒性的必要条件而非锦上添花。</li>
-<li><strong>消融揭示组件分工</strong>：去掉 AG 后 NDCG 反升 0.25% 但 APLT 几乎归零（<span class="arithmatex">\(T_{APLT}\)</span> 仅 0.37），说明公平增益主要来自引导融合而非正则本身；去掉 <span class="arithmatex">\(d_t^{(1)}\)</span> 精度损失最大（−1.79%），去掉 <span class="arithmatex">\(d_t^{(3)}\)</span> 权衡最差（<span class="arithmatex">\(T_{Gini}\)</span> 0.85），三信号互补；Tail Bonus 主要起"精度-公平平衡器"作用（去掉后 APLT 更高但 NDCG 掉 1.05%）。</li>
+<li><strong>消融揭示组件分工</strong>：去掉 AG 后 NDCG 反升 0.25% 但 APLT 几乎归零（<span class="arithmatex">\(T_{APLT}\)</span>仅 0.37），说明公平增益主要来自引导融合而非正则本身；去掉<span class="arithmatex">\(d_t^{(1)}\)</span>精度损失最大（−1.79%），去掉<span class="arithmatex">\(d_t^{(3)}\)</span>权衡最差（<span class="arithmatex">\(T_{Gini}\)</span> 0.85），三信号互补；Tail Bonus 主要起"精度-公平平衡器"作用（去掉后 APLT 更高但 NDCG 掉 1.05%）。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 C-DiffRec/CFG-DiffRec 的静态引导尺度，本文把引导强度变成步级可学习量；相比 AG-DiffRec 的固定 <span class="arithmatex">\(w\)</span>，AAN 用差异信号做条件化，鲁棒性从"单数据集有效"提升到"三数据集一致"；相比 LightGCN/MultiVAE 等非扩散基线，本文在保持扩散精度优势的同时把 Gini 拉近到经典模型水平（ML1M 上 .8313 vs .7763）。</li>
 <li><strong>可迁移亮点</strong>: ① "弱模型差异作为纠错信号 + MLP 条件化权重"可迁移到任何带引导的生成式推荐（扩散/流匹配）；② <span class="arithmatex">\(\mathcal{L}_{pop}\)</span> 通过重要性采样而非直接反传实现不可微公平约束，这一技巧对列表级公平正则普遍适用。</li>
 <li><strong>审稿级局限批判</strong>: ① 推理需双模型前向，采样开销约 2×，论文自认未解决；② 公平增益高度依赖数据集稀疏度（FTKY 上 Gini/ΔExp 绝对提升有限），且弱模型仅用"早期 checkpoint"这一种退化策略，未探索更丰富的退化方式；③ 仅覆盖物品侧流行度公平，未涉及用户侧或多方公平。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

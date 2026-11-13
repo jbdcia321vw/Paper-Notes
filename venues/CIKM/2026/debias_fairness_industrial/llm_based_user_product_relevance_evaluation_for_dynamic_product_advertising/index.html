@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 <li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>动态商品广告（DPA）召回长期缺乏可靠离线指标：曝光反馈稀疏且有偏，线上 A/B 又贵又慢。本文提出<strong>无查询（query-free）的用户-商品相关性指标</strong>：先用 RQ-kmeans 语义 ID（SID）分组 + 事件分层把 30 天行为史压缩成少量加权意图代表（LLM 调用降约 30×），再用「智能体自动发现 + 人工业务对齐」生成五级相关性指南，蒸馏到 Gemini-2.5-Flash 学生模型做规模化打分，最后以阈值 <span class="arithmatex">\(k\)</span> 聚合出 MicroRel/MacroRel。在 30 天生产流量上，MicroRel 与线上 CP 的 Pearson 达 <span class="arithmatex">\(r=0.97\)</span>，并在 4 组 A/B 中与 CTR/CVR 方向一致。</p>
+<p>动态商品广告（DPA）召回长期缺乏可靠离线指标：曝光反馈稀疏且有偏，线上 A/B 又贵又慢。本文提出<strong>无查询（query-free）的用户-商品相关性指标</strong>：先用 RQ-kmeans 语义 ID（SID）分组 + 事件分层把 30 天行为史压缩成少量加权意图代表（LLM 调用降约 30×），再用「智能体自动发现 + 人工业务对齐」生成五级相关性指南，蒸馏到 Gemini-2.5-Flash 学生模型做规模化打分，最后以阈值 <span class="arithmatex">\(k\)</span>聚合出 MicroRel/MacroRel。在 30 天生产流量上，MicroRel 与线上 CP 的 Pearson 达<span class="arithmatex">\(r=0.97\)</span>，并在 4 组 A/B 中与 CTR/CVR 方向一致。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: DPA 召回离线评估沿用未来交互召回率、Conversion Precision/Recall（CP/CR）等基于曝光反馈的指标，或依赖昂贵慢速的用户调研。</li>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>框架分三块：<strong>(1) 意图表示</strong>——多模态商品 embedding 经 RQ-kmeans 得到分层 SID，按 <code>(SID 前缀, 事件类型)</code> 分组，每组选一个代表商品并赋权，得到紧凑意图集 <span class="arithmatex">\(d_u\)</span>；<strong>(2) 意图-商品判定</strong>——智能体循环自动发现相关性规则，再经人工业务对齐形成五级分类指南，用其提示 Gemini-2.5-Pro 教师标注蒸馏语料，LoRA 微调 Gemini-2.5-Flash 学生作为线上判定器 <span class="arithmatex">\(\mathcal{J}\)</span>；<strong>(3) 指标计算</strong>——逐候选对意图集做加权覆盖，经阈值 <span class="arithmatex">\(k\)</span> 二值化后聚合为 MicroRel/MacroRel。整条链路与上游聚合层解耦，同一批判定结果可在不同聚合规则下复用。</p>
+<p>框架分三块：<strong>(1) 意图表示</strong>——多模态商品 embedding 经 RQ-kmeans 得到分层 SID，按 <code>(SID 前缀, 事件类型)</code> 分组，每组选一个代表商品并赋权，得到紧凑意图集 <span class="arithmatex">\(d_u\)</span>；<strong>(2) 意图-商品判定</strong>——智能体循环自动发现相关性规则，再经人工业务对齐形成五级分类指南，用其提示 Gemini-2.5-Pro 教师标注蒸馏语料，LoRA 微调 Gemini-2.5-Flash 学生作为线上判定器<span class="arithmatex">\(\mathcal{J}\)</span>；<strong>(3) 指标计算</strong>——逐候选对意图集做加权覆盖，经阈值<span class="arithmatex">\(k\)</span> 二值化后聚合为 MicroRel/MacroRel。整条链路与上游聚合层解耦，同一批判定结果可在不同聚合规则下复用。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户30天行为史 H_u=(p_t,e_t)"] --&gt; B["RQ-kmeans 分层 SID + (SID,事件) 分组"]
     B --&gt; C["加权意图代表集 d_u"]
@@ -4245,7 +4256,7 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>SID 分组 + 事件分层的意图压缩</strong>：逐事件判定成本过高且偏向「重复曝光同款」的召回算法。对商品 embedding 做 <span class="arithmatex">\(L=3\)</span> 级、每级 512 码本的残差量化 <span class="arithmatex">\(c_l=\arg\min_k\|r_{l-1}-C_l^{(k)}\|_2,\ r_l=r_{l-1}-C_l^{(c_l)}\)</span>，以 SID 前缀长度控制粒度；同组内取最近商品为代表，权重
+<p><strong>SID 分组 + 事件分层的意图压缩</strong>：逐事件判定成本过高且偏向「重复曝光同款」的召回算法。对商品 embedding 做 <span class="arithmatex">\(L=3\)</span>级、每级 512 码本的残差量化<span class="arithmatex">\(c_l=\arg\min_k\|r_{l-1}-C_l^{(k)}\|_2,\ r_l=r_{l-1}-C_l^{(c_l)}\)</span>，以 SID 前缀长度控制粒度；同组内取最近商品为代表，权重
 $<span class="arithmatex">\(w_g=\log(1+|g|)\cdot\beta(e_g),\quad \beta(\text{purchase})=3,\ \beta(\text{cart})=2,\ \beta(\text{other})=1\)</span>$
 对数项让高频同质组占优但不线性膨胀，事件分层防止低意图浏览压过同 SID 的高意图信号——本质是对「重复浏览」这一伪相关做显式正则。</p>
 </li>
@@ -4367,7 +4378,7 @@ $<span class="arithmatex">\(w_g=\log(1+|g|)\cdot\beta(e_g),\quad \beta(\text{pur
 </tr>
 </tbody>
 </table>
-<p>跨源 Pearson：MicroRel–CP <span class="arithmatex">\(r=0.97\)</span>、ImpRel <span class="arithmatex">\(r=0.95\)</span>、MacroRel <span class="arithmatex">\(r=0.93\)</span>，而 NDCG@15 仅 <span class="arithmatex">\(r=0.55\)</span>、MAP@15 <span class="arithmatex">\(r=0.94\)</span>。</p>
+<p>跨源 Pearson：MicroRel–CP <span class="arithmatex">\(r=0.97\)</span>、ImpRel<span class="arithmatex">\(r=0.95\)</span>、MacroRel<span class="arithmatex">\(r=0.93\)</span>，而 NDCG@15 仅<span class="arithmatex">\(r=0.55\)</span>、MAP@15<span class="arithmatex">\(r=0.94\)</span>。</p>
 <h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
 <p>意图集构造（<span class="arithmatex">\(k=7\)</span>，Cost 为相对全序列的成对调用占比）：</p>
 <table>
@@ -4437,14 +4448,20 @@ $<span class="arithmatex">\(w_g=\log(1+|g|)\cdot\beta(e_g),\quad \beta(\text{pur
 <ol>
 <li><strong>压缩几乎无损且更抗噪</strong>：SID+事件加权仅用 3.4% 的 LLM 调用即达 0.989 的意图集保真度，且 P(CVR)=0.50 反超全序列（0.24）——去重近重复事件、压低低意图浏览，使指标不再奖励「重复曝光同款」的召回算法，这是全序列指标无法区分的失效模式。</li>
 <li><strong>指南是增益主来源，而非模型规模</strong>：无指南的 Pro 教师 F1 仅 0.816，低于带指南的微调 Flash（0.869）；增益集中在人口属性不匹配、品牌 vs 品类混淆等规则类，说明结构化规则比「更大模型 + 松散 prompt」更关键。</li>
-<li><strong>阈值 <span class="arithmatex">\(k\)</span> 存在明确甜区</strong>：<span class="arithmatex">\(k\in[5,7]\)</span> 内 P(CP)/P(CR)/P(CVR) 同时达峰（<span class="arithmatex">\(k=7\)</span> 时三者 95% bootstrap CI 均严格为正），<span class="arithmatex">\(k\ge8\)</span> 后 CP/CR 因候选通过率跌破约 5% 而衰减，印证多意图支持比单弱意图匹配更贴合多触点购买行为。</li>
+<li><strong>阈值 <span class="arithmatex">\(k\)</span>存在明确甜区</strong>：<span class="arithmatex">\(k\in[5,7]\)</span>内 P(CP)/P(CR)/P(CVR) 同时达峰（<span class="arithmatex">\(k=7\)</span>时三者 95% bootstrap CI 均严格为正），<span class="arithmatex">\(k\ge8\)</span> 后 CP/CR 因候选通过率跌破约 5% 而衰减，印证多意图支持比单弱意图匹配更贴合多触点购买行为。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 CP/CR 等曝光反馈指标，本文用内容驱动标签绕开曝光偏置与倾向分数缺失问题（IPS/DR 类方法在召回层常无 propensities 可用）；相比 LREF、BloomIntent 等 LLM 判定工作依赖显式 query 或 Cranfield 式 topic，本文首次在无 query 的 DPA 场景从异构行为史推断意图；相比既有 LLM-judge 仅对齐人工评分，本文直接对齐线上 CTR/CVR 等业务 KPI。</li>
 <li><strong>可迁移亮点</strong>: ① SID 分组 + 事件分层的「意图压缩」可迁移到任意长行为史序列的 LLM 评估/重排场景；② 「智能体规则发现 + 人工业务覆盖」的双阶段指南生成，是低成本构建领域判定标准的通用范式。</li>
 <li><strong>审稿级局限批判</strong>: ① 全部实验基于 Snap 单一生产系统与内部数据，6 路召回源与 10K 消融集不可复现，跨平台泛化性未验证；② 指标依赖商品多模态 embedding 与 SID 码本质量，且 <span class="arithmatex">\(k\)</span>、<span class="arithmatex">\(L\)</span>、<span class="arithmatex">\(\beta\)</span> 等超参在业务分布漂移下需重调；③ 学生模型虽 9× 加速，但 751ms p50 对超大规模离线批量评估仍是瓶颈，且与线上指标的相关性在 engagement-based 召回上明显偏弱（如 MacroRel 仅 +0.019）。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4430,12 +4441,18 @@
 <li><strong>房间级推荐是真正的难点，且模型排序被反转</strong>：房间级所有序列模型 R@5 均低于 0.14，而通用 CF 的 DirectAU 达 0.2781，反超序列模型一倍以上——因为房间一次性存在、序列中几乎不重复消费，序列建模的前提假设失效，必须显式建模"房间-主播"归属关系。</li>
 <li><strong>长尾与冷启动是数据集的固有属性而非噪声</strong>：70.7% 主播交互少于 5 次、Top-10 主播占据约 1.5% 交互、43.8% 用户交互少于 50 次，且送礼仅占点击 1.5%；这解释了为何 5-core 过滤会严重扭曲真实分布，也使 KuaiLive 天然适合公平性与冷启动研究。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 LiveRec（仅观看时长、无生命周期、无侧信息）、LSEC（电商直播、仅 follow/purchase 两类行为）、KLive（仅 9,932 主播、无生命周期与负样本），KuaiLive 是唯一同时提供房间起止时间戳、四类实时行为、负反馈与三方侧信息的数据集，因而首次支持"动态候选池"下的可复现评测。</li>
 <li><strong>可迁移亮点</strong>: ① "时间约束候选集 + 采样排序"的评测构造可直接迁移到新闻、短视频等强时效推荐基准；② 用统一时间快照对齐时间敏感特征（如粉丝数）的做法，是构建无穿越数据集的实用工程技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① 仅采样 10,000 负样本而非 Full-Ranking，且未报告方差/显著性检验，指标绝对值可能高估且模型间微小差距（如 Wide&amp;Deep 与 DeepFM 的 0.0002 AUC）不具判别力；② 匿名化导致稠密语义特征缺失，作者自承多数 CTR 模型表现趋同、DIN/DIEN 在房间级严重退化，基准对特征交叉类方法的区分度受限；此外仅 21 天窗口、单平台（快手国内版，99% 中国用户）也限制了结论的跨域泛化性。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

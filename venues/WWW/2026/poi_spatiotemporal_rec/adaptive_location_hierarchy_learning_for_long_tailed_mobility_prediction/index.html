@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入用户轨迹 <span class="arithmatex">\(x_{1:t}\)</span>，任意骨干输出 location 级 logits <span class="arithmatex">\(z\)</span>；ALOHA 先用 Gumbel-Softmax 把 <span class="arithmatex">\(z\)</span> 扰动为叶子节点概率 <span class="arithmatex">\(p_0(y^H)\)</span>，再沿预构建的转移矩阵自底向上递归得到 Need/Activity/Category 各级概率，最后对四级条件概率加权求和构成 Adaptive Hierarchical Loss 反传。层级本身由 LLM+CoT 离线一次性生成并可跨城市复用，推理阶段仅需一次矩阵乘，不引入任何新网络参数。</p>
+<p>输入用户轨迹 <span class="arithmatex">\(x_{1:t}\)</span>，任意骨干输出 location 级 logits<span class="arithmatex">\(z\)</span>；ALOHA 先用 Gumbel-Softmax 把<span class="arithmatex">\(z\)</span>扰动为叶子节点概率<span class="arithmatex">\(p_0(y^H)\)</span>，再沿预构建的转移矩阵自底向上递归得到 Need/Activity/Category 各级概率，最后对四级条件概率加权求和构成 Adaptive Hierarchical Loss 反传。层级本身由 LLM+CoT 离线一次性生成并可跨城市复用，推理阶段仅需一次矩阵乘，不引入任何新网络参数。</p>
 <pre class="mermaid"><code>flowchart TD
     A["轨迹 x_1:t"] --&gt; B["任意骨干 RNN/GNN/Transformer/Diffusion"]
     B --&gt; C["Location logits z"]
@@ -4248,12 +4259,12 @@
 <li>
 <p><strong>Gumbel 扰动 + 概率树递归（探索语义近邻）</strong>：痛点在于 argmax 式优化让模型只盯高概率头节点。做法是对 logits 注入 Gumbel 噪声后 softmax：
 $<span class="arithmatex">\(p_0(y^H_{t+1})=\frac{\exp((z_i+g_i)/\tau)}{\sum_j \exp((z_j+g_j)/\tau)},\quad g_i=-\log(-\log a_i)\)</span>$
-再由 <span class="arithmatex">\(p_0(y^{h-1})=T^{h\to h-1}p_0(y^h)\)</span> 与链式法则 <span class="arithmatex">\(p(y^H)=\prod_{h=1}^{H}p(y^h|y^{h-1})\)</span> 得到各级条件概率。Gumbel 是稳定分布族，加噪不改变原分布形状，因此"探索"不会牺牲收敛性——这是它优于 Focal/CB 等硬重加权插件的关键。</p>
+再由 <span class="arithmatex">\(p_0(y^{h-1})=T^{h\to h-1}p_0(y^h)\)</span>与链式法则<span class="arithmatex">\(p(y^H)=\prod_{h=1}^{H}p(y^h|y^{h-1})\)</span> 得到各级条件概率。Gumbel 是稳定分布族，加噪不改变原分布形状，因此"探索"不会牺牲收敛性——这是它优于 Focal/CB 等硬重加权插件的关键。</p>
 </li>
 <li>
-<p><strong>节点自适应权重与 AHL 损失（抑制粒度竞争）</strong>：痛点在于粗粒度层类别少、易主导梯度（granularity competition）。做法是给每级每样本一个可学习权重 <span class="arithmatex">\(w^h_i\)</span>（Softplus 保正，初始化 <span class="arithmatex">\(\{1,0.75,0.5,0.25\}\)</span> 由细到粗递减）：
+<p><strong>节点自适应权重与 AHL 损失（抑制粒度竞争）</strong>：痛点在于粗粒度层类别少、易主导梯度（granularity competition）。做法是给每级每样本一个可学习权重 <span class="arithmatex">\(w^h_i\)</span>（Softplus 保正，初始化<span class="arithmatex">\(\{1,0.75,0.5,0.25\}\)</span> 由细到粗递减）：
 $<span class="arithmatex">\(\mathcal{L}_{hier}=-\frac{1}{N\cdot H}\sum_{i=1}^{N}\sum_{h=1}^{H} w^h_i \log p(y^h_i|y^{h-1}_i)\)</span>$
-梯度分析显示 <span class="arithmatex">\(\partial \ell_{hier}/\partial z_j = p_0(y^H_i)\cdot A - w^H_i\)</span>，其中 <span class="arithmatex">\(A\)</span> 含级间权重差 <span class="arithmatex">\((w^{h+1}_i-w^h_i)/S^h_i\)</span>——<strong>级间权重必须不均等</strong>才能维持表征多样性，等权会退化为普通 CE。训练无需负采样（全库 softmax），推理仅多一次 <span class="arithmatex">\(O(N)\)</span> 的矩阵乘。</p>
+梯度分析显示 <span class="arithmatex">\(\partial \ell_{hier}/\partial z_j = p_0(y^H_i)\cdot A - w^H_i\)</span>，其中<span class="arithmatex">\(A\)</span>含级间权重差<span class="arithmatex">\((w^{h+1}_i-w^h_i)/S^h_i\)</span>——<strong>级间权重必须不均等</strong>才能维持表征多样性，等权会退化为普通 CE。训练无需负采样（全库 softmax），推理仅多一次<span class="arithmatex">\(O(N)\)</span> 的矩阵乘。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4308,7 +4319,7 @@ $<span class="arithmatex">\(\mathcal{L}_{hier}=-\frac{1}{N\cdot H}\sum_{i=1}^{N}
 </table>
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 按用户时间序 <strong>8:1:1 比例划分</strong>；训练集未出现、仅在验证/测试出现的位置与用户在评测时剔除（严格防穿越）。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: <strong>Full-Ranking 全库排序</strong>（对全部 <span class="arithmatex">\(|\mathcal{P}|\)</span> 个位置打分），指标 MRR@k 与 NDCG@k，<span class="arithmatex">\(k\in\{1,5,10\}\)</span>；头/尾按 Pareto 原则以访问频次前 20% 切分。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: <strong>Full-Ranking 全库排序</strong>（对全部 <span class="arithmatex">\(|\mathcal{P}|\)</span>个位置打分），指标 MRR@k 与 NDCG@k，<span class="arithmatex">\(k\in\{1,5,10\}\)</span>；头/尾按 Pareto 原则以访问频次前 20% 切分。</li>
 <li><strong>对比基线与超参设置</strong>: 4 类骨干（Graph-Flashback / STHGCN / MCLP / Diff-POI）× 6 个插件（Focal、CB、IB、LA、BLV 五个 CV 长尾插件 + 本文），外加框架级基线 MELT、LoTNext；层级构建用 GPT-4o-mini 与 GLM-4.5 双模型交叉验证。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4544,12 +4555,18 @@ $<span class="arithmatex">\(\mathcal{L}_{hier}=-\frac{1}{N\cdot H}\sum_{i=1}^{N}
 <li><strong>尾部提升不以头部为代价</strong>：JKT 上头/尾分组对比显示尾部组提升显著、头部组 M@k 基本持平且 N@k 略优；层级距离在 Need/Activity/Category 三级分别缩短 3.3%/2.5%/3.4%，证明收益来自粗粒度语义理解而非简单重加权。案例中真实标签为仅 27 次访问的尾部位置，ALOHA 排第 1，STHGCN 未进前 3；CW（本文对/基线错）95 次 vs WC 24 次。</li>
 <li><strong>层级构建廉价且鲁棒</strong>：Category→Activity 映射人工修正率 &lt;2.60%（GPT-4o-mini 与 GLM-4.5 双模型一致），单城构建耗时 3~6 分钟、成本 &lt;$1；随机破坏 10% 映射后 JKT M@1 仍为 0.2003~0.2118（干净版 0.2097），自适应权重有效吸收噪声；每轨迹额外耗时约 0.1ms（0.628→0.735ms），远低于 BLV 的 4.978ms。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 LoTNext（图耦合、不可迁移），ALOHA 完全解耦骨干，四类架构通吃且无需图采样；相比 Focal/CB/LA/BLV 等 CV 长尾插件（静态类别重加权、忽略时空依赖、常负迁移），ALOHA 用语义层级 + 稳定分布扰动实现"软重平衡"；相比 MELT（RecSys 迁移），其未建模空间语义，KLP 上 M@1 落后 LoTNext 达 24.32%。</li>
 <li><strong>可迁移亮点</strong>: ① "LLM 离线建层级 + 在线仅矩阵乘"的模式可低成本移植到电商品类树、内容标签体系等任意具备天然分类学的长尾推荐场景；② 用 Gumbel 稳定分布做"不破坏收敛性的探索"这一思路，可直接替换对比学习中的硬负采样增广。</li>
 <li><strong>审稿级局限批判</strong>: ① 层级质量仍依赖 LLM 对本地 POI 类别的语义判断，Need 层仅 3 类且 Activity→Need 修正率高达 10~20%，粗粒度先验偏粗；② 实验全部为离线 Full-Ranking，缺少线上 A/B 与延迟敏感场景验证，且未与 LLM4Rec 类生成式 POI 预测方法对比。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

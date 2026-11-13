@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4231,7 +4242,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入用户历史序列 <span class="arithmatex">\(s=\{i_1,\dots,i_{t-1}\}\)</span>，目标是自回归生成下一物品 <span class="arithmatex">\(i_t\)</span> 的语义码序列。离线阶段：用预训练 SASRec 取每物品 top-<span class="arithmatex">\(k\)</span> 协同邻居，将其标题与物品自身属性文本分别送入冻结 T5 编码并加权融合，经 RQ-VAE 量化得到协同-语义联合码本。在线生成阶段：码序列经可学习码嵌入表得到 <span class="arithmatex">\(\mathbf{e}^{code}_i\)</span>，同时保留冻结语义表示 <span class="arithmatex">\(\mathbf{e}^{sem}_i\)</span>，二者经门控融合后送入解码器；训练时叠加 InfoNCE 实例级对齐与 Poincaré 球测地距离的流形对齐。三模块共同保证语义与协同信号在两阶段被一致使用。</p>
+<p>输入用户历史序列 <span class="arithmatex">\(s=\{i_1,\dots,i_{t-1}\}\)</span>，目标是自回归生成下一物品<span class="arithmatex">\(i_t\)</span>的语义码序列。离线阶段：用预训练 SASRec 取每物品 top-<span class="arithmatex">\(k\)</span>协同邻居，将其标题与物品自身属性文本分别送入冻结 T5 编码并加权融合，经 RQ-VAE 量化得到协同-语义联合码本。在线生成阶段：码序列经可学习码嵌入表得到<span class="arithmatex">\(\mathbf{e}^{code}_i\)</span>，同时保留冻结语义表示<span class="arithmatex">\(\mathbf{e}^{sem}_i\)</span>，二者经门控融合后送入解码器；训练时叠加 InfoNCE 实例级对齐与 Poincaré 球测地距离的流形对齐。三模块共同保证语义与协同信号在两阶段被一致使用。</p>
 <pre class="mermaid"><code>flowchart TD
     A["物品属性文本 + top-k 协同邻居标题"] --&gt; B["T5 编码加权融合 → RQ-VAE 量化"]
     B --&gt; C["语义码序列 (SID)"]
@@ -4250,14 +4261,14 @@ $<span class="arithmatex">\(\tilde{\mathbf{e}}_i = a\,\mathrm{Encode}(\text{Prom
 再送入 RQ-VAE 量化。直觉：两路输入同源同编码器，天然同空间对齐，无需额外对齐任务；协同相似物品因共享邻居标题而获得相近码，码分配与下游生成目标一致。该步完全离线，无在线开销。</p>
 </li>
 <li>
-<p><strong>语义引导生成 (Semantic-Guided Generation)</strong>：痛点是码嵌入在生成训练中被交互数据"覆盖"掉语义。先用物品级可学习权重 <span class="arithmatex">\(\mathbf{w}=\mathrm{softmax}(W_h\mathbf{h}_i/\tau_w)\)</span> 把 <span class="arithmatex">\(l\)</span> 层码嵌入压成物品级向量 <span class="arithmatex">\(\mathbf{e}^{code}_i=\mathbf{E}_i^\top\tilde{\mathbf{w}}\)</span>（<span class="arithmatex">\(\tau_w\)</span> 从 2 线性退火到 1 以稳定训练），再与投影后的语义表示门控融合：
+<p><strong>语义引导生成 (Semantic-Guided Generation)</strong>：痛点是码嵌入在生成训练中被交互数据"覆盖"掉语义。先用物品级可学习权重 <span class="arithmatex">\(\mathbf{w}=\mathrm{softmax}(W_h\mathbf{h}_i/\tau_w)\)</span>把<span class="arithmatex">\(l\)</span>层码嵌入压成物品级向量<span class="arithmatex">\(\mathbf{e}^{code}_i=\mathbf{E}_i^\top\tilde{\mathbf{w}}\)</span>（<span class="arithmatex">\(\tau_w\)</span> 从 2 线性退火到 1 以稳定训练），再与投影后的语义表示门控融合：
 $<span class="arithmatex">\(g_i=\sigma(W_g[\mathbf{e}^{code}_i;\mathbf{e}^{sem}_i]),\quad \mathbf{e}^{fused}_i=g_i\mathbf{e}^{code}_i+(1-g_i)\mathbf{e}^{sem}_i\)</span>$
-配合 InfoNCE 对齐 <span class="arithmatex">\(\mathcal{L}_{align}\)</span>。直觉：门控按码嵌入的表达能力自适应决定语义先验的补回比例，计算量仅约 <span class="arithmatex">\(2(ld+dh+lh)\)</span> FLOPs，可忽略。</p>
+配合 InfoNCE 对齐 <span class="arithmatex">\(\mathcal{L}_{align}\)</span>。直觉：门控按码嵌入的表达能力自适应决定语义先验的补回比例，计算量仅约<span class="arithmatex">\(2(ld+dh+lh)\)</span> FLOPs，可忽略。</p>
 </li>
 <li>
 <p><strong>双曲流形对齐 (Manifold Alignment)</strong>：痛点是码嵌入源自离散码本索引、语义表示源自 PLM 隐状态，二者距离度量与分布结构不同，实例级对比无法弥合全局几何。将两者经指数映射投到 Poincaré 球 <span class="arithmatex">\(\mathbb{D}^d_c\)</span>：
 $<span class="arithmatex">\(z=\phi(\mathbf{e})=\frac{c\tanh(\|\tilde{\mathbf{e}}\|/2c)}{\|\tilde{\mathbf{e}}\|}\tilde{\mathbf{e}},\quad \mathcal{L}_{geo}=\sum_i d_{\mathbb{D}}(z^{code}_i,z^{sem}_i)\)</span>$
-其中 <span class="arithmatex">\(d_{\mathbb{D}}\)</span> 为测地距离。直觉：双曲空间负曲率的指数膨胀特性可同时低失真保留码序列的层次结构与语义表示的相似性；复杂度 <span class="arithmatex">\(O(Nd)\)</span>，低于 InfoNCE 的 <span class="arithmatex">\(O(N^2d)\)</span>。总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{gen}+\alpha\mathcal{L}_{align}+\beta\mathcal{L}_{geo}\)</span>，负采样沿用骨干模型默认策略（无额外负采样设计）。</p>
+其中 <span class="arithmatex">\(d_{\mathbb{D}}\)</span>为测地距离。直觉：双曲空间负曲率的指数膨胀特性可同时低失真保留码序列的层次结构与语义表示的相似性；复杂度<span class="arithmatex">\(O(Nd)\)</span>，低于 InfoNCE 的<span class="arithmatex">\(O(N^2d)\)</span>。总损失<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{gen}+\alpha\mathcal{L}_{align}+\beta\mathcal{L}_{geo}\)</span>，负采样沿用骨干模型默认策略（无额外负采样设计）。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4462,15 +4473,21 @@ $<span class="arithmatex">\(z=\phi(\mathbf{e})=\frac{c\tanh(\|\tilde{\mathbf{e}}
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>语义引导生成是最大贡献项</strong>：去掉 SG 后 Beauty N@10 从 0.0546 跌至 0.0444（−18.7%），跌幅远超其他单模块，说明生成阶段语义先验流失是解耦的主要矛盾；而 CT 单独移除仅跌 8.1%，印证"分词侧错位"是次要但不可忽略的环节。</li>
-<li><strong>流形对齐不可被对比对齐替代</strong>：在已含最优权重 InfoNCE 的前提下，去掉 MA 仍使 Beauty N@10 掉 10.1%；替换为欧氏 <span class="arithmatex">\(L_2\)</span>（0.0517）或 MMD（0.0504）均不及双曲测地（0.0546），且 <span class="arithmatex">\(L_2\)</span> 甚至低于 w/o. MA 的 0.0487 之外的对照水平，证明几何错配是独立于实例相似度的第二层障碍。门控权重分布可视化佐证：无 MA 时 <span class="arithmatex">\(g\)</span> 大量趋近 0（模型偏赖易利用的语义表示），有 MA 后 <span class="arithmatex">\(g\)</span> 集中于 0.5 附近，码嵌入被真正学习。</li>
+<li><strong>流形对齐不可被对比对齐替代</strong>：在已含最优权重 InfoNCE 的前提下，去掉 MA 仍使 Beauty N@10 掉 10.1%；替换为欧氏 <span class="arithmatex">\(L_2\)</span>（0.0517）或 MMD（0.0504）均不及双曲测地（0.0546），且<span class="arithmatex">\(L_2\)</span>甚至低于 w/o. MA 的 0.0487 之外的对照水平，证明几何错配是独立于实例相似度的第二层障碍。门控权重分布可视化佐证：无 MA 时<span class="arithmatex">\(g\)</span>大量趋近 0（模型偏赖易利用的语义表示），有 MA 后<span class="arithmatex">\(g\)</span> 集中于 0.5 附近，码嵌入被真正学习。</li>
 <li><strong>即插即用且开销极低</strong>：在 TIGER 上 N@10 提升 19.23%/15.76%/16.93%，在 LIGER 上提升 13.59%/10.53%/12.70%；Beauty 上 TIGER 单步训练/推理时间仅增 6.70%/6.19%，LIGER 仅增 1.98%/0.54%，性能增益远大于成本。此外，与 MMGRec 式拼接（0.0512）、LETTER 式隐式对比（0.0523）相比，本文显式文本化融合（0.0546）在 Beauty 上分别高出 6.6% 与 4.4%。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 TIGER/RPG 仅做语义分词、生成侧纯交互重嵌入，本文首次把"跨阶段双向补全"作为统一问题处理；相比 MMGRec 的向量拼接与 LETTER 的隐式辅助监督，本文用"协同信号文本化 + 同 PLM 编码"实现零额外对齐任务的显式注入；相比 PRORec 的额外训练阶段，本文模块离线化、在线开销可忽略。</li>
 <li><strong>可迁移亮点</strong>: (1) "把非文本信号（CF 邻居、图结构）转写为文本再走同一 PLM"是低成本跨模态对齐的通用技巧，可迁移到多模态/知识图谱增强的分词；(2) 双曲流形对齐可作为离散码本与稠密表征之间的通用几何桥接层，适用于任何 VQ/RQ 类生成式检索系统。</li>
-<li><strong>审稿级局限批判</strong>: (1) 协同邻居依赖预训练 SASRec 的 top-<span class="arithmatex">\(k\)</span>，<span class="arithmatex">\(k\)</span> 与 <span class="arithmatex">\(a\)</span> 需按数据集调参，且邻居质量在冷启动物品上难以保证，论文未给出冷启动分桶实验；(2) 双曲曲率 <span class="arithmatex">\(c\)</span> 与两个损失权重 <span class="arithmatex">\(\alpha,\beta\)</span> 构成三维超参空间，虽敏感性分析显示稳定，但缺少与自适应曲率方法的对比；此外仅在 Amazon 三数据集验证，缺工业级大规模线上 A/B 证据。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: (1) 协同邻居依赖预训练 SASRec 的 top-<span class="arithmatex">\(k\)</span>，<span class="arithmatex">\(k\)</span>与<span class="arithmatex">\(a\)</span>需按数据集调参，且邻居质量在冷启动物品上难以保证，论文未给出冷启动分桶实验；(2) 双曲曲率<span class="arithmatex">\(c\)</span>与两个损失权重<span class="arithmatex">\(\alpha,\beta\)</span> 构成三维超参空间，虽敏感性分析显示稳定，但缺少与自适应曲率方法的对比；此外仅在 Amazon 三数据集验证，缺工业级大规模线上 A/B 证据。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

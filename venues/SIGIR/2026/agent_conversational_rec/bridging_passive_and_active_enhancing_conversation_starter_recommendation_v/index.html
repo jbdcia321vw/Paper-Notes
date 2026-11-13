@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>双塔基座：用户塔编码用户特征，Query 塔用预训练 LM 编码文本（开场白 <span class="arithmatex">\(q_s\)</span> 与主动查询 <span class="arithmatex">\(q_a\)</span> 共用同一编码器），内积打分 + in-batch 负采样交叉熵训练。在此之上叠加两个离线训练期模块：<strong>分布对齐器</strong>用生成器 <span class="arithmatex">\(G\)</span>（意图映射 MLP）与判别器 <span class="arithmatex">\(D\)</span>（来源分类 MLP）做极小极大博弈，剥离域噪声得到域不变表征；<strong>语义离散器</strong>用 RQ-VAE 将连续表征量化成三层码本语义 ID，以码本簇的流式频率 <span class="arithmatex">\(P(c_q)\)</span> 近似概率密度，注入 LogQ 校正项完成去偏。最终主任务损失与对抗损失多任务联合优化，线上仅保留双塔前向，满足延迟要求。</p>
+<p>双塔基座：用户塔编码用户特征，Query 塔用预训练 LM 编码文本（开场白 <span class="arithmatex">\(q_s\)</span>与主动查询<span class="arithmatex">\(q_a\)</span>共用同一编码器），内积打分 + in-batch 负采样交叉熵训练。在此之上叠加两个离线训练期模块：<strong>分布对齐器</strong>用生成器<span class="arithmatex">\(G\)</span>（意图映射 MLP）与判别器<span class="arithmatex">\(D\)</span>（来源分类 MLP）做极小极大博弈，剥离域噪声得到域不变表征；<strong>语义离散器</strong>用 RQ-VAE 将连续表征量化成三层码本语义 ID，以码本簇的流式频率<span class="arithmatex">\(P(c_q)\)</span> 近似概率密度，注入 LogQ 校正项完成去偏。最终主任务损失与对抗损失多任务联合优化，线上仅保留双塔前向，满足延迟要求。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户特征 + 文本(主动查询/开场白)"] --&gt; B["LM Encoder 特征提取"]
     B --&gt; C["意图映射 G + 判别器 D 对抗对齐"]
@@ -4234,12 +4245,12 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>对抗分布对齐器（Adversarial Distribution Aligner）</strong>：痛点是把 <span class="arithmatex">\(q_a\)</span> 当辅助正样本直接混训会因分布偏移而负迁移（实验证实 AUC 反降 2.71%）。做法是让 <span class="arithmatex">\(G\)</span> 把两类文本表征映射到共享意图空间，<span class="arithmatex">\(D\)</span> 判别来源，迫使编码器学域不变特征：
+<p><strong>对抗分布对齐器（Adversarial Distribution Aligner）</strong>：痛点是把 <span class="arithmatex">\(q_a\)</span>当辅助正样本直接混训会因分布偏移而负迁移（实验证实 AUC 反降 2.71%）。做法是让<span class="arithmatex">\(G\)</span>把两类文本表征映射到共享意图空间，<span class="arithmatex">\(D\)</span> 判别来源，迫使编码器学域不变特征：
 $<span class="arithmatex">\(\mathcal{L}_{adv}=\min_G\max_D\ \mathbb{E}_{z\sim\mathcal{D}_A}[\log D(G(z))]+\mathbb{E}_{z\sim\mathcal{D}_S}[\log(1-D(G(z)))]\)</span>$
 直觉：若表征已无法区分"手打"还是"菜单"，则意图语义已被对齐，主动查询的知识可安全迁移。</p>
 </li>
 <li>
-<p><strong>语义离散器与免 ID 去偏（Semantic Discretizer）</strong>：痛点在于手打 query 几乎唯一，<span class="arithmatex">\(P_i\approx 1/N\)</span>，传统 LogQ 的 item-ID 频率统计失效；而高维连续空间直接做密度估计在流式训练中不可行。做法是用 RQ-VAE 量化 <span class="arithmatex">\(z\to\{c_1,c_2,c_3\}\)</span>，以码本簇频率作密度代理，并把判别器输出 <span class="arithmatex">\(1-D(G(z))\)</span> 作为样本权重 <span class="arithmatex">\(\beta_q\)</span>：
+<p><strong>语义离散器与免 ID 去偏（Semantic Discretizer）</strong>：痛点在于手打 query 几乎唯一，<span class="arithmatex">\(P_i\approx 1/N\)</span>，传统 LogQ 的 item-ID 频率统计失效；而高维连续空间直接做密度估计在流式训练中不可行。做法是用 RQ-VAE 量化<span class="arithmatex">\(z\to\{c_1,c_2,c_3\}\)</span>，以码本簇频率作密度代理，并把判别器输出<span class="arithmatex">\(1-D(G(z))\)</span>作为样本权重<span class="arithmatex">\(\beta_q\)</span>：
 $<span class="arithmatex">\(\mathcal{L}_{debiased}=-\beta_q\log\frac{\exp(f(u,q)-\log P(c_q))}{\sum_{q'\in\mathcal{B}}\exp(f(u,q')-\log P(c_{q'}))}\)</span>$
 直觉：无限主动查询被压缩为有限语义簇，长尾意图不再被热门簇淹没，同时 <span class="arithmatex">\(\beta_q\)</span> 抑制对齐不佳的噪声样本。</p>
 </li>
@@ -4269,14 +4280,14 @@ $<span class="arithmatex">\(\mathcal{L}_{debiased}=-\beta_q\log\frac{\exp(f(u,q)
 <td style="text-align: center;">开场白语料规模未披露</td>
 <td style="text-align: center;">7.2B</td>
 <td style="text-align: center;">高稀疏</td>
-<td style="text-align: left;">含主动查询 <span class="arithmatex">\(q_a\)</span> 与开场白 <span class="arithmatex">\(q_s\)</span> 双源文本</td>
+<td style="text-align: left;">含主动查询 <span class="arithmatex">\(q_a\)</span>与开场白<span class="arithmatex">\(q_s\)</span> 双源文本</td>
 </tr>
 </tbody>
 </table>
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 按生产日志时间顺序构建训练/测试（流式训练场景），<strong>测试集严格限定为候选语料 <span class="arithmatex">\(\mathcal{Q}_s\)</span> 中的开场白</strong>，主动查询只进训练不进测试，保证与线上部署一致且防止标签泄漏。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 离线采用 <strong>AUC</strong> 作为主指标（工业精排/召回常用），未采用 Full-Ranking 或 Sampled Ranking 的 HR/NDCG 口径；线上采用 A/B 测试的业务指标。</li>
-<li><strong>对比基线与超参设置</strong>: 所有基线共享同一用户塔与特征集，仅 Query 侧建模不同——ID-based Retrieval（可学习 item ID）、Semantic Retrieval（仅开场白日志训练的语义双塔）、Basic + Active（朴素数据增广）、以及两个消融变体；温度 <span class="arithmatex">\(\tau\)</span>、多任务权重 <span class="arithmatex">\(\lambda\)</span> 未在正文给出具体取值。</li>
+<li><strong>对比基线与超参设置</strong>: 所有基线共享同一用户塔与特征集，仅 Query 侧建模不同——ID-based Retrieval（可学习 item ID）、Semantic Retrieval（仅开场白日志训练的语义双塔）、Basic + Active（朴素数据增广）、以及两个消融变体；温度 <span class="arithmatex">\(\tau\)</span>、多任务权重<span class="arithmatex">\(\lambda\)</span> 未在正文给出具体取值。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4355,12 +4366,18 @@ $<span class="arithmatex">\(\mathcal{L}_{debiased}=-\beta_q\log\frac{\exp(f(u,q)
 <li><strong>重加权比对齐更"要命"</strong>：去掉 <span class="arithmatex">\(\beta_q\)</span> 后 AUC 暴跌至 58.00（-6.65），甚至低于 ID-based 基线，表明开放文本中的噪声/热门查询若不按对齐置信度降权，会直接污染双塔表征。</li>
 <li><strong>去偏真正打开了多样性</strong>：线上唯一曝光 query 数 +30.65%、唯一点击 query 数 +56.50%，远高于 AUC 层面的收益幅度，证明语义簇级 LogQ 校正确实把长尾意图推上了曝光位，回音室被实质性打破。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 Onesug 等端到端 query 推荐与 GQR 等 LLM 直接生成 query 的工作，本文聚焦"对话前"的开场白阶段且坚持检索式范式以保工业效率；相比标准 LogQ 校正（依赖 item-ID 频率），本文首次把去偏推广到不可赋 ID 的开放文本，用 RQ-VAE 语义簇频率作密度代理。</li>
 <li><strong>可迁移亮点</strong>: ① "对抗对齐 + 语义离散化"组合可迁移到任何需要融合开放文本信号与封闭候选集的召回任务（如搜索 suggestion、冷启动 query 扩展）；② 用判别器输出作为样本置信权重 <span class="arithmatex">\(\beta_q\)</span> 是一个轻量且通用的噪声抑制技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① 评估仅用 AUC 单一指标，缺少 HR/NDCG 等排名口径与公开数据集复现，工业结论的外部有效性存疑；② 线上增益（活跃天数 +0.04%）量级极小，且对抗训练 + RQ-VAE 的离线训练稳定性与超参（<span class="arithmatex">\(\lambda\)</span>、码本大小、层数）敏感性未做分析。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

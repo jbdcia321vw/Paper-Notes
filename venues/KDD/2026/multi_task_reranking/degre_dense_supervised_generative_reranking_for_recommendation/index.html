@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>DeGRe 采用离线-在线解耦的三阶段闭环。<strong>离线阶段</strong>：Lookahead Evaluator（DeGRe-E，因果 Transformer + 累积回归头）对候选集任意子序列估计期望累积价值，并以束宽 <span class="arithmatex">\(B\)</span> 引导束搜索，在未曝光空间挖掘高价值前瞻序列集 <span class="arithmatex">\(\mathcal{T}_{syn}\)</span>。<strong>训练阶段</strong>：将评估器逐步价值估计转化为硬标签（目标决策）、软标签（候选空间细粒度价值分布）与序列权重，通过混合蒸馏损失注入轻量 Online Generator（DeGRe-G，双向编码器 + 用户引导因果解码器 + 候选约束指针式解码）。<strong>在线阶段</strong>：评估器不部署，生成器仅执行一次贪心解码输出列表，规避两阶段范式的额外开销。</p>
+<p>DeGRe 采用离线-在线解耦的三阶段闭环。<strong>离线阶段</strong>：Lookahead Evaluator（DeGRe-E，因果 Transformer + 累积回归头）对候选集任意子序列估计期望累积价值，并以束宽 <span class="arithmatex">\(B\)</span>引导束搜索，在未曝光空间挖掘高价值前瞻序列集<span class="arithmatex">\(\mathcal{T}_{syn}\)</span>。<strong>训练阶段</strong>：将评估器逐步价值估计转化为硬标签（目标决策）、软标签（候选空间细粒度价值分布）与序列权重，通过混合蒸馏损失注入轻量 Online Generator（DeGRe-G，双向编码器 + 用户引导因果解码器 + 候选约束指针式解码）。<strong>在线阶段</strong>：评估器不部署，生成器仅执行一次贪心解码输出列表，规避两阶段范式的额外开销。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户上下文 X_u + 候选集 V_u (N=12)"] --&gt; B["Lookahead Evaluator (累积回归)"]
     B --&gt; C["束搜索挖掘前瞻序列 T_syn"]
@@ -4242,17 +4253,17 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>累积回归评估器（Cumulative Regression Evaluator）</strong>：痛点在于传统列表级评估器只给完整列表打分，无法指导中间步。DeGRe-E 将离散价值 <span class="arithmatex">\(V\)</span>（如累计点击数）建模为序数二分类分布，预测 <span class="arithmatex">\(P(V\ge k \mid l_{1:t}) = \sigma(f_k(l_{1:t}))\)</span>，期望价值由概率求和直接导出：
+<p><strong>累积回归评估器（Cumulative Regression Evaluator）</strong>：痛点在于传统列表级评估器只给完整列表打分，无法指导中间步。DeGRe-E 将离散价值 <span class="arithmatex">\(V\)</span>（如累计点击数）建模为序数二分类分布，预测<span class="arithmatex">\(P(V\ge k \mid l_{1:t}) = \sigma(f_k(l_{1:t}))\)</span>，期望价值由概率求和直接导出：
 $<span class="arithmatex">\(\hat{V}(l_{1:t}) = \sum_{k=1}^{t} P(V \ge k \mid l_{1:t})\)</span>$
 训练用下三角掩码的有序 BCE 损失（<span class="arithmatex">\(k \le t\)</span> 约束累计值不超过步数）。直觉：把标量回归拆成一组有序二分类，既保留分布形状又天然支持任意长度子序列的渐进估值。</p>
 </li>
 <li>
-<p><strong>稠密监督构造（Dense Supervision Construction）</strong>：针对启发式标签偏差，用评估器引导束搜索（每步对剩余候选扩展、按 <span class="arithmatex">\(\hat{V}([l_{&lt;t};v])\)</span> 保留 Top-<span class="arithmatex">\(B\)</span>）得到前瞻序列集。对每条序列每步构造：<strong>硬标签</strong> <span class="arithmatex">\(v_{i_t}\)</span>（评估器选中的目标决策）+ <strong>软标签</strong> <span class="arithmatex">\(q_t(v_i) = \text{softmax}_{v_i}(\hat{V}([l_{&lt;t};v_i]))\)</span>（保留次优候选的细粒度排序信息）+ <strong>序列权重</strong> <span class="arithmatex">\(w_l = \text{softmax}_{l}(\hat{V}(l)/\tau_w)\)</span>（按前瞻价值重塑监督强度）。直觉：硬标签提供确定性模仿目标，软标签作为局部正则器让生成器感知候选间相对优劣，权重让梯度聚焦高置信序列。</p>
+<p><strong>稠密监督构造（Dense Supervision Construction）</strong>：针对启发式标签偏差，用评估器引导束搜索（每步对剩余候选扩展、按 <span class="arithmatex">\(\hat{V}([l_{&lt;t};v])\)</span>保留 Top-<span class="arithmatex">\(B\)</span>）得到前瞻序列集。对每条序列每步构造：<strong>硬标签</strong><span class="arithmatex">\(v_{i_t}\)</span>（评估器选中的目标决策）+ <strong>软标签</strong><span class="arithmatex">\(q_t(v_i) = \text{softmax}_{v_i}(\hat{V}([l_{&lt;t};v_i]))\)</span>（保留次优候选的细粒度排序信息）+ <strong>序列权重</strong><span class="arithmatex">\(w_l = \text{softmax}_{l}(\hat{V}(l)/\tau_w)\)</span>（按前瞻价值重塑监督强度）。直觉：硬标签提供确定性模仿目标，软标签作为局部正则器让生成器感知候选间相对优劣，权重让梯度聚焦高置信序列。</p>
 </li>
 <li>
 <p><strong>混合蒸馏目标与推理效率</strong>：总损失为
 $<span class="arithmatex">\(\mathcal{L}_{Gen} = \sum_{l \in \mathcal{T}_{syn}} w_l \sum_{t=1}^{L} \left[ \mathcal{L}_{CE}(v_{i_t}, P_{\theta,t}) + \alpha \mathcal{L}_{KL}(q_t \| P_{\theta,t}) \right]\)</span>$
-其中 CE 项做前瞻模仿、KL 项做价值对齐（<span class="arithmatex">\(\alpha=0.01\)</span>）。生成器采用候选约束解码 <span class="arithmatex">\(P_\theta(v_i|l_{&lt;t}) = \text{softmax}(h_t^{dec} m_i^\top)\)</span>，输出严格限定在候选集内且不重复；解码起点由用户表征线性投影 <span class="arithmatex">\(e_{start} = W_p e_{user} + b_p\)</span> 初始化（替代静态 <code>&lt;BOS&gt;</code>，增强首项个性化）。<strong>免负采样</strong>（候选集内 softmax 即隐式负样本），在线仅一次贪心解码，<span class="arithmatex">\(L&lt;10\)</span> 时开销可控。</p>
+其中 CE 项做前瞻模仿、KL 项做价值对齐（<span class="arithmatex">\(\alpha=0.01\)</span>）。生成器采用候选约束解码<span class="arithmatex">\(P_\theta(v_i|l_{&lt;t}) = \text{softmax}(h_t^{dec} m_i^\top)\)</span>，输出严格限定在候选集内且不重复；解码起点由用户表征线性投影<span class="arithmatex">\(e_{start} = W_p e_{user} + b_p\)</span>初始化（替代静态 <code>&lt;BOS&gt;</code>，增强首项个性化）。<strong>免负采样</strong>（候选集内 softmax 即隐式负样本），在线仅一次贪心解码，<span class="arithmatex">\(L&lt;10\)</span> 时开销可控。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4299,8 +4310,8 @@ $<span class="arithmatex">\(\mathcal{L}_{Gen} = \sum_{l \in \mathcal{T}_{syn}} w
 </table>
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 统一采用 <code>Leave-One-Out</code>，每个用户最后一个 session 作测试集，其余训练，严格遵循时间因果。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 生成器用 <strong>Monte Carlo 采样 HR@K%</strong>（<span class="arithmatex">\(K\in\{1,3,10\}\)</span>）——将生成列表与 10,000 条随机对比集 <span class="arithmatex">\(S_u\)</span> 比较，衡量排列空间优化能力；评估器用 <strong>R-AUC</strong>（连续值域排序一致性）、<strong>PCOC</strong>（校准比）、<strong>RMSE</strong>（绝对误差）。所有生成器基线由统一外部评估器打分以保证公平。</li>
-<li><strong>对比基线与超参设置</strong>: 生成器基线 NAR4Rec / GReF / NLGR-G / GoalRank；评估器基线 DeepFM / PIER / NLGR-E。Embedding 维度 <span class="arithmatex">\(d=16\)</span>，评估器 <span class="arithmatex">\(N_E=6\)</span> 层、生成器 <span class="arithmatex">\(N_G=4\)</span> 层，Adam 学习率 <span class="arithmatex">\(5\times10^{-4}\)</span>，batch 1024，<span class="arithmatex">\(\alpha=0.01\)</span>，重排设定 12 选 6，5 次随机种子取均值。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 生成器用 <strong>Monte Carlo 采样 HR@K%</strong>（<span class="arithmatex">\(K\in\{1,3,10\}\)</span>）——将生成列表与 10,000 条随机对比集<span class="arithmatex">\(S_u\)</span> 比较，衡量排列空间优化能力；评估器用 <strong>R-AUC</strong>（连续值域排序一致性）、<strong>PCOC</strong>（校准比）、<strong>RMSE</strong>（绝对误差）。所有生成器基线由统一外部评估器打分以保证公平。</li>
+<li><strong>对比基线与超参设置</strong>: 生成器基线 NAR4Rec / GReF / NLGR-G / GoalRank；评估器基线 DeepFM / PIER / NLGR-E。Embedding 维度 <span class="arithmatex">\(d=16\)</span>，评估器<span class="arithmatex">\(N_E=6\)</span>层、生成器<span class="arithmatex">\(N_G=4\)</span>层，Adam 学习率<span class="arithmatex">\(5\times10^{-4}\)</span>，batch 1024，<span class="arithmatex">\(\alpha=0.01\)</span>，重排设定 12 选 6，5 次随机种子取均值。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4458,15 +4469,21 @@ $<span class="arithmatex">\(\mathcal{L}_{Gen} = \sum_{l \in \mathcal{T}_{syn}} w
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>前瞻序列挖掘是性能根基</strong>：移除硬标签后 HR@1% 暴跌 58.03%（0.7910→0.2107），仅略高于纯曝光训练（0.1577），证明束搜索挖掘的高价值序列是 DeGRe 的核心贡献，而非网络结构本身。</li>
-<li><strong>软标签与序列权重是"锦上添花"而非"雪中送炭"</strong>：移除后 HR@1% 仅降 0.14% / 0.54%，说明细粒度分布信息与价值加权主要起正则与梯度聚焦作用；超参分析显示 <span class="arithmatex">\(\alpha\)</span> 过大（&gt;0.01）会过度平滑分布反而损害主任务，<span class="arithmatex">\(\tau_w\)</span> 呈倒 U 型，需中等温度平衡区分度与稳定性。</li>
+<li><strong>软标签与序列权重是"锦上添花"而非"雪中送炭"</strong>：移除后 HR@1% 仅降 0.14% / 0.54%，说明细粒度分布信息与价值加权主要起正则与梯度聚焦作用；超参分析显示 <span class="arithmatex">\(\alpha\)</span>过大（&gt;0.01）会过度平滑分布反而损害主任务，<span class="arithmatex">\(\tau_w\)</span> 呈倒 U 型，需中等温度平衡区分度与稳定性。</li>
 <li><strong>离线探索宽度带来边际递减收益</strong>：束宽 <span class="arithmatex">\(B\)</span> 从 1→2→4→8，HR@1% 依次为 69.5%→79.1%→84.4%→88.7%，验证更宽搜索挖到更优前瞻序列，但增益递减，工业上可按算力预算折中；线上 A/B 中 DeGRe 较 PRM 再提升 ORDER +1.0%、GMV +2.99%，且新用户仍获 GMV +2.72%、支付宝场景 GMV +4.14%，跨用户群与跨场景鲁棒。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 GReF（MLE 拟合启发式标签，无法探索未曝光空间），DeGRe 用评估器主动挖掘前瞻序列消除标签偏差；相比 NLGR/GoalRank（列表级稀疏奖励，信用分配模糊），DeGRe 用累积回归提供逐步稠密价值信号；相比两阶段 generator-evaluator（目标不一致+双模型在线部署），DeGRe 离线蒸馏后在线仅需单模型单次贪心解码，延迟仅 +14.8ms。</li>
 <li><strong>可迁移亮点</strong>: ① "累积回归 + 束搜索构造稠密监督"可迁移到任何序列决策任务（如多轮对话策略、组合优化）；② 用户表征初始化解码起点替代静态 <code>&lt;BOS&gt;</code>，是低成本提升首项个性化的通用技巧。</li>
-<li><strong>审稿级局限批判</strong>: ① 离线束搜索开销随 <span class="arithmatex">\(B\)</span> 与候选规模增长，论文仅给出 Top-<span class="arithmatex">\(K\)</span> 预截断与批并行，未量化大规模候选（N≫12）下的离线成本；② 评估器与生成器共享特征处理架构但层数不同，蒸馏效果对架构对齐的敏感度未做消融；③ 公开数据集仅 ML-1M 与 Taobao Ad，缺乏更多跨域基准验证泛化性。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 离线束搜索开销随 <span class="arithmatex">\(B\)</span>与候选规模增长，论文仅给出 Top-<span class="arithmatex">\(K\)</span> 预截断与批并行，未量化大规模候选（N≫12）下的离线成本；② 评估器与生成器共享特征处理架构但层数不同，蒸馏效果对架构对齐的敏感度未做消融；③ 公开数据集仅 ML-1M 与 Taobao Ad，缺乏更多跨域基准验证泛化性。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

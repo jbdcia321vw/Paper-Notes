@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4472,12 +4483,18 @@
 <li><strong>SSS 的增益高度依赖设置耦合，而非普适有效</strong>：SASRec 在 Beauty 上 <code>Single+CE+Prefix</code> 达 0.0944，而 <code>Multi+CE+Prefix</code> 仅 0.0731，甚至低于不切分的 0.0947；同一模型跨设置最大差异可达 17–24 倍（CDs 上 GRU4Rec 2493%），证明"用了 SSS"远不等于"用对了 SSS"。</li>
 <li><strong>增益机理是分布重塑而非样本扩容</strong>：可视化显示 SSS 后低频物品的目标概率从近零显著抬升、目标分布平坦化，且每个目标的输入数量成倍增长；这解释了为何 <code>Multi+CE</code> 下 SSS 失效——该组合本身已让所有交互成为目标并做全库排序优化，SSS 的边际分布修正空间被耗尽。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 [33,91] 仅验证"SSS 有效"并局限于目标策略与滑动窗口，本文首次揭示 SSS 对<strong>评估公平性</strong>的系统性干扰，并将分析扩展到 3 种切分 × 2 目标 × 2 损失的完整正交空间；相较一般可复现性研究（如 [18,55] 关注结果能否复现），本文聚焦"看似平凡却显著影响性能"的隐性实现细节，视角更锐利。</li>
 <li><strong>可迁移亮点</strong>: (1) 提出"数据增强的价值在于重塑训练分布而非增加样本量"这一判据，可直接用于评估其他 DA 算子（Crop/Mask/Insert）的真实贡献；(2) 建议将切分方式、目标策略、损失函数作为<strong>必报实现细节</strong>并跨配置全面评估，可迁移至跨域、多模态、LLM4Rec 等继承同一代码管线的子领域。</li>
-<li><strong>审稿级局限批判</strong>: (1) 全文为实证与可视化分析，<strong>缺乏理论刻画</strong>切分/目标/损失如何联合影响分布与泛化的统一框架，结论的普适性依赖所选 4 个骨干与 6 个数据集；(2) 未量化 SSS 带来的训练开销（序列数从 <span class="arithmatex">\(|s_u|\)</span> 膨胀至 <span class="arithmatex">\(O(|s_u|^2)\)</span> 量级的样本对），也未讨论在工业级超长序列与在线增量训练场景下的可行性。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: (1) 全文为实证与可视化分析，<strong>缺乏理论刻画</strong>切分/目标/损失如何联合影响分布与泛化的统一框架，结论的普适性依赖所选 4 个骨干与 6 个数据集；(2) 未量化 SSS 带来的训练开销（序列数从 <span class="arithmatex">\(|s_u|\)</span>膨胀至<span class="arithmatex">\(O(|s_u|^2)\)</span> 量级的样本对），也未讨论在工业级超长序列与在线增量训练场景下的可行性。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

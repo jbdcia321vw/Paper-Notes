@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4273,7 +4284,7 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{Ranking}} = -\sum_{i=1}^{n}\frac{
 </table>
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 全局时间戳切分——以训练数据最后日期为界，取其后 9 天评估；另设最长 1 个月的分布漂移评估。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 离线用预订标签的 NDCG（相对基线的百分比差），每设置训练 3 个模型报均值±标准差；线上为 3 周 A/B，指标为 Bookers、Booked Nights、Views，显著性 <span class="arithmatex">\(p&lt;0.05\)</span> / <span class="arithmatex">\(p&lt;0.01\)</span>。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 离线用预订标签的 NDCG（相对基线的百分比差），每设置训练 3 个模型报均值±标准差；线上为 3 周 A/B，指标为 Bookers、Booked Nights、Views，显著性 <span class="arithmatex">\(p&lt;0.05\)</span>/<span class="arithmatex">\(p&lt;0.01\)</span>。</li>
 <li><strong>对比基线与超参设置</strong>: 基线为 Airbnb 线上生产模型（约 900 维手工特征 + MLP，经多年 A/B 严格筛选，属"强基线"）；序列编码器 4 层、<span class="arithmatex">\(d=128\)</span>、post-norm、无 FFN，事件投影 MLP 1024-512-256-128，输出降维至 32；排序头 1024-256-64-1。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4383,12 +4394,18 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{Ranking}} = -\sum_{i=1}^{n}\frac{
 <li><strong>浏览事件是双刃剑</strong>：短期序列长度在 11–20 条时 NDCG 达峰，超过后明显下滑，直接验证了"高频浏览=噪声"的假设，也反向支撑了频次分层选择策略的必要性；长期序列则呈单调递增趋势。</li>
 <li><strong>简单架构 + 工程加速优于复杂架构</strong>：加 FFN、加 DIN 式早融合、扩参数均只带来边际离线收益甚至掉点，而三项训练加速策略合计贡献约 4× 吞吐——在 <span class="arithmatex">\(10^8\)</span> 量级数据下，吞吐即效果。此外模型在训练截止后 1 个月内 NDCG 衰减 &lt;0.1%，无需高频重训。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 SASRec/BERT4Rec，本文把 next-item 预测改造为"异构事件序列 + 候选集内 listwise 排序"，并明确弃用双向编码（收益中性但拖慢训练）；相比 DIN 的 target-aware 早融合，本文选择 late-fusion 以换取编码器离线预计算，线上延迟可控；相比 Meta 生成式推荐等 engagement 导向工作，本文直面"稀疏预订标签 + 探索性浏览"的电商特有噪声。</li>
 <li><strong>可迁移亮点</strong>: ① "按事件频次分配时间窗口"的序列构造法，可直接迁移到任何高频弱信号 + 低频强信号的场景（如电商加购/下单、内容平台的收藏/完播）；② 因果掩码下的"搜索批处理"复用中间嵌入，是序列精排降 FLOPs 的通用技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① 离线评估仅覆盖含预订的 5% 流量，NDCG 对"非预订客转化"这一核心目标存在系统性偏差，结论高度依赖线上 A/B；② 序列嵌入按天批量刷新，实时性受限，作者自承实时推理离线可涨 5% 但因 retargeting 无法转化为线上收益，说明离线-线上鸿沟仍是黑箱；③ 单平台单业务验证，跨场景泛化性未知。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][多模态推荐] 用 MLLM 将图像转语义描述并推理用户偏好画像，配合阈值去噪与拓扑增强精修物品图，三数据集全库排序 SOTA。">
+        <meta name="description" content="[SIGIR 2026][多模态推荐] 用 MLLM 推理用户偏好画像替代噪声聚合初始化，并以阈值去噪+共现增强精修物品图，三数据集 11/12 指标 SOTA。">
       
       
       
@@ -129,10 +129,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/multimodal_rec/mllmrec_a_preference_reasoning_paradigm_with_graph_refinement_for_multimoda/" />
 <meta property="og:title" content="[Paper Note] MLLMRec: A Preference Reasoning Paradigm with Graph Refinement for Multimodal Recommendation" />
-<meta property="og:description" content="[SIGIR 2026][多模态推荐] 用 MLLM 将图像转语义描述并推理用户偏好画像，配合阈值去噪与拓扑增强精修物品图，三数据集全库排序 SOTA。" />
+<meta property="og:description" content="[SIGIR 2026][多模态推荐] 用 MLLM 推理用户偏好画像替代噪声聚合初始化，并以阈值去噪+共现增强精修物品图，三数据集 11/12 指标 SOTA。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] MLLMRec: A Preference Reasoning Paradigm with Graph Refinement for Multimodal Recommendation" />
-<meta name="twitter:description" content="[SIGIR 2026][多模态推荐] 用 MLLM 将图像转语义描述并推理用户偏好画像，配合阈值去噪与拓扑增强精修物品图，三数据集全库排序 SOTA。" />
+<meta name="twitter:description" content="[SIGIR 2026][多模态推荐] 用 MLLM 推理用户偏好画像替代噪声聚合初始化，并以阈值去噪+共现增强精修物品图，三数据集 11/12 指标 SOTA。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -158,7 +158,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] MLLMRec: A Preference Reasoning Paradigm with Graph Refinement for Multimodal Recommendation",
   "headline": "[Paper Note] MLLMRec: A Preference Reasoning Paradigm with Graph Refinement for Multimodal Recommendation",
-  "description": "[SIGIR 2026][\u591a\u6a21\u6001\u63a8\u8350] \u7528 MLLM \u5c06\u56fe\u50cf\u8f6c\u8bed\u4e49\u63cf\u8ff0\u5e76\u63a8\u7406\u7528\u6237\u504f\u597d\u753b\u50cf\uff0c\u914d\u5408\u9608\u503c\u53bb\u566a\u4e0e\u62d3\u6251\u589e\u5f3a\u7cbe\u4fee\u7269\u54c1\u56fe\uff0c\u4e09\u6570\u636e\u96c6\u5168\u5e93\u6392\u5e8f SOTA\u3002",
+  "description": "[SIGIR 2026][\u591a\u6a21\u6001\u63a8\u8350] \u7528 MLLM \u63a8\u7406\u7528\u6237\u504f\u597d\u753b\u50cf\u66ff\u4ee3\u566a\u58f0\u805a\u5408\u521d\u59cb\u5316\uff0c\u5e76\u4ee5\u9608\u503c\u53bb\u566a+\u5171\u73b0\u589e\u5f3a\u7cbe\u4fee\u7269\u54c1\u56fe\uff0c\u4e09\u6570\u636e\u96c6 11/12 \u6307\u6807 SOTA\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/multimodal_rec/mllmrec_a_preference_reasoning_paradigm_with_graph_refinement_for_multimoda/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/multimodal_rec/mllmrec_a_preference_reasoning_paradigm_with_graph_refinement_for_multimoda/",
   "inLanguage": "zh-CN",
@@ -175,8 +175,8 @@
     { "@type": "Thing", "name": "\u7269\u54c1\u56fe\u7cbe\u4fee" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3994,10 +3994,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4008,7 +4008,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4016,22 +4016,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4039,32 +4039,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4091,12 +4069,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4114,7 +4092,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4122,10 +4100,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4138,10 +4116,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4178,7 +4156,7 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][多模态推荐] 用 MLLM 将图像转语义描述并推理用户偏好画像，配合阈值去噪与拓扑增强精修物品图，三数据集全库排序 SOTA。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][多模态推荐] 用 MLLM 推理用户偏好画像替代噪声聚合初始化，并以阈值去噪+共现增强精修物品图，三数据集 11/12 指标 SOTA。</p>
   
   <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 多模态推荐 · 召回 · MLLM 偏好推理 · 物品图精修</p>
   
@@ -4232,236 +4210,291 @@
   
 
 
-<h1 id="mllmrec-a-preference-reasoning-paradigm-with-graph-refinement-for-multimodal-recommendation">MLLMRec: A Preference Reasoning Paradigm with Graph Refinement for Multimodal Recommendation (面向多模态推荐的图精修偏好推理范式)</h1>
+<h1 id="mllmrec-a-preference-reasoning-paradigm-with-graph-refinement-for-multimodal-recommendation">MLLMRec: A Preference Reasoning Paradigm with Graph Refinement for Multimodal Recommendation (面向多模态推荐的偏好推理范式与图精修)</h1>
 <ul>
 <li><strong>会议/期刊</strong>: SIGIR 2026</li>
-<li><strong>推荐链路定位</strong>: 召回 (Retrieval) — 用户/物品表征学习与 Top-K 排序</li>
-<li><strong>研究方向</strong>: 多模态推荐 / 图神经网络推荐</li>
+<li><strong>作者与机构</strong>: Yuzhuo Dang, Xin Zhang, Zhiqiang Pan, Yuxiao Duan, Wanyu Chen, Fei Cai, Honghui Chen（国防科技大学系统工程学院 / 电子对抗学院）</li>
+<li><strong>推荐链路定位</strong>: 召回（用户/物品表征学习）</li>
+<li><strong>研究方向</strong>: 多模态推荐 / 大语言模型推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2508.15304v3">https://arxiv.org/abs/2508.15304v3</a></li>
 <li><strong>开源代码</strong>: <a href="https://github.com/Yuzhuo-Dang/MLLMRec.git">https://github.com/Yuzhuo-Dang/MLLMRec.git</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对多模态推荐中"用户表征初始化要么与行为无关、要么被模态噪声污染"以及"KNN 物品图含低相似度假边、缺失受众共现关系"两大痛点，MLLMRec 用 MLLM 将物品图像转成语义描述并与文本融合，再构造用户行为描述列表让 MLLM 推理出纯净偏好画像作为用户初始化；同时设计阈值控制去噪与拓扑感知增强两种即插即用策略精修物品-物品图。在 Baby/Sports/Clothing 三数据集全库排序下取得多数指标 SOTA。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>现有多模态推荐在用户侧初始化上要么行为无关（随机嵌入）、要么被模态噪声污染，且 KNN 物品图存在低相似度假阳性边与共现缺失假阴性边。MLLMRec 用 MLLM 将物品图像转成语义描述、再对用户历史行为列表推理出"净化后的偏好画像"作为多模态流初始化，同时以阈值去噪 + Jaccard 共现增强精修物品图，双流经用户-物品图与物品图卷积后由 InfoNCE 对齐。在 Baby/Sports/Clothing 三数据集 8:1:1 划分、全库排序下，12 项指标中 11 项最优，Baby R@20 达 0.1105（较最强基线 DOGE 提升约 0.8%）。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 多模态推荐 (MMRS) 经历了 VBPR 式简单特征融合 → MMGCN/GRCN 图卷积高阶传播 → LATTICE/FREEDOM 挖掘物品-物品语义图 → 近期 LLM/MLLM 增强（LLMRec 生成辅助属性、DOGE 用 MLLM 统一模态粒度）的演进脉络。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>用户表征初始化不准确</strong>：随机初始化与行为无关，加剧冷启动；聚合历史物品模态特征则被预训练编码器噪声污染（图 1(a) 中棕色标记的噪声），且无法捕捉决策过程中的潜在交互意图。</li>
-<li><strong>物品-物品图结构噪声</strong>：KNN 固定邻居数迫使弱相似物品相连，Baby 数据集约 12% 的边相似度低于 0.5（图 1(b)）；且 KNN 只看模态相似度，忽略受众共现关系，导致语义远但行为相关的物品（如篮球与护膝）断连（图 1(c)），形成假阴性边。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 两类结构噪声会破坏后续图卷积，导致物品表征语义漂移；而简单增加网络深度或常规对比学习无法同时解决"用户侧语义初始化"与"物品侧图拓扑修正"这两个正交问题。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者观察到 MLLM 具备跨模态理解与认知推理能力，可把图像"翻译"为任务导向的语义描述以统一模态粒度，并进一步把用户历史行为序列组织成自然语言描述列表，让 MLLM 直接推理出过滤噪声后的偏好画像——即把 MLLM 从"特征翻译器/数据增强器"升级为"偏好推理器"。</li>
+<li><strong>主流范式</strong>: MMGCN/LATTICE/FREEDOM 走"模态特征 + 用户-物品图卷积 + KNN 物品图"路线；DOGE/NEGGEN 等近期工作把 MLLM 当作特征翻译器或负样本生成器。</li>
+<li><strong>前人局限一（用户侧）</strong>: 用户表征初始化要么随机（行为无关，加剧冷启动），要么直接聚合历史物品的预训练模态特征（不加筛选地引入无关视觉噪声，如图 1(a) 的"棕色帽子"案例），且都无法刻画决策背后的潜在交互意图。</li>
+<li><strong>前人局限二（物品侧）</strong>: 固定度 KNN 强制低相似物品连边——Baby 数据集约 12% 的边相似度低于 0.5（图 1(b)）；同时纯特征相似度忽略"受众共现"，语义远但行为相关的物品（篮球 vs 护膝）被断开（图 1(c)），形成假阴性边。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: MLLM 的世界知识与跨模态理解能力，可以把"图像→语义描述→行为列表→偏好画像"串成一条推理链，从而在初始化阶段就完成去噪与意图蒸馏；而物品图的两类结构噪声可分别用"相似度阈值"与"用户集合 Jaccard 系数"对症修复。</li>
+<li><strong>本文切入点</strong>: 把 MLLM 从"特征提取器"升级为"偏好推理器"，并配套两个即插即用的图精修算子。</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2508.15304v3/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户集 <span class="arithmatex">\(\mathcal{U}=\{u\}\)</span>、物品集 <span class="arithmatex">\(\mathcal{I}=\{i\}\)</span>，隐式反馈矩阵 <span class="arithmatex">\(\mathbf{R}=[r_{u,i}]\in\{0,1\}^{|\mathcal{U}|\times|\mathcal{I}|}\)</span>。</li>
-<li>每个物品 <span class="arithmatex">\(i\)</span> 关联多模态属性 <span class="arithmatex">\(\mathcal{M}=\{v,t\}\)</span>，<span class="arithmatex">\(v\)</span> 为视觉域、<span class="arithmatex">\(t\)</span> 为文本域；物品图像集合 <span class="arithmatex">\(\mathcal{D}_v=\{i_v\}\)</span>，文本描述集合 <span class="arithmatex">\(\mathcal{D}_t=\{i_t\}\)</span>。</li>
-<li>目标：学习预测函数 <span class="arithmatex">\(\mathcal{F}:(\mathbf{R},\mathcal{D}_v,\mathcal{D}_t)\to\hat{y}_{ui}\)</span>，<span class="arithmatex">\(\hat{y}_{ui}\in[0,1]\)</span> 为用户 <span class="arithmatex">\(u\)</span> 对物品 <span class="arithmatex">\(i\)</span> 的偏好分，按降序生成 Top-<span class="arithmatex">\(K\)</span> 列表。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：物品图像经 MLLM 生成语义描述 <span class="arithmatex">\(i_s\)</span> → 与文本 <span class="arithmatex">\(i_t\)</span> 拼接成多模态描述 <span class="arithmatex">\(i_m\)</span> → 按用户历史聚合为行为描述列表 <span class="arithmatex">\(List_u\)</span> → MLLM 推理出用户偏好画像 <span class="arithmatex">\(u_p\)</span> → 偏好画像/物品多模态描述与 ID 嵌入双流并行，在用户-物品图上传播 → 同时物品-物品图经阈值去噪与拓扑增强精修后做图卷积 → 双流表征拼接，InfoNCE 对齐 + BPR 优化。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>模型分三阶段闭环：<strong>推理阶段</strong>先用 MLLM（Qwen2.5-VL-7B）把每张物品图转成任务导向的语义描述 <span class="arithmatex">\(i_s\)</span>，与原始文本<span class="arithmatex">\(i_t\)</span>拼接为多模态描述<span class="arithmatex">\(i_m=i_t\oplus i_s\)</span>；再按时间顺序把用户交互过的<span class="arithmatex">\(i_m\)</span>拼成行为描述列表<span class="arithmatex">\(List_u\)</span>，喂给 MLLM 推理出偏好画像<span class="arithmatex">\(u_p\)</span>。<strong>表征学习阶段</strong>：画像与物品描述经 Sentence-Transformer 编码 + 两层 MLP 投影，得到多模态流初值；ID 流用 Xavier 随机初始化；两流各自在用户-物品二部图上做 LightGCN 式传播。<strong>图精修阶段</strong>：对物品侧构建"阈值去噪语义图 + Jaccard 共现图"的融合图，再做物品图卷积；最后拼接双流并以 InfoNCE 对齐、BPR 主损失优化。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 物品图像 + 文本元数据 + 用户-物品交互"] --&gt; B["MLLM 语义描述生成 (Prompt1)"]
-    B --&gt; C["多模态描述融合 i_m = i_t ⊕ i_s"]
+    A["物品图像 + 文本元数据"] --&gt; B["MLLM 语义描述生成 i_s"]
+    B --&gt; C["多模态描述 i_m = i_t ⊕ i_s"]
     C --&gt; D["用户行为描述列表 List_u"]
-    D --&gt; E["MLLM 用户偏好画像推理 (Prompt2)"]
-    C --&gt; F["物品多模态表征流"]
-    E --&gt; G["用户多模态表征流"]
-    A --&gt; H["ID 嵌入流"]
-    C --&gt; I["物品-物品图构建"]
-    I --&gt; J["阈值控制去噪 + 拓扑感知增强"]
-    J --&gt; K["物品-物品图卷积"]
-    F --&gt; L["用户-物品图卷积"]
-    G --&gt; L
-    H --&gt; L
-    K --&gt; L
-    L --&gt; M["双流拼接 + InfoNCE 对齐 + BPR 打分"]</code></pre>
+    D --&gt; E["MLLM 偏好画像推理 u_p"]
+    E --&gt; F["多模态流初值 (Encoder+MLP)"]
+    G["ID 嵌入 (Xavier)"] --&gt; H["用户-物品图卷积 (双流)"]
+    F --&gt; H
+    H --&gt; I["物品图精修: 阈值去噪 + Jaccard 共现增强"]
+    I --&gt; J["物品图卷积 + 双流拼接 + InfoNCE/BPR"]
+    J --&gt; K["Top-K 排序推荐"]</code></pre>
 <figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2508.15304v3/figure_2.png" /><figcaption>图 2</figcaption>
+  <img alt="图2：MLLMRec的整体框架。首先，MLLM将图像转换为语义描述，并与文本融合以生成多模态描述。接着，MLLMRec为用户构建行为描述列表，将其输入MLLM以推理用户偏好画像。然后，推理得到的画像与多模态描述连同ID嵌入在用户-物品交互图上传播，以吸收协同信号。同时，MLLMRec通过两种设计策略对物品-物品图进行细化，这些策略被应用" src="../../../../../assets/papers/2508.15304v3/figure_2.png" /><figcaption>图2：MLLMRec的整体框架。首先，MLLM将图像转换为语义描述，并与文本融合以生成多模态描述。接着，MLLMRec为用户构建行为描述列表，将其输入MLLM以推理用户偏好画像。然后，推理得到的画像与多模态描述连同ID嵌入在用户-物品交互图上传播，以吸收协同信号。同时，MLLMRec通过两种设计策略对物品-物品图进行细化，这些策略被应用</figcaption>
 </figure>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>模块一：语义描述生成与多模态融合。</strong> 用 MLLM 将图像转为任务导向的语义描述：
-$<span class="arithmatex">\(i_s = \text{MLLM}(\text{Prompt1}, i_v), \quad i_s\in\mathcal{D}_s\)</span>$
-Prompt1 要求聚焦颜色、材质、风格、功能等影响购买决策的关键属性，不超过 100 词。随后与原始文本拼接：
-$<span class="arithmatex">\(i_m = i_t \oplus i_s\)</span>$
-物理直觉：传统 VGG16/ResNet 视觉编码器捕捉的是通用特征，与推荐语境可能无关；生成式描述把视觉信息投影到语言空间，统一了模态粒度，缓解"文本主导、视觉高噪低语义"的模态不平衡瓶颈。</p>
-<p><strong>模块二：用户偏好画像推理。</strong> 按时间顺序聚合用户历史物品的多模态描述：
-$<span class="arithmatex">\(List_u = [i_m],\quad r_{u,i}=1\)</span>$
-再嵌入 Prompt2 让 MLLM 推理：
-$<span class="arithmatex">\(u_p = \text{MLLM}(\text{Prompt2}, List_u),\quad u_p\in\mathcal{D}_p\)</span>$
-由于 <span class="arithmatex">\(List_u\)</span> 源自交互矩阵 <span class="arithmatex">\(\mathbf{R}\)</span>，<span class="arithmatex">\(\mathcal{D}_p\)</span> 天然携带交互背后的潜在动机，为后续协同信号注入提供高保真语义基础。</p>
-<p><strong>模块三：双流协同表征学习与图精修。</strong> 设计 ID 协同流与 MLLM 多模态流双流并行，在用户-物品图上传播获取高阶表征；物品侧则对物品-物品图施加两种即插即用精修：(a) <strong>阈值控制去噪</strong>——剪除相似度低于阈值的伪边；(b) <strong>拓扑感知增强</strong>——恢复潜在受众共现连边。精修后的图同时作用于多模态与 ID 物品表征的图卷积。最终双流拼接，并用 InfoNCE 对比损失对齐两个视图。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 总损失由 BPR 排序损失与 InfoNCE 跨视图对齐损失构成（原文以 InfoNCE + BPR 联合优化，具体权重与温度系数 <span class="arithmatex">\(\tau\)</span> 的取值原文正文摘录未完整给出，需以代码/附录为准）。</li>
-<li><strong>训练负采样策略</strong>: 采用 BPR 框架下的负采样（每正例配负例），InfoNCE 部分为跨视图对比；具体采样分布（Uniform / In-batch）原文摘录未明确报告。</li>
-<li><strong>时间与空间复杂度</strong>: MLLM 语义描述与用户画像推理属<strong>离线预处理</strong>（一次性生成，可缓存）；在线训练为双流图卷积 + 物品图卷积，推理阶段为标准内积打分，支持 ANN 检索。原文未报告具体单 epoch 耗时、推理延迟 (ms/request) 与峰值显存。</li>
-</ul>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li><strong>MLLM 偏好画像推理（用户侧去噪初始化）</strong>：痛点是用预训练视觉编码器（VGG16/ResNet）抽的特征与推荐任务无关、且聚合时不分好坏。本文用任务导向 Prompt1 让 MLLM 只抽取"影响购买决策的属性"（颜色、材质、风格、功能），把视觉信号投影到语言空间以消除模态粒度失衡；再用 Prompt2 对行为列表做归纳推理，输出 ≤100 词的偏好画像。关键不在公式而在<strong>信息通路</strong>：<span class="arithmatex">\(u_p=\mathrm{MLLM}(\text{Prompt2}, List_u)\)</span>，其中<span class="arithmatex">\(List_u=[i_m],\ r_{u,i}=1\)</span>。由于<span class="arithmatex">\(List_u\)</span> 源自交互矩阵，画像天然携带行为感知与意图蒸馏双重信息，等价于在初始化阶段做了一次"语义级负采样/去噪"。</li>
+<li><strong>阈值控制去噪（Threshold-Controlled Denoising）</strong>：KNN 的固定度约束是假阳性边根源。本文在 top-<span class="arithmatex">\(K_s\)</span>基础上叠加相似度下界<span class="arithmatex">\(\alpha\)</span>：<span class="arithmatex">\(\tilde{s}_{a,b}=\mathbb{I}[s_{a,b}\in \text{top-}K_s(s_{a,:})\ \wedge\ s_{a,b}\geq\alpha]\)</span>，其中<span class="arithmatex">\(s_{a,b}\)</span> 为多模态特征余弦相似度。物理直觉：允许"邻居不足"的物品拥有更少边，而非被迫连到低相似节点，从源头切断语义漂移的传播路径。</li>
+<li><strong>拓扑感知增强（Topology-Aware Enhancement）</strong>：补假阴性边。用交互列向量的 Jaccard 系数度量受众共现 <span class="arithmatex">\(c_{a,b}=|r_{:,a}\cap r_{:,b}|/|r_{:,a}\cup r_{:,b}|\)</span>，取 top-<span class="arithmatex">\(K_c\)</span>保留为加权边<span class="arithmatex">\(\tilde{c}_{a,b}\)</span>，最终融合图<span class="arithmatex">\(S^*=\tilde{S}+\tilde{C}\)</span>。直觉：语义图管"看起来像"，共现图管"被同一批人买"，二者互补覆盖物品关系的两个正交维度。</li>
+<li><strong>训练目标、负采样与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{BPR}+\lambda_{cl}\mathcal{L}_{cl}\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{cl}\)</span>为用户/物品两侧 InfoNCE 之和，对齐 ID 流与多模态流（温度<span class="arithmatex">\(\tau=0.2\)</span>）；BPR 采用<strong>均匀随机负采样</strong>（每正样本 1 负）。MLLM 推理为离线一次性预处理，在线仅需图卷积与内积，推理开销与 FREEDOM 同级；但离线阶段需对全部物品与用户各跑一次 7B 模型，是主要成本。</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 采用 Amazon 三个子集 Baby、Sports、Clothing（原文表 1 给出统计量，具体数值需以原文表格为准）：</li>
+<li><strong>数据集与预处理</strong>: Amazon 三数据集，均做 <code>5-core</code> 过滤：</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2508.15304v3/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Baby</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: left;">图像 + 文本标题/描述</td>
-</tr>
-<tr>
-<td style="text-align: left;">Sports</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: left;">图像 + 文本标题/描述</td>
-</tr>
-<tr>
-<td style="text-align: left;">Clothing</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: left;">图像 + 文本标题/描述</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>注：摘录正文未包含表 1 的具体数值，上述统计量严格以原文表 1 为准，未做任何臆测填充。</p>
-</blockquote>
-<ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文摘录未明确说明划分策略（MMRS 领域惯例多为按比例划分或留一法），需以原文实验章节为准；此处不做推断。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 原文摘录未明确标注 Full-Ranking 或 Sampled Ranking，需以原文实验章节为准。</li>
-<li><strong>评价指标与显著性检验</strong>: 主实验报告 Recall@20 (R@20) 与 NDCG@20 (N@20)（见表 3、表 4）；是否进行配对显著性检验原文摘录未报告。</li>
-</ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
-<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>原文表 3 报告了各基线（含 VBPR、MMGCN、GRCN、LATTICE、FREEDOM、MGCN、GUME、MMSSL、MENTOR、DOGE 等）与 MLLMRec 在 Baby/Sports/Clothing 上的整体性能，最优与次优分别加粗与下划线标注。摘要结论为"在多数指标上达到 SOTA"。</p>
-<figure class="paper-figure">
-  <img alt="表 3" src="../../../../../assets/papers/2508.15304v3/table_3.png" /><figcaption>表 3</figcaption>
-</figure>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">传统/协同过滤基线</th>
-<th style="text-align: center;">序列/图/多模态最强基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Interactions</th>
+<th style="text-align: center;">密度</th>
+<th style="text-align: left;">场景说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">Baby</td>
-<td style="text-align: left;">R@20 / N@20</td>
-<td style="text-align: center;">原文表 3</td>
-<td style="text-align: center;">原文表 3</td>
-<td style="text-align: center;"><strong>原文表 3</strong></td>
-<td style="text-align: center;">原文表 3</td>
+<td style="text-align: center;">19,445</td>
+<td style="text-align: center;">7,050</td>
+<td style="text-align: center;">160,792</td>
+<td style="text-align: center;">0.117%</td>
+<td style="text-align: left;">母婴，图像+文本</td>
 </tr>
 <tr>
 <td style="text-align: left;">Sports</td>
-<td style="text-align: left;">R@20 / N@20</td>
-<td style="text-align: center;">原文表 3</td>
-<td style="text-align: center;">原文表 3</td>
-<td style="text-align: center;"><strong>原文表 3</strong></td>
-<td style="text-align: center;">原文表 3</td>
+<td style="text-align: center;">35,598</td>
+<td style="text-align: center;">18,357</td>
+<td style="text-align: center;">296,337</td>
+<td style="text-align: center;">0.045%</td>
+<td style="text-align: left;">运动户外</td>
 </tr>
 <tr>
 <td style="text-align: left;">Clothing</td>
-<td style="text-align: left;">R@20 / N@20</td>
-<td style="text-align: center;">原文表 3</td>
-<td style="text-align: center;">原文表 3</td>
-<td style="text-align: center;"><strong>原文表 3</strong></td>
-<td style="text-align: center;">原文表 3</td>
+<td style="text-align: center;">39,387</td>
+<td style="text-align: center;">23,033</td>
+<td style="text-align: center;">278,677</td>
+<td style="text-align: center;">0.031%</td>
+<td style="text-align: left;">服饰鞋饰</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>注：摘录正文未包含表 3 的具体数值，严格以原文表格为准，未做任何数值填充。</p>
-</blockquote>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文表 4 报告了 MLLMRec 及其变体在三个数据集上 R@20 与 N@20 的表现，用于验证各模块（MLLM 语义描述、用户偏好画像推理、阈值控制去噪、拓扑感知增强）的有效性。</p>
-<figure class="paper-figure">
-  <img alt="表 4" src="../../../../../assets/papers/2508.15304v3/table_4.png" /><figcaption>表 4</figcaption>
-</figure>
+<ul>
+<li><strong>数据划分与防穿越</strong>: <strong>比例划分 8:1:1</strong>（随机切分训练/验证/测试），非时间戳切分，存在轻度未来信息泄漏风险。</li>
+<li><strong>排名评测协议</strong>: 报告 R@10/20 与 N@10/20；原文未显式声明候选集规模，按该系列惯例为<strong>全库排序（Full-Ranking）</strong>，测试正样本对全部未交互物品打分。</li>
+<li><strong>对比基线与超参</strong>: 三类基线共 13 个——CF 类（BPR、LightGCN）、通用多模态类（VBPR、LATTICE、SLMRec、FREEDOM、LGMRec、GUME、ModalSync、COHESION）、MLLM 类（LLM-CF、DOGE、NEGGEN）。嵌入维度 <span class="arithmatex">\(d=512\)</span>，隐层 2048，<span class="arithmatex">\(K_s=10\)</span>，<span class="arithmatex">\(L_{ui}=2\)</span>、<span class="arithmatex">\(L_{ii}=1\)</span>，<span class="arithmatex">\(\alpha\)</span>网格搜 {0.5,0.6,0.7,0.8}（三数据集均取 0.7），<span class="arithmatex">\(K_c\in\{5,10,15,20\}\)</span>，<span class="arithmatex">\(\beta,\lambda_{cl}\in\{10^{-4},\dots,0.1\}\)</span>，batch 2048，lr<span class="arithmatex">\(10^{-4}\)</span>，Adam，早停 20 epoch。</li>
+</ul>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">变体</th>
-<th style="text-align: center;">Baby R@20/N@20</th>
-<th style="text-align: center;">Sports R@20/N@20</th>
-<th style="text-align: center;">Clothing R@20/N@20</th>
+<th style="text-align: left;">模型</th>
+<th style="text-align: center;">Baby R@20</th>
+<th style="text-align: center;">Baby N@20</th>
+<th style="text-align: center;">Sports R@20</th>
+<th style="text-align: center;">Sports N@20</th>
+<th style="text-align: center;">Clothing R@20</th>
+<th style="text-align: center;">Clothing N@20</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">完整 MLLMRec</td>
-<td style="text-align: center;">原文表 4</td>
-<td style="text-align: center;">原文表 4</td>
-<td style="text-align: center;">原文表 4</td>
+<td style="text-align: left;">BPR (UAI'09)</td>
+<td style="text-align: center;">0.0575</td>
+<td style="text-align: center;">0.0249</td>
+<td style="text-align: center;">0.0653</td>
+<td style="text-align: center;">0.0298</td>
+<td style="text-align: center;">0.0279</td>
+<td style="text-align: center;">0.0126</td>
 </tr>
 <tr>
-<td style="text-align: left;">去某模块变体</td>
-<td style="text-align: center;">原文表 4</td>
-<td style="text-align: center;">原文表 4</td>
-<td style="text-align: center;">原文表 4</td>
+<td style="text-align: left;">LightGCN (SIGIR'20)</td>
+<td style="text-align: center;">0.0754</td>
+<td style="text-align: center;">0.0328</td>
+<td style="text-align: center;">0.0864</td>
+<td style="text-align: center;">0.0387</td>
+<td style="text-align: center;">0.0526</td>
+<td style="text-align: center;">0.0236</td>
+</tr>
+<tr>
+<td style="text-align: left;">LATTICE (MM'21)</td>
+<td style="text-align: center;">0.0850</td>
+<td style="text-align: center;">0.0370</td>
+<td style="text-align: center;">0.0953</td>
+<td style="text-align: center;">0.0421</td>
+<td style="text-align: center;">0.0733</td>
+<td style="text-align: center;">0.0330</td>
+</tr>
+<tr>
+<td style="text-align: left;">FREEDOM (MM'23)</td>
+<td style="text-align: center;">0.0992</td>
+<td style="text-align: center;">0.0424</td>
+<td style="text-align: center;">0.1089</td>
+<td style="text-align: center;">0.0481</td>
+<td style="text-align: center;">0.0941</td>
+<td style="text-align: center;">0.0420</td>
+</tr>
+<tr>
+<td style="text-align: left;">GUME (CIKM'24)</td>
+<td style="text-align: center;">0.1042</td>
+<td style="text-align: center;">0.0460</td>
+<td style="text-align: center;">0.1165</td>
+<td style="text-align: center;">0.0527</td>
+<td style="text-align: center;">0.1024</td>
+<td style="text-align: center;">0.0466</td>
+</tr>
+<tr>
+<td style="text-align: left;">ModalSync (WWW'25)</td>
+<td style="text-align: center;">0.1045</td>
+<td style="text-align: center;">0.0462</td>
+<td style="text-align: center;">0.1189</td>
+<td style="text-align: center;">0.0551</td>
+<td style="text-align: center;">0.1058</td>
+<td style="text-align: center;">0.0488</td>
+</tr>
+<tr>
+<td style="text-align: left;">DOGE (AAAI'25)</td>
+<td style="text-align: center;">0.1096</td>
+<td style="text-align: center;">0.0482</td>
+<td style="text-align: center;">0.1185</td>
+<td style="text-align: center;">0.0536</td>
+<td style="text-align: center;">0.1036</td>
+<td style="text-align: center;">0.0468</td>
+</tr>
+<tr>
+<td style="text-align: left;">NEGGEN (MM'25)</td>
+<td style="text-align: center;">0.1065</td>
+<td style="text-align: center;">0.0438</td>
+<td style="text-align: center;">0.1114</td>
+<td style="text-align: center;">0.0506</td>
+<td style="text-align: center;">0.0961</td>
+<td style="text-align: center;">0.0441</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MLLMRec</strong></td>
+<td style="text-align: center;"><strong>0.1105</strong></td>
+<td style="text-align: center;"><strong>0.0491</strong></td>
+<td style="text-align: center;"><strong>0.1223</strong></td>
+<td style="text-align: center;"><strong>0.0575</strong></td>
+<td style="text-align: center;"><strong>0.1075</strong></td>
+<td style="text-align: center;"><strong>0.0493</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Improv. vs 最强基线</td>
+<td style="text-align: center;">+0.8%</td>
+<td style="text-align: center;">+1.9%</td>
+<td style="text-align: center;">+2.9%</td>
+<td style="text-align: center;">+4.4%</td>
+<td style="text-align: center;">+1.6%</td>
+<td style="text-align: center;">+1.0%</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>注：摘录正文未包含表 4 的具体数值与变体命名，严格以原文表格为准。原文结论为消融验证了各模块有效性；是否严格控制参数量/图度数原文摘录未报告。</p>
-</blockquote>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">变体</th>
+<th style="text-align: center;">Baby R@20</th>
+<th style="text-align: center;">Baby N@20</th>
+<th style="text-align: center;">Sports R@20</th>
+<th style="text-align: center;">Sports N@20</th>
+<th style="text-align: center;">Clothing R@20</th>
+<th style="text-align: center;">Clothing N@20</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">MLLMRec 完整</td>
+<td style="text-align: center;"><strong>0.1105</strong></td>
+<td style="text-align: center;"><strong>0.0491</strong></td>
+<td style="text-align: center;"><strong>0.1223</strong></td>
+<td style="text-align: center;"><strong>0.0575</strong></td>
+<td style="text-align: center;"><strong>0.1075</strong></td>
+<td style="text-align: center;"><strong>0.0493</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o RS（去推理/多模态流）</td>
+<td style="text-align: center;">0.0990</td>
+<td style="text-align: center;">0.0438</td>
+<td style="text-align: center;">0.1156</td>
+<td style="text-align: center;">0.0524</td>
+<td style="text-align: center;">0.1012</td>
+<td style="text-align: center;">0.0459</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o GD（去阈值去噪）</td>
+<td style="text-align: center;">0.1094</td>
+<td style="text-align: center;">0.0487</td>
+<td style="text-align: center;">0.1214</td>
+<td style="text-align: center;">0.0550</td>
+<td style="text-align: center;">0.1068</td>
+<td style="text-align: center;">0.0486</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o TE（去共现增强）</td>
+<td style="text-align: center;">0.1087</td>
+<td style="text-align: center;">0.0480</td>
+<td style="text-align: center;">0.1209</td>
+<td style="text-align: center;">0.0546</td>
+<td style="text-align: center;">0.1061</td>
+<td style="text-align: center;">0.0477</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o GCN II（去物品图卷积）</td>
+<td style="text-align: center;">0.1037</td>
+<td style="text-align: center;">0.0465</td>
+<td style="text-align: center;">0.1030</td>
+<td style="text-align: center;">0.0464</td>
+<td style="text-align: center;">0.0957</td>
+<td style="text-align: center;">0.0432</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o CL（去 InfoNCE）</td>
+<td style="text-align: center;">0.0998</td>
+<td style="text-align: center;">0.0442</td>
+<td style="text-align: center;">0.1174</td>
+<td style="text-align: center;">0.0531</td>
+<td style="text-align: center;">0.1023</td>
+<td style="text-align: center;">0.0464</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>推理策略与物品图卷积是双支柱，但主导数据集不同</strong>：Baby 上 w/o RS 的 R@20 跌幅最大（0.1105→0.0990，−10.4%），说明稀疏母婴场景最依赖画像推理补足行为信号；Sports/Clothing 上 w/o GCN II 跌幅最大（0.1223→0.1030，−15.8%；0.1075→0.0957，−11.0%），说明物品数多、共现结构丰富的类目更吃高阶物品关系。</li>
+<li><strong>图精修是"小而稳"的增益，且去噪略强于增强</strong>：w/o GD 与 w/o TE 的 R@20 跌幅仅 0.5%–1.1%，但三数据集一致为正；GD 跌幅普遍大于 TE，印证假阳性边（低相似度强制连边）比假阴性边危害更直接。</li>
+<li><strong>对比学习对齐贡献显著且稳定</strong>：w/o CL 在 Baby 上 R@20 掉 9.7%（0.1105→0.0998），与 w/o RS 量级相当，说明"ID 流 + 多模态流"若不对齐，两路信号会各自漂移，InfoNCE 是把推理画像真正注入协同空间的必要粘合剂。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>用户/物品交互频次分桶表现</strong>: 原文摘录未报告分桶实验。</li>
-<li><strong>关键超参数敏感度</strong>: 原文表 2 给出 MLLMRec 的最优超参数设置（含阈值等），但摘录正文未包含具体数值与敏感度曲线。</li>
-</ul>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2508.15304v3/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
-<ul>
-<li><strong>线上 A/B 测试结果</strong>: 原文仅包含离线实验，未报告线上 A/B 测试。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li>把 MLLM 从"特征翻译器"升级为"偏好推理器"，用行为描述列表直接生成用户画像作为初始化，思路可迁移到冷启动用户建模与跨域用户画像。</li>
-<li>阈值控制去噪 + 拓扑感知增强是<strong>即插即用</strong>的物品图精修算子，可移植到 LATTICE/FREEDOM 等任意依赖物品-物品图的 MMRS 框架。</li>
-<li>双流（ID + 多模态）InfoNCE 对齐范式与 MENTOR 等一致，工程上易复用。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议披露不足</strong>：摘录正文未明确数据划分（LOO / Ratio / 时间切分）与 Full-Ranking / Sampled Ranking 协议，审稿人难以判断是否存在未来信息泄露或采样偏差，需在正文补全。</li>
-<li><strong>MLLM 离线开销</strong>：为每个物品生成语义描述、为每个用户推理偏好画像，属 O(|I|+|U|) 次 MLLM 调用，离线成本与可扩展性（百万级物品）未量化；画像质量对 Prompt 设计高度敏感。</li>
-<li><strong>统计严谨性</strong>：未报告多随机种子方差与配对显著性检验，SOTA 结论的稳健性存疑。</li>
-<li><strong>超参与阈值敏感性</strong>：阈值控制去噪的阈值选择对图拓扑影响大，原文摘录未给出敏感度分析。</li>
-<li><strong>理论-实现落差</strong>：拓扑感知增强"恢复共现连边"的具体构造规则与计算复杂度在摘录中未展开，需结合代码核实。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 DOGE 的本质区别在于——DOGE 用 MLLM 做跨模态粒度对齐（仍是"翻译器"），本文用 MLLM 对<strong>用户行为序列</strong>做归纳推理，产出的是用户级语义先验而非物品级特征；与 FREEDOM 相比，本文不冻结物品图，而是显式区分并修复两类结构噪声；与 LATTICE 相比，多出的 Jaccard 共现图补上了纯特征相似度缺失的协同维度。</li>
+<li><strong>可迁移亮点</strong>: (1) "行为列表 → LLM 归纳画像 → 作为表征初始化"这一范式可低成本迁移到冷启动用户与跨域场景；(2) 阈值 + top-K 的双约束稀疏化，可直接替换任意 KNN 构图模块中的固定度策略。</li>
+<li><strong>审稿级局限批判</strong>: (1) <strong>离线成本与可扩展性</strong>：需对全量物品与全量用户各调用一次 7B MLLM，物品数上万时预处理开销与提示长度（行为列表随交互数线性增长）均未讨论，且画像质量对 Prompt 高度敏感、缺乏鲁棒性分析；(2) <strong>评估协议偏弱</strong>：随机 8:1:1 划分而非时间戳切分，存在未来交互泄漏；未报告显著性检验与方差，提升幅度（Baby R@20 仅 +0.8%）在无显著性支撑下说服力有限；此外 <span class="arithmatex">\(\alpha\)</span> 在三数据集均取 0.7 却未给出敏感性曲线，超参普适性存疑。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （把 MLLM 从特征翻译器推进到用户偏好推理器，配合两类对症图精修，思路清晰但各组件单独看均非首创）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （13 个基线覆盖三类范式、消融完整，但随机划分有泄漏风险、无显著性检验、提升幅度偏小）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （公式与符号定义干净、Prompt 模板完整披露、复杂度与超参表清晰；物品图融合 <span class="arithmatex">\(S^*=\tilde{S}+\tilde{C}\)</span> 的量纲差异未做归一化讨论）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （代码已开源、在线推理开销可控，但离线 7B 模型全量推理成本与 Prompt 敏感性是规模化落地的主要门槛）</li>
 </ul>
 
 

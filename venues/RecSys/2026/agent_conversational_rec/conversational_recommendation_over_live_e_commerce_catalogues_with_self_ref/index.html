@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4253,7 +4264,7 @@
 <li><strong>双哈希五类变更分类（核心增量）</strong>：痛点在于"稳定 ID 能定位条目，却无法回答自然语言查询；而全量哈希只能告诉你'变了'，不能告诉你'是否需要重嵌入'"。本文引入两级哈希：全量哈希覆盖 feed 全部字段以检测任意变动，语义哈希仅覆盖 <code>name / description / brand / category</code> 四个字段以判定是否触发重嵌入。由此得到互斥五类：</li>
 </ol>
 <div class="arithmatex">\[\text{cls}(i)=\begin{cases}\text{New} &amp; \text{id}_i \notin \mathcal{I}_{\text{idx}}\\ \text{SemChange} &amp; h^{\text{sem}}_i \neq h^{\text{sem}}_{\text{idx}(i)}\\ \text{MetaOnly} &amp; h^{\text{full}}_i \neq h^{\text{full}}_{\text{idx}(i)} \wedge h^{\text{sem}}_i = h^{\text{sem}}_{\text{idx}(i)}\\ \text{Deleted} &amp; \text{id}_i \in \mathcal{I}_{\text{idx}} \wedge \text{id}_i \notin \mathcal{I}_{\text{feed}}\\ \text{Unchanged} &amp; \text{otherwise}\end{cases}\]</div>
-<p>物理直觉：改价/补货只影响过滤与展示，不影响语义可检索性，保留旧向量即可；只有语义字段变化才使旧向量失效。这一分类把"嵌入调用次数"从 <span class="arithmatex">\(O(|\mathcal{C}|)\)</span> 降到 <span class="arithmatex">\(O(|\Delta_{\text{sem}}|)\)</span>。</p>
+<p>物理直觉：改价/补货只影响过滤与展示，不影响语义可检索性，保留旧向量即可；只有语义字段变化才使旧向量失效。这一分类把"嵌入调用次数"从 <span class="arithmatex">\(O(|\mathcal{C}|)\)</span>降到<span class="arithmatex">\(O(|\Delta_{\text{sem}}|)\)</span>。</p>
 <ol>
 <li>
 <p><strong>编排器即控制器（Orchestrator-as-Controller）</strong>：痛点在于让 LLM 端到端生成推荐既贵又不可控。本文把 LLM 的职责压缩到两处——8 类意图分类与偏好追问（Elicitor 在偏好模糊时提 1–3 个澄清问题），检索、重排、多样性全部是确定性函数。收益是成本可预测、行为可审计；代价是推荐质量上限受限于检索器与重排器而非 LLM 推理能力。</p>
@@ -4373,12 +4384,18 @@
 <li><strong>元数据变更与语义变更的成本差达 5 倍</strong>：改价/库存 0.072 s（2.5%）vs. 改描述/类目 0.357 s（12.3%），差值几乎全部来自富化与嵌入调用——这直接量化了"语义哈希"这一设计的价值：把高频的改价/补货挡在嵌入之外。</li>
 <li><strong>删除比新增更便宜</strong>：删除 0.062 s（2.1%）远低于新增 0.321 s（11.0%），因为删除无需富化与嵌入，仅需索引移除，验证了写入顺序设计（先 upsert 后删除）不会引入额外开销。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与检索增强型 CRS（如 LLM-REDIAL、KBRD 类）相比，本文不改进对话理解或推荐相关性，而是解决它们共同回避的<strong>索引新鲜度</strong>问题；与 agentic CRS（工具调用式编排）相比，本文刻意<strong>收窄</strong> LLM 权限，只保留意图分类与追问，换取成本可控与行为可审计；与"适配刷新索引的 LLM 推荐器"这类模型侧工作互补——后者改模型，本文改数据管道。</li>
 <li><strong>可迁移亮点</strong>: ① <strong>语义哈希 vs. 全量哈希的两级差分</strong>可直接迁移到任何"向量索引 + 高频元数据变动"的场景（短视频库、本地生活 POI 库、招聘岗位库），把嵌入成本与语义变更量而非库规模挂钩；② <strong>拒绝空/不完整快照</strong>这一防御性设计，是所有做增量删除同步的系统都应照抄的工程细节。</li>
 <li><strong>审稿级局限批判</strong>: ① <strong>评估严重不足</strong>——仅 500 条记录、单一商家、无排序指标、无用户研究、无与全量重建之外的任何基线对比，且作者自承"不主张千万级规模"，因此"增量同步更快"这一结论的普适性未被验证（哈希比对在百万级目录下的开销、向量库 upsert 的批量效率均未测）；② <strong>非事务性写入是生产隐患</strong>，作者虽列出截断检测与回滚需求但未实现，且五类分类在 feed 出现 ID 复用或语义哈希碰撞时的行为未讨论；③ 作为 3 页 Demo 论文，方法新颖度有限（差分同步是经典工程模式），贡献主要在系统集成与真实渠道落地。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

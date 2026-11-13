@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,7 +4220,7 @@
 <li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>深度推荐器是黑盒且难以系统性增强，跨域冷启动下更因域特异混杂（曝光/流行度）而性能骤降。本文提出 PRL：把最终评分拆为 <span class="arithmatex">\(R=\hat{R}+\tilde{R}\)</span>，固定基座 <span class="arithmatex">\(\hat{R}\)</span>，用层次贝叶斯模型对残差 <span class="arithmatex">\(\tilde{R}\)</span> 做概率用户聚类 + 域级混杂 <span class="arithmatex">\(s_m\)</span> 建模，推理时以 do-calculus 对 <span class="arithmatex">\(s_m\)</span> 边缘化得到去偏残差。即插即用于 CDL/DLRM/NCF/PerK/LightGCN，在 XMRec 冷启动划分上 Recall@20 最高从 0.1098 提升至 0.2750（+150%），CDL 基座上更从 0.0143 升至 0.1091（约 7.6 倍）。</p>
+<p>深度推荐器是黑盒且难以系统性增强，跨域冷启动下更因域特异混杂（曝光/流行度）而性能骤降。本文提出 PRL：把最终评分拆为 <span class="arithmatex">\(R=\hat{R}+\tilde{R}\)</span>，固定基座<span class="arithmatex">\(\hat{R}\)</span>，用层次贝叶斯模型对残差<span class="arithmatex">\(\tilde{R}\)</span>做概率用户聚类 + 域级混杂<span class="arithmatex">\(s_m\)</span>建模，推理时以 do-calculus 对<span class="arithmatex">\(s_m\)</span> 边缘化得到去偏残差。即插即用于 CDL/DLRM/NCF/PerK/LightGCN，在 XMRec 冷启动划分上 Recall@20 最高从 0.1098 提升至 0.2750（+150%），CDL 基座上更从 0.0143 升至 0.1091（约 7.6 倍）。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 跨域推荐多依赖源域与目标域<strong>共享用户或物品</strong>做知识迁移（如 PerK 的个性化 top-K 迁移），或以域内内容特征（CDL）缓解冷启动。</li>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>训练阶段：给定任意基座推荐器，先算其预测 <span class="arithmatex">\(\hat{R}_{ij}\)</span> 与残差 <span class="arithmatex">\(\tilde{R}_{ij}=R_{ij}-\hat{R}_{ij}\)</span>；随后联合优化一个层次贝叶斯生成模型——域级混杂 <span class="arithmatex">\(s_m\)</span> 同时影响用户隐向量 <span class="arithmatex">\(u_i\)</span>、物品隐向量 <span class="arithmatex">\(v_j\)</span> 与残差；用户按 <span class="arithmatex">\(u_i\)</span> 的概率后验被划入 <span class="arithmatex">\(K\)</span> 个高斯簇，每簇共享一套 <span class="arithmatex">\((\mu_k,\Sigma_k)\)</span> 与残差子模型。推理阶段：对新用户-物品对，先由式 24 推断簇 <span class="arithmatex">\(\pi_i\)</span>，再用该簇子模型对 <span class="arithmatex">\(s_m\)</span> 做 do-calculus 边缘化得到去偏残差，最后 <span class="arithmatex">\(R=\hat{R}+\tilde{R}\)</span> 输出。全流程用 ELBO 的 E-Step/M-Step 交替求解，基座参数全程冻结。</p>
+<p>训练阶段：给定任意基座推荐器，先算其预测 <span class="arithmatex">\(\hat{R}_{ij}\)</span>与残差<span class="arithmatex">\(\tilde{R}_{ij}=R_{ij}-\hat{R}_{ij}\)</span>；随后联合优化一个层次贝叶斯生成模型——域级混杂<span class="arithmatex">\(s_m\)</span>同时影响用户隐向量<span class="arithmatex">\(u_i\)</span>、物品隐向量<span class="arithmatex">\(v_j\)</span>与残差；用户按<span class="arithmatex">\(u_i\)</span>的概率后验被划入<span class="arithmatex">\(K\)</span>个高斯簇，每簇共享一套<span class="arithmatex">\((\mu_k,\Sigma_k)\)</span>与残差子模型。推理阶段：对新用户-物品对，先由式 24 推断簇<span class="arithmatex">\(\pi_i\)</span>，再用该簇子模型对<span class="arithmatex">\(s_m\)</span>做 do-calculus 边缘化得到去偏残差，最后<span class="arithmatex">\(R=\hat{R}+\tilde{R}\)</span> 输出。全流程用 ELBO 的 E-Step/M-Step 交替求解，基座参数全程冻结。</p>
 <pre class="mermaid"><code>flowchart TD
     A["基座推荐器输出 R_hat + 原始特征 x_v"] --&gt; B["残差 R_tilde = R - R_hat"]
     B --&gt; C["层次贝叶斯：概率用户聚类 K 簇 + 域混杂 s_m"]
@@ -4231,15 +4242,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>概率用户聚类（Product-of-Gaussians 物品先验 + GMM 式用户先验）</strong>：痛点是用单一全局残差模型无法适配异质用户群。物品先验融合内容估计与域条件估计：<span class="arithmatex">\(p(v_j|x_j^v,s_m)=\mathrm{PoG}(f_v(x_j^v),W_v s_m,\Lambda_v^{-1}I,\lambda_v^{-1}I)\)</span>，其闭式为 <span class="arithmatex">\(\mu_{pog}=\frac{\Lambda_v f_v(x_j^v)+\lambda_v W_v s_m}{\Lambda_v+\lambda_v}\)</span>；用户先验 <span class="arithmatex">\(u_i\sim\mathcal{N}(\mu_{\pi_i}+W_u s_m,\Sigma_{\pi_i})\)</span>，簇后验按 GMM 责任度计算 <span class="arithmatex">\(q(\pi_i=k)\propto\mathcal{N}(u_i;\mu_k+W_u s_{m_i},\Sigma_k)\)</span>。直觉：内容信号与域信号按精度加权融合，簇均值让同簇用户互相正则，天然形成可解释分群。</p>
+<p><strong>概率用户聚类（Product-of-Gaussians 物品先验 + GMM 式用户先验）</strong>：痛点是用单一全局残差模型无法适配异质用户群。物品先验融合内容估计与域条件估计：<span class="arithmatex">\(p(v_j|x_j^v,s_m)=\mathrm{PoG}(f_v(x_j^v),W_v s_m,\Lambda_v^{-1}I,\lambda_v^{-1}I)\)</span>，其闭式为<span class="arithmatex">\(\mu_{pog}=\frac{\Lambda_v f_v(x_j^v)+\lambda_v W_v s_m}{\Lambda_v+\lambda_v}\)</span>；用户先验<span class="arithmatex">\(u_i\sim\mathcal{N}(\mu_{\pi_i}+W_u s_m,\Sigma_{\pi_i})\)</span>，簇后验按 GMM 责任度计算<span class="arithmatex">\(q(\pi_i=k)\propto\mathcal{N}(u_i;\mu_k+W_u s_{m_i},\Sigma_k)\)</span>。直觉：内容信号与域信号按精度加权融合，簇均值让同簇用户互相正则，天然形成可解释分群。</p>
 </li>
 <li>
-<p><strong>do-calculus 混杂去偏</strong>：痛点是直接条件于 <span class="arithmatex">\(s_m\)</span> 会过拟合域捷径。PRL 对 <span class="arithmatex">\((u_i,v_j)\)</span> 做干预，切断 <span class="arithmatex">\(s\to(u,v)\)</span> 的边，按簇子模型对域做贝叶斯模型平均：
+<p><strong>do-calculus 混杂去偏</strong>：痛点是直接条件于 <span class="arithmatex">\(s_m\)</span>会过拟合域捷径。PRL 对<span class="arithmatex">\((u_i,v_j)\)</span>做干预，切断<span class="arithmatex">\(s\to(u,v)\)</span> 的边，按簇子模型对域做贝叶斯模型平均：
 $<span class="arithmatex">\(p^{(k)}(\tilde{R}_{ij}\mid do(u_i),do(v_j))=\sum_{m=1}^{M}p^{(k)}(\tilde{R}_{ij}\mid u_i,v_j,s_m)\,p(s_m)\)</span>$
 直觉：边缘化等价于"抹掉域身份、只保留跨域稳定的用户-物品交互信号"，从而把曝光/流行度偏差从残差中剥离。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：总目标为 ELBO，分解为四项——用户 KL（拉向簇心）、残差似然 <span class="arithmatex">\(-\frac{\lambda_{\tilde R}}{2}(\tilde{R}_{ij}-u_i^\top v_j-w_R^\top s_m)^2\)</span>、物品 KL（拉向 PoG 先验）、簇 KL。<span class="arithmatex">\(\mu_k,\Sigma_k\)</span> 有闭式更新（式 20–21），<span class="arithmatex">\(W_u,W_v,w_R\)</span> 亦有闭式解（式 25–27），仅 <span class="arithmatex">\(f_v(\cdot)\)</span> 用梯度上升。<strong>无负采样</strong>（评分回归范式）；推理时式 22 只用到该用户已评分物品，开销随交互数而非全库规模增长，适合在线服务。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：总目标为 ELBO，分解为四项——用户 KL（拉向簇心）、残差似然 <span class="arithmatex">\(-\frac{\lambda_{\tilde R}}{2}(\tilde{R}_{ij}-u_i^\top v_j-w_R^\top s_m)^2\)</span>、物品 KL（拉向 PoG 先验）、簇 KL。<span class="arithmatex">\(\mu_k,\Sigma_k\)</span>有闭式更新（式 20–21），<span class="arithmatex">\(W_u,W_v,w_R\)</span>亦有闭式解（式 25–27），仅<span class="arithmatex">\(f_v(\cdot)\)</span> 用梯度上升。<strong>无负采样</strong>（评分回归范式）；推理时式 22 只用到该用户已评分物品，开销随交互数而非全库规模增长，适合在线服务。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4435,12 +4446,18 @@ $<span class="arithmatex">\(p^{(k)}(\tilde{R}_{ij}\mid do(u_i),do(v_j))=\sum_{m=
 <li><strong>混杂信号强度决定收益上限</strong>：XMRec 上 PRL 普遍带来 1.5–7.6 倍 Recall 提升，而 MovieLens 上 DLRM/PerK 几乎零增益——因为"上映年份"作为混杂远弱于"国家市场"，印证了方法收益与域混杂强度正相关。</li>
 <li><strong>去偏可量化</strong>：案例研究中，CDL 基座对"Camera &amp; Photo"品类的国家间推荐偏置比为 1.75×（印度 6.46% vs 意大利 3.70%），PRL 后降至 1.14×（3.59% vs 3.14%），<strong>国家特异偏置下降 38.5%</strong>；t-SNE 显示五种基座下用户隐向量均清晰分为 3 簇，且簇 1 对 4–5 个特定物品呈显著偏好。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 PerK 等依赖共享用户/物品的跨域迁移，PRL 不要求实体重叠，且把基座当黑盒；相较 PDA/DICE 等 SCM 去偏方法，PRL 首次在因果图内引入<strong>用户簇隐变量</strong>，实现簇级定向校正；相较 CDL 类内容冷启动方法，PRL 是叠加式增强而非替换。</li>
 <li><strong>可迁移亮点</strong>: ① "冻结基座 + 学残差"的即插即用范式可直接用于线上已有精排模型的低成本迭代；② 用域索引嵌入 <span class="arithmatex">\(s_m\)</span> 做 VDI 近似混杂，工程上易实现且相似域会自发聚拢。</li>
-<li><strong>审稿级局限批判</strong>: ① 评测协议未明确 Full-Ranking 还是采样排序，且指标绝对值极低（NDCG@20 多在 0.01 量级），结论稳健性存疑；② 簇数 <span class="arithmatex">\(K=3\)</span> 为固定超参，缺少 <span class="arithmatex">\(K\)</span> 敏感性分析；③ 每簇一套子模型 + 逐域边缘化，域数 <span class="arithmatex">\(M\)</span> 增大时推理成本线性上升，论文未给出在线延迟实测。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 评测协议未明确 Full-Ranking 还是采样排序，且指标绝对值极低（NDCG@20 多在 0.01 量级），结论稳健性存疑；② 簇数 <span class="arithmatex">\(K=3\)</span>为固定超参，缺少<span class="arithmatex">\(K\)</span>敏感性分析；③ 每簇一套子模型 + 逐域边缘化，域数<span class="arithmatex">\(M\)</span> 增大时推理成本线性上升，论文未给出在线延迟实测。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

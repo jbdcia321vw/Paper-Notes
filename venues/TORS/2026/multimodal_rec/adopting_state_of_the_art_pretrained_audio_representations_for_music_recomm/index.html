@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4437,12 +4448,18 @@
 <li><strong>推荐器复杂度与场景强耦合</strong>：热启动按 KNN(0.037)→Shallow→Bimodal→Hybrid/BERT4Rec 单调递增，BERT4Rec 最优；冷启动排序完全反转，Bimodal-Content 在 10 个 PAR 中 9 个取得最佳，因其对比目标把内容投影拉入协同邻域，天然适配无协同信号的新物品。</li>
 <li><strong>混合方案未超越强协同基线</strong>：即便最优组合 MusiCNN+BERT4Rec（0.4722）仍低于 ELSA（0.5580），且 Bimodal 的协同投影（0.4145）也低于原始 ELSA——提示"加模态≠涨点"，热启动下内容信息的边际价值有限，其真正价值在于统一热/冷场景与可解释性。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 [89]（频谱 CNN 端到端预测协同嵌入）与 [59]（用 3 个预训练编码器仅作负采样稳定性佐证），本文首次把 9 个 SOTA PAR 放在统一协议下做"表征 × 推荐器 × 场景"的三维控制实验；相比 Beeformer [91]（文本内容 + ELSA 投影），本文把内容模态替换为音频 PAR 并给出冷启动增益证据。</li>
 <li><strong>可迁移亮点</strong>: ①<strong>打乱初始化对照</strong>是评估"预训练表征是否真被利用"的廉价且通用的归因工具，可迁移到任何冻结嵌入初始化实验；②ADCL 删去同模态排斥项的简化，对多模态对齐类推荐（图文电商、短视频）值得一试。</li>
 <li><strong>审稿级局限批判</strong>: ①仅单一数据集（Music4All，摇滚/流行主导），且 MuQ/MuQ-MuLan 训练集含 Music4All，存在表征侧的数据重叠优势，泛化性存疑；②冷启动仅 589 个自然新物品且候选集极小，指标不可与热启动比较，也未与专门冷启动方法对比；③BERT4Rec 序列截断 300、部分配置 CI 极宽（如 Music2Vec+Hybrid ±0.2874），统计结论稳健性有限。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

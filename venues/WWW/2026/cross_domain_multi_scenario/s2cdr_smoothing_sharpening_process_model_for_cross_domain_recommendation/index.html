@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为拼接源/目标域的统一交互矩阵 <span class="arithmatex">\(\tilde{\boldsymbol{R}}_{st}\)</span>（重叠用户桥接两域，冷启动用户对应块全零待推断）。<strong>平滑过程</strong>以热方程 + 理想低通滤波器构成的平滑函数 <span class="arithmatex">\(b_{\text{smooth}}\)</span> 为 ODE 导数，将原始交互信号连续腐蚀为去噪后的平滑偏好信号 <span class="arithmatex">\(\boldsymbol{B}_{T_b}\)</span>；<strong>锐化过程</strong>以 <span class="arithmatex">\(h_{\text{sharpen}}=-\boldsymbol{H}_t\tilde{\boldsymbol{P}}\)</span> 为导数，从 <span class="arithmatex">\(\boldsymbol{B}_{T_b}\)</span> 出发反向迭代放大节点间差异，输出锐化矩阵 <span class="arithmatex">\(\hat{\boldsymbol{R}}_{st}\)</span>，其中冷启动用户块即为预测交互。全过程无神经网络、无 embedding、无反向传播，ODE 求解即推理。</p>
+<p>输入为拼接源/目标域的统一交互矩阵 <span class="arithmatex">\(\tilde{\boldsymbol{R}}_{st}\)</span>（重叠用户桥接两域，冷启动用户对应块全零待推断）。<strong>平滑过程</strong>以热方程 + 理想低通滤波器构成的平滑函数<span class="arithmatex">\(b_{\text{smooth}}\)</span>为 ODE 导数，将原始交互信号连续腐蚀为去噪后的平滑偏好信号<span class="arithmatex">\(\boldsymbol{B}_{T_b}\)</span>；<strong>锐化过程</strong>以<span class="arithmatex">\(h_{\text{sharpen}}=-\boldsymbol{H}_t\tilde{\boldsymbol{P}}\)</span>为导数，从<span class="arithmatex">\(\boldsymbol{B}_{T_b}\)</span>出发反向迭代放大节点间差异，输出锐化矩阵<span class="arithmatex">\(\hat{\boldsymbol{R}}_{st}\)</span>，其中冷启动用户块即为预测交互。全过程无神经网络、无 embedding、无反向传播，ODE 求解即推理。</p>
 <pre class="mermaid"><code>flowchart TD
     A["统一交互矩阵 R_st（源+目标域）"] --&gt; B["平滑过程: ODE 积分 b_smooth = α·b_heat + β·b_ideal"]
     B --&gt; C["平滑偏好信号 B_Tb（低频内在偏好）"]
@@ -4231,22 +4242,22 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>热方程平滑算子 <span class="arithmatex">\(b_{\text{heat}}\)</span>（捕获跨域 item 相关性）</strong>：痛点在于 DMCDR 无 item-item 桥接。本文在跨域 item-item 相似图 <span class="arithmatex">\(\tilde{\boldsymbol{P}}=\tilde{\boldsymbol{R}}_{st}^\top\tilde{\boldsymbol{R}}_{st}\)</span> 上引入热方程（牛顿冷却定律的图版本）：
+<p><strong>热方程平滑算子 <span class="arithmatex">\(b_{\text{heat}}\)</span>（捕获跨域 item 相关性）</strong>：痛点在于 DMCDR 无 item-item 桥接。本文在跨域 item-item 相似图<span class="arithmatex">\(\tilde{\boldsymbol{P}}=\tilde{\boldsymbol{R}}_{st}^\top\tilde{\boldsymbol{R}}_{st}\)</span> 上引入热方程（牛顿冷却定律的图版本）：
 $<span class="arithmatex">\(b_{\text{heat}}(\boldsymbol{B}_t)=k\,\boldsymbol{B}_t(\tilde{\boldsymbol{P}}-\boldsymbol{I})\)</span>$
 其直觉是：<span class="arithmatex">\(\tilde{\boldsymbol{P}}\)</span> 由<strong>两域拼接矩阵</strong>导出，故天然编码源域与目标域 item 的跨域相似性，热扩散使偏好沿该图传播，实现「源域看过冒险书 → 目标域冒险电影得分升高」的迁移。</p>
 </li>
 <li>
 <p><strong>理想低通滤波算子 <span class="arithmatex">\(b_{\text{ideal}}\)</span>（滤除高频噪声）</strong>：热方程只抓低阶信息，且交互矩阵含大量高频噪声。本文借 GSP 的理想低通滤波器强化表达：
 $<span class="arithmatex">\(b_{\text{ideal}}(\boldsymbol{B}_t)=\boldsymbol{B}_t\!\left(\boldsymbol{D}_I^{-1/2}\bar{\boldsymbol{U}}\bar{\boldsymbol{U}}^\top\boldsymbol{D}_I^{1/2}-\boldsymbol{I}\right)\)</span>$
-其中 <span class="arithmatex">\(\bar{\boldsymbol{U}}\)</span> 为 <span class="arithmatex">\(\boldsymbol{R}_{st}\)</span> 的 top-<span class="arithmatex">\(K\)</span> 奇异向量。该算子将信号投影到主奇异子空间，等价于保留低频、截断高频，从而剥离「幻想/浪漫」类噪声偏好、保留「冒险」类内在偏好。二者加权合成 <span class="arithmatex">\(b_{\text{smooth}}=k\boldsymbol{B}_t(\alpha\tilde{\boldsymbol{P}}+\beta\boldsymbol{D}_I^{-1/2}\bar{\boldsymbol{U}}\bar{\boldsymbol{U}}^\top\boldsymbol{D}_I^{1/2}-\boldsymbol{I})\)</span>。</p>
+其中 <span class="arithmatex">\(\bar{\boldsymbol{U}}\)</span>为<span class="arithmatex">\(\boldsymbol{R}_{st}\)</span>的 top-<span class="arithmatex">\(K\)</span>奇异向量。该算子将信号投影到主奇异子空间，等价于保留低频、截断高频，从而剥离「幻想/浪漫」类噪声偏好、保留「冒险」类内在偏好。二者加权合成<span class="arithmatex">\(b_{\text{smooth}}=k\boldsymbol{B}_t(\alpha\tilde{\boldsymbol{P}}+\beta\boldsymbol{D}_I^{-1/2}\bar{\boldsymbol{U}}\bar{\boldsymbol{U}}^\top\boldsymbol{D}_I^{1/2}-\boldsymbol{I})\)</span>。</p>
 </li>
 <li>
-<p><strong>锐化算子与免训练求解</strong>：平滑会过度抹平节点差异（这正是纯 CF 类方法 PGSP/GF-CF 的上限所在）。锐化过程取 <span class="arithmatex">\(h_{\text{sharpen}}(\boldsymbol{H}_t)=-\boldsymbol{H}_t\tilde{\boldsymbol{P}}\)</span>，负号使信号沿图<strong>反向扩散</strong>，重新拉开邻居间差距以恢复个性化。两阶段均为 <span class="arithmatex">\(\boldsymbol{X}_T=\boldsymbol{X}_0+\int_0^T f(\boldsymbol{X}_t)dt\)</span> 的 Riemann 积分，用 Euler / RK4 / DOPRI 等 ODE 求解器离散积分即可，<strong>无损失函数、无负采样、无参数</strong>；推理开销仅为矩阵-矩阵乘法与 <span class="arithmatex">\(T/s\)</span> 步积分。</p>
+<p><strong>锐化算子与免训练求解</strong>：平滑会过度抹平节点差异（这正是纯 CF 类方法 PGSP/GF-CF 的上限所在）。锐化过程取 <span class="arithmatex">\(h_{\text{sharpen}}(\boldsymbol{H}_t)=-\boldsymbol{H}_t\tilde{\boldsymbol{P}}\)</span>，负号使信号沿图<strong>反向扩散</strong>，重新拉开邻居间差距以恢复个性化。两阶段均为<span class="arithmatex">\(\boldsymbol{X}_T=\boldsymbol{X}_0+\int_0^T f(\boldsymbol{X}_t)dt\)</span>的 Riemann 积分，用 Euler / RK4 / DOPRI 等 ODE 求解器离散积分即可，<strong>无损失函数、无负采样、无参数</strong>；推理开销仅为矩阵-矩阵乘法与<span class="arithmatex">\(T/s\)</span> 步积分。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集与预处理</strong>: Douban（Movie、Book）与 Amazon（Movie&amp;TV、CDs&amp;Vinyl、Books）构造三个 CDR 场景；评分 <span class="arithmatex">\(\ge 4\)</span> 二值化为 1，过滤交互数 <span class="arithmatex">\(&lt;5\)</span> 的用户（<code>5-core</code>）。</li>
+<li><strong>数据集与预处理</strong>: Douban（Movie、Book）与 Amazon（Movie&amp;TV、CDs&amp;Vinyl、Books）构造三个 CDR 场景；评分 <span class="arithmatex">\(\ge 4\)</span>二值化为 1，过滤交互数<span class="arithmatex">\(&lt;5\)</span> 的用户（<code>5-core</code>）。</li>
 </ul>
 <table>
 <thead>
@@ -4281,7 +4292,7 @@ $<span class="arithmatex">\(b_{\text{ideal}}(\boldsymbol{B}_t)=\boldsymbol{B}_t\
 <ul>
 <li><strong>数据划分与防穿越</strong>: 随机抽取约 20% 重叠用户作为冷启动用户（如 10% 从 Movie 侧、10% 从 Book 侧），其余重叠用户用于桥接两域；冷启动用户在被预测域中的交互块置零，属<strong>冷启动划分</strong>。</li>
 <li><strong>排名评测协议</strong>: <code>Sampled Ranking</code>——<code>Leave-One-Out</code>，每用户 1 正例 + 999 随机负例，报告 HR@10 与 NDCG@10。</li>
-<li><strong>对比基线与超参</strong>: 14 个基线覆盖单域（NeuMF）、映射式（EMCDR/DCDCSR/SSCDR/TMCDR/LACDR/DOML/UDMCF）、元学习式（PTUPCDR）、解耦式（CDRIB）、GSP-CF（GF-CF/PGSP）、扩散式（DMCDR）。<span class="arithmatex">\(\alpha,\beta\in\{0.1,\dots,1.0\}\)</span>，<span class="arithmatex">\(T_b,T_h\in[1,3]\)</span>，步数 <span class="arithmatex">\(\in\{1,\dots,5\}\)</span>，<span class="arithmatex">\(k=1\)</span>。</li>
+<li><strong>对比基线与超参</strong>: 14 个基线覆盖单域（NeuMF）、映射式（EMCDR/DCDCSR/SSCDR/TMCDR/LACDR/DOML/UDMCF）、元学习式（PTUPCDR）、解耦式（CDRIB）、GSP-CF（GF-CF/PGSP）、扩散式（DMCDR）。<span class="arithmatex">\(\alpha,\beta\in\{0.1,\dots,1.0\}\)</span>，<span class="arithmatex">\(T_b,T_h\in[1,3]\)</span>，步数<span class="arithmatex">\(\in\{1,\dots,5\}\)</span>，<span class="arithmatex">\(k=1\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4434,15 +4445,21 @@ $<span class="arithmatex">\(b_{\text{ideal}}(\boldsymbol{B}_t)=\boldsymbol{B}_t\
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>平滑是命脉、锐化是增益</strong>：移除整个平滑函数 <span class="arithmatex">\(b_{\text{smooth}}\)</span> 使 Book→Movie HR 从 0.5430 暴跌至 0.1935（−64%），而移除锐化仅降至 0.4892；说明 GSP 平滑承担了跨域迁移的主体，锐化则是在平滑基础上「找回」被抹平的个性化差异（+5.4~11% 相对增益）。</li>
-<li><strong>跨域 item 图优于单域 item 图</strong>：用单域 <span class="arithmatex">\(\tilde{\boldsymbol{P}}_{\text{source}}\)</span> 或 <span class="arithmatex">\(\tilde{\boldsymbol{P}}_{\text{target}}\)</span> 替换跨域 <span class="arithmatex">\(\tilde{\boldsymbol{P}}\)</span> 均显著掉点（如 Music→Movie HR 0.1645/0.3535 vs. 0.3703），且对目标域冷启动用户，源域 item 图往往比目标域 item 图更有效——直接验证了「跨域 item 相关性是偏好迁移桥梁」这一核心动机。</li>
-<li><strong>超参强度与数据稀疏度反向相关</strong>：交互稀疏的 Movie→Book 需较大 <span class="arithmatex">\(\alpha\)</span> 才能捕获有限的相关性，而交互丰富的 Movie→Music/Book→Music 只需较小 <span class="arithmatex">\(\alpha\)</span>；噪声滤波强度 <span class="arithmatex">\(\beta\)</span> 同理——稀疏场景噪声少、小 <span class="arithmatex">\(\beta\)</span> 即可，稠密场景噪声多、需大 <span class="arithmatex">\(\beta\)</span>。此外 S2CDR 参数量为 0（DMCDR 为 21.17M~72.30M），预处理与推理时间全面低于 DMCDR。</li>
+<li><strong>跨域 item 图优于单域 item 图</strong>：用单域 <span class="arithmatex">\(\tilde{\boldsymbol{P}}_{\text{source}}\)</span>或<span class="arithmatex">\(\tilde{\boldsymbol{P}}_{\text{target}}\)</span>替换跨域<span class="arithmatex">\(\tilde{\boldsymbol{P}}\)</span> 均显著掉点（如 Music→Movie HR 0.1645/0.3535 vs. 0.3703），且对目标域冷启动用户，源域 item 图往往比目标域 item 图更有效——直接验证了「跨域 item 相关性是偏好迁移桥梁」这一核心动机。</li>
+<li><strong>超参强度与数据稀疏度反向相关</strong>：交互稀疏的 Movie→Book 需较大 <span class="arithmatex">\(\alpha\)</span>才能捕获有限的相关性，而交互丰富的 Movie→Music/Book→Music 只需较小<span class="arithmatex">\(\alpha\)</span>；噪声滤波强度<span class="arithmatex">\(\beta\)</span>同理——稀疏场景噪声少、小<span class="arithmatex">\(\beta\)</span>即可，稠密场景噪声多、需大<span class="arithmatex">\(\beta\)</span>。此外 S2CDR 参数量为 0（DMCDR 为 21.17M~72.30M），预处理与推理时间全面低于 DMCDR。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 DMCDR，本文用<strong>无噪声图滤波</strong>替代高斯加噪、用<strong>跨域 item-item 图</strong>补上被忽略的迁移桥梁，且免去 70M 级参数训练；相比 PGSP/GF-CF 等纯 GSP-CF，本文多出「锐化」这一反向扩散步骤，把平滑后的过平滑信号重新拉开，故在 Book→Movie 上 HR 从 0.4301 跃至 0.5430；相比 EMCDR/PTUPCDR 等映射式方法，本文不做表征映射而是直接操作交互矩阵，规避了映射函数在冷启动用户上的泛化误差。</li>
 <li><strong>可迁移亮点</strong>: ①「平滑→锐化」的 ODE 双阶段结构可迁移到任何需要「先去噪再恢复个性化」的召回场景（如序列去噪、图推荐过平滑缓解）；② 用 top-<span class="arithmatex">\(K\)</span> 奇异向量构造理想低通滤波器的做法计算廉价，可作为 GCN 类模型的即插即用去噪前置模块。</li>
-<li><strong>审稿级局限批判</strong>: ① 评估采用 1:999 采样排序而非 Full-Ranking，且仅报告 HR/NDCG@10，未覆盖全库排序下的真实召回上限；② 方法本质是线性图滤波 + ODE 积分，对<strong>非线性高阶交互</strong>建模能力有限，且 <span class="arithmatex">\(\alpha,\beta,T_b,T_h\)</span>、步数与 <span class="arithmatex">\(K\)</span> 等超参需按场景网格搜索，跨场景自适应能力存疑；③ 仅在两个数据集三个场景验证，未涉及多域（&gt;2）或含辅助信息（文本/图像）的冷启动设定。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 评估采用 1:999 采样排序而非 Full-Ranking，且仅报告 HR/NDCG@10，未覆盖全库排序下的真实召回上限；② 方法本质是线性图滤波 + ODE 积分，对<strong>非线性高阶交互</strong>建模能力有限，且 <span class="arithmatex">\(\alpha,\beta,T_b,T_h\)</span>、步数与<span class="arithmatex">\(K\)</span> 等超参需按场景网格搜索，跨场景自适应能力存疑；③ 仅在两个数据集三个场景验证，未涉及多域（&gt;2）或含辅助信息（文本/图像）的冷启动设定。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

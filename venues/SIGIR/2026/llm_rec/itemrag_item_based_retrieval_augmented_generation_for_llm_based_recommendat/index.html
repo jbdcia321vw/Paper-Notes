@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>对每个"查询物品" <span class="arithmatex">\(i\)</span>（既包括目标用户历史中的物品，也包括每个候选物品），先取文本语义最相似的 top-<span class="arithmatex">\(K\)</span> 物品集合 <span class="arithmatex">\(\mathcal{T}(i)\)</span>，再构造检索池 <span class="arithmatex">\(\mathcal{P}(i)\)</span> = <span class="arithmatex">\(i\)</span> 自身的共购邻居 ∪ 相似物品的共购邻居；随后按共购频率加权概率从池中采样 <span class="arithmatex">\(N\)</span> 个物品，交给 LLM 生成一段"共购模式摘要"，拼接到物品 <span class="arithmatex">\(i\)</span> 的原始描述之后。最终推荐 prompt 由增强后的历史物品描述、增强后的候选物品描述与排序指令组成。由于摘要只依赖物品本身、与目标用户无关，可离线预计算并跨用户复用。</p>
+<p>对每个"查询物品" <span class="arithmatex">\(i\)</span>（既包括目标用户历史中的物品，也包括每个候选物品），先取文本语义最相似的 top-<span class="arithmatex">\(K\)</span>物品集合<span class="arithmatex">\(\mathcal{T}(i)\)</span>，再构造检索池<span class="arithmatex">\(\mathcal{P}(i)\)</span>=<span class="arithmatex">\(i\)</span>自身的共购邻居 ∪ 相似物品的共购邻居；随后按共购频率加权概率从池中采样<span class="arithmatex">\(N\)</span>个物品，交给 LLM 生成一段"共购模式摘要"，拼接到物品<span class="arithmatex">\(i\)</span> 的原始描述之后。最终推荐 prompt 由增强后的历史物品描述、增强后的候选物品描述与排序指令组成。由于摘要只依赖物品本身、与目标用户无关，可离线预计算并跨用户复用。</p>
 <pre class="mermaid"><code>flowchart TD
     A["查询物品 i（历史/候选）"] --&gt; B["语义 top-K 相似物品 T(i)"]
     A --&gt; C["共购邻居 N(i)"]
@@ -4241,7 +4252,7 @@ $<span class="arithmatex">\(\mathcal{P}(i)=\mathcal{N}(i)\cup\{j:\exists q\in\ma
 <li>
 <p><strong>共购频率加权采样（破解弱相关噪声 C2）</strong>：池中大量物品只是偶然共购，全量注入会稀释信号。本文定义采样权重为自身共购频率与"相似物品—该物品"平均共购频率的混合：
 $<span class="arithmatex">\(w_{ij}=c_{ij}+\frac{1}{|\mathcal{T}(i)|}\sum_{q\in\mathcal{T}(i)}c_{qj}\)</span>$
-并按 <span class="arithmatex">\(w_{ij}/\sum_{q\in\mathcal{P}(i)}w_{iq}\)</span> 采样 <span class="arithmatex">\(N\)</span> 个物品。高频共购意味着稳定偏好关联而非偶发搭配，加权采样相当于一个无需训练的软硬负样本过滤器。</p>
+并按 <span class="arithmatex">\(w_{ij}/\sum_{q\in\mathcal{P}(i)}w_{iq}\)</span>采样<span class="arithmatex">\(N\)</span> 个物品。高频共购意味着稳定偏好关联而非偶发搭配，加权采样相当于一个无需训练的软硬负样本过滤器。</p>
 </li>
 <li>
 <p><strong>训练目标、负采样与推理效率</strong>：本方法<strong>无参数训练</strong>，无损失函数与负采样，全部依赖冻结 LLM（GPT-4.1-mini）的 zero-shot 排序能力；超参为每物品 5 个语义近邻、最终采样 50 个物品。推理开销主要来自 prompt 变长（作者自承这是主要局限），但摘要可离线缓存、与用户解耦，边际成本可控。</p>
@@ -4523,12 +4534,18 @@ $<span class="arithmatex">\(w_{ij}=c_{ij}+\frac{1}{|\mathcal{T}(i)|}\sum_{q\in\m
 <li><strong>共购信号不可被语义替代</strong>：<code>w/o co-purch</code>（纯语义检索）在 Toys 上 H@1 仅 46.4，比完整模型低 3.1，且与 CoRAL 的 44.6 差距很小——印证了图 1 的动机观察，即语义相似 ≠ 推荐相关。</li>
 <li><strong>冷启动鲁棒性来自相似物品扩展</strong>：冷启动设定下 ItemRAG 平均仅比标准设定下降约 1%，而 <code>w/o sim-items</code> 在 Arts 上 H@1 掉到 56.0（−1.8），说明"借相似物品的共购邻居"是冷启动场景的关键补丁；同时频率加权采样（<code>w/o co-freq</code>）在各域稳定贡献 0.5–1.5 个点，验证了噪声过滤的必要性。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 CoRAL 等同为用户级检索，靠相似用户历史做长尾增强，粒度粗且与候选无关；与纯语义 item-RAG 相比，本文用共购频率把"语义相似"升级为"推荐相关"，并用加权采样抑制偶发共购噪声。本质区别在于<strong>检索的条件变量从 user 换成了 candidate item</strong>。</li>
 <li><strong>可迁移亮点</strong>: ① "语义近邻的共购邻居"这一池扩展技巧可直接迁移到任何图稀疏/冷启动物品的协同增强；② 物品级摘要与用户解耦、可离线缓存，是 LLM 推荐降本的标准工程范式。</li>
 <li><strong>审稿级局限批判</strong>: ① 无训练、纯 prompt 方案，性能强依赖 GPT-4.1-mini 的指令遵循能力，换小模型是否成立未知；② 评测仅 10 候选的采样排序，未报告全库 Full-Ranking，且冷启动设定是人为移除交互构造的，与真实上新分布存在偏差；③ 作者自承 prompt 变长带来 API 成本与延迟上升，缺少 token 开销的定量分析。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

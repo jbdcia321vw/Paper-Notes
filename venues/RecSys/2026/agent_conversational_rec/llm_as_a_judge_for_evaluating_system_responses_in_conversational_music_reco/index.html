@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/nlp4musa/llm-as-a-judge-for-crs">https://github.com/nlp4musa/llm-as-a-judge-for-crs</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>对话推荐系统（CRS）的响应生成质量缺乏可靠自动评估手段：排序指标无法衡量自然语言解释，参考式指标（BLEU/BERTScore）又假设存在唯一标准答案。本文构建首个 CRS 响应评估的用户研究，采样 20 个多轮音乐推荐会话、用 4 个不同规模指令微调 LLM 生成候选响应，收集 20 位领域专家共 <span class="arithmatex">\(n{=}400\)</span> 条双维度（个性化质量 / 解释质量）评分，以 10,000 次 Bootstrap 相关分析检验 LLM-as-a-Judge 与人类判断的对齐度。结果显示 LLM 评审达到中等正相关（最佳 <span class="arithmatex">\(r{=}0.55\)</span>），全面超越所有参考式基线（最高仅 <span class="arithmatex">\(r{=}0.19\)</span>），并给出"规模越大越好、对话历史对个性化最关键、领域示例对解释最关键"的部署指南。</p>
+<p>对话推荐系统（CRS）的响应生成质量缺乏可靠自动评估手段：排序指标无法衡量自然语言解释，参考式指标（BLEU/BERTScore）又假设存在唯一标准答案。本文构建首个 CRS 响应评估的用户研究，采样 20 个多轮音乐推荐会话、用 4 个不同规模指令微调 LLM 生成候选响应，收集 20 位领域专家共 <span class="arithmatex">\(n{=}400\)</span>条双维度（个性化质量 / 解释质量）评分，以 10,000 次 Bootstrap 相关分析检验 LLM-as-a-Judge 与人类判断的对齐度。结果显示 LLM 评审达到中等正相关（最佳<span class="arithmatex">\(r{=}0.55\)</span>），全面超越所有参考式基线（最高仅<span class="arithmatex">\(r{=}0.19\)</span>），并给出"规模越大越好、对话历史对个性化最关键、领域示例对解释最关键"的部署指南。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: CRS 同时追求推荐准确性与自然语言响应生成；前者有成熟排序指标，后者依赖参考式指标（BLEU/ROUGE/BERTScore/嵌入相似度）或昂贵的人工评估。</li>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>形式化定义：给定用户画像 <span class="arithmatex">\(p_u\)</span>、截至 <span class="arithmatex">\(t-1\)</span> 轮的历史 <span class="arithmatex">\(s_{t-1}=\{(q_i,m_i,r_i)\}_{i=1}^{t-1}\)</span>、当前查询 <span class="arithmatex">\(q_t\)</span> 与推荐物品 <span class="arithmatex">\(m_t\)</span>，响应生成器按 <span class="arithmatex">\(r_t=\mathrm{LLM}(p_u,s_{t-1},q_t,m_t)\)</span> 产出响应；judge 在 <span class="arithmatex">\((p_u,s_{t-1},m_t,r_t)\)</span>、prompt <span class="arithmatex">\(\mathcal{P}\)</span> 与示例 <span class="arithmatex">\(\mathcal{I}\)</span> 条件下输出预测分 <span class="arithmatex">\(\hat{y}\)</span>，人类标注者在<strong>完全相同的 rubric 与示例</strong>（经教程页呈现）下给出 <span class="arithmatex">\(y^*\)</span>，核心指标为 <span class="arithmatex">\(\mathrm{Corr}(\hat{y},y^*)\)</span>。数据取自 TalkPlayData-Challenge（基于 LFM-2B 的多模态 agentic 合成对话，经人工验证质量可比真实对话），剔除单轮会话后按轮深 2–8 平衡采样 20 个会话；4 个生成器（Llama-3.2-1B/3B、Gemma-4-E2B/E4B）各产 1 条响应，共 80 个 (session, response) 对。</p>
+<p>形式化定义：给定用户画像 <span class="arithmatex">\(p_u\)</span>、截至<span class="arithmatex">\(t-1\)</span>轮的历史<span class="arithmatex">\(s_{t-1}=\{(q_i,m_i,r_i)\}_{i=1}^{t-1}\)</span>、当前查询<span class="arithmatex">\(q_t\)</span>与推荐物品<span class="arithmatex">\(m_t\)</span>，响应生成器按<span class="arithmatex">\(r_t=\mathrm{LLM}(p_u,s_{t-1},q_t,m_t)\)</span>产出响应；judge 在<span class="arithmatex">\((p_u,s_{t-1},m_t,r_t)\)</span>、prompt<span class="arithmatex">\(\mathcal{P}\)</span>与示例<span class="arithmatex">\(\mathcal{I}\)</span>条件下输出预测分<span class="arithmatex">\(\hat{y}\)</span>，人类标注者在<strong>完全相同的 rubric 与示例</strong>（经教程页呈现）下给出<span class="arithmatex">\(y^*\)</span>，核心指标为<span class="arithmatex">\(\mathrm{Corr}(\hat{y},y^*)\)</span>。数据取自 TalkPlayData-Challenge（基于 LFM-2B 的多模态 agentic 合成对话，经人工验证质量可比真实对话），剔除单轮会话后按轮深 2–8 平衡采样 20 个会话；4 个生成器（Llama-3.2-1B/3B、Gemma-4-E2B/E4B）各产 1 条响应，共 80 个 (session, response) 对。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户画像 p_u + 对话历史 s_{t-1} + 查询 q_t + 推荐物品 m_t"] --&gt; B["4 个指令微调 LLM 生成候选响应 r_t"]
     B --&gt; C["LLM Judge：rubric + 对话历史 + 画像 + in-context 示例"]
@@ -4240,9 +4251,9 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>CRS 专用条件化 Judge 与双维 Rubric</strong>：痛点在于标准 judge 只看响应本身，无法判断"是否贴合该用户偏好"与"解释是否扎根于音乐属性"。本文让 judge 接收 <span class="arithmatex">\(p_u\)</span>、<span class="arithmatex">\([s_{t-1},m_t,q_t]\)</span> 与示例 <span class="arithmatex">\(\mathcal{I}\)</span>，并按两条 rubric 打分——Personalization Quality 衡量响应是否聚焦用户声明的偏好/收听历史/人口属性；Explanation Quality 衡量是否将推荐理由锚定在曲目音乐属性与用户请求的语义关联上。直觉：把"评估所需的最小充分信息集"显式喂给 judge，才能让打分从表层措辞转向内容适配性。</li>
+<li><strong>CRS 专用条件化 Judge 与双维 Rubric</strong>：痛点在于标准 judge 只看响应本身，无法判断"是否贴合该用户偏好"与"解释是否扎根于音乐属性"。本文让 judge 接收 <span class="arithmatex">\(p_u\)</span>、<span class="arithmatex">\([s_{t-1},m_t,q_t]\)</span>与示例<span class="arithmatex">\(\mathcal{I}\)</span>，并按两条 rubric 打分——Personalization Quality 衡量响应是否聚焦用户声明的偏好/收听历史/人口属性；Explanation Quality 衡量是否将推荐理由锚定在曲目音乐属性与用户请求的语义关联上。直觉：把"评估所需的最小充分信息集"显式喂给 judge，才能让打分从表层措辞转向内容适配性。</li>
 <li><strong>受控的 Judge 规模/家族对比设计</strong>：选取 Qwen3-LM4B、GPT-5.4-nano/GPT-5.4、Gemini-3.1-Flash-Lite/Gemini-3.1-Pro，每个闭源家族配"效率版+满血版"一对，Qwen3-LM4B 则与同家族同规模的 Qwen3-Embedding-4B 基线严格对齐参数规模，从而把"生成式显式推理 vs. 嵌入相似度"的差异从模型能力差异中剥离出来。</li>
-<li><strong>训练目标、负采样与推理效率</strong>：本文为评估方法学研究，无训练损失与负采样；推理开销即 judge 调用成本——轻量 judge（nano / Flash-Lite）以 <span class="arithmatex">\(r{=}0.40/0.43\)</span> 逼近满血版（<span class="arithmatex">\(0.51/0.55\)</span>），构成成本-精度折中的实用档位。</li>
+<li><strong>训练目标、负采样与推理效率</strong>：本文为评估方法学研究，无训练损失与负采样；推理开销即 judge 调用成本——轻量 judge（nano / Flash-Lite）以 <span class="arithmatex">\(r{=}0.40/0.43\)</span>逼近满血版（<span class="arithmatex">\(0.51/0.55\)</span>），构成成本-精度折中的实用档位。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4272,7 +4283,7 @@
 </table>
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 无训练/测试划分（纯评估研究）；采用<strong>会话级采样 + 轮深分层</strong>保证刺激材料覆盖 turn 2–8，避免单轮样本污染多轮评估结论。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 非排序任务，采用 <strong>Bootstrap 相关协议</strong>——10,000 次重采样估计 Pearson <span class="arithmatex">\(r\)</span> 与 Spearman <span class="arithmatex">\(\rho\)</span> 的均值及 95% CI，CI 跨零即判为不可靠；<span class="arithmatex">\(*\)</span> 表示 <span class="arithmatex">\(p&lt;0.05\)</span>。人工标注信度用 ordinal Krippendorff's <span class="arithmatex">\(\alpha\)</span>（Personalization 0.4478 / Explanation 0.4484，属开放式文本评估的典型区间 0.4–0.6）。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 非排序任务，采用 <strong>Bootstrap 相关协议</strong>——10,000 次重采样估计 Pearson <span class="arithmatex">\(r\)</span>与 Spearman<span class="arithmatex">\(\rho\)</span>的均值及 95% CI，CI 跨零即判为不可靠；<span class="arithmatex">\(*\)</span>表示<span class="arithmatex">\(p&lt;0.05\)</span>。人工标注信度用 ordinal Krippendorff's<span class="arithmatex">\(\alpha\)</span>（Personalization 0.4478 / Explanation 0.4484，属开放式文本评估的典型区间 0.4–0.6）。</li>
 <li><strong>对比基线与超参设置</strong>: 参考式基线 BLEU（1–4 平均）、ROUGE-L、BERTScore（RoBERTa-Large）、Qwen3-Embedding-4B（对合成参考算余弦）；无参考基线 Qwen3-Embedding-4B（编码完整评估上下文后与响应对比）；LLM judge 5 个。双维度相关性中等（Pearson <span class="arithmatex">\(r{=}0.587\)</span>），支持作为独立维度分别评估。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4281,10 +4292,10 @@
 <thead>
 <tr>
 <th style="text-align: left;">方法</th>
-<th style="text-align: center;">Personalization <span class="arithmatex">\(r\)</span> [95% CI]</th>
-<th style="text-align: center;">Personalization <span class="arithmatex">\(\rho\)</span></th>
-<th style="text-align: center;">Explanation <span class="arithmatex">\(r\)</span> [95% CI]</th>
-<th style="text-align: center;">Explanation <span class="arithmatex">\(\rho\)</span></th>
+<th style="text-align: center;">Personalization <span class="arithmatex">\(r\)</span>[95% CI]</th>
+<th style="text-align: center;">Personalization<span class="arithmatex">\(\rho\)</span></th>
+<th style="text-align: center;">Explanation<span class="arithmatex">\(r\)</span>[95% CI]</th>
+<th style="text-align: center;">Explanation<span class="arithmatex">\(\rho\)</span></th>
 </tr>
 </thead>
 <tbody>
@@ -4375,7 +4386,7 @@
 <th style="text-align: left;">累积条件</th>
 <th style="text-align: center;">Personalization <span class="arithmatex">\(r\)</span></th>
 <th style="text-align: center;"><span class="arithmatex">\(\Delta\)</span></th>
-<th style="text-align: center;">Explanation <span class="arithmatex">\(r\)</span></th>
+<th style="text-align: center;">Explanation<span class="arithmatex">\(r\)</span></th>
 <th style="text-align: center;"><span class="arithmatex">\(\Delta\)</span></th>
 </tr>
 </thead>
@@ -4412,16 +4423,22 @@
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>参考式指标在解释维度上彻底失效，而生成式显式推理是决定性因素</strong>：所有参考式指标在 Explanation 上 <span class="arithmatex">\(r \le 0.02\)</span> 且 CI 跨零；在 Qwen3-4B 同规模受控对比中，把参考替换为完整上下文仅把嵌入指标从 <span class="arithmatex">\(r{=}0.02\)</span> 拉到 <span class="arithmatex">\(0.30\)</span>，而显式 rubric 推理直接到 <span class="arithmatex">\(0.45\)</span>——说明"上下文可得性"与"生成式推理能力"是两个独立增益源，后者贡献更大。</li>
-<li><strong>对话历史是单点最大增益，且增益来源因维度而异</strong>：加入对话历史带来 Personalization <span class="arithmatex">\(+0.13\)</span> 的最大单步提升（响应本身无法体现"是否承接了用户前几轮的修正"）；而 Explanation 的主要杠杆是领域锚定的 in-context 示例（<span class="arithmatex">\(+0.08\)</span>），因为示例把抽象 rubric 落成了可模仿的具体判据；用户画像在历史已给定时几乎无增量（<span class="arithmatex">\(+0.02/+0.01\)</span>）。</li>
+<li><strong>参考式指标在解释维度上彻底失效，而生成式显式推理是决定性因素</strong>：所有参考式指标在 Explanation 上 <span class="arithmatex">\(r \le 0.02\)</span>且 CI 跨零；在 Qwen3-4B 同规模受控对比中，把参考替换为完整上下文仅把嵌入指标从<span class="arithmatex">\(r{=}0.02\)</span>拉到<span class="arithmatex">\(0.30\)</span>，而显式 rubric 推理直接到<span class="arithmatex">\(0.45\)</span>——说明"上下文可得性"与"生成式推理能力"是两个独立增益源，后者贡献更大。</li>
+<li><strong>对话历史是单点最大增益，且增益来源因维度而异</strong>：加入对话历史带来 Personalization <span class="arithmatex">\(+0.13\)</span>的最大单步提升（响应本身无法体现"是否承接了用户前几轮的修正"）；而 Explanation 的主要杠杆是领域锚定的 in-context 示例（<span class="arithmatex">\(+0.08\)</span>），因为示例把抽象 rubric 落成了可模仿的具体判据；用户画像在历史已给定时几乎无增量（<span class="arithmatex">\(+0.02/+0.01\)</span>）。</li>
 <li><strong>偏差是配置特异的而非普遍性的，且轻量 judge 存在风格脆弱性</strong>：Bias(Judge−Human) 多数 CI 跨零，唯 Qwen3-LM4B 双维度均显著正向过评（<span class="arithmatex">\(0.68/0.62\)</span>）、Gemini-3.1-Pro 在 Personalization 上小幅过评（<span class="arithmatex">\(0.29\)</span>）；案例研究中语义反转与 prompt 注入被所有 judge 稳健抵御（全部压到 1/1），但华丽改写（Fluent）会把 Flash-Lite 从 4/2 抬到 5/4、nano 从 3/3 抬到 5/3，而满血版保持稳定——提示跨生成器的分数差可能部分来自文风而非质量。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 BLEU/ROUGE/BERTScore 等参考式指标，本文方法不依赖唯一参考、且在同规模受控下把相关性提升 2–20 倍；相较 Qwen3-Embedding 无参考基线，本文证明"编码上下文 + 余弦相似度"仍显著弱于"rubric 引导的生成式打分"（<span class="arithmatex">\(0.30\)</span> vs <span class="arithmatex">\(0.45\)</span>）；相较通用 LLM-as-a-Judge 实践，本文首次把用户画像、多轮历史与领域示例纳入 CRS 评估条件并量化各条件的边际贡献。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 BLEU/ROUGE/BERTScore 等参考式指标，本文方法不依赖唯一参考、且在同规模受控下把相关性提升 2–20 倍；相较 Qwen3-Embedding 无参考基线，本文证明"编码上下文 + 余弦相似度"仍显著弱于"rubric 引导的生成式打分"（<span class="arithmatex">\(0.30\)</span>vs<span class="arithmatex">\(0.45\)</span>）；相较通用 LLM-as-a-Judge 实践，本文首次把用户画像、多轮历史与领域示例纳入 CRS 评估条件并量化各条件的边际贡献。</li>
 <li><strong>可迁移亮点</strong>: ① "对话历史 &gt; 用户画像 &gt; 示例"的边际增益排序可直接指导任何多轮生成式推荐的评估 prompt 设计，优先塞历史而非画像；② 用同家族同规模（Qwen3-LM-4B vs Qwen3-Embedding-4B）做受控对比，是剥离"模型能力"与"方法范式"混淆的干净实验设计，可复用到其他评估方法学研究。</li>
-<li><strong>审稿级局限批判</strong>: ① 人类参考本身有噪声（<span class="arithmatex">\(\alpha \approx 0.45\)</span>），为任何自动指标设定了相关性天花板，最佳 judge 的 <span class="arithmatex">\(r{=}0.55/0.51\)</span> 仍不足以支撑高风险场景全自动评估；② 仅 20 会话 / 80 响应 / 2 个维度，未覆盖事实准确性与对话自然度，且合成对话数据与真实用户分布存在域差距，结论外推需谨慎。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 人类参考本身有噪声（<span class="arithmatex">\(\alpha \approx 0.45\)</span>），为任何自动指标设定了相关性天花板，最佳 judge 的<span class="arithmatex">\(r{=}0.55/0.51\)</span> 仍不足以支撑高风险场景全自动评估；② 仅 20 会话 / 80 响应 / 2 个维度，未覆盖事实准确性与对话自然度，且合成对话数据与真实用户分布存在域差距，结论外推需谨慎。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

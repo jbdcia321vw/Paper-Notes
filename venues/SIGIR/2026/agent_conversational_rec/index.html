@@ -3991,16 +3991,16 @@
 
 
 <h1 id="_1">🗣️ 对话推荐与智能体仿真</h1>
-<p><strong>SIGIR 2026</strong> · <strong>7</strong> 篇论文解读</p>
+<p><strong>SIGIR 2026</strong> · <strong>8</strong> 篇论文解读</p>
 <blockquote>
 <p><strong>方向说明</strong>：多轮主动追问对话推荐 (CRS)、基于 LLM Agent 的用户行为模拟沙盒、可解释性推荐理由生成</p>
 </blockquote>
-<p>📌 <strong>同领域跨会议浏览：</strong> <a href="../../../CIKM/2026/agent_conversational_rec/">CIKM 2026 (4)</a> · <a href="../../../KDD/2026/agent_conversational_rec/">KDD 2026 (2)</a> · <a href="../../../RecSys/2026/agent_conversational_rec/">RecSys 2026 (6)</a> · <a href="../../../TORS/2026/agent_conversational_rec/">ACM TORS 2026 (1)</a> · <a href="../../../WWW/2026/agent_conversational_rec/">WWW (TheWebConf) 2026 (4)</a></p>
-<p>🔥 <strong>高频主题：</strong> 端到端生成式 ×2 · 重排 ×2</p>
+<p>📌 <strong>同领域跨会议浏览：</strong> <a href="../../../AAAI/2026/agent_conversational_rec/">AAAI (RecSys Track) 2026 (3)</a> · <a href="../../../CIKM/2026/agent_conversational_rec/">CIKM 2026 (5)</a> · <a href="../../../DASFAA/2026/agent_conversational_rec/">DASFAA 2026 (1)</a> · <a href="../../../ECIR/2026/agent_conversational_rec/">ECIR 2026 (3)</a> · <a href="../../../KDD/2026/agent_conversational_rec/">KDD 2026 (2)</a> · <a href="../../../RecSys/2026/agent_conversational_rec/">RecSys 2026 (9)</a> · <a href="../../../TORS/2026/agent_conversational_rec/">ACM TORS 2026 (1)</a> · <a href="../../../WWW/2026/agent_conversational_rec/">WWW (TheWebConf) 2026 (5)</a></p>
+<p>🔥 <strong>高频主题：</strong> 重排 ×4 · 端到端生成式 ×2</p>
 <dl>
 <dt><strong><a href="a_standardized_re_evaluation_of_conversational_recommender_systems_on_the_r/">A Standardized Re-evaluation of Conversational Recommender Systems on the ReDial Dataset</a></strong></dt>
 <dd>
-<p>在 ReDial 上标准化复现 7 个 CRS 方法，揭示 Recall@1 粒度鸿沟、约 50% 准确率来自重复捷径，且增益多源于 LLM 骨干而非架构创新。</p>
+<p>统一复现 7 个 CRS 模型，揭示 Recall@1 复现粒度鸿沟、约 50% 精度来自重复捷径、增益多源于 LLM 骨干而非架构创新。</p>
 </dd>
 <dt><strong><a href="bridging_passive_and_active_enhancing_conversation_starter_recommendation_v/">Bridging Passive and Active: Enhancing Conversation Starter Recommendation via Active Expression Modeling</a></strong></dt>
 <dd>
@@ -4014,13 +4014,17 @@
 <dd>
 <p>从行为轨迹挖掘决策策略作为共享对齐层，锚定 LLM 推理与 GBDT 拟合双过程分支，群体仿真误差降至 8.80%。</p>
 </dd>
+<dt><strong><a href="recquest_towards_estimating_user_domain_knowledge_in_conversational_recomme/">RecQuest: Towards Estimating User Domain Knowledge in Conversational Recommender Systems</a></strong></dt>
+<dd>
+<p>提出游戏化数据采集协议 RecQuest 与知识估计新任务，用客观问卷替代自评建立 ground truth，并给出 LLM 零/少样本与微调基线。</p>
+</dd>
 <dt><strong><a href="task_aware_automated_user_profile_generation_for_recommendation_simulation_/">Task-Aware Automated User Profile Generation for Recommendation Simulation Using Large Language Models</a></strong></dt>
 <dd>
 <p>提出免训练三阶段画像生成框架 APG4RecSim，用语义合并+反事实因果映射将交互历史转为任务对齐画像，在判别/排序/评分三任务上取得最佳综合表现。</p>
 </dd>
 <dt><strong><a href="trace_a_conversational_framework_for_sustainable_tourism_recommendation_wit/">TRACE: A Conversational Framework for Sustainable Tourism Recommendation with Agentic Counterfactual Explanations</a></strong></dt>
 <dd>
-<p>多智能体 LLM 对话推荐框架，用澄清提问+反事实解释对用户进行可持续旅游软性助推，24 人用户研究验证。</p>
+<p>多智能体 LLM 框架以澄清提问+反事实解释实现可持续旅游推荐的非强制绿色引导，24 人用户研究验证。</p>
 </dd>
 <dt><strong><a href="when_and_how_to_ask_dynamic_preference_elicitation_strategies_for_conversat/">When and How to Ask: Dynamic Preference Elicitation Strategies for Conversational Recommendation</a></strong></dt>
 <dd>

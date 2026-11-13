@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][跨域与多场景推荐] 用 LLM 生成可迁移跨域行为+噪声过滤+两阶段训练+域感知画像，缓解域不平衡与域迁移问题，三数据集全排序 Recall/NDCG 显著提升。">
+        <meta name="description" content="[SIGIR 2026][跨域与多场景推荐] 用可迁移物品增广+双阶段训练+域感知画像，缓解CDSR域不平衡与域迁移难题，全库排序下H@10最高提升26.96%">
       
       
       
@@ -23,7 +23,7 @@
     
     
 
-  <title>[Paper Note] LLM-EDT: Large Language Models Enhanced Cross-domain Sequential Recommendation with Dual-phase Training</title>
+  <title>[Paper Note] LLM-EDT: Large Language Model Enhanced Cross-domain Sequential Recommendation with Dual-phase Training</title>
 
     
       <link rel="stylesheet" href="../../../../../assets/stylesheets/main.57a0d79d.min.css">
@@ -108,20 +108,20 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 跨域与多场景推荐, 召回/序列建模, 跨域序列推荐, LLM 数据增强, 双阶段训练" />
+<meta name="keywords" content="SIGIR 2026, 跨域与多场景推荐, 召回, 跨域序列推荐, 双阶段训练, LLM数据增广" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
 
 <meta property="article:tag" content="跨域与多场景推荐" />
 
-<meta property="article:tag" content="召回/序列建模" />
+<meta property="article:tag" content="召回" />
 
 <meta property="article:tag" content="跨域序列推荐" />
 
-<meta property="article:tag" content="LLM 数据增强" />
-
 <meta property="article:tag" content="双阶段训练" />
+
+<meta property="article:tag" content="LLM数据增广" />
 
 
 
@@ -130,11 +130,11 @@
 <meta property="og:site_name" content="RecSys Paper Notes · 推荐系统论文精读库" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/cross_domain_multi_scenario/llm_edt_large_language_model_enhanced_cross_domain_sequential_recommendatio/" />
-<meta property="og:title" content="[Paper Note] LLM-EDT: Large Language Models Enhanced Cross-domain Sequential Recommendation with Dual-phase Training" />
-<meta property="og:description" content="[SIGIR 2026][跨域与多场景推荐] 用 LLM 生成可迁移跨域行为+噪声过滤+两阶段训练+域感知画像，缓解域不平衡与域迁移问题，三数据集全排序 Recall/NDCG 显著提升。" />
+<meta property="og:title" content="[Paper Note] LLM-EDT: Large Language Model Enhanced Cross-domain Sequential Recommendation with Dual-phase Training" />
+<meta property="og:description" content="[SIGIR 2026][跨域与多场景推荐] 用可迁移物品增广+双阶段训练+域感知画像，缓解CDSR域不平衡与域迁移难题，全库排序下H@10最高提升26.96%" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="[Paper Note] LLM-EDT: Large Language Models Enhanced Cross-domain Sequential Recommendation with Dual-phase Training" />
-<meta name="twitter:description" content="[SIGIR 2026][跨域与多场景推荐] 用 LLM 生成可迁移跨域行为+噪声过滤+两阶段训练+域感知画像，缓解域不平衡与域迁移问题，三数据集全排序 Recall/NDCG 显著提升。" />
+<meta name="twitter:title" content="[Paper Note] LLM-EDT: Large Language Model Enhanced Cross-domain Sequential Recommendation with Dual-phase Training" />
+<meta name="twitter:description" content="[SIGIR 2026][跨域与多场景推荐] 用可迁移物品增广+双阶段训练+域感知画像，缓解CDSR域不平衡与域迁移难题，全库排序下H@10最高提升26.96%" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -158,9 +158,9 @@
 {
   "@context": "https://schema.org",
   "@type": "ScholarlyArticle",
-  "name": "[Paper Note] LLM-EDT: Large Language Models Enhanced Cross-domain Sequential Recommendation with Dual-phase Training",
-  "headline": "[Paper Note] LLM-EDT: Large Language Models Enhanced Cross-domain Sequential Recommendation with Dual-phase Training",
-  "description": "[SIGIR 2026][\u8de8\u57df\u4e0e\u591a\u573a\u666f\u63a8\u8350] \u7528 LLM \u751f\u6210\u53ef\u8fc1\u79fb\u8de8\u57df\u884c\u4e3a+\u566a\u58f0\u8fc7\u6ee4+\u4e24\u9636\u6bb5\u8bad\u7ec3+\u57df\u611f\u77e5\u753b\u50cf\uff0c\u7f13\u89e3\u57df\u4e0d\u5e73\u8861\u4e0e\u57df\u8fc1\u79fb\u95ee\u9898\uff0c\u4e09\u6570\u636e\u96c6\u5168\u6392\u5e8f Recall/NDCG \u663e\u8457\u63d0\u5347\u3002",
+  "name": "[Paper Note] LLM-EDT: Large Language Model Enhanced Cross-domain Sequential Recommendation with Dual-phase Training",
+  "headline": "[Paper Note] LLM-EDT: Large Language Model Enhanced Cross-domain Sequential Recommendation with Dual-phase Training",
+  "description": "[SIGIR 2026][\u8de8\u57df\u4e0e\u591a\u573a\u666f\u63a8\u8350] \u7528\u53ef\u8fc1\u79fb\u7269\u54c1\u589e\u5e7f+\u53cc\u9636\u6bb5\u8bad\u7ec3+\u57df\u611f\u77e5\u753b\u50cf\uff0c\u7f13\u89e3CDSR\u57df\u4e0d\u5e73\u8861\u4e0e\u57df\u8fc1\u79fb\u96be\u9898\uff0c\u5168\u5e93\u6392\u5e8f\u4e0bH@10\u6700\u9ad8\u63d0\u534726.96%",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/cross_domain_multi_scenario/llm_edt_large_language_model_enhanced_cross_domain_sequential_recommendatio/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/cross_domain_multi_scenario/llm_edt_large_language_model_enhanced_cross_domain_sequential_recommendatio/",
   "inLanguage": "zh-CN",
@@ -168,18 +168,18 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u8de8\u57df\u4e0e\u591a\u573a\u666f\u63a8\u8350, \u53ec\u56de/\u5e8f\u5217\u5efa\u6a21, \u8de8\u57df\u5e8f\u5217\u63a8\u8350, LLM \u6570\u636e\u589e\u5f3a, \u53cc\u9636\u6bb5\u8bad\u7ec3",
+  "keywords": "SIGIR 2026, \u8de8\u57df\u4e0e\u591a\u573a\u666f\u63a8\u8350, \u53ec\u56de, \u8de8\u57df\u5e8f\u5217\u63a8\u8350, \u53cc\u9636\u6bb5\u8bad\u7ec3, LLM\u6570\u636e\u589e\u5e7f",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u8de8\u57df\u4e0e\u591a\u573a\u666f\u63a8\u8350" },
-    { "@type": "Thing", "name": "\u53ec\u56de/\u5e8f\u5217\u5efa\u6a21" },
+    { "@type": "Thing", "name": "\u53ec\u56de" },
     { "@type": "Thing", "name": "\u8de8\u57df\u5e8f\u5217\u63a8\u8350" },
-    { "@type": "Thing", "name": "LLM \u6570\u636e\u589e\u5f3a" },
-    { "@type": "Thing", "name": "\u53cc\u9636\u6bb5\u8bad\u7ec3" }
+    { "@type": "Thing", "name": "\u53cc\u9636\u6bb5\u8bad\u7ec3" },
+    { "@type": "Thing", "name": "LLM\u6570\u636e\u589e\u5e7f" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -212,7 +212,7 @@
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "[Paper Note] LLM-EDT: Large Language Models Enhanced Cross-domain Sequential Recommendation with Dual-phase Training",
+      "name": "[Paper Note] LLM-EDT: Large Language Model Enhanced Cross-domain Sequential Recommendation with Dual-phase Training",
       "item": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/cross_domain_multi_scenario/llm_edt_large_language_model_enhanced_cross_domain_sequential_recommendatio/"
     }
   ]
@@ -538,7 +538,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#llm-edt-large-language-models-enhanced-cross-domain-sequential-recommendation-with-dual-phase-training" class="md-skip">
+        <a href="#llm-edt-large-language-model-enhanced-cross-domain-sequential-recommendation-with-dual-phase-training" class="md-skip">
           跳转至
         </a>
       
@@ -572,7 +572,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              [Paper Note] LLM-EDT: Large Language Models Enhanced Cross-domain Sequential Recommendation with Dual-phase Training
+              [Paper Note] LLM-EDT: Large Language Model Enhanced Cross-domain Sequential Recommendation with Dual-phase Training
             
           </span>
         </div>
@@ -3997,10 +3997,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4011,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4019,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4072,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4095,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4103,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4119,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4152,10 +4130,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#rating" class="md-nav__link">
     <span class="md-ellipsis">
       
-        论文图表
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4181,9 +4159,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][跨域与多场景推荐] 用 LLM 生成可迁移跨域行为+噪声过滤+两阶段训练+域感知画像，缓解域不平衡与域迁移问题，三数据集全排序 Recall/NDCG 显著提升。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][跨域与多场景推荐] 用可迁移物品增广+双阶段训练+域感知画像，缓解CDSR域不平衡与域迁移难题，全库排序下H@10最高提升26.96%</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 跨域与多场景推荐 · 召回/序列建模 · 跨域序列推荐 · LLM 数据增强 · 双阶段训练</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 跨域与多场景推荐 · 召回 · 跨域序列推荐 · 双阶段训练 · LLM数据增广</p>
   
 </aside>
   
@@ -4211,7 +4189,7 @@
       
       
       
-        <span class="md-tag">召回/序列建模</span>
+        <span class="md-tag">召回</span>
       
     
       
@@ -4225,14 +4203,14 @@
       
       
       
-        <span class="md-tag">LLM 数据增强</span>
+        <span class="md-tag">双阶段训练</span>
       
     
       
       
       
       
-        <span class="md-tag">双阶段训练</span>
+        <span class="md-tag">LLM数据增广</span>
       
     
   </nav>
@@ -4242,214 +4220,287 @@
   
 
 
-<h1 id="llm-edt-large-language-models-enhanced-cross-domain-sequential-recommendation-with-dual-phase-training">LLM-EDT: Large Language Models Enhanced Cross-domain Sequential Recommendation with Dual-phase Training (大语言模型增强的双阶段训练跨域序列推荐)</h1>
+<h1 id="llm-edt-large-language-model-enhanced-cross-domain-sequential-recommendation-with-dual-phase-training">LLM-EDT: Large Language Model Enhanced Cross-domain Sequential Recommendation with Dual-phase Training (大模型增强的双阶段训练跨域序列推荐)</h1>
 <ul>
-<li><strong>会议/期刊</strong>: SIGIR 2026 (Melbourne, VIC, Australia)</li>
-<li><strong>推荐链路定位</strong>: 召回/序列建模 (Sequential Next-Item Retrieval)，端到端序列打分</li>
-<li><strong>研究方向</strong>: 跨域与多场景推荐 (主) / 大语言模型推荐 (次)</li>
+<li><strong>会议/期刊</strong>: SIGIR 2026</li>
+<li><strong>作者与机构</strong>: Ziwei Liu, Qidong Liu, Wanyu Wang, Yejing Wang, Pengyue Jia, Tong Xu, Wei Huang, Chong Chen, Xiangyu Zhao (香港城市大学、西安交通大学、中科大、清华等)</li>
+<li><strong>推荐链路定位</strong>: 召回（序列下一物品预测）</li>
+<li><strong>研究方向</strong>: 跨域与多场景推荐 / 序列推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2511.19931v2">https://arxiv.org/abs/2511.19931v2</a></li>
 <li><strong>开源代码</strong>: <a href="https://github.com/Applied-Machine-Learning-Lab/SIGIR26_LLM-EDT">https://github.com/Applied-Machine-Learning-Lab/SIGIR26_LLM-EDT</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对跨域序列推荐 (CDSR) 中的<strong>域不平衡</strong>与<strong>域迁移</strong>两大痛点，本文提出 LLM-EDT：用 LLM 生成"可迁移跨域行为"并配以相似度噪声过滤与位置感知插入来平衡域分布；用"全局预训练→域微调"的双阶段训练把域共享背景注入域专属线程；再用 K-means + summarize-reform-analyze 的域感知画像做偏好对齐。在三个公开数据集的全排序协议下，Recall@10/20 与 NDCG@10/20 均取得统计显著提升（<span class="arithmatex">\(p&lt;0.05\)</span>）。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>跨域序列推荐（CDSR）长期受困于<strong>域不平衡</strong>（单域交互主导，另一域特征学不出来）与<strong>域迁移</strong>（混合序列中跨域偏好难捕捉）两大矛盾。本文提出 LLM-EDT：用 LLM 生成"可迁移物品"并做相似度噪声过滤与位置感知插入来平衡域分布；用"全局预训练→域微调"的双阶段训练把域共享背景注入域专属线程；再用 K-means 聚类 + 摘要-重构-分析流水线生成细粒度用户画像并以对比对齐损失注入表征。在 Amazon 三组跨域数据集上，H@10/N@10 相对最强基线提升 2.81%–26.96%（单侧 t 检验 <span class="arithmatex">\(p&lt;0.05\)</span>）。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 序列推荐 (SRS) 以 GRU4Rec、SASRec 等自注意力/RNN 架构为主流；跨域序列推荐 (CDSR) 通过融合多域交互缓解数据稀疏，主流做法包括迁移学习框架、GNN 桥接域间物品连接，以及三线程 (domain-shared + 两个 domain-specific) 并行建模。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>域不平衡 (Domain Imbalance)</strong>：作者定义域比例 <span class="arithmatex">\(r=\frac{|n_A-n_B|}{n_A+n_B}\)</span>，在图 1 中统计 Amazon Cloth-Sport 发现绝大多数用户落在 90%–100% 区间（原始 6272 人），即一个域几乎主导全部行为，导致弱势域特征难以学习。现有迁移/GNN 方法严重依赖重叠用户 (overlapping users)，实际场景受限。</li>
-<li><strong>域迁移 (Domain Transition)</strong>：混合序列中难以捕捉跨域偏好转移。仅用全局共享特征的方法缺乏域内细节；引入域专属线程的方法又把共享/专属线程<strong>并行</strong>训练，二者缺乏必要连接，域专属建模模糊。</li>
-<li><strong>LLM 增强的次生问题</strong>：LLMCDSR 用 LLM 数据增强但引入<strong>无关噪声 (Irrelevant Noise)</strong> 且牺牲训练/推理效率；LLM4CDSR 仅把 LLM 当编码器/摘要器，仍是"一步式"粗粒度画像，产生<strong>粗糙画像 (Rough Profiling)</strong>，且未按"全局→域专属"的渐进粒度学习偏好。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 简单增加网络深度或常规对比学习无法同时解决"域分布极度偏斜下的域内特征学习"与"混合序列中的跨域转移建模"，因为二者分别要求<strong>数据层面再平衡</strong>与<strong>训练范式层面的渐进式知识传递</strong>。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 图 1 的实证统计（原始 vs. 增强后用户域比例分布）直接支撑"用 LLM 生成弱势域样本来平衡分布"的动机；同时作者观察到三线程并行训练缺乏共享→专属的知识流动，故改为<strong>串行双阶段</strong>（先全局预训练、再冻结主干微调域专属 adapter），并以域感知画像替代一步式摘要。</li>
+<li><strong>主流范式</strong>: CDSR 通过融合多域交互缓解单域稀疏，主流做法分两支——仅用全局共享特征加额外迁移目标（如 ABXI），或并行维护"共享线程 + 域专属线程"的三线程结构（如 TriCDR、LLM4CDSR）。</li>
+<li><strong>前人局限</strong>: ① 传统迁移/GNN 方法（C2DSR、TriCDR）<strong>强依赖重叠用户</strong>，现实中大量用户仅单域有交互；② 三线程结构并行训练，域专属与域共享特征之间<strong>缺乏显式连接</strong>，域专属建模模糊；③ LLMCDSR 用 LLM 增广但<strong>引入无关噪声</strong>且牺牲效率，LLM4CDSR 的画像仅一步摘要，属<strong>粗糙画像</strong>。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 作者统计 Amazon Cloth-Sport 的域比例 <span class="arithmatex">\(r=\frac{|n_A-n_B|}{n_A+n_B}\)</span>，发现绝大多数用户落在 90%–100% 区间（图1），即域不平衡是普遍现象而非个例；同时 t-SNE 显示两域物品嵌入在语义空间存在明显间隔（图3a），说明需要"可迁移物品"充当桥梁。</li>
+<li><strong>本文切入点</strong>: 用 LLM 生成<strong>语义上接近主导域、但属于弱势域</strong>的迁移物品来平衡分布，并以"先全局后域专属"的渐进训练替代并行三线程。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户集 <span class="arithmatex">\(\mathcal{U}=\{u_1,\dots,u_{|\mathcal{U}|}\}\)</span>；双域物品集 <span class="arithmatex">\(\mathcal{I}=\mathcal{A}\cup\mathcal{B}\)</span>，<span class="arithmatex">\(|\mathcal{A}|,|\mathcal{B}|\)</span> 分别为两域物品数。</li>
-<li>用户混合序列 <span class="arithmatex">\(S_u=\{v_1^u,\dots,v_n^u\}\)</span>，域内序列 <span class="arithmatex">\(S_u^A=\{a_1^u,\dots,a_{n_A}^u\}\)</span>、<span class="arithmatex">\(S_u^B=\{b_1^u,\dots,b_{n_B}^u\}\)</span>，<span class="arithmatex">\(n=n_A+n_B\)</span>。</li>
-<li>增强后序列 <span class="arithmatex">\(S_{aug}=\{v_1,\hat v_2,\dots,v_{n+2k-1},\hat v_{n+2k}\}\)</span>，其中 <span class="arithmatex">\(\hat v_i\)</span> 为插入的增强交互，<span class="arithmatex">\(k\)</span> 为每方向生成样本数；域内增强序列 <span class="arithmatex">\(S_{aug}^A\)</span>、<span class="arithmatex">\(S_{aug}^B\)</span> 各含 <span class="arithmatex">\(n_A+k\)</span>、<span class="arithmatex">\(n_B+k\)</span> 项。</li>
-<li>LLM 嵌入维度 <span class="arithmatex">\(d_L\)</span>，推荐空间维度 <span class="arithmatex">\(d\)</span>；adapter 中间维度 <span class="arithmatex">\(d_L/2\)</span>。</li>
-<li>输出：下一物品概率 <span class="arithmatex">\(P(v_{n+1}=v_i\mid S_{aug},S_{aug}^A,S_{aug}^B)\)</span>，分别在 <span class="arithmatex">\(\mathcal{A}_{aug}\)</span> 与 <span class="arithmatex">\(\mathcal{B}_{aug}\)</span> 上取 argmax。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：原始混合序列 → <strong>可迁移物品增强器</strong>（K-means 选代表样本 → LLM A2B/B2A 生成 → LLM 嵌入余弦相似度噪声过滤 → 按相似位置插入）→ 增强序列 <span class="arithmatex">\(S_{aug}\)</span> → <strong>双阶段训练</strong>（全局预训练 SASRec + adapter；域微调冻结主干、训练两个域专属 adapter）→ 打分预测；同时 <strong>域感知画像</strong>（K-means 聚类 → summarize-reform-analyze → LLM 嵌入 + adapter → 对比对齐损失 <span class="arithmatex">\(\mathcal{L}_{align}\)</span>）注入全局用户表征。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>输入用户混合交互序列 <span class="arithmatex">\(S\)</span>，先经<strong>可迁移物品增广器</strong>：LLM 分别做 A2B/B2A 生成候选物品，经 LLM 嵌入余弦相似度过滤后，按"最相似原始物品之后"的位置插入，得到增广序列<span class="arithmatex">\(S_{aug}\)</span>及其按域切分的<span class="arithmatex">\(S^A_{aug},S^B_{aug}\)</span>。随后进入<strong>双阶段训练</strong>：全局预训练在<span class="arithmatex">\(S_{aug}\)</span>上训练 SASRec 获得域共享表征<span class="arithmatex">\(\tilde{u}\)</span>；域微调冻结骨干、仅训练两个域适配器得到<span class="arithmatex">\(u^A,u^B\)</span>，预测时融合两者。并行地，<strong>域感知画像</strong>模块对每域嵌入做 K-means 聚类，经摘要-重构-分析生成文本画像<span class="arithmatex">\(P_u\)</span>，编码为<span class="arithmatex">\(\tilde{p}\)</span>后与<span class="arithmatex">\(\tilde{u}\)</span> 做对比对齐。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 用户混合序列 S_u / 域内序列 S_u^A, S_u^B"] --&gt; B["可迁移物品增强器: K-means 代表样本 + LLM A2B/B2A 生成"]
-    B --&gt; C["噪声过滤器: LLM 嵌入余弦相似度 + rank/阈值 tau"]
-    C --&gt; D["位置感知插入: 生成项插到最相似源域项之后"]
-    D --&gt; E["增强序列 S_aug / S_aug^A / S_aug^B"]
-    E --&gt; F["全局预训练: LLM Embedder + Adapter + SASRec (混合序列)"]
-    F --&gt; G["域微调: 冻结 SASRec, 训练域专属 Adapter (A/B)"]
-    A --&gt; H["域感知画像: K-means 聚类 + summarize-reform-analyze"]
-    H --&gt; I["偏好对齐损失 L_align (对比学习)"]
-    G --&gt; J["打分预测: 全局表征 + 域专属表征联合打分"]
-    I --&gt; J</code></pre>
-<p>图 2 展示了 LLM-EDT 的整体框架，包含可迁移物品增强器、双阶段训练与域感知画像三大模块。</p>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 可迁移物品增强器 (Transferable Item Augmenter)</strong></p>
-<ul>
-<li><strong>样本生成器</strong>：对主导域 <span class="arithmatex">\(\mathcal{A}\)</span> 的原始序列 <span class="arithmatex">\(S_{raw}^A\)</span> 先用 K-means 聚类保证多样性，取聚类代表项 <span class="arithmatex">\(S_{rep}^A\)</span>，再用提示词 <span class="arithmatex">\(T\)</span> 驱动 LLM 生成弱势域 <span class="arithmatex">\(\mathcal{B}\)</span> 的可迁移物品：
-$<span class="arithmatex">\(I_B=\mathrm{LLMs}(T,S_{rep}^A),\quad I_A=\mathrm{LLMs}(T,S_{rep}^B)\)</span>$
-物理直觉：可迁移物品应与主导域语义相近，从而作为"域切换信号"。</li>
-<li><strong>噪声过滤器</strong>：用 LLM 文本嵌入模型对物品文本属性（name/brand/category/description）编码得 <span class="arithmatex">\(E_{rep}^A,E_{rep}^B,E_{I_A},E_{I_B}\)</span>，对生成项 <span class="arithmatex">\(i\)</span> 计算与两域代表项的最大余弦相似度：
-$<span class="arithmatex">\((s_i^A,score_i^A)=\arg\max_{s_k^A\in S_{rep}^A}\mathrm{sim}(E_i,E_{s_k^A}),\quad (s_i^B,score_i^B)=\arg\max_{s_k^B\in S_{rep}^B}\mathrm{sim}(E_i,E_{s_k^B})\)</span>$
-A2B 方向保留集合：
-$<span class="arithmatex">\(\mathcal{T}_{A2B}=\{i\in I_B\mid \mathrm{rank}(score_i^A)\le k\ \wedge\ score_i^B\ge\tau\}\)</span>$
-即"与源域足够近（排名前 <span class="arithmatex">\(k\)</span>）且与目标域足够相关（阈值 <span class="arithmatex">\(\tau\)</span>）"的双重约束，抑制 LLM 幻觉噪声。</li>
-<li><strong>位置感知插入</strong>：不同于随机插入，生成项被严格插到其最相似源域项 <span class="arithmatex">\(s_i^A\)</span> 之后，形成域间桥梁，保留兴趣转移的时序语义。</li>
-</ul>
-<p><strong>(2) 双阶段训练框架 (Dual-phase Training)</strong></p>
-<ul>
-<li><strong>全局预训练</strong>：LLM Embedder 得 <span class="arithmatex">\(E_{aug}=\{\tilde e_1,\dots,\tilde e_{n+2k}\}\)</span>，<span class="arithmatex">\(\tilde e_i\in\mathbb{R}^{d_L}\)</span>；adapter 投影：
-$<span class="arithmatex">\(\tilde e_i=W_1(W_2e_i+b_2)+b_1,\quad W_1\in\mathbb{R}^{d\times d_L/2},W_2\in\mathbb{R}^{d_L/2\times d_L}\)</span>$
-SASRec 主干 <span class="arithmatex">\(f_{\tilde\theta}\)</span> 输出全局用户表征 <span class="arithmatex">\(\tilde u\in\mathbb{R}^d\)</span>，打分 <span class="arithmatex">\(P=\tilde e_i^\top\tilde u\)</span>。</li>
-<li><strong>域微调</strong>：冻结 SASRec 主干 <span class="arithmatex">\(f_{\tilde\theta_F}\)</span>，对 <span class="arithmatex">\(S_{aug}^A,S_{aug}^B\)</span> 各接一个可训练 adapter：
-$<span class="arithmatex">\(h_A=f_{\tilde\theta_F}(S_{aug}^A),\ u_A=W_3(W_4h_A+b_4)+b_3;\quad h_B=f_{\tilde\theta_F}(S_{aug}^B),\ u_B=W_5(W_6h_B+b_6)+b_5\)</span>$
-域 A 的联合打分融合全局与域专属：
-$<span class="arithmatex">\(P(v_{n_A+k+1}=v_i\mid S_{aug},S_{aug}^A,v_i\in\mathcal{A}_{aug})=(\tilde e_i^A)^\top u_A+\tilde e_i^\top\tilde u\)</span>$
-物理直觉：域专属线程在"已具备全局背景"的主干上微调，实现从全局到域专属的<strong>渐进式</strong>偏好更新，而非并行三线程的割裂建模。</li>
-</ul>
-<p><strong>(3) 域感知画像 (Domain-aware Profiling)</strong></p>
-<ul>
-<li><strong>K-means 聚类</strong>：对 <span class="arithmatex">\(E_{aug}^A,E_{aug}^B\)</span> 聚类得 <span class="arithmatex">\(C\)</span> 个子序列 <span class="arithmatex">\(S_{g_1}^A,\dots,S_{g_C}^A\)</span> 与 <span class="arithmatex">\(S_{g_1}^B,\dots,S_{g_C}^B\)</span>。</li>
-<li><strong>Summarize-Reform-Analyze</strong>：先对每域 <span class="arithmatex">\(C\)</span> 个子序列摘要得 <span class="arithmatex">\(\{P_c^A\}_{c=1}^C,\{P_c^B\}_{c=1}^C\)</span>；再用域比例 <span class="arithmatex">\(r\)</span> 从 5 个手工构造选项中选出"再形成指令" <span class="arithmatex">\(R\)</span>（描述域不平衡程度），由 LLM 结合域背景改写；最后把两域摘要与 <span class="arithmatex">\(R\)</span> 组织进提示词，分析得跨域偏好文本 <span class="arithmatex">\(P_u\)</span>。</li>
-<li><strong>偏好对齐</strong>：<span class="arithmatex">\(P_u\)</span> 经 LLM 嵌入 + adapter 降维为 <span class="arithmatex">\(\tilde p\in\mathbb{R}^d\)</span>，与全局表征 <span class="arithmatex">\(\tilde u\)</span> 做对比对齐（见下式）。</li>
-</ul>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>：</li>
-<li>预训练：<span class="arithmatex">\(\mathcal{L}_{pre}=-\sum_{u\in\mathcal{U}}\sum_{j=1}^{n+2k}\log\sigma\big(P(v_{j+1}=v^+)-P(v_{j+1}=v^-)\big)\)</span></li>
-<li>域微调：<span class="arithmatex">\(\mathcal{L}_A=-\sum_{u\in\mathcal{U}}\sum_{j=1}^{n_A+k}\log\sigma\big(P(v_{j+1}=v^+)-P(v_{j+1}=v^-)\big)\)</span>，<span class="arithmatex">\(\mathcal{L}_B\)</span> 同理替换记号。</li>
-<li>对齐：<span class="arithmatex">\(\mathcal{L}_{align}^1=-\frac{1}{B}\sum_{i=1}^{B}\log\frac{\exp(\cos(\tilde u_i,\tilde p_i)/\tau)}{\sum_{j=1}^{B}\mathbb{I}[i\neq j]\exp(\cos(\tilde u_i,\tilde p_j)/\tau)}\)</span>（原文在截断处给出该 InfoNCE 形式，温度系数 <span class="arithmatex">\(\tau\)</span>；完整 <span class="arithmatex">\(\mathcal{L}_{align}\)</span> 的对称项在原文后续段落，笔记以原文可见部分为准）。</li>
-<li><strong>训练负采样策略</strong>：BPR 式 pairwise 损失，<span class="arithmatex">\(v^-\)</span> 为<strong>随机采样负例</strong>（Uniform random negative），未使用 in-batch 或难负例挖掘。</li>
-<li><strong>时间与空间复杂度</strong>：LLM 物品嵌入与生成用户嵌入均可<strong>离线缓存</strong>，服务阶段无需 LLM 推理，保持在线效率；增强器与画像的 LLM 调用为一次性离线开销（原文未报告具体 GPU 小时/显存数值）。域微调阶段主干冻结，仅训练轻量 adapter，参数量与训练成本显著低于全量微调。</li>
-</ul>
+    A["混合交互序列 S"] --&gt; B["可迁移物品增广器&lt;br/&gt;LLM生成+相似度过滤+位置插入"]
+    B --&gt; C["全局预训练&lt;br/&gt;SASRec on S_aug"]
+    C --&gt; D["域微调&lt;br/&gt;冻结骨干+双域Adapter"]
+    A --&gt; E["域感知画像&lt;br/&gt;K-means+摘要-重构-分析"]
+    E --&gt; F["对比对齐损失 L_align"]
+    F --&gt; C
+    D --&gt; G["域内打分 e^T·u^A + e^T·u"]</code></pre>
+<figure class="paper-figure">
+  <img alt="图2：所提出的LLM-EDT框架" src="../../../../../assets/papers/2511.19931v2/figure_2.png" /><figcaption>图2：所提出的LLM-EDT框架</figcaption>
+</figure>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>可迁移物品增广器（生成-过滤-插入三件套）</strong>：痛点是不加筛选的 LLM 增广会引入幻觉噪声、随机插入破坏位置语义。生成端先用 K-means 对主导域物品聚类取代表样本 <span class="arithmatex">\(S^{A}_{rep}\)</span>喂给 LLM 保证多样性；过滤端对生成物品<span class="arithmatex">\(i\)</span> 计算与两域代表集的最大余弦相似度，仅保留"在目标域相似度排名靠前且绝对相似度达标"的样本：
+$<span class="arithmatex">\(T^{A2B}=\{i\in I^B \mid \mathrm{rank}(score^A_i)\le k \wedge score^B_i\ge \tau\}\)</span>$
+插入端不做随机插入，而是把生成物品紧接在其最相似的原始物品 <span class="arithmatex">\(s^A_i\)</span> 之后，使其天然成为域切换信号。直觉：迁移物品既贴近主导域语义、又归属弱势域，从而在嵌入空间"缝合"两域间隔（图3b 验证分布更紧凑）。</p>
+</li>
+<li>
+<p><strong>双阶段训练（全局预训练 → 域微调）</strong>：针对三线程并行导致域专属与共享特征脱节的问题，改为<strong>串行渐进</strong>。预训练阶段用适配器把 LLM 嵌入降维投影到推荐空间 <span class="arithmatex">\(\tilde{e}_i=W_1(W_2e_i+b_2)+b_1\)</span>，在<span class="arithmatex">\(S_{aug}\)</span>上以 BPR 式损失<span class="arithmatex">\(\mathcal{L}_{pre}\)</span> 训练；微调阶段<strong>冻结 SASRec 骨干</strong>，仅用两个轻量适配器编码域序列，最终打分显式融合全局与域专属两路：
+$<span class="arithmatex">\(P(v_{n_A+k+1}=v_i\mid S_{aug},S^A_{aug})=\tilde{e}^A_i{}^\top u^A+\tilde{e}_i{}^\top\tilde{u}\)</span>$
+这样域专属线程天然继承全局背景，且两路打分相加保证共享知识不被域微调冲掉。</p>
+</li>
+<li>
+<p><strong>域感知画像与对齐损失</strong>：针对"一步摘要"的粗糙画像，先用 K-means 把每域序列切成 <span class="arithmatex">\(C\)</span>个子序列分别摘要得<span class="arithmatex">\(\{P^c_A\},\{P^c_B\}\)</span>，再用域比例<span class="arithmatex">\(r\)</span>构造"重构指令"<span class="arithmatex">\(R\)</span>平衡两域摘要权重，最后分析生成跨域画像<span class="arithmatex">\(P_u\)</span>。以 InfoNCE 对齐全局表征与画像表征：
+$<span class="arithmatex">\(\mathcal{L}_{align}=-\frac{1}{B}\sum_{i=1}^{B}\log\frac{\exp(\cos(\tilde{u}_i,\tilde{p}_i)/\tau)}{\sum_{j=1}^{B}\mathbb{I}[i\neq j]\exp(\cos(\tilde{u}_i,\tilde{p}_j)/\tau)}\)</span>$
+总损失为 <span class="arithmatex">\(\mathcal{L}_{pre}+\alpha\mathcal{L}_{align}\)</span>（预训练）与<span class="arithmatex">\(\mathcal{L}_A+\mathcal{L}_B\)</span>（微调）。负采样采用<strong>随机负采样</strong>（每正样本配一随机负例）。推理时所有 LLM 嵌入与画像均可离线缓存，线上仅加载适配器与 SASRec，<strong>零 LLM 推理开销</strong>。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文使用三个公开跨域数据集（Amazon 系，含 Cloth-Sport 等双域组合），统计见表 1。</li>
+<li><strong>数据集与预处理</strong>: 三组 Amazon 子类跨域对，增广前后统计如下：</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2511.19931v2/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">三个公开跨域数据集（Amazon 系，含 Cloth-Sport）</td>
-<td style="text-align: center;">原文表 1 报告</td>
-<td style="text-align: center;">原文表 1 报告</td>
-<td style="text-align: center;">原文表 1 报告</td>
-<td style="text-align: center;">原文表 1 报告</td>
-<td style="text-align: left;">物品文本属性：name/brand/category/description</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p>说明：受输入文本截断影响，表 1 的具体数值未能完整提取，以上仅标注原文确实报告了用户/物品/交互统计；具体数字请以原文表 1 为准，本笔记不做臆造。</p>
-</blockquote>
-<ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文按 CDSR 常规的<strong>序列下一项预测</strong>设定组织训练/测试序列（具体为 Leave-One-Out 还是比例划分，原文正文未在可见部分明确标注，<strong>原文未明确报告</strong>）；增强样本按位置插入，需注意生成样本仅进入训练序列、测试目标仍为真实交互，以规避标签泄露。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 主实验表 2 报告 Recall@10/20 与 NDCG@10/20；是否全库排序 vs 采样排序在可见文本中<strong>未明确标注</strong>（原文未报告负例采样比例），需以原文实验节为准。</li>
-<li><strong>评价指标与显著性检验</strong>: Recall@10、Recall@20、NDCG@10、NDCG@20；表 2 中 "*" 表示相对基线通过<strong>单侧 <span class="arithmatex">\(t\)</span>-检验 <span class="arithmatex">\(p&lt;0.05\)</span></strong> 的统计显著性。Embedding 维度 <span class="arithmatex">\(d\)</span> 与 LLM 维度 <span class="arithmatex">\(d_L\)</span> 经 adapter 对齐。</li>
-</ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
-<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>表 2 给出 LLM-EDT 与各基线的整体性能，最优加粗、次优下划线，"*" 表示单侧 <span class="arithmatex">\(t\)</span>-检验 <span class="arithmatex">\(p&lt;0.05\)</span> 显著优于基线。</p>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2511.19931v2/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">传统/协同过滤基线</th>
-<th style="text-align: center;">序列/跨域最强基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items(前/后)</th>
+<th style="text-align: center;">Avg.len(前/后)</th>
+<th style="text-align: left;">场景说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">数据集 1</td>
-<td style="text-align: left;">Recall@10 / NDCG@10</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;"><strong>最优（加粗）</strong></td>
-<td style="text-align: center;">显著（*，<span class="arithmatex">\(p&lt;0.05\)</span>）</td>
+<td style="text-align: left;">Cloth-Sport</td>
+<td style="text-align: center;">9,933</td>
+<td style="text-align: center;">3,278 / 4,204</td>
+<td style="text-align: center;">10.71 / 11.04</td>
+<td style="text-align: left;">服饰→运动，域不平衡最严重</td>
 </tr>
 <tr>
-<td style="text-align: left;">数据集 2</td>
-<td style="text-align: left;">Recall@20 / NDCG@20</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;"><strong>最优（加粗）</strong></td>
-<td style="text-align: center;">显著（*，<span class="arithmatex">\(p&lt;0.05\)</span>）</td>
+<td style="text-align: left;">Electronic-Cell Phone</td>
+<td style="text-align: center;">20,728</td>
+<td style="text-align: center;">10,492 / 11,023</td>
+<td style="text-align: center;">8.30 / 8.51</td>
+<td style="text-align: left;">电子→手机</td>
 </tr>
 <tr>
-<td style="text-align: left;">数据集 3</td>
-<td style="text-align: left;">Recall@10 / NDCG@10</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;"><strong>最优（加粗）</strong></td>
-<td style="text-align: center;">显著（*，<span class="arithmatex">\(p&lt;0.05\)</span>）</td>
+<td style="text-align: left;">Food-Kitchen</td>
+<td style="text-align: center;">14,858</td>
+<td style="text-align: center;">8,343 / 8,742</td>
+<td style="text-align: center;">8.13 / 8.47</td>
+<td style="text-align: left;">食品→厨具</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>说明：输入文本在表 2 数值处截断，具体数值与提升百分比请以原文表 2 为准；本笔记严格不臆造数字，仅确认"三数据集上本文方法均为最优且统计显著"这一原文结论。</p>
-</blockquote>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>表 3 报告消融结果，验证可迁移物品增强器、双阶段训练、域感知画像三模块的贡献。</p>
-<figure class="paper-figure">
-  <img alt="表 3" src="../../../../../assets/papers/2511.19931v2/table_3.png" /><figcaption>表 3</figcaption>
-</figure>
 <ul>
-<li>原文结论：移除各核心模块均导致性能下降，其中<strong>双阶段训练</strong>（全局预训练→域微调的知识传递）与<strong>可迁移物品增强器</strong>（域平衡）贡献最为关键；域感知画像的对齐损失提供额外增益。消融是否严格对齐参数量/图度数，原文可见部分未明确说明（<strong>原文未报告</strong>）。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 沿用 LLM4CDSR 的序列划分设定（按时间序的下一物品预测，具体切分比例与基线一致）。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 报告 H@10 与 N@10；基线对比采用与 LLM4CDSR 一致的评测流程，显著性用单侧 t 检验 <span class="arithmatex">\(p&lt;0.05\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: 基线分三类——SRS（GRU4Rec/BERT4Rec/SASRec）、CDSR（C2DSR/TriCDR/SyNCRec/ABXI）、LLM 增强（LLM-ESR/LLMCDSR/LLM4CDSR）。隐藏维 128、batch 512、预训练 lr 1e-3、微调 lr 1e-5、适配器维 64、聚类数 <span class="arithmatex">\(K=10\)</span>、<span class="arithmatex">\(\alpha\in\{0.1,\dots,1.0\}\)</span>，结果取种子 {42,44,46} 均值。</li>
 </ul>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">模型</th>
+<th style="text-align: center;">Cloth H@10</th>
+<th style="text-align: center;">Sport H@10</th>
+<th style="text-align: center;">Elec H@10</th>
+<th style="text-align: center;">Cell H@10</th>
+<th style="text-align: center;">Food H@10</th>
+<th style="text-align: center;">Kitchen H@10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">SASRec</td>
+<td style="text-align: center;">0.7081</td>
+<td style="text-align: center;">0.5911</td>
+<td style="text-align: center;">0.3501</td>
+<td style="text-align: center;">0.3212</td>
+<td style="text-align: center;">0.3250</td>
+<td style="text-align: center;">0.4211</td>
+</tr>
+<tr>
+<td style="text-align: left;">C2DSR</td>
+<td style="text-align: center;">0.7166</td>
+<td style="text-align: center;">0.5948</td>
+<td style="text-align: center;">0.4559</td>
+<td style="text-align: center;">0.2819</td>
+<td style="text-align: center;">0.3416</td>
+<td style="text-align: center;">0.4424</td>
+</tr>
+<tr>
+<td style="text-align: left;">TriCDR</td>
+<td style="text-align: center;">0.7219</td>
+<td style="text-align: center;">0.6114</td>
+<td style="text-align: center;">0.4532</td>
+<td style="text-align: center;">0.2616</td>
+<td style="text-align: center;">0.3457</td>
+<td style="text-align: center;">0.4446</td>
+</tr>
+<tr>
+<td style="text-align: left;">ABXI</td>
+<td style="text-align: center;">0.7474</td>
+<td style="text-align: center;">0.6440</td>
+<td style="text-align: center;">0.4623</td>
+<td style="text-align: center;">0.3282</td>
+<td style="text-align: center;">0.3652</td>
+<td style="text-align: center;">0.4682</td>
+</tr>
+<tr>
+<td style="text-align: left;">LLM-ESR</td>
+<td style="text-align: center;">0.7433</td>
+<td style="text-align: center;">0.6394</td>
+<td style="text-align: center;">0.4548</td>
+<td style="text-align: center;">0.3411</td>
+<td style="text-align: center;">0.3667</td>
+<td style="text-align: center;">0.4551</td>
+</tr>
+<tr>
+<td style="text-align: left;">LLMCDSR</td>
+<td style="text-align: center;">0.7646</td>
+<td style="text-align: center;">0.7138</td>
+<td style="text-align: center;">0.4900</td>
+<td style="text-align: center;">0.3586</td>
+<td style="text-align: center;">0.3746</td>
+<td style="text-align: center;">0.4779</td>
+</tr>
+<tr>
+<td style="text-align: left;">LLM4CDSR</td>
+<td style="text-align: center;">0.7882</td>
+<td style="text-align: center;">0.7021</td>
+<td style="text-align: center;">0.4818</td>
+<td style="text-align: center;">0.3423</td>
+<td style="text-align: center;">0.3976</td>
+<td style="text-align: center;">0.4901</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LLM-EDT</strong></td>
+<td style="text-align: center;"><strong>0.8104</strong></td>
+<td style="text-align: center;"><strong>0.7649</strong></td>
+<td style="text-align: center;"><strong>0.5289</strong></td>
+<td style="text-align: center;"><strong>0.4553</strong></td>
+<td style="text-align: center;"><strong>0.4349</strong></td>
+<td style="text-align: center;"><strong>0.5406</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Improv.%</td>
+<td style="text-align: center;">+2.81</td>
+<td style="text-align: center;">+7.16</td>
+<td style="text-align: center;">+7.94</td>
+<td style="text-align: center;">+26.96</td>
+<td style="text-align: center;">+9.38</td>
+<td style="text-align: center;">+10.30</td>
+</tr>
+</tbody>
+</table>
+<p>N@10 上提升更显著：Cell Phone +25.82%、Sport +7.35%、Kitchen +12.42%。</p>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">变体</th>
+<th style="text-align: center;">Cloth H@10</th>
+<th style="text-align: center;">Cloth N@10</th>
+<th style="text-align: center;">Sport H@10</th>
+<th style="text-align: center;">Sport N@10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">LLM-EDT</td>
+<td style="text-align: center;"><strong>0.8078</strong></td>
+<td style="text-align: center;"><strong>0.7432</strong></td>
+<td style="text-align: center;"><strong>0.7529</strong></td>
+<td style="text-align: center;"><strong>0.6779</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o Aug.</td>
+<td style="text-align: center;">0.7919</td>
+<td style="text-align: center;">0.7311</td>
+<td style="text-align: center;">0.6854</td>
+<td style="text-align: center;">0.6291</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o Filtering</td>
+<td style="text-align: center;">0.7724</td>
+<td style="text-align: center;">0.7148</td>
+<td style="text-align: center;">0.6670</td>
+<td style="text-align: center;">0.6079</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o Inserting</td>
+<td style="text-align: center;">0.7802</td>
+<td style="text-align: center;">0.7195</td>
+<td style="text-align: center;">0.6703</td>
+<td style="text-align: center;">0.6214</td>
+</tr>
+<tr>
+<td style="text-align: left;">Random Inserting</td>
+<td style="text-align: center;">0.7842</td>
+<td style="text-align: center;">0.7235</td>
+<td style="text-align: center;">0.6774</td>
+<td style="text-align: center;">0.6377</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o DFT</td>
+<td style="text-align: center;">0.7581</td>
+<td style="text-align: center;">0.6753</td>
+<td style="text-align: center;">0.7049</td>
+<td style="text-align: center;">0.6022</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o Profiling</td>
+<td style="text-align: center;">0.7951</td>
+<td style="text-align: center;">0.7377</td>
+<td style="text-align: center;">0.7399</td>
+<td style="text-align: center;">0.6617</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o S-R-A</td>
+<td style="text-align: center;">0.7901</td>
+<td style="text-align: center;">0.7321</td>
+<td style="text-align: center;">0.7278</td>
+<td style="text-align: center;">0.6526</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>增广的收益主要落在弱势域</strong>：去掉增广后 Sport 域 H@10 从 0.7529 掉到 0.6854（-6.75pt），而 Cloth 仅掉 1.59pt，说明迁移物品确实在补弱势域信号；且"过滤"比"插入方式"更关键（w/o Filtering 在 Cloth 上甚至低于 w/o Aug.，证明未过滤的幻觉样本会造成负迁移）。</li>
+<li><strong>双阶段训练是域迁移问题的核心解</strong>：w/o DFT 在 Cloth 上 H@10 暴跌至 0.7581（-4.97pt），是消融中最大跌幅之一，验证"先全局后域专属"的串行渐进优于并行三线程；而 w/o S-R-A 掉 1.77pt，说明细粒度画像比朴素摘要更有效。</li>
+<li><strong>冷启动与骨干无关性双重验证</strong>：按交互长度分桶后，LLM-EDT 在 Very Short 到 Very Long 全部桶上均优于 LLMCDSR；替换骨干为 GRU4Rec/BERT4Rec 后仍保持 SOTA（如 BERT4Rec 骨干下 Cloth H@10 达 0.8113），且换用 GPT-3.5 性能仅微降（0.8091 vs 0.8104），体现 LLM-agnostic 与 model-agnostic 的通用性。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>域比例分桶</strong>：图 1 对比原始与增强后的用户域比例分布，增强后 90%–100% 极端不平衡区间用户数由 6272 显著下降（80%–90% 区间由 1070 升至 2892，50%–80% 区间由 3444 升至 3799），直观证明增强器有效再平衡域分布。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 LLMCDSR 的"生成+元学习召回"，本文把噪声控制前移到<strong>训练前的相似度过滤</strong>，避免元网络额外开销；相比 LLM4CDSR 的三线程并行 + 一步画像，本文用<strong>串行双阶段 + 聚类多粒度画像</strong>建立域间显式连接，这是性能差距的主要来源。</li>
+<li><strong>可迁移亮点</strong>: ① "按最相似原始物品定位插入"的位置感知增广策略可直接迁移到任何序列增广任务；② 离线缓存 LLM 嵌入 + 线上仅跑适配器的部署范式，是 LLM4Rec 工业落地的通用降本技巧。</li>
+<li><strong>审稿级局限批判</strong>: ① 增广与画像依赖 DeepSeek API，虽单用户成本低（生成+摘要约 <span class="arithmatex">\(0.00067\)</span>），但<strong>离线批处理延迟与 API 稳定性</strong>未讨论，且画像质量对 prompt 设计敏感；② 实验仅在 Amazon 两域对上进行，<strong>多域（&gt;2）场景与真实工业跨场景数据</strong>未验证，域比例<span class="arithmatex">\(r\)</span> 的二域定义也难以直接推广。</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2511.19931v2/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
+<h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>分布对比案例</strong>：图 3 给出 Cloth-Sport 上的分布对比，进一步佐证增强后弱势域样本覆盖提升。</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （迁移物品"生成-过滤-定位插入"闭环与串行双阶段训练组合新颖，但各组件单看均有前作影子）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （三数据集、三类基线、8 组消融、冷启动/骨干/LLM 替换/效率分析齐全，但划分细节依赖前作、缺全库排序说明）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （公式与符号清晰，动机统计图有说服力；部分符号如 <span class="arithmatex">\(k\)</span>与聚类数<span class="arithmatex">\(K\)</span> 易混淆）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （代码开源、线上零 LLM 推理、参数量接近 SASRec，但离线 API 依赖与多域扩展性待验证）</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2511.19931v2/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<ul>
-<li><strong>关键超参数</strong>：生成样本数 <span class="arithmatex">\(k\)</span>、过滤阈值 <span class="arithmatex">\(\tau\)</span>、聚类数 <span class="arithmatex">\(C\)</span>、对齐温度 <span class="arithmatex">\(\tau\)</span>、adapter 中间维度 <span class="arithmatex">\(d_L/2\)</span>；原文可见部分未给出完整敏感度曲线（<strong>原文未报告</strong>具体趋势数值）。</li>
-<li><strong>线上 A/B 测试</strong>：<strong>原文仅包含离线实验</strong>，未报告线上 CTR/CVR/GMV 等指标。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>"生成—过滤—定位插入"三段式增强范式</strong>具有强普适性：K-means 选代表样本保证多样性、双阈值（rank + 相似度）过滤抑制 LLM 幻觉、按最相似源域项定位插入保留时序语义，可迁移到任意序列增强/跨域对齐任务。</li>
-<li><strong>双阶段"先全局后域专属"的串行训练</strong>替代并行三线程，用冻结主干 + 轻量 adapter 实现知识流动，参数高效且易落地。</li>
-<li><strong>离线缓存 LLM 嵌入</strong>使服务阶段零 LLM 推理，工程友好。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议透明度不足</strong>：数据划分（LOO vs. 比例）与排序协议（全库 vs. 采样）在正文可见部分未明确交代，削弱可复现性与跨论文可比性；建议补充负例采样比例与全排序设定。</li>
-<li><strong>LLM 依赖与成本</strong>：增强器与画像均依赖 DeepSeek 系列 LLM 与嵌入 API，离线预处理成本、提示词敏感性、跨数据集迁移稳定性未量化；不同 LLM 版本可能显著影响增强质量。</li>
-<li><strong>噪声过滤的阈值 <span class="arithmatex">\(\tau\)</span> 与 <span class="arithmatex">\(k\)</span> 为手工设定</strong>，缺乏自适应机制；过滤后仍可能残留语义漂移样本，且增强样本进入训练序列存在潜在分布偏移风险。</li>
-<li><strong>画像对齐损失</strong>仅见单侧 InfoNCE 形式，对称项与权重 <span class="arithmatex">\(\lambda\)</span> 的消融需在原文完整版核实；"reform" 阶段 5 个手工选项的构造主观性较强。</li>
-<li><strong>仅离线实验</strong>，缺少工业级延迟/吞吐与</li>
-</ul>
-<h2 id="_1">论文图表</h2>
-<figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2511.19931v2/figure_2.png" /><figcaption>图 2</figcaption>
-</figure>
 
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4230,7 +4241,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>DeSocial 分两段闭环：①<strong>用户驱动算法选择</strong>——对每个在 <span class="arithmatex">\(G_{t+1}\)</span> 中有候选连接的用户 <span class="arithmatex">\(u\)</span>，在其历史邻域上采样正负邻居对 <span class="arithmatex">\(\Gamma\)</span>，由模型池中各算法的持有者分别打分并回报加权胜率，<span class="arithmatex">\(u\)</span> 据此选出个性化骨干 <span class="arithmatex">\(F_u\)</span>；②<strong>用户级共识投票</strong>——对候选连接 <span class="arithmatex">\((p,q)\)</span>，从使用 <span class="arithmatex">\(F_p\)</span> 的用户集合中均匀采样 <span class="arithmatex">\(n\)</span> 个验证者组成委员会，各验证者把 <span class="arithmatex">\(D_t\)</span> 拷入本地内存、用各自模型独立推理并给出二值票，多数票即最终判定。全程无全局优化、无参数共享，仅靠用户级共识收敛。</p>
+<p>DeSocial 分两段闭环：①<strong>用户驱动算法选择</strong>——对每个在 <span class="arithmatex">\(G_{t+1}\)</span>中有候选连接的用户<span class="arithmatex">\(u\)</span>，在其历史邻域上采样正负邻居对<span class="arithmatex">\(\Gamma\)</span>，由模型池中各算法的持有者分别打分并回报加权胜率，<span class="arithmatex">\(u\)</span>据此选出个性化骨干<span class="arithmatex">\(F_u\)</span>；②<strong>用户级共识投票</strong>——对候选连接<span class="arithmatex">\((p,q)\)</span>，从使用<span class="arithmatex">\(F_p\)</span>的用户集合中均匀采样<span class="arithmatex">\(n\)</span>个验证者组成委员会，各验证者把<span class="arithmatex">\(D_t\)</span> 拷入本地内存、用各自模型独立推理并给出二值票，多数票即最终判定。全程无全局优化、无参数共享，仅靠用户级共识收敛。</p>
 <pre class="mermaid"><code>flowchart TD
     A["时序社交图 D_t = ∪G_τ"] --&gt; B["用户 u 采样正负邻居对 Γ"]
     B --&gt; C["模型池 F 各算法本地评估 → 加权胜率"]
@@ -4243,17 +4254,17 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>用户驱动算法选择（把"聚合"换成"选择"）</strong>：痛点是无全局优化时无法端到端训练统一模型。用户 <span class="arithmatex">\(u\)</span> 在邻域对集 <span class="arithmatex">\(\Gamma=\{(v_p,v_n)\mid v_p\in\cup_\tau N^\tau(u),\,v_n\notin\cup_\tau N^\tau(u)\}\)</span> 上，按各算法区分正负对的能力加权投票选骨干：</li>
+<li><strong>用户驱动算法选择（把"聚合"换成"选择"）</strong>：痛点是无全局优化时无法端到端训练统一模型。用户 <span class="arithmatex">\(u\)</span>在邻域对集<span class="arithmatex">\(\Gamma=\{(v_p,v_n)\mid v_p\in\cup_\tau N^\tau(u),\,v_n\notin\cup_\tau N^\tau(u)\}\)</span> 上，按各算法区分正负对的能力加权投票选骨干：</li>
 </ol>
 <div class="arithmatex">\[F_u=\arg\max_{f\in\mathcal{F}}\sum_{(v_p,v_n)\in\Gamma}\mathbb{I}\big[P(u,v_p)&gt;P(u,v_n)\big]\cdot\Pi_{u,v_p},\quad \Pi_{u,v_p}=\exp\big(\alpha(t-t_e)\big)\]</div>
-<p>其中 <span class="arithmatex">\(\Pi\)</span> 按连接出现时刻 <span class="arithmatex">\(t_e\)</span> 指数加权，越近期的连接权重越大。直觉：让每个用户只用自己的局部证据挑"最懂我社交圈"的归纳偏置，避免异构局部视图被一个聚合器抹平。</p>
+<p>其中 <span class="arithmatex">\(\Pi\)</span>按连接出现时刻<span class="arithmatex">\(t_e\)</span> 指数加权，越近期的连接权重越大。直觉：让每个用户只用自己的局部证据挑"最懂我社交圈"的归纳偏置，避免异构局部视图被一个聚合器抹平。</p>
 <ol>
-<li><strong>用户级共识投票（方差下的鲁棒判定）</strong>：单验证者易受局部噪声与模型方差影响。委员会 <span class="arithmatex">\(\Phi_{p,t+1}\sim\text{UniformSample}(V_{F_p},n)\)</span> 中每个 <span class="arithmatex">\(\phi\)</span> 用自身模型对 <span class="arithmatex">\((p,q)\)</span> 与一组负样本 <span class="arithmatex">\(q'\)</span> 比较，投出</li>
+<li><strong>用户级共识投票（方差下的鲁棒判定）</strong>：单验证者易受局部噪声与模型方差影响。委员会 <span class="arithmatex">\(\Phi_{p,t+1}\sim\text{UniformSample}(V_{F_p},n)\)</span>中每个<span class="arithmatex">\(\phi\)</span>用自身模型对<span class="arithmatex">\((p,q)\)</span>与一组负样本<span class="arithmatex">\(q'\)</span> 比较，投出</li>
 </ol>
 <div class="arithmatex">\[\text{Vote}(\phi,p,q,t)=\mathbb{I}\Big[P(p,q)&gt;\max_{q'\in\text{Neg}(\phi,p,q,t)}P(p,q')\Big]\]</div>
 <p>最终 <span class="arithmatex">\(\text{Ver}(\Phi_{p,t+1},p,q,t)=\text{Majority}(\text{Vote})\)</span>，即过半票为正向。直觉：只要单模型优于随机猜测，多数投票就能压掉个体方差；但若骨干弱于随机，投票会放大错误——这正是"必须先选好模型"的原因。</p>
 <ol>
-<li><strong>训练目标、负采样与推理效率</strong>：各验证者独立最小化 <span class="arithmatex">\(\mathcal{L}(\hat{G}_{t+1},G_{t+1};\Theta_u)\)</span>，仅被选为验证者的用户参与更新（对齐 DeSocial 实际执行模式，避免集中式模拟的全图更新开销）。负样本采用 [57] 的随机采样策略；请求与投票分别按 <span class="arithmatex">\(B_{req}\)</span>、<span class="arithmatex">\(B_{vote}\)</span> 分批以降低分布式通信与推理开销。</li>
+<li><strong>训练目标、负采样与推理效率</strong>：各验证者独立最小化 <span class="arithmatex">\(\mathcal{L}(\hat{G}_{t+1},G_{t+1};\Theta_u)\)</span>，仅被选为验证者的用户参与更新（对齐 DeSocial 实际执行模式，避免集中式模拟的全图更新开销）。负样本采用 [57] 的随机采样策略；请求与投票分别按<span class="arithmatex">\(B_{req}\)</span>、<span class="arithmatex">\(B_{vote}\)</span> 分批以降低分布式通信与推理开销。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4296,8 +4307,8 @@
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: <strong>滚动 Leave-One-Out（时序切片级）</strong>——<span class="arithmatex">\(t\)</span> 时刻用 <span class="arithmatex">\(\cup_{\tau=0}^{t-1}G_\tau\)</span> 训练、<span class="arithmatex">\(G_t\)</span> 验证、<span class="arithmatex">\(G_{t+1}\)</span> 测试，非按用户/边剔除。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 提出 <strong>Acc@K</strong>（<span class="arithmatex">\(K\in\{2,3,5\}\)</span>），即 1 条用户批准正连接 + <span class="arithmatex">\(K-1\)</span> 条随机负连接中，正连接获得最高共识分的概率；负样本按 [57] 随机策略采样，属<strong>采样排序</strong>而非全库排序。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: <strong>滚动 Leave-One-Out（时序切片级）</strong>——<span class="arithmatex">\(t\)</span>时刻用<span class="arithmatex">\(\cup_{\tau=0}^{t-1}G_\tau\)</span>训练、<span class="arithmatex">\(G_t\)</span>验证、<span class="arithmatex">\(G_{t+1}\)</span> 测试，非按用户/边剔除。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 提出 <strong>Acc@K</strong>（<span class="arithmatex">\(K\in\{2,3,5\}\)</span>），即 1 条用户批准正连接 +<span class="arithmatex">\(K-1\)</span> 条随机负连接中，正连接获得最高共识分的概率；负样本按 [57] 随机策略采样，属<strong>采样排序</strong>而非全库排序。</li>
 <li><strong>对比基线与超参设置</strong>: 单骨干 MLP/GCN/GAT/GraphSAGE/SGC；分布式基线 GEN、E2GNN（集成）、FedGraphNN（联邦），均支持上述五骨干。报告五次验证者设置运行的均值±标准差。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4505,12 +4516,18 @@
 <li><strong>个性化选择与共识缺一不可，且选择质量敏感</strong>：去掉共识（单验证者）UCI 掉 4.28 个点（77.63→73.35），说明多数投票是抗方差主力；而 Random/Simple Select 分别掉至 75.05/73.33，证明"选对模型"比"多模型"更关键——随机或启发式选择会显著削弱共识收益。</li>
 <li><strong>"少即是多"与活跃度分层效应</strong>：验证者选择树显示盲目加入更多算法类型可能反而降分，有效验证依赖归纳偏置互补而非数量堆叠；图 2 中 Q1（最不活跃）用户靠活跃验证者的集体评估获得改善，但 UCI 与 GDELT-GCN 上 Q4 因邻域冗余产生冲突信号、全一致率反低于 Q3；图 3 表明委员会规模 <span class="arithmatex">\(n\)</span> 增大后增益收敛，实用规模无需很大。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 E2GNN/GEN 的本质区别是<strong>决策级选择</strong>而非参数融合/软投票；与 FedGraphNN 的区别是验证者拥有全局图感知、独立推理后共识，而非在局部视图上交换梯度再按固定规则聚合；与单骨干 GNN 的区别是把"一个全局模型"换成"每人一个模型 + 委员会"。</li>
 <li><strong>可迁移亮点</strong>: ① Acc@K 共识指标可直接迁移到任何"多评估者二值判定"的推荐场景（如众包标注、去中心化审核）；② 用本地邻域胜率做模型选择，是一种免全局训练的轻量个性化路由技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① 模型池固定为五个轻量 GNN，未验证更大/演化模型池与验证者可靠性异质（恶意验证者）下的鲁棒性；② 评测仅在采样 Acc@K 上做，缺少全库排序与真实在线 A/B，且集中式模拟中仅更新验证者集合，可能低估分布式真实通信开销。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

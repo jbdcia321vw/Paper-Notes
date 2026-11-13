@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 以用户请求为训练样本单元，通过数据/系统/模型协同设计消除请求内特征冗余，训练吞吐提升最高570%，同等算力下模型FLOPs扩展7倍。">
+        <meta name="description" content="[SIGIR 2026][生成式推荐与离散语义ID] 以用户请求为训练样本单元，在数据源头去重用户特征，实现训练吞吐 2-6 倍提升并支撑 HSTU 生成式推荐规模化落地。">
       
       
       
@@ -108,18 +108,20 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 去偏公平、可信隐私与工业架构, 召回/粗排/精排, 请求级训练样本, 特征去重与计算摊销" />
+<meta name="keywords" content="SIGIR 2026, 生成式推荐与离散语义ID, 端到端生成式, Request-Only Optimization, HSTU, 特征去重" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
 
-<meta property="article:tag" content="去偏公平、可信隐私与工业架构" />
+<meta property="article:tag" content="生成式推荐与离散语义ID" />
 
-<meta property="article:tag" content="召回/粗排/精排" />
+<meta property="article:tag" content="端到端生成式" />
 
-<meta property="article:tag" content="请求级训练样本" />
+<meta property="article:tag" content="Request-Only Optimization" />
 
-<meta property="article:tag" content="特征去重与计算摊销" />
+<meta property="article:tag" content="HSTU" />
+
+<meta property="article:tag" content="特征去重" />
 
 
 
@@ -129,10 +131,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/request_only_optimization_for_recommendation_systems/" />
 <meta property="og:title" content="[Paper Note] Request-Only Optimization for Recommendation Systems" />
-<meta property="og:description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 以用户请求为训练样本单元，通过数据/系统/模型协同设计消除请求内特征冗余，训练吞吐提升最高570%，同等算力下模型FLOPs扩展7倍。" />
+<meta property="og:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 以用户请求为训练样本单元，在数据源头去重用户特征，实现训练吞吐 2-6 倍提升并支撑 HSTU 生成式推荐规模化落地。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] Request-Only Optimization for Recommendation Systems" />
-<meta name="twitter:description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 以用户请求为训练样本单元，通过数据/系统/模型协同设计消除请求内特征冗余，训练吞吐提升最高570%，同等算力下模型FLOPs扩展7倍。" />
+<meta name="twitter:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 以用户请求为训练样本单元，在数据源头去重用户特征，实现训练吞吐 2-6 倍提升并支撑 HSTU 生成式推荐规模化落地。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -158,7 +160,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] Request-Only Optimization for Recommendation Systems",
   "headline": "[Paper Note] Request-Only Optimization for Recommendation Systems",
-  "description": "[SIGIR 2026][\u53bb\u504f\u516c\u5e73\u3001\u53ef\u4fe1\u9690\u79c1\u4e0e\u5de5\u4e1a\u67b6\u6784] \u4ee5\u7528\u6237\u8bf7\u6c42\u4e3a\u8bad\u7ec3\u6837\u672c\u5355\u5143\uff0c\u901a\u8fc7\u6570\u636e/\u7cfb\u7edf/\u6a21\u578b\u534f\u540c\u8bbe\u8ba1\u6d88\u9664\u8bf7\u6c42\u5185\u7279\u5f81\u5197\u4f59\uff0c\u8bad\u7ec3\u541e\u5410\u63d0\u5347\u6700\u9ad8570%\uff0c\u540c\u7b49\u7b97\u529b\u4e0b\u6a21\u578bFLOPs\u6269\u5c557\u500d\u3002",
+  "description": "[SIGIR 2026][\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID] \u4ee5\u7528\u6237\u8bf7\u6c42\u4e3a\u8bad\u7ec3\u6837\u672c\u5355\u5143\uff0c\u5728\u6570\u636e\u6e90\u5934\u53bb\u91cd\u7528\u6237\u7279\u5f81\uff0c\u5b9e\u73b0\u8bad\u7ec3\u541e\u5410 2-6 \u500d\u63d0\u5347\u5e76\u652f\u6491 HSTU \u751f\u6210\u5f0f\u63a8\u8350\u89c4\u6a21\u5316\u843d\u5730\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/request_only_optimization_for_recommendation_systems/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/request_only_optimization_for_recommendation_systems/",
   "inLanguage": "zh-CN",
@@ -166,16 +168,17 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u53bb\u504f\u516c\u5e73\u3001\u53ef\u4fe1\u9690\u79c1\u4e0e\u5de5\u4e1a\u67b6\u6784, \u53ec\u56de/\u7c97\u6392/\u7cbe\u6392, \u8bf7\u6c42\u7ea7\u8bad\u7ec3\u6837\u672c, \u7279\u5f81\u53bb\u91cd\u4e0e\u8ba1\u7b97\u644a\u9500",
+  "keywords": "SIGIR 2026, \u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID, \u7aef\u5230\u7aef\u751f\u6210\u5f0f, Request-Only Optimization, HSTU, \u7279\u5f81\u53bb\u91cd",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
-    { "@type": "Thing", "name": "\u53bb\u504f\u516c\u5e73\u3001\u53ef\u4fe1\u9690\u79c1\u4e0e\u5de5\u4e1a\u67b6\u6784" },
-    { "@type": "Thing", "name": "\u53ec\u56de/\u7c97\u6392/\u7cbe\u6392" },
-    { "@type": "Thing", "name": "\u8bf7\u6c42\u7ea7\u8bad\u7ec3\u6837\u672c" },
-    { "@type": "Thing", "name": "\u7279\u5f81\u53bb\u91cd\u4e0e\u8ba1\u7b97\u644a\u9500" }
+    { "@type": "Thing", "name": "\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID" },
+    { "@type": "Thing", "name": "\u7aef\u5230\u7aef\u751f\u6210\u5f0f" },
+    { "@type": "Thing", "name": "Request-Only Optimization" },
+    { "@type": "Thing", "name": "HSTU" },
+    { "@type": "Thing", "name": "\u7279\u5f81\u53bb\u91cd" }
   ],
   
-  "datePublished": "2026-11-12",
+  "datePublished": "2026-11-13",
   "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
@@ -3994,10 +3997,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4008,7 +4011,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4016,22 +4019,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4039,32 +4042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4091,12 +4072,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4114,7 +4095,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4122,10 +4103,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4138,10 +4119,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4153,17 +4134,6 @@
     <span class="md-ellipsis">
       
         Rating (四维评分)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        论文图表
       
     </span>
   </a>
@@ -4189,9 +4159,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][去偏公平、可信隐私与工业架构] 以用户请求为训练样本单元，通过数据/系统/模型协同设计消除请求内特征冗余，训练吞吐提升最高570%，同等算力下模型FLOPs扩展7倍。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][生成式推荐与离散语义ID] 以用户请求为训练样本单元，在数据源头去重用户特征，实现训练吞吐 2-6 倍提升并支撑 HSTU 生成式推荐规模化落地。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 去偏公平、可信隐私与工业架构 · 召回/粗排/精排 · 请求级训练样本 · 特征去重与计算摊销</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 生成式推荐与离散语义ID · 端到端生成式 · Request-Only Optimization · HSTU · 特征去重</p>
   
 </aside>
   
@@ -4212,28 +4182,35 @@
       
       
       
-        <span class="md-tag">去偏公平、可信隐私与工业架构</span>
+        <span class="md-tag">生成式推荐与离散语义ID</span>
       
     
       
       
       
       
-        <span class="md-tag">召回/粗排/精排</span>
+        <span class="md-tag">端到端生成式</span>
       
     
       
       
       
       
-        <span class="md-tag">请求级训练样本</span>
+        <span class="md-tag">Request-Only Optimization</span>
       
     
       
       
       
       
-        <span class="md-tag">特征去重与计算摊销</span>
+        <span class="md-tag">HSTU</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">特征去重</span>
       
     
   </nav>
@@ -4246,220 +4223,250 @@
 <h1 id="request-only-optimization-for-recommendation-systems">Request-Only Optimization for Recommendation Systems (面向推荐系统的仅请求级优化)</h1>
 <ul>
 <li><strong>会议/期刊</strong>: SIGIR 2026</li>
-<li><strong>推荐链路定位</strong>: 召回 (Retrieval) / 粗排 (Early-Stage Ranking) / 精排 (Late-Stage Ranking) / 端到端生成式 (Generative Recommenders)</li>
-<li><strong>研究方向</strong>: 去偏公平、可信隐私与工业架构 / 生成式推荐与离散语义 ID</li>
+<li><strong>作者与机构</strong>: Liang Guo, Wei Li, Jiaqi Zhai 等，Meta Platforms, Inc.</li>
+<li><strong>推荐链路定位</strong>: 召回 / 粗排 / 精排（全链路训练范式）</li>
+<li><strong>研究方向</strong>: 生成式推荐与离散语义ID / 工业架构与系统</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2508.05640v3">https://arxiv.org/abs/2508.05640v3</a></li>
 <li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对工业推荐系统"以曝光 (impression) 为训练样本单元"导致同一请求内用户特征被重复存储与重复计算的根因性低效，本文提出 Request-Only Optimization (ROO) 范式：将一次用户请求作为训练样本单元，把特征划分为仅请求级 (RO) 与曝光级 (NRO) 两部分，在数据格式、数据管道与模型架构三层协同设计。ROO 使同存储下训练样本量提升 43%–150%，召回/粗排训练吞吐最高提升 570%，精排提升 32%–100%，并借助计算摊销将 HSTU 生成式推荐模型 FLOPs 扩展 7 倍，在十亿用户级产品上取得显著离线与线上指标收益。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>工业 DLRM 长期以「单次曝光 (impression)」为训练样本单元，同一请求下 4–7 个曝光会重复存储与重复计算完全相同的用户侧长序列特征，成为存储、通信与 GPU 算力的主要浪费源。本文提出 Request-Only Optimization (ROO)：把一次用户请求作为训练样本单元，将特征拆为 RO（请求级，仅一份）与 NRO（曝光级，数组），在数据源头完成原生去重，并配套 UserArch 与 HSTU 序列架构。在 Meta 三个十亿用户产品上，同存储下样本量提升 43%–150%，召回/粗排训练吞吐提升 220%–570%，精排提升 32%–100%；同等算力下模型 FLOPs 扩大 7 倍，线上主消费指标最高 +4.77%。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 工业级 DLRM 以 PB 级数据训练、服务十亿级用户，单样本计算量已达 TFLOPs 量级。主流范式是"两阶段"数据管道：请求阶段下发多个候选内容形成多次曝光 (impression)，反馈阶段收集用户行为并与特征 join，<strong>以单次曝光为训练样本单元</strong>。为利用长用户历史，序列建模（Transformer/HSTU）被广泛采用，用户侧稀疏序列特征构成训练样本特征的绝大部分。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>源头特征冗余</strong>：一次请求平均产生 4–7 次曝光（图 2），曝光级 event-feature joiner（图 1b）会把完全相同的用户特征在每条曝光样本中重复存储，冗余沿存储、网络带宽、GPU 计算全链路级联放大。</li>
-<li><strong>训练/推理栈割裂</strong>：推理侧已有请求级优化（客户端广播 + 服务端去重）作为"wrapper"叠加在曝光级数据之上，增加系统复杂度却未触及训练侧根因。</li>
-<li><strong>规模化瓶颈</strong>：序列建模与生成式推荐 (GR) 依赖的恰是被冗余处理的用户序列特征，导致高复杂度架构在训练成本上不可行。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 曝光级数据格式已深度嵌入客户端与服务端基础设施，且反馈阶段曝光事件是增量到达的，因此简单的"批内去重"或"加深网络"无法在数据生成源头消除冗余；必须从数据格式层面重构样本单元。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 同一请求内所有曝光共享同一份用户特征（RO 特征），因此用户塔/序列编码器的计算与通信可在请求级<strong>精确摊销一次</strong>。作者据此将计算与通信复杂度从 <span class="arithmatex">\(O(B_{NRO})\)</span> 降至 <span class="arithmatex">\(O(B_{RO})\)</span>，并指出该摊销恰好为 HSTU 等重用户侧架构打开规模化空间。</li>
+<li><strong>主流范式</strong>: 工业 DLRM 采用「曝光阶段 → 反馈阶段」两段式流水线，在曝光级 event-feature joiner 处把用户特征与每个候选物品拼接成独立训练样本（图 1b）。</li>
+<li><strong>前人局限</strong>: 其一，同一请求内用户侧长序列特征被复制 4–7 份（图 2），违反数据库第二范式，存储、跨机通信与 embedding all-to-all 全部按 <span class="arithmatex">\(B_{NRO}\)</span> 规模膨胀；其二，推理侧虽已有 request-level 去重（You et al.），但仅作为推理包装层，训练与推理特征格式割裂，系统复杂度不降反升。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 用户特征在请求内严格等价，且在现代模型中占据特征空间绝大多数；因此用户塔计算与通信可完全摊薄到请求级，理论加速比恰为 <span class="arithmatex">\(B_{NRO}/B_{RO}\)</span>（即每请求曝光数）。</li>
+<li><strong>本文切入点</strong>: 不做局部工程补丁，而是从数据 schema 根部重构——请求级样本 + RO/NRO 分离，使数据、系统、模型三层协同设计。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户集 <span class="arithmatex">\(\mathcal{U}\)</span>、物品集 <span class="arithmatex">\(\mathcal{I}\)</span>；一次请求 <span class="arithmatex">\(r\)</span> 对应 <span class="arithmatex">\(m\)</span> 个候选物品（曝光），批内请求数为 <span class="arithmatex">\(B_{RO}\)</span>，批内曝光总数为 <span class="arithmatex">\(B_{NRO}\)</span>，平均 <span class="arithmatex">\(B_{NRO}/B_{RO}\approx 4\text{–}7\)</span>。</li>
-<li>特征被显式划分为两类：</li>
-<li><strong>RO (Request-Only) 特征</strong>：用户稠密特征 <code>map&lt;int,float&gt;</code>、用户 ID-list 特征 <code>map&lt;int,list&lt;int&gt;&gt;</code>，每个请求仅存一份；</li>
-<li><strong>NRO (Non-Request-Only / 曝光级) 特征</strong>：物品稠密特征 <code>map&lt;int,list&lt;float&gt;&gt;</code>、物品 ID-list 特征 <code>map&lt;int,list&lt;list&lt;int&gt;&gt;</code>，沿候选维度展平。</li>
-<li>张量化：RO 用户浮点特征为 2D 张量，RO 用户 ID-list 为 PyTorch <code>KeyedJaggedTensor</code>；NRO 同理，并以 NRO 张量显式记录"每个 ROO 样本含多少曝光"以避免批大小对齐时的用户特征复制。</li>
-<li>序列建模记号：用户历史 <span class="arithmatex">\(RO_0,\dots,RO_{n-1}\)</span>（<span class="arithmatex">\(n\)</span> 常达数千），请求内目标物品 <span class="arithmatex">\(NRO_0,\dots,NRO_{m-1}\)</span>（<span class="arithmatex">\(m\)</span> 常为数十），每项附行为特征 <span class="arithmatex">\(a\)</span> 与上下文特征 <span class="arithmatex">\(c\)</span>（surface type、时间戳等），嵌入维度 <span class="arithmatex">\(d\)</span>（实验场景取 <span class="arithmatex">\(d=256\)</span>）。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流向：反馈阶段由 <strong>request-level joiner</strong> 按 request-id 缓冲用户-物品交互事件，join 窗口关闭后生成一条紧凑 ROO 样本（RO 部分一份用户特征 + NRO 部分物品特征数组）→ 以 feature flattening 列式格式落盘（提升压缩比）→ DPP worker 读入并转为 RO/NRO 两套张量 → 模型侧 RO 塔/序列编码器只对 <span class="arithmatex">\(B_{RO}\)</span> 个请求计算一次，结果 fanout 给该请求下所有曝光 → 与 NRO 物品表征交互后打分或自回归解码。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>ROO 将反馈阶段的 joiner 从曝光级改为请求级：以 request-id 为键缓冲同一请求内的全部交互事件，窗口关闭后生成一条紧凑样本——RO 部分仅存一份用户稠密特征与用户 ID-list 序列，NRO 部分存物品特征数组及每样本曝光计数。预处理阶段 RO 张量批大小为 <span class="arithmatex">\(B_{RO}\)</span>、NRO 为<span class="arithmatex">\(B_{NRO}\)</span>，借助 TorchRec 变长分片共享同一 embedding 表，避免为用户特征做批对齐复制。模型侧用户塔/序列编码器只对 RO 计算一次，结果 fanout 给该请求内所有候选；训练与推理共用同一输入格式，消除客户端广播与服务端去重逻辑。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["反馈阶段: 曝光事件增量到达"] --&gt; B["Request-level Joiner: 按 request-id 缓冲, 窗口关闭生成 ROO 样本"]
-    B --&gt; C["列式存储: RO 特征一份 + NRO 物品特征数组"]
-    C --&gt; D["DPP Worker: RO 2D 张量 / KeyedJaggedTensor, NRO 沿候选维展平"]
-    D --&gt; E["RO 侧计算摊销: 用户塔 / UserArch / HSTU 序列编码器 (B_RO 次)"]
-    E --&gt; F["NRO 侧: 物品表征与 RO 表征交互"]
-    F --&gt; G["打分预测 (召回/粗排/精排) 或 自回归解码 (GR)"]</code></pre>
-<p>图 1 展示了传统曝光级 joiner 与本文请求级 joiner 的对比；图 3 以 <span class="arithmatex">\(B_{NRO}=4,B_{RO}=1\)</span> 为例说明 RO 侧 embedding lookup 与 all-to-all 通信如何从 4 次降为 1 次；图 4 对比了双塔类模型在曝光级训练 (a) 与 ROO 训练 (b) 下的结构差异。</p>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 请求级数据格式与 join 质量保障。</strong> 表 1 与表 2 分别给出曝光级与请求级样本 schema：曝光级需为每条曝光重复 <code>user dense features</code> 与 <code>user id-list features</code>，请求级则将其提升为请求维度（<code>map&lt;int,float&gt;</code> / <code>map&lt;int,list&lt;int&gt;&gt;</code>），物品特征改为嵌套 list。为避免请求级 join 引入分布偏移，作者用固定时间策略或动态训练触发器提前关闭 join 窗口，实测最早交互事件到请求最后一条物品的平均时间差在 16 分钟内，数据落地延迟约为固定窗口的一半；表 3 显示转化率与视频观看时长等关键标签的分布失配率极低（转化失配 0.023%–0.16%，观看时长失配 0.01%–1.07%），用户样本与特征覆盖率和曝光级数据持平。</p>
-<p><strong>(2) UserArch：RO 侧特征压缩与规模化。</strong> 精排模型中用户-物品交互发生得早，ROO 收益主要限于 embedding lookup 与跨 GPU 通信。为此作者在进入 post-ROO 架构前用 Linear Compress Embedding (LCE) 压缩用户特征维度。设用户特征张量 <span class="arithmatex">\(X\in\mathbb{R}^{B,d_{in},n_{in}}\)</span>：</p>
-<div class="arithmatex">\[f(X)=b+g(X)\odot W,\quad b\in\mathbb{R}^{1,n_{out}},\ W\in\mathbb{R}^{n_{in},n_{out}}\]</div>
-<p>其中 <span class="arithmatex">\(g(X)\)</span> 将 <span class="arithmatex">\(X\)</span> reshape/permute 为 <span class="arithmatex">\(\mathbb{R}^{B\times d,n_{in}}\)</span>；再接一层线性投影到输出维度：</p>
-<div class="arithmatex">\[f'(f(X))=b'+g'(f(X))\odot W',\quad b'\in\mathbb{R}^{1,d_{out}},\ W'\in\mathbb{R}^{d_{in},d_{out}}\]</div>
-<p>物理直觉：先在特征数维 <span class="arithmatex">\(n_{in}\to n_{out}\)</span> 压缩、再在嵌入维 <span class="arithmatex">\(d_{in}\to d_{out}\)</span> 投影，使"增加用户侧特征"不再线性推高 post-ROO 交互架构的规模，而 UserArch 自身的计算又被 ROO 摊销，从而在同等算力下容纳更多用户信号。</p>
-<p><strong>(3) ROO 自回归建模与 HSTU 摊销。</strong> 对基于 self-attention 的序列转导架构，曝光级设置下总开销为 <span class="arithmatex">\(m\cdot(n^2d+nd^2)\)</span>；ROO 设置下历史与请求内目标拼接为一条序列，开销降为 <span class="arithmatex">\((n+m)^2d+(n+m)d^2\)</span>。在 <span class="arithmatex">\(n=1000,m=10,d=256\)</span> 的中等场景下，序列编码器计算节省达 <strong>9.82×</strong>。检索场景中序列编码器仅输入用户历史，排序场景中目标信息亦输入编码器（图 5b）。作者据此在用户序列上部署 HSTU（面向工业级大而动态词表的 Transformer 变体），把省下的算力全部投入模型 FLOPs 扩展。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 原文未给出统一的显式损失公式（属工业系统论文，各产品沿用其原有训练目标）；核心贡献在于样本组织与计算图重构，而非新损失项。</li>
-<li><strong>训练负采样策略</strong>: 原文未报告负采样细节（召回/粗排沿用各产品既有配置）。</li>
-<li><strong>时间与空间复杂度</strong>:</li>
-<li>RO 侧 embedding lookup、embedding all-to-all 通信、RO-only 架构的 FLOPs 由 <span class="arithmatex">\(O(B_{NRO})\)</span> 降为 <span class="arithmatex">\(O(B_{RO})\)</span>（图 3）；</li>
-<li>序列编码器由 <span class="arithmatex">\(m(n^2d+nd^2)\)</span> 降为 <span class="arithmatex">\((n+m)^2d+(n+m)d^2\)</span>；</li>
-<li>存储侧：同容量下训练样本量提升 43%–150%（表 4）；</li>
-<li>推理侧：ROO 统一训练与推理输入格式，移除客户端用户特征广播与服务端去重，模型内部完成用户特征 fanout；</li>
-<li>理论加速比 300%–600%（对应每请求 4–7 次曝光）。</li>
-</ul>
+    A["请求内多曝光事件流"] --&gt; B["请求级 Joiner (按 request-id 缓冲)"]
+    B --&gt; C["ROO 样本: RO 用户特征 x1 + NRO 物品数组"]
+    C --&gt; D["RO 侧 embedding 查找与 all-to-all (仅 B_RO 次)"]
+    D --&gt; E["UserArch / HSTU 用户塔编码"]
+    E --&gt; F["Fanout 至 NRO 候选 + 交互层打分"]</code></pre>
+<figure class="paper-figure">
+  <img alt="图 1：传统训练数据流水线在数据生成源头即产生过多的特征重复，即曝光级事件-特征拼接器（b），在整个系统中浪费大量计算资源。请求级拼接器（本工作）取代传统拼接器，在单个样本中捕获属于同一请求的所有曝光（c）。" src="../../../../../assets/papers/2508.05640v3/figure_1.png" /><figcaption>图 1：传统训练数据流水线在数据生成源头即产生过多的特征重复，即曝光级事件-特征拼接器（b），在整个系统中浪费大量计算资源。请求级拼接器（本工作）取代传统拼接器，在单个样本中捕获属于同一请求的所有曝光（c）。</figcaption>
+</figure>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>请求级数据 Schema 与 RO/NRO 分离</strong>：曝光级 schema 中用户特征是非键列对键子集的依赖，天然冗余。ROO 将 RO 特征抽出为请求键下的一张表，NRO 以数组形式内嵌，列式存储压缩率随之提升。效果是同一存储预算下可记录更多样本（+43%~150%），且无需 InverseKeyedJaggedTensor 之类自定义结构，模型改写成本极低。数据质量上，转化标签失配率仅 0.023%–0.16%，视频观看时长失配 ≤1.07%，分布基本无损。</p>
+</li>
+<li>
+<p><strong>UserArch：RO 侧可摊销的算力扩张</strong>：精排模型中用户-物品交互发生得早，ROO 收益被限制在 embedding 查找。UserArch 在进入 post-ROO 交互架构前，先用线性压缩嵌入 LCE 压缩用户特征维度：<span class="arithmatex">\(f(X)=b+g(X)\odot W\)</span>，其中<span class="arithmatex">\(X\in\mathbb{R}^{B,d_{in},n_{in}}\)</span>，<span class="arithmatex">\(g(\cdot)\)</span>将<span class="arithmatex">\(X\)</span>重排为<span class="arithmatex">\(\mathbb{R}^{B\times d,n_{in}}\)</span>，<span class="arithmatex">\(W\in\mathbb{R}^{n_{in},n_{out}}\)</span>；再由第二层线性映射到<span class="arithmatex">\(d_{out}\)</span>。由于该模块只依赖 RO，其开销被请求内多曝光摊薄，因而可以放心纳入更多用户侧特征而不撑大下游交互网络。</p>
+</li>
+<li>
+<p><strong>ROO 下的自回归序列建模与 HSTU</strong>：传统曝光级下，对 <span class="arithmatex">\(n\)</span>长历史、<span class="arithmatex">\(m\)</span>个请求内目标的 Transformer 编码代价为<span class="arithmatex">\(m\cdot(n^2d+nd^2)\)</span>；ROO 将历史与目标拼成单序列后降为<span class="arithmatex">\((n+m)^2d+(n+m)d^2\)</span>。在<span class="arithmatex">\(n=1000,m=10,d=256\)</span> 的中等设定下，序列编码器节省 9.82 倍。这正是生成式推荐 (GR) 此前在工业界算力上不可行的根因，ROO 使其变得可负担。训练目标沿用 HSTU 的下一 token 自回归损失，无需额外负采样；推理时 RO 编码可跨候选复用。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 本文不使用公开学术基准，实验载体为某十亿用户级平台上三个（部分段落提及四个）主要推荐产品的真实工业数据，分别记为 product-A/B/C(/D)。原文未报告用户数、物品数、交互数等统计量。</li>
+<li><strong>数据集与场景</strong>: 非公开学术数据集，而是 Meta 三个十亿级用户产品（product-A/B/C/D）的真实工业日志，覆盖召回、粗排 (ESR)、精排 (LSR) 三类模型；对比实验严格保证数据源与网络结构一致，唯一变量为 ROO 数据与流水线。</li>
 </ul>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
+<th style="text-align: left;">场景</th>
+<th style="text-align: center;">每请求曝光数</th>
+<th style="text-align: center;">样本量增益</th>
+<th style="text-align: center;">吞吐增益</th>
+<th style="text-align: left;">评估指标</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Product-A</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">用户稠密/ID-list 序列特征 + 物品特征</td>
+<td style="text-align: left;">Retrieval (B/C)</td>
+<td style="text-align: center;">4–7</td>
+<td style="text-align: center;">+43%~150%</td>
+<td style="text-align: center;">+220%~570%</td>
+<td style="text-align: left;">Recall@100</td>
 </tr>
 <tr>
-<td style="text-align: left;">Product-B</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">同上</td>
+<td style="text-align: left;">ESR (A/B/C/D)</td>
+<td style="text-align: center;">4–7</td>
+<td style="text-align: center;">同上</td>
+<td style="text-align: center;">+125%~266%</td>
+<td style="text-align: left;">NE ↓ / 线上指标</td>
 </tr>
 <tr>
-<td style="text-align: left;">Product-C</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">同上</td>
+<td style="text-align: left;">LSR (A/B/C/D)</td>
+<td style="text-align: center;">4–7</td>
+<td style="text-align: center;">同上</td>
+<td style="text-align: center;">+32%~100%</td>
+<td style="text-align: left;">NE ↓ / 线上指标</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文未报告离线训练/验证/测试的具体切分比例；工业场景下按时间顺序的在线数据流训练，请求级 join 窗口（固定时间或动态触发）决定样本落地时点，理论上存在"等待窗口内后续曝光"的轻微时序耦合，但表 3 的标签分布对齐分析表明失配可忽略。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 原文未报告 Full-Ranking 或 Sampled Ranking 协议；评测以工业离线指标与线上 A/B 指标为主。</li>
-<li><strong>评价指标与显著性检验</strong>: 原文摘要与正文提及"显著离线与线上指标收益"，但抽取文本中未给出具体指标名称、数值与显著性检验（如 paired <span class="arithmatex">\(t\)</span>-test）细节；嵌入维度在序列建模复杂度分析中取 <span class="arithmatex">\(d=256\)</span>。</li>
+<li><strong>数据划分与防穿越</strong>: 采用工业标准的<strong>时间切分</strong>（按事件时间先后划分训练/评估），请求级 joiner 的窗口关闭策略为固定时长或动态触发，实测最早与最末交互事件间隔 ≤16 分钟，落地延迟约为固定窗口的一半，未引入穿越。</li>
+<li><strong>排名评测协议</strong>: 离线采用 <strong>Full-Ranking 式全库评估</strong>（召回用 Recall@100，排序用 Normalized Entropy），线上采用大规模 <strong>A/B 测试</strong>，并给出各产品逐指标的显著性阈值（如 product-A 的 topline 显著线为 0.03%）。</li>
+<li><strong>对比基线与超参</strong>: 基线为同架构的曝光级训练版本（Baseline 1.0x FLOPs）；关键对照为 HSTU(Impression) 与 HSTU(ROO)；序列长度 <span class="arithmatex">\(n\)</span>量级为千、请求规模<span class="arithmatex">\(m\)</span>量级为十、<span class="arithmatex">\(d=256\)</span>。</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>本文主实验为系统效率与样本量对比，而非与传统推荐基线的精度对比表。核心结果如下：</p>
+<p>召回模型（product-B，Recall@100 相对基线提升）：</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">维度</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">传统曝光级训练</th>
-<th style="text-align: center;">本文 ROO</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: left;">Model</th>
+<th style="text-align: center;">FLOPs/example</th>
+<th style="text-align: center;">C-Task Recall@100</th>
+<th style="text-align: center;">E-Task Recall@100</th>
+<th style="text-align: center;">线上 Consumption</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">样本量 (Product-A)</td>
-<td style="text-align: left;">同存储下训练样本数</td>
-<td style="text-align: center;">基准</td>
-<td style="text-align: center;">+43%</td>
-<td style="text-align: center;">+43%</td>
+<td style="text-align: left;">Baseline</td>
+<td style="text-align: center;">1.0x</td>
+<td style="text-align: center;">+0.0%</td>
+<td style="text-align: center;">+0.0%</td>
+<td style="text-align: center;">+0.0%</td>
 </tr>
 <tr>
-<td style="text-align: left;">样本量 (Product-B)</td>
-<td style="text-align: left;">同存储下训练样本数</td>
-<td style="text-align: center;">基准</td>
-<td style="text-align: center;">+150%</td>
-<td style="text-align: center;">+150%</td>
+<td style="text-align: left;">HSTU (Impression)</td>
+<td style="text-align: center;">6.8x</td>
+<td style="text-align: center;">+3.53%</td>
+<td style="text-align: center;">+2.35%</td>
+<td style="text-align: center;">–</td>
 </tr>
 <tr>
-<td style="text-align: left;">样本量 (Product-C)</td>
-<td style="text-align: left;">同存储下训练样本数</td>
-<td style="text-align: center;">基准</td>
-<td style="text-align: center;">+100%</td>
-<td style="text-align: center;">+100%</td>
-</tr>
-<tr>
-<td style="text-align: left;">训练吞吐 (召回/粗排)</td>
-<td style="text-align: left;">Training throughput</td>
-<td style="text-align: center;">基准</td>
-<td style="text-align: center;">最高 6×</td>
-<td style="text-align: center;">最高 +570%</td>
-</tr>
-<tr>
-<td style="text-align: left;">训练吞吐 (精排)</td>
-<td style="text-align: left;">Training throughput</td>
-<td style="text-align: center;">基准</td>
-<td style="text-align: center;">—</td>
-<td style="text-align: center;">+32% ~ +100%</td>
-</tr>
-<tr>
-<td style="text-align: left;">模型规模 (HSTU)</td>
-<td style="text-align: left;">同等训练算力下 FLOPs</td>
-<td style="text-align: center;">基准</td>
-<td style="text-align: center;">7×</td>
-<td style="text-align: center;">+600%</td>
-</tr>
-<tr>
-<td style="text-align: left;">序列编码器计算</td>
-<td style="text-align: left;"><span class="arithmatex">\(n=1000,m=10,d=256\)</span></td>
-<td style="text-align: center;"><span class="arithmatex">\(m(n^2d+nd^2)\)</span></td>
-<td style="text-align: center;"><span class="arithmatex">\((n+m)^2d+(n+m)d^2\)</span></td>
-<td style="text-align: center;">9.82× 节省</td>
+<td style="text-align: left;"><strong>HSTU (ROO)</strong></td>
+<td style="text-align: center;"><strong>0.99x</strong></td>
+<td style="text-align: center;"><strong>+3.87%</strong></td>
+<td style="text-align: center;"><strong>+2.41%</strong></td>
+<td style="text-align: center;"><strong>+4.77%</strong></td>
 </tr>
 </tbody>
 </table>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文未提供传统意义上的逐模块消融表。可视为"设计对照"的证据包括：(a) 图 3 的通信/计算去重示意与理论复杂度推导；(b) 表 3 的请求级 join 数据质量对照（相对曝光级数据的标签失配率）；(c) 图 4 的曝光级 vs. ROO 双塔结构对照。各模块贡献的定量拆分（如 UserArch 单独移除的降幅）原文未报告。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
+<p>排序模型离线 NE 下降与线上指标提升（NE 越低越好）：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model</th>
+<th style="text-align: center;">E-Task NE</th>
+<th style="text-align: center;">C-Task NE</th>
+<th style="text-align: center;">Topline</th>
+<th style="text-align: center;">Consumption</th>
+<th style="text-align: center;">Engagement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">LSR-A UserArch</td>
+<td style="text-align: center;">-0.41%</td>
+<td style="text-align: center;">-0.42%</td>
+<td style="text-align: center;">+0.04%</td>
+<td style="text-align: center;">+0.08%</td>
+<td style="text-align: center;">–</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LSR-A +HSTU</strong></td>
+<td style="text-align: center;"><strong>-0.53%</strong></td>
+<td style="text-align: center;"><strong>-0.57%</strong></td>
+<td style="text-align: center;"><strong>+0.12%</strong></td>
+<td style="text-align: center;"><strong>+0.18%</strong></td>
+<td style="text-align: center;"><strong>+4.8%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">ESR-B HSTU</td>
+<td style="text-align: center;">-0.31%</td>
+<td style="text-align: center;">-0.32%</td>
+<td style="text-align: center;">+0.04%</td>
+<td style="text-align: center;">+2.43%</td>
+<td style="text-align: center;">+4.9%</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LSR-B UserArch+HSTU</strong></td>
+<td style="text-align: center;"><strong>-0.86%</strong></td>
+<td style="text-align: center;"><strong>-0.78%</strong></td>
+<td style="text-align: center;"><strong>+0.07%</strong></td>
+<td style="text-align: center;"><strong>+5.56%</strong></td>
+<td style="text-align: center;"><strong>+7.0%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LSR-C HSTU</strong></td>
+<td style="text-align: center;"><strong>-0.81%</strong></td>
+<td style="text-align: center;"><strong>-0.79%</strong></td>
+<td style="text-align: center;"><strong>+0.25%</strong></td>
+<td style="text-align: center;"><strong>+1.1%</strong></td>
+<td style="text-align: center;"><strong>+2.9%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LSR-D UserArch+HSTU</strong></td>
+<td style="text-align: center;"><strong>-0.60%</strong></td>
+<td style="text-align: center;"><strong>-0.64%</strong></td>
+<td style="text-align: center;"><strong>+0.04%</strong></td>
+<td style="text-align: center;"><strong>+2.51%</strong></td>
+<td style="text-align: center;"><strong>+6.9%</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">配置</th>
+<th style="text-align: center;">训练吞吐</th>
+<th style="text-align: center;">离线 NE / Recall</th>
+<th style="text-align: left;">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">曝光级 Baseline</td>
+<td style="text-align: center;">1.0x</td>
+<td style="text-align: center;">基准</td>
+<td style="text-align: left;">用户特征重复 <span class="arithmatex">\(B_{NRO}\)</span> 次</td>
+</tr>
+<tr>
+<td style="text-align: left;">+ ROO 数据格式</td>
+<td style="text-align: center;">1.3x–6.7x</td>
+<td style="text-align: center;">持平</td>
+<td style="text-align: left;">仅去重，质量无损</td>
+</tr>
+<tr>
+<td style="text-align: left;">+ UserArch</td>
+<td style="text-align: center;">同上</td>
+<td style="text-align: center;">NE -0.41%~-0.42%</td>
+<td style="text-align: left;">RO 侧特征扩容被摊薄</td>
+</tr>
+<tr>
+<td style="text-align: left;">+ HSTU 序列编码</td>
+<td style="text-align: center;">同上</td>
+<td style="text-align: center;">NE 再降 0.12%~0.45%</td>
+<td style="text-align: left;">长序列自回归建模</td>
+</tr>
+<tr>
+<td style="text-align: left;">去掉 ROO 直接上 HSTU</td>
+<td style="text-align: center;">需 6.8x FLOPs</td>
+<td style="text-align: center;">Recall +3.53%</td>
+<td style="text-align: left;">算力不可承受</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>ROO 的收益与「每请求曝光数」强正相关</strong>：召回/粗排因用户塔占比高，吞吐提升达 220%–570%；精排因早期交互限制了可去重比例，仅 32%–100%。极端情形下若每请求仅 1 个曝光，ROO 退化为曝光级、零收益——这划定了方法的适用边界。</li>
+<li><strong>同等算力下模型容量可扩大 7 倍</strong>：HSTU(ROO) 以 0.99x FLOPs 取得比 HSTU(Impression) 在 6.8x FLOPs 下更好的 Recall（+3.87% vs +3.53%），说明去重释放的算力被有效转化为建模能力，而非单纯省钱。</li>
+<li><strong>离线 NE 与线上指标高度一致且增益叠加</strong>：LSR-B 上 UserArch 与 HSTU 叠加后 NE 降 0.86%/0.78%，对应线上消费 +5.56%、互动 +7.0%，远超 0.24%/0.63% 的显著线；product-C 仅 HSTU 即带来 topline +0.25%（显著线 0.03%），验证了范式在异构产品上的普适性。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>分桶表现</strong>: 原文未按用户/物品交互频次分桶分析。</li>
-<li><strong>超参敏感度</strong>: 原文未报告温度系数、损失权重等超参敏感性；仅给出序列长度 <span class="arithmatex">\(n\)</span> 与请求规模 <span class="arithmatex">\(m\)</span> 对加速比的理论影响趋势（<span class="arithmatex">\(n\)</span> 越大、<span class="arithmatex">\(m\)</span> 越大，ROO 摊销收益越显著）。</li>
-<li><strong>线上 A/B 测试结果</strong>: 论文声明 ROO 已部署至三个十亿级活跃用户产品，并"取得显著离线与线上指标收益"，但抽取文本中未列出具体业务指标（CTR/CVR/停留时长等）数值、实验周期与流量占比，属原文未充分报告项。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>根因级重构</strong>：不在既有曝光级管线上打补丁，而是把样本单元从 impression 改为 request，从数据生成源头消除冗余，这一思路可迁移到任何"一请求多候选"的排序/召回/生成式系统。</li>
-<li><strong>三层协同设计</strong>：数据格式（表 2）、基础设施（request-level joiner、列式压缩、变长 batch sharding）、模型架构（UserArch、ROO 序列模型、HSTU）形成闭环，且训练/推理格式统一，显著降低系统复杂度。</li>
-<li><strong>算力再投资</strong>：把摊销节省的算力转化为 7× FLOPs 的模型扩展，是"效率换质量"的典范工程论证。</li>
-<li><strong>局限性与审稿视角批判</strong>:</li>
-<li><strong>可复现性不足</strong>：无开源代码、无公开数据集、无具体超参与损失公式，学术读者难以复现；核心收益高度依赖 Meta 内部基础设施（TorchRec、feature flattening）。</li>
-<li><strong>评估协议不透明</strong>：未报告数据划分、排序协议（Full vs. Sampled）、离线指标定义与显著性检验，线上 A/B 仅给结论不给数值，削弱说服力。</li>
-<li><strong>join 窗口的时序耦合</strong>：请求级 join 需等待窗口内后续曝光，虽实测延迟约减半且标签失配极低，但在强实时性场景下可能引入训练-服务偏差，论文对此的量化边界讨论有限。</li>
-<li><strong>适用边界</strong>：收益与 <span class="arithmatex">\(B_{NRO}/B_{RO}\)</span> 强相关；对单候选请求或用户特征占比低的场景，摊销收益会显著缩水，论文未给出失效条件的系统分析。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 You et al. 的推理侧 request-level 去重，ROO 是覆盖数据、训练、推理的全链路方案并统一了特征格式；相比 RecD 依赖列式压缩与逆索引重建，ROO 在数据源头去重、无需自定义张量结构、不增加落地延迟；相比 DIN/Pi et al. 等长序列子序列选择方法，ROO 是正交的系统级摊销，可与任意序列架构叠加。</li>
+<li><strong>可迁移亮点</strong>: ①「请求级样本 + RO/NRO 分离」的 schema 设计可直接迁移到任何存在单用户多候选的召回/粗排训练；② 用 <span class="arithmatex">\(B_{NRO}/B_{RO}\)</span> 估算理论加速比，可作为架构选型前的快速可行性判据。</li>
+<li><strong>审稿级局限批判</strong>: ① 全部结论基于 Meta 内部闭源产品，无公开数据集与开源代码，学术界难以复现与横向对比；② 收益强依赖每请求曝光数（4–7），对曝光稀疏或单候选场景（如搜索精排）几乎无效；③ 请求级 joiner 引入窗口等待，虽实测 ≤16 分钟，但对强实时性场景仍是潜在延迟风险，论文未给出端到端 ATS 延迟的完整分布。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （并非新模型而是数据范式的重构，洞察朴素但系统性极强，理论加速比推导清晰）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （三产品四场景 + 离线 NE/Recall + 线上 A/B 与显著性阈值齐全，但缺公开数据集与开源复现）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （复杂度对比 <span class="arithmatex">\(m(n^2d+nd^2)\)</span>vs<span class="arithmatex">\((n+m)^2d+(n+m)d^2\)</span> 推导干净，LCE 公式明确；部分系统细节下放附录）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （已在十亿用户产品全量部署，吞吐 2–6 倍、样本量 +43%~150%，是罕见的端到端生产级验证）</li>
 </ul>
-<h2 id="_1">论文图表</h2>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2508.05640v3/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2508.05640v3/figure_2.png" /><figcaption>图 2</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2508.05640v3/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2508.05640v3/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2508.05640v3/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 4" src="../../../../../assets/papers/2508.05640v3/figure_4.png" /><figcaption>图 4</figcaption>
-</figure>
 
 
 

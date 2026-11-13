@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>PGHS 分三阶段闭环：阶段 A 先过滤出"用户主动比较多商户后才决策"的高意向会话，将用户画像编码后 K-Means 聚成 <span class="arithmatex">\(K\)</span> 个人格群，群内用 LLM 为每个选择实例生成理由文本，再对理由向量做 HDBSCAN 微聚类并丢弃离群噪声，每个精炼簇被形式化为"显式指令 <span class="arithmatex">\(T_{k,j}\)</span> + 稠密向量 <span class="arithmatex">\(v_{k,j}\)</span>"的双模态决策策略；阶段 B 以 <span class="arithmatex">\(T_{k,j}\)</span> 作 System Prompt 驱动 LLM 推理分支、以 <span class="arithmatex">\(v_{k,j}\)</span> 拼接场景特征与用户向量驱动 GBDT 拟合分支；阶段 C 用场景历史访客日志估计策略分布，蒙特卡洛采样后按 <span class="arithmatex">\(\lambda\)</span> 加权融合为群体购买率估计。</p>
+<p>PGHS 分三阶段闭环：阶段 A 先过滤出"用户主动比较多商户后才决策"的高意向会话，将用户画像编码后 K-Means 聚成 <span class="arithmatex">\(K\)</span>个人格群，群内用 LLM 为每个选择实例生成理由文本，再对理由向量做 HDBSCAN 微聚类并丢弃离群噪声，每个精炼簇被形式化为"显式指令<span class="arithmatex">\(T_{k,j}\)</span>+ 稠密向量<span class="arithmatex">\(v_{k,j}\)</span>"的双模态决策策略；阶段 B 以<span class="arithmatex">\(T_{k,j}\)</span>作 System Prompt 驱动 LLM 推理分支、以<span class="arithmatex">\(v_{k,j}\)</span>拼接场景特征与用户向量驱动 GBDT 拟合分支；阶段 C 用场景历史访客日志估计策略分布，蒙特卡洛采样后按<span class="arithmatex">\(\lambda\)</span> 加权融合为群体购买率估计。</p>
 <pre class="mermaid"><code>flowchart TD
     A["高意向轨迹 + 用户画像"] --&gt; B["K-Means 人格聚类"]
     B --&gt; C["LLM 生成理由 + HDBSCAN 精炼"]
@@ -4255,7 +4266,7 @@ $<span class="arithmatex">\(\hat{y}_{fit}=f_{ML}\big(\text{Concat}(\phi(\tilde{S
 <li>
 <p><strong>群体级融合与训练/推理开销</strong>：最终估计
 $<span class="arithmatex">\(\hat{Y}_{hybrid}(S,a)=\lambda\cdot\frac{1}{N}\sum_{i=1}^{N}\hat{y}^{(i)}_{reason}+(1-\lambda)\cdot\frac{1}{N}\sum_{i=1}^{N}\hat{y}^{(i)}_{fit}\)</span>$
-其中每个访客按余弦相似度分配到最相似策略，<span class="arithmatex">\(\lambda\)</span> 平衡两分支。融合的收益来自<strong>互补误差结构</strong>：推理分支在稀疏数据上泛化更好，拟合分支吸收隐性规律，实测均衡融合误差最低。注意本文无对比学习式负采样，训练信号为二分类购买结果的有监督拟合；推理开销主要来自 <span class="arithmatex">\(N\)</span> 次 LLM 调用的蒙特卡洛采样，是落地的主要成本项。</p>
+其中每个访客按余弦相似度分配到最相似策略，<span class="arithmatex">\(\lambda\)</span>平衡两分支。融合的收益来自<strong>互补误差结构</strong>：推理分支在稀疏数据上泛化更好，拟合分支吸收隐性规律，实测均衡融合误差最低。注意本文无对比学习式负采样，训练信号为二分类购买结果的有监督拟合；推理开销主要来自<span class="arithmatex">\(N\)</span> 次 LLM 调用的蒙特卡洛采样，是落地的主要成本项。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4474,12 +4485,18 @@ $<span class="arithmatex">\(\hat{Y}_{hybrid}(S,a)=\lambda\cdot\frac{1}{N}\sum_{i
 <li><strong>融合的收益独立于策略存在</strong>：Fusion (No Policy) 已达 9.9%，优于任一单分支最优值（13.7%），验证了推理与拟合的误差结构确实互补；叠加策略后进一步降至 8.8%，两者增益近似可加。</li>
 <li><strong>尾部商户是唯一短板，也是 LLM 分支的价值证明</strong>：PGHS 在 Tail 上 GSE 为 12.26%，反而高于 w/o Policy 的 11.83%，说明稀疏场景下策略文本的约束可能过强；但该值仍远优于所有基线（最优 ML 15.60%），且专家评估中 PGHS 的 Kendall's <span class="arithmatex">\(\tau\)</span> 达 0.69，较最优 ML（0.50）与最优 LLM（0.52）分别提升 38.0% 与 32.7%，证明其在"策略排序"这一真实诊断任务上的实用价值。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较规则/统计仿真器与纯 LLM Agent 仿真（如 LLM 驱动的超理性决策者），本文首次把"策略"提升为跨范式的对齐媒介而非某一分支的输入特征；相较表征学习类拟合器（DNN Embedding），PGHS 通过策略向量注入获得了对语义漂移的鲁棒性，且无需重训大模型。</li>
 <li><strong>可迁移亮点</strong>: ① "文本指令 + 稠密向量"的双模态策略表征可直接迁移到任何需要同时驱动 LLM 与轻量模型的场景（如冷启动画像增强、可解释推荐理由生成）；② 用 HDBSCAN 剔除噪声理由簇的做法，是低成本提升 LLM 生成标签质量的通用技巧。</li>
-<li><strong>审稿级局限批判</strong>: ① 推理成本未量化——群体估计需 <span class="arithmatex">\(N\)</span> 次 LLM 调用，商户规模扩大时延迟与费用可能成为瓶颈，且 <span class="arithmatex">\(\lambda\)</span> 与 <span class="arithmatex">\(N\)</span> 的敏感性分析缺失；② 评估仅限单一平台 101 商户、5 个菜系，且无公开基准复现，泛化性与统计显著性检验（未报告 <span class="arithmatex">\(p\)</span> 值或置信区间）均待补强；③ 尾部商户上策略引导反而略增误差，说明策略抽象在极稀疏群上可能引入归纳偏置。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 推理成本未量化——群体估计需 <span class="arithmatex">\(N\)</span>次 LLM 调用，商户规模扩大时延迟与费用可能成为瓶颈，且<span class="arithmatex">\(\lambda\)</span>与<span class="arithmatex">\(N\)</span>的敏感性分析缺失；② 评估仅限单一平台 101 商户、5 个菜系，且无公开基准复现，泛化性与统计显著性检验（未报告<span class="arithmatex">\(p\)</span> 值或置信区间）均待补强；③ 尾部商户上策略引导反而略增误差，说明策略抽象在极稀疏群上可能引入归纳偏置。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4473,12 +4484,18 @@
 <li><strong>动态选择的收益集中在分歧型群组</strong>：全局主效应在公平维度不显著（p=.068），但交互项极显著——在 coalitional 群组上 LLM 显著优于 APP（t=4.44, p&lt;.001）与 ADD（t=3.22, p=.002）；在 minority 群组上满意度显著优于 MAJ（t=4.11, p&lt;.001）与 MPL（t=3.01, p=.004）。说明收益来源不是"找到更强的通用策略"，而是<strong>在静态强策略失效的配置上及时切换</strong>。</li>
 <li><strong>策略选择模式与人类研究结论互证</strong>：16 个场景中 ADD 被选 6 次、FAI 4 次、LMS/MPL 各 2 次、APP/MAJ 各 1 次；MPL <strong>仅</strong>在 uniform 群组被选中，coalitional 群组则四种策略各出现一次。额外 40 个场景（n=1,200）复现该模式（MPL 仅用于 3/10 uniform 组，coalitional 组六种策略全覆盖），与既有文献"MPL 适合高共识群组"的结论一致，构成外部效度佐证。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 Barile 等[5]的纯用户研究，本文把同一套主观量表<strong>内化为可调用模块</strong>，首次让公平/共识进入实时决策环；相比 LLM-as-judge 文献（Shi 等[38]、Malberg 等[28]）关注个体评分偏差，本文聚焦<strong>群组级多主体权衡</strong>这一更难的判断任务；相比注意力/GNN 类 GRS（Cao 等[9]、Huang 等[19]），本文不追求新打分模型，而是保留社会选择策略的透明性、只动态选择策略，可解释性与可复现性更强。</li>
 <li><strong>可迁移亮点</strong>: ① <strong>label masking + 真值锚定的 CoT 蒸馏</strong>范式可直接迁移到任何"主观指标不可实时测量"的场景（如解释质量、信任度、多样性感知的在线打分）；② <strong>committee sampling（多次采样取均值）</strong> 用采样方差模拟人群分歧，是低成本复现人类分布离散度的实用技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① <strong>延迟不可接受</strong>：每群组 30 次 LLM 前向，作者自述可达数分钟，与"实时推荐"的宣称存在张力，需蒸馏到 ≤1.5B SLM 才可能落地；② <strong>领域与场景强绑定</strong>：仅餐厅、固定 5 人×10 项、"前 3 已访问取第 4"的构造，且未与深度学习 GRS 基线对比（受数据可得性限制），外部泛化性证据薄弱；③ 训练信号本质是<strong>合成推理</strong>，存在对 DeepSeek-V3.1 教师模型的依赖，与真实人类推理仍有 gap。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

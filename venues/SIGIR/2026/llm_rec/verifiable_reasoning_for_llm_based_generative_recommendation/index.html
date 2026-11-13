@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][LLM4Rec] 提出 reason-verify-recommend 范式，用混合验证器+代理偏好预测+单调性正则，在四个数据集上显著提升生成式推荐效果。">
+        <meta name="description" content="[SIGIR 2026][大语言模型推荐] 提出 reason-verify-recommend 范式，用混合验证器对隐空间推理逐步审计与修正，四数据集 Recall@10 最高提升约 47%">
       
       
       
@@ -108,20 +108,18 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 大语言模型推荐, 端到端生成式, 可验证推理, 混合验证器, 代理偏好预测" />
+<meta name="keywords" content="SIGIR 2026, 大语言模型推荐, 生成式端到端, 可验证推理, 隐空间推理" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
 
 <meta property="article:tag" content="大语言模型推荐" />
 
-<meta property="article:tag" content="端到端生成式" />
+<meta property="article:tag" content="生成式端到端" />
 
 <meta property="article:tag" content="可验证推理" />
 
-<meta property="article:tag" content="混合验证器" />
-
-<meta property="article:tag" content="代理偏好预测" />
+<meta property="article:tag" content="隐空间推理" />
 
 
 
@@ -131,10 +129,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/verifiable_reasoning_for_llm_based_generative_recommendation/" />
 <meta property="og:title" content="[Paper Note] Verifiable Reasoning for LLM-based Generative Recommendation" />
-<meta property="og:description" content="[SIGIR 2026][LLM4Rec] 提出 reason-verify-recommend 范式，用混合验证器+代理偏好预测+单调性正则，在四个数据集上显著提升生成式推荐效果。" />
+<meta property="og:description" content="[SIGIR 2026][大语言模型推荐] 提出 reason-verify-recommend 范式，用混合验证器对隐空间推理逐步审计与修正，四数据集 Recall@10 最高提升约 47%" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] Verifiable Reasoning for LLM-based Generative Recommendation" />
-<meta name="twitter:description" content="[SIGIR 2026][LLM4Rec] 提出 reason-verify-recommend 范式，用混合验证器+代理偏好预测+单调性正则，在四个数据集上显著提升生成式推荐效果。" />
+<meta name="twitter:description" content="[SIGIR 2026][大语言模型推荐] 提出 reason-verify-recommend 范式，用混合验证器对隐空间推理逐步审计与修正，四数据集 Recall@10 最高提升约 47%" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +158,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] Verifiable Reasoning for LLM-based Generative Recommendation",
   "headline": "[Paper Note] Verifiable Reasoning for LLM-based Generative Recommendation",
-  "description": "[SIGIR 2026][LLM4Rec] \u63d0\u51fa reason-verify-recommend \u8303\u5f0f\uff0c\u7528\u6df7\u5408\u9a8c\u8bc1\u5668+\u4ee3\u7406\u504f\u597d\u9884\u6d4b+\u5355\u8c03\u6027\u6b63\u5219\uff0c\u5728\u56db\u4e2a\u6570\u636e\u96c6\u4e0a\u663e\u8457\u63d0\u5347\u751f\u6210\u5f0f\u63a8\u8350\u6548\u679c\u3002",
+  "description": "[SIGIR 2026][\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350] \u63d0\u51fa reason-verify-recommend \u8303\u5f0f\uff0c\u7528\u6df7\u5408\u9a8c\u8bc1\u5668\u5bf9\u9690\u7a7a\u95f4\u63a8\u7406\u9010\u6b65\u5ba1\u8ba1\u4e0e\u4fee\u6b63\uff0c\u56db\u6570\u636e\u96c6 Recall@10 \u6700\u9ad8\u63d0\u5347\u7ea6 47%",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/verifiable_reasoning_for_llm_based_generative_recommendation/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/verifiable_reasoning_for_llm_based_generative_recommendation/",
   "inLanguage": "zh-CN",
@@ -168,18 +166,17 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350, \u7aef\u5230\u7aef\u751f\u6210\u5f0f, \u53ef\u9a8c\u8bc1\u63a8\u7406, \u6df7\u5408\u9a8c\u8bc1\u5668, \u4ee3\u7406\u504f\u597d\u9884\u6d4b",
+  "keywords": "SIGIR 2026, \u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350, \u751f\u6210\u5f0f\u7aef\u5230\u7aef, \u53ef\u9a8c\u8bc1\u63a8\u7406, \u9690\u7a7a\u95f4\u63a8\u7406",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350" },
-    { "@type": "Thing", "name": "\u7aef\u5230\u7aef\u751f\u6210\u5f0f" },
+    { "@type": "Thing", "name": "\u751f\u6210\u5f0f\u7aef\u5230\u7aef" },
     { "@type": "Thing", "name": "\u53ef\u9a8c\u8bc1\u63a8\u7406" },
-    { "@type": "Thing", "name": "\u6df7\u5408\u9a8c\u8bc1\u5668" },
-    { "@type": "Thing", "name": "\u4ee3\u7406\u504f\u597d\u9884\u6d4b" }
+    { "@type": "Thing", "name": "\u9690\u7a7a\u95f4\u63a8\u7406" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -538,7 +535,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#verifiable-reasoning-for-llm-based-generative-recommendation-llm" class="md-skip">
+        <a href="#verifiable-reasoning-for-llm-based-generative-recommendation" class="md-skip">
           跳转至
         </a>
       
@@ -3997,10 +3994,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4008,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4016,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4039,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4069,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4092,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4100,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4116,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4181,9 +4156,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][LLM4Rec] 提出 reason-verify-recommend 范式，用混合验证器+代理偏好预测+单调性正则，在四个数据集上显著提升生成式推荐效果。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][大语言模型推荐] 提出 reason-verify-recommend 范式，用混合验证器对隐空间推理逐步审计与修正，四数据集 Recall@10 最高提升约 47%</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 大语言模型推荐 · 端到端生成式 · 可验证推理 · 混合验证器 · 代理偏好预测</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 大语言模型推荐 · 生成式端到端 · 可验证推理 · 隐空间推理</p>
   
 </aside>
   
@@ -4211,7 +4186,7 @@
       
       
       
-        <span class="md-tag">端到端生成式</span>
+        <span class="md-tag">生成式端到端</span>
       
     
       
@@ -4225,14 +4200,7 @@
       
       
       
-        <span class="md-tag">混合验证器</span>
-      
-    
-      
-      
-      
-      
-        <span class="md-tag">代理偏好预测</span>
+        <span class="md-tag">隐空间推理</span>
       
     
   </nav>
@@ -4242,139 +4210,310 @@
   
 
 
-<h1 id="verifiable-reasoning-for-llm-based-generative-recommendation-llm">Verifiable Reasoning for LLM-based Generative Recommendation (面向 LLM 生成式推荐的可验证推理)</h1>
+<h1 id="verifiable-reasoning-for-llm-based-generative-recommendation">Verifiable Reasoning for LLM-based Generative Recommendation (面向大模型生成式推荐的可验证推理)</h1>
 <ul>
 <li><strong>会议/期刊</strong>: SIGIR 2026</li>
-<li><strong>推荐链路定位</strong>: 端到端生成式 (End-to-End Generative)</li>
-<li><strong>研究方向</strong>: 大语言模型推荐 (LLM4Rec) / 生成式推荐与离散语义 ID</li>
+<li><strong>作者与机构</strong>: Xinyu Lin, Hanqing Zeng, Hanchao Yu, Yinglong Xia, Jiang Zhang, Aashu Singh, Fei Liu, Qifan Wang (Meta MRS)；Wenjie Wang, Fuli Feng, Tat-Seng Chua (NUS)</li>
+<li><strong>推荐链路定位</strong>: 端到端生成式（Next-Item 生成）</li>
+<li><strong>研究方向</strong>: 大语言模型推荐 / 生成式推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2603.07725v1">https://arxiv.org/abs/2603.07725v1</a></li>
 <li><strong>开源代码</strong>: <a href="https://github.com/Linxyhaha/Verifiable-Rec">https://github.com/Linxyhaha/Verifiable-Rec</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对 LLM 生成式推荐中 <code>reason-then-recommend</code> 范式因缺乏中间验证而导致的<strong>同质化推理</strong>与<strong>误差累积推理</strong>两大退化问题，本文提出 <code>reason-verify-recommend</code> 范式及实现 VRec：用混合验证器（多维度）+ 代理偏好预测任务（可靠性）+ 置信度引导调整 + 单调性正则，在四个真实数据集上显著提升推荐效果且不牺牲效率。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>现有 Reason4Rec 采用 <code>reason-then-recommend</code> 范式，但隐空间推理缺乏中间监督，导致<strong>同质化推理</strong>（塌缩为单一确定性路径）与<strong>误差累积</strong>（步数越多越差）。本文提出 <code>reason-verify-recommend</code> 范式与 VRec：用多维度混合验证器（类别/标题/协同）对每步隐推理表征做组级偏好预测，以预测熵为反馈、末层权重为引导原型进行置信度加权修正，并加单调性正则。在 CDs/MicroLens/Goodreads/Instruments 四数据集上，VRec 相对最强基线 LatentR3 的 Recall@10 提升 5.3%–46.9%，推理开销仅增 0.59%。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 以 OpenAI-o1、DeepSeek-R1 为代表的 LLM 推理能力被引入生成式推荐（Reason4Rec）。主流做法是 <code>reason-then-recommend</code>：LLM 先在隐空间自回归地逐步推理用户历史，再生成下一个物品。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>同质化推理 (Homogeneous reasoning)</strong>：监督信号仅施加于最终推荐物品 <span class="arithmatex">\(\hat{y}\)</span>，中间推理 <span class="arithmatex">\(R\)</span> 无直接优化，模型易收敛到退化分布，反复利用相同的虚假关联（spurious correlations），推理表征在 t-SNE 上坍缩（图 3(a)）。</li>
-<li><strong>误差累积推理 (Error-accumulated reasoning)</strong>：早期推理错误沿自回归链条传播放大，随推理步数增加性能持续下降（图 3(b)）。</li>
-<li>根因：推理过程<strong>未被验证 (unverified)</strong>，缺乏对中间推理质量的反馈与纠偏。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 推理在隐空间进行，<strong>没有天然的中间步骤监督信号</strong>来判断其正确性；且用户偏好本身是多维的（语义、协同、类别等），单一视角验证不足以刻画。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 若推理导向正确推荐，则其应与<strong>群体级用户偏好 (group-level preference)</strong> 对齐。因此可将"推理正确性"这一不可得标签，转化为"偏好预测"这一可监督的<strong>代理任务</strong>，用预测熵作为评估反馈、用分类器末层权重作为引导原型。</li>
+<li><strong>主流范式</strong>: Reason4Rec 让 LLM 先在隐空间自回归生成推理表征 <span class="arithmatex">\(R=(r_1,\dots,r_m)\)</span>，再据此生成下一物品，监督信号仅落在最终物品<span class="arithmatex">\(\hat{y}\)</span> 上。</li>
+<li><strong>前人局限</strong>: ① 推理表征 <span class="arithmatex">\(R\)</span>无直接优化，模型收敛到退化分布<span class="arithmatex">\(M_\theta(R|X)\to\delta_{R^*(X)}(R)\)</span>，推理同质化；② 无中间校验，早期错误沿自回归链放大，LatentR3 在 1 步时最优、步数增加性能持续下降。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 推理质量虽无显式标签，但"能导向正确推荐的推理"应与<strong>组级用户偏好</strong>（如 hip-hop、jazz 这类粗粒度类别）对齐；验证器对偏好预测的<strong>熵</strong>即可作为推理正确性的代理信号，其<strong>末层分类权重</strong>天然是偏好原型，可直接用于修正推理表征。</li>
+<li><strong>本文切入点</strong>: 在每步推理后插入验证-修正算子，把"一次性推理"改为"推理-验证交替"，用轻量验证器提供可靠且多维的反馈。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户历史交互序列 <span class="arithmatex">\(X = [i_1, i_2, \ldots, i_L]\)</span>，<span class="arithmatex">\(i \in \mathcal{I}\)</span> 为物品标识（如物品标题），<span class="arithmatex">\(L=|X|\)</span>。</li>
-<li>目标：生成下一个物品 <span class="arithmatex">\(y = i_{L+1}\)</span>。</li>
-<li>LLM <span class="arithmatex">\(M\)</span> 参数为 <span class="arithmatex">\(\theta\)</span>，隐维度 <span class="arithmatex">\(d_M\)</span>；推理序列 <span class="arithmatex">\(R=(r_1,\ldots,r_m)\)</span>，<span class="arithmatex">\(r_j \in \mathbb{R}^{d_M}\)</span>，<span class="arithmatex">\(m\)</span> 为推理步数。</li>
-<li>物品词表 <span class="arithmatex">\(\mathcal{V}\)</span>；验证器集合 <span class="arithmatex">\(\mathcal{V}_{er} = \{V_1,\ldots,V_n\}\)</span>，每个验证器对应一个偏好维度 <span class="arithmatex">\(i\)</span>，类别数 <span class="arithmatex">\(d_i\)</span>。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：用户历史 <span class="arithmatex">\(X\)</span> → LLM 自回归生成中间推理表征 <span class="arithmatex">\(r\)</span> → 混合验证器（个性化 router 加权 + <span class="arithmatex">\(n\)</span> 个维度验证器）输出反馈 <span class="arithmatex">\(f_i\)</span> 与引导向量 <span class="arithmatex">\(g_i\)</span> → 置信度加权调整得到 <span class="arithmatex">\(r^*\)</span> → 替换原 <span class="arithmatex">\(r\)</span> 进入下一步推理 → 多步后自回归生成下一物品。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>输入用户历史 <span class="arithmatex">\(X\)</span>，LLM 每步产生隐推理表征<span class="arithmatex">\(r_t\)</span>；验证阶段由个性化 Router 为<span class="arithmatex">\(n\)</span>个维度验证器分配权重，各验证器输出组级偏好分布<span class="arithmatex">\(p\)</span>，取熵<span class="arithmatex">\(f_i\)</span>为反馈、末层权重<span class="arithmatex">\(g_i\)</span>为引导向量，按置信度<span class="arithmatex">\(c_i=1/f_i\)</span>加权融合得到修正表征<span class="arithmatex">\(r^*\)</span>，回填下一推理步；交替<span class="arithmatex">\(m\)</span> 步后自回归生成物品。训练分两阶段：先用 LatentR3 生成的正/负样本预训练验证器，再联合微调验证器与 LLM（含验证损失与单调性正则）。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 用户历史序列 X"] --&gt; B["LLM 推理步: 生成中间推理表征 r"]
-    B --&gt; C["个性化 Router: 按用户行为分配维度权重 w"]
-    C --&gt; D["混合验证器 V1..Vn: 类别/标题语义/协同等维度"]
-    D --&gt; E["评估反馈 f_i = H(p) 熵 + 引导向量 g_i = 末层权重原型"]
-    E --&gt; F["置信度调整: r* = Σ (1-c_i)r + c_i g_i"]
-    F --&gt;|"交错执行 m 步"| B
-    F --&gt; G["推荐步: 自回归生成下一物品 y"]</code></pre>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 混合验证器 + 个性化 Router（多维度性）</strong></p>
-<ul>
-<li>每个验证器 <span class="arithmatex">\(V_i\)</span> 评估推理表征与用户在第 <span class="arithmatex">\(i\)</span> 个偏好维度上的对齐：<span class="arithmatex">\(f_i, g_i \leftarrow V_i(r)\)</span>。</li>
-<li>个性化 router <span class="arithmatex">\(g(\cdot)\)</span> 为不同用户自适应分配维度权重：<span class="arithmatex">\(w = g(r_i) \in \mathbb{R}^n\)</span>，然后 <span class="arithmatex">\(f_i, g_i \leftarrow V_i(w_i r)\)</span>。物理直觉：有的用户重类别（如爵士乐），有的重价格/歌手，router 实现 <strong>inter-user 多样性</strong>；多验证器实现 <strong>intra-user 多样性</strong>。</li>
-</ul>
-<p><strong>(2) 代理偏好预测 + 熵评估（可靠性）</strong></p>
-<ul>
-<li>不做二分类（无真值、噪声大），而是定义群体级偏好预测任务：<span class="arithmatex">\(p = V_i(w_i r) \in \mathbb{R}^{d_i}\)</span>，<span class="arithmatex">\(\hat{P} = \arg\max_j p_j\)</span>。</li>
-<li>评估反馈用预测熵：<span class="arithmatex">\(f_i = H(p) = -\sum_{j=1}^{d_i} p_j \log p_j\)</span>。熵小 → 推理与偏好高置信对齐；熵大 → 推理可能偏离偏好。</li>
-</ul>
-<p><strong>(3) 引导向量与置信度调整</strong></p>
-<ul>
-<li>引导信号取验证器末层权重作为偏好原型：<span class="arithmatex">\(g_i = W_{i,:,j^*}\)</span>，<span class="arithmatex">\(j^* = \arg\max_j p_j\)</span>，<span class="arithmatex">\(W_i \in \mathbb{R}^{d_M \times d_i}\)</span>。</li>
-<li>置信度 <span class="arithmatex">\(c_i = 1/f_i\)</span>，调整公式：
-$<span class="arithmatex">\(r^* = \sum_{i=1}^{n} \left[(1-c_i) r + c_i g_i\right]\)</span>$
-直觉：对齐好（<span class="arithmatex">\(f_i\)</span> 小、<span class="arithmatex">\(c_i\)</span> 大）时更激进地沿当前路径增强推理，缓解同质化；偏离时保守混合、鼓励探索其他路径，阻断误差传播。</li>
-</ul>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<p><strong>两阶段训练：</strong></p>
-<ul>
+    A["用户历史 X"] --&gt; B["LLM 隐空间推理步 r_t"]
+    B --&gt; C["个性化 Router 加权"]
+    C --&gt; D["混合验证器: 类别/标题/协同"]
+    D --&gt; E["熵反馈 f_i + 原型引导 g_i"]
+    E --&gt; F["置信度加权修正 r*"]
+    F --&gt; B
+    F --&gt; G["自回归生成下一物品"]</code></pre>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
 <li>
-<p><strong>Stage 1 验证器预训练</strong>：用预训练 LLM 推理推荐器对全部样本 <span class="arithmatex">\((X,y)\)</span> 生成推理与推荐。成功生成目标物品 → 正样本，推理 <span class="arithmatex">\(R\)</span> 与各维度偏好 <span class="arithmatex">\(P\)</span> 配对；失败 → 负样本，<span class="arithmatex">\(R\)</span> 配 <span class="arithmatex">\(\varnothing\)</span>。损失：
-$<span class="arithmatex">\(\mathcal{L}_v = \begin{cases} -\log \Pr(\hat{P}=P), &amp; P \neq \varnothing \\ -\alpha \sum_{j=1}^{d_i} p_j \log p_j, &amp; P = \varnothing \end{cases}\)</span>$
-即正样本最小化交叉熵，负样本最大化熵（输出均匀分布 → 大 <span class="arithmatex">\(f\)</span>）。</p>
+<p><strong>混合验证器 + 个性化 Router（多维性）</strong>：单一维度（如仅类别）无法覆盖丰富偏好。对每个维度 <span class="arithmatex">\(i\)</span>设验证器<span class="arithmatex">\(V_i\)</span>，Router<span class="arithmatex">\(g(\cdot)\)</span>依用户行为输出权重<span class="arithmatex">\(w\)</span>，得<span class="arithmatex">\(f_i,g_i\leftarrow V_i(w_i r)\)</span>。维度内多样性覆盖语义/协同多侧面，维度间多样性刻画"不同用户关注不同侧面"（有人因电影《泰坦尼克号》喜欢该曲，有人因歌手）。</p>
 </li>
 <li>
-<p><strong>Stage 2 可验证推理微调</strong>：联合微调验证器与 LLM 推荐器：
-$<span class="arithmatex">\(\mathcal{L}_r = -\frac{1}{|\mathcal{D}|}\sum_{\mathcal{D}}\sum_{t=1}^{|y|} M_\theta(X, R, y_{&lt;t}), \quad R=(r_1^*,\ldots,r_m^*)\)</span>$</p>
+<p><strong>组级偏好预测代理任务 + 熵反馈/权重引导（可靠性）</strong>：二分类"推理是否正确"无标签且噪声大，改为预测组级偏好 <span class="arithmatex">\(\hat{P}=\arg\max_j p_j\)</span>，<span class="arithmatex">\(p=V_i(w_i r)\in\mathbb{R}^{d_i}\)</span>。反馈取熵<span class="arithmatex">\(f_i=H(p)=-\sum_j p_j\log p_j\)</span>，低熵即高置信对齐；引导取末层权重<span class="arithmatex">\(g_i=W_{i,:,j^*}\)</span> 作为偏好原型。修正算子为
+$<span class="arithmatex">\(r^*=\sum_{i=1}^{n}\left[(1-c_i)r+c_i g_i\right],\quad c_i=1/f_i\)</span>$
+直觉：对齐好（低熵、<span class="arithmatex">\(c_i\)</span> 大）时强力拉向原型、抑制同质化；偏离时温和混合、阻断误差传播。</p>
 </li>
-<li><strong>单调性正则</strong>：<span class="arithmatex">\(\mathcal{L}_m = \max(0, f_i^t - f_i^{t-1})\)</span>，惩罚相邻步熵上升，强制推理逐步更对齐（防验证器跨步共享导致的捷径学习）。</li>
-<li><strong>总损失</strong>：<span class="arithmatex">\(\mathcal{L} = \mathcal{L}_r + \beta \mathcal{L}_v + \gamma \mathcal{L}_m\)</span>，<span class="arithmatex">\(\beta,\gamma\)</span> 为平衡超参。</li>
-</ul>
-<p><strong>负采样策略</strong>：验证器预训练阶段以"生成失败样本"作为负例（非传统 item 负采样）；推荐器本身为自回归生成，免负采样。</p>
-<p><strong>复杂度</strong>：LLM 推荐器主导 <span class="arithmatex">\(O(mLd^2)\)</span>（<span class="arithmatex">\(m\)</span> 推理步、<span class="arithmatex">\(L\)</span> 层、<span class="arithmatex">\(d\)</span> 隐维）；验证模块增加 <span class="arithmatex">\(O(mnkd^2)\)</span>（<span class="arithmatex">\(n\)</span> 个验证器、每个 <span class="arithmatex">\(k\)</span> 层 MLP）。验证器为轻量线性头/MLP，开销相对 LLM 主干可忽略，故称"不牺牲效率"。</p>
+<li>
+<p><strong>两阶段训练与单调性正则</strong>：Stage 1 验证器预训练，正样本（成功生成目标物品）最小化交叉熵，负样本最大化熵（推向均匀分布）：
+$<span class="arithmatex">\(\mathcal{L}_v=\begin{cases}-\log \Pr(\hat{P}=P), &amp; P\neq\varnothing\\ -\alpha\sum_j p_j\log p_j, &amp; P=\varnothing\end{cases}\)</span>$
+Stage 2 联合微调，总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_r+\beta\mathcal{L}_v+\gamma\mathcal{L}_m\)</span>，其中单调性正则<span class="arithmatex">\(\mathcal{L}_m=\max(0,f_i^t-f_i^{t-1})\)</span>惩罚相邻步熵上升，强制推理逐步更确定。验证器为线性头或 2–3 层 MLP，复杂度<span class="arithmatex">\(O(mnkd^2)\)</span>远小于 LLM 主干<span class="arithmatex">\(O(mLd^2)\)</span>，无需负采样。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
-<blockquote>
-<p><strong>说明</strong>：提供的 PDF 抽取文本在 Table 1 处截断，以下数据集统计、划分与主实验数值<strong>原文未在抽取文本中完整报告</strong>，仅能依据可见信息与摘要/正文描述标注，具体数值需以原文完整版为准。</p>
-</blockquote>
 <ul>
-<li><strong>数据集</strong>: 四个真实世界数据集（摘要与正文均称 "four real-world datasets"）。抽取文本中<strong>未列出具体数据集名称与统计表</strong>；代码仓库关联了 MicroLens 数据集（候选代码 URL 中出现 <code>westlake-repl/MicroLens</code>），推测短视频推荐场景为其中之一，但原文未在可见文本中确认。</li>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 抽取文本未明确报告（LOO / Ratio / Temporal 均未在可见部分说明），<strong>原文未报告</strong>。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 抽取文本未明确报告 Full-Ranking 或 Sampled Ranking，<strong>原文未报告</strong>。</li>
-<li><strong>评价指标与显著性检验</strong>: 抽取文本未列出具体指标（Recall@K / NDCG@K 等）与显著性检验方式，<strong>原文未报告</strong>。</li>
+<li><strong>数据集与预处理</strong>: 四个真实数据集，物品序列最大长度 10，无 5-core 过滤说明：</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
-<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>抽取文本在 "Table 1 Overall performance of VRec and baselines on four real-world datasets. The" 处截断，<strong>具体数值原文未在可见文本中报告</strong>。仅可确认结论：VRec 在四个数据集上"substantially enhances recommendation effectiveness and scalability without compromising efficiency"。</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">最强基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;">#Train</th>
+<th style="text-align: center;">#Valid</th>
+<th style="text-align: center;">#Test</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: left;">场景说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">四个真实数据集（名称未在抽取文本中给出）</td>
-<td style="text-align: left;">未报告</td>
-<td style="text-align: center;">未报告</td>
-<td style="text-align: center;">未报告</td>
-<td style="text-align: center;">原文称"substantial"，具体数值原文未报告</td>
+<td style="text-align: left;">CDs</td>
+<td style="text-align: center;">49,251</td>
+<td style="text-align: center;">6,156</td>
+<td style="text-align: center;">6,158</td>
+<td style="text-align: center;">5,841</td>
+<td style="text-align: left;">Amazon 音乐专辑，含标题/类别</td>
+</tr>
+<tr>
+<td style="text-align: left;">MicroLens</td>
+<td style="text-align: center;">60,101</td>
+<td style="text-align: center;">9,036</td>
+<td style="text-align: center;">9,121</td>
+<td style="text-align: center;">5,326</td>
+<td style="text-align: left;">微视频，文本描述噪声大</td>
+</tr>
+<tr>
+<td style="text-align: left;">Goodreads</td>
+<td style="text-align: center;">256,868</td>
+<td style="text-align: center;">33,148</td>
+<td style="text-align: center;">33,040</td>
+<td style="text-align: center;">7,413</td>
+<td style="text-align: left;">图书，含标题/描述/类别</td>
+</tr>
+<tr>
+<td style="text-align: left;">Instruments</td>
+<td style="text-align: center;">66,500</td>
+<td style="text-align: center;">8,312</td>
+<td style="text-align: center;">8,313</td>
+<td style="text-align: center;">5,030</td>
+<td style="text-align: left;">Amazon 乐器</td>
 </tr>
 </tbody>
 </table>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>抽取文本未包含消融表格。正文提及将验证器分类器设计（线性头 vs. MLP）的讨论放在 Section 4.3.3，但具体消融数值<strong>原文未在可见文本中报告</strong>。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
 <ul>
-<li><strong>分桶表现</strong>: 抽取文本未报告长尾/冷启动分桶结果。</li>
-<li><strong>关键超参数</strong>: 涉及 <span class="arithmatex">\(\alpha\)</span>（负样本熵权重）、<span class="arithmatex">\(\beta\)</span>（验证器损失权重）、<span class="arithmatex">\(\gamma\)</span>（单调性正则权重）、推理步数 <span class="arithmatex">\(m\)</span>、验证器数量 <span class="arithmatex">\(n\)</span>、类别数 <span class="arithmatex">\(d_i\)</span>，但敏感度分析数值<strong>原文未在可见文本中报告</strong>。</li>
-<li><strong>线上 A/B 测试</strong>: 抽取文本未提及线上实验，<strong>原文仅包含离线实验</strong>（据可见文本判断）。</li>
+<li><strong>数据划分与防穿越</strong>: 按时间戳排序后 <code>8:1:1</code> 比例划分训练/验证/测试。</li>
+<li><strong>排名评测协议</strong>: 采用 R@5/R@10、N@5/N@10；原文未明示 Full-Ranking 或采样排序（属评估披露不足点）。</li>
+<li><strong>对比基线与超参</strong>: 传统序列模型 GRU4Rec/Caser/SASRec，生成式 TIGER/LETTER/SETRec/D3，推理增强 LatentTTS/LatentR3；LLM 主干 Qwen2.5-1.5B 全参微调，学习率 <span class="arithmatex">\(\{3e^{-4},5e^{-5},3e^{-5}\}\)</span>，推理步<span class="arithmatex">\(m\in\{1,2,4,6,8,10\}\)</span>，<span class="arithmatex">\(\beta\in\{0.3,0.5,0.7,1\}\)</span>，<span class="arithmatex">\(\gamma\in\{0.1,\dots,2\}\)</span>；显著性用单样本 t 检验<span class="arithmatex">\(p&lt;0.01\)</span>。</li>
 </ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">方法</th>
+<th style="text-align: center;">CDs R@10</th>
+<th style="text-align: center;">CDs N@10</th>
+<th style="text-align: center;">MicroLens R@10</th>
+<th style="text-align: center;">MicroLens N@10</th>
+<th style="text-align: center;">Goodreads R@10</th>
+<th style="text-align: center;">Goodreads N@10</th>
+<th style="text-align: center;">Instruments R@10</th>
+<th style="text-align: center;">Instruments N@10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">SASRec</td>
+<td style="text-align: center;">0.0984</td>
+<td style="text-align: center;">0.0641</td>
+<td style="text-align: center;">0.0069</td>
+<td style="text-align: center;">0.0037</td>
+<td style="text-align: center;">0.0316</td>
+<td style="text-align: center;">0.0157</td>
+<td style="text-align: center;">0.0972</td>
+<td style="text-align: center;">0.0772</td>
+</tr>
+<tr>
+<td style="text-align: left;">TIGER</td>
+<td style="text-align: center;">0.0555</td>
+<td style="text-align: center;">0.0325</td>
+<td style="text-align: center;">0.0075</td>
+<td style="text-align: center;">0.0030</td>
+<td style="text-align: center;">0.0384</td>
+<td style="text-align: center;">0.0175</td>
+<td style="text-align: center;">0.0945</td>
+<td style="text-align: center;">0.0616</td>
+</tr>
+<tr>
+<td style="text-align: left;">LETTER</td>
+<td style="text-align: center;">0.0619</td>
+<td style="text-align: center;">0.0350</td>
+<td style="text-align: center;">0.0104</td>
+<td style="text-align: center;">0.0045</td>
+<td style="text-align: center;">0.0377</td>
+<td style="text-align: center;">0.0185</td>
+<td style="text-align: center;">0.1012</td>
+<td style="text-align: center;">0.0583</td>
+</tr>
+<tr>
+<td style="text-align: left;">SETRec</td>
+<td style="text-align: center;">0.0942</td>
+<td style="text-align: center;">0.0553</td>
+<td style="text-align: center;">0.0129</td>
+<td style="text-align: center;">0.0066</td>
+<td style="text-align: center;">0.0174</td>
+<td style="text-align: center;">0.0088</td>
+<td style="text-align: center;">0.0864</td>
+<td style="text-align: center;">0.0746</td>
+</tr>
+<tr>
+<td style="text-align: left;">D3</td>
+<td style="text-align: center;">0.0940</td>
+<td style="text-align: center;">0.0659</td>
+<td style="text-align: center;">0.0134</td>
+<td style="text-align: center;">0.0076</td>
+<td style="text-align: center;">0.0534</td>
+<td style="text-align: center;">0.0285</td>
+<td style="text-align: center;">0.1188</td>
+<td style="text-align: center;">0.0915</td>
+</tr>
+<tr>
+<td style="text-align: left;">LatentTTS</td>
+<td style="text-align: center;">0.0912</td>
+<td style="text-align: center;">0.0643</td>
+<td style="text-align: center;">0.0123</td>
+<td style="text-align: center;">0.0068</td>
+<td style="text-align: center;">0.0513</td>
+<td style="text-align: center;">0.0265</td>
+<td style="text-align: center;">0.1068</td>
+<td style="text-align: center;">0.0866</td>
+</tr>
+<tr>
+<td style="text-align: left;">LatentR3</td>
+<td style="text-align: center;">0.0978</td>
+<td style="text-align: center;">0.0703</td>
+<td style="text-align: center;">0.0160</td>
+<td style="text-align: center;">0.0088</td>
+<td style="text-align: center;">0.0565</td>
+<td style="text-align: center;">0.0301</td>
+<td style="text-align: center;">0.1243</td>
+<td style="text-align: center;">0.0951</td>
+</tr>
+<tr>
+<td style="text-align: left;">VRec-1Step</td>
+<td style="text-align: center;">0.1070</td>
+<td style="text-align: center;">0.0730</td>
+<td style="text-align: center;">0.0154</td>
+<td style="text-align: center;">0.0093</td>
+<td style="text-align: center;">0.0593</td>
+<td style="text-align: center;">0.0310</td>
+<td style="text-align: center;">0.1269</td>
+<td style="text-align: center;">0.0976</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>VRec</strong></td>
+<td style="text-align: center;"><strong>0.1213</strong></td>
+<td style="text-align: center;"><strong>0.0862</strong></td>
+<td style="text-align: center;"><strong>0.0235</strong></td>
+<td style="text-align: center;"><strong>0.0121</strong></td>
+<td style="text-align: center;"><strong>0.0582</strong></td>
+<td style="text-align: center;"><strong>0.0312</strong></td>
+<td style="text-align: center;"><strong>0.1301</strong></td>
+<td style="text-align: center;"><strong>0.0997</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Improv.%</strong></td>
+<td style="text-align: center;">+24.0%</td>
+<td style="text-align: center;">+22.6%</td>
+<td style="text-align: center;">+46.9%</td>
+<td style="text-align: center;">+37.5%</td>
+<td style="text-align: center;">+3.0%</td>
+<td style="text-align: center;">+3.7%</td>
+<td style="text-align: center;">+4.7%</td>
+<td style="text-align: center;">+4.8%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<p>CDs 数据集（图 5，数值为近似读数）：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">变体</th>
+<th style="text-align: center;">R@10</th>
+<th style="text-align: center;">N@10</th>
+<th style="text-align: left;">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">w/o Verifier (=LatentR3)</td>
+<td style="text-align: center;">~0.098</td>
+<td style="text-align: center;">~0.070</td>
+<td style="text-align: left;">去掉验证步，降幅最大</td>
+</tr>
+<tr>
+<td style="text-align: left;">Single V-C</td>
+<td style="text-align: center;">~0.107</td>
+<td style="text-align: center;">~0.075</td>
+<td style="text-align: left;">仅类别验证器</td>
+</tr>
+<tr>
+<td style="text-align: left;">Single V-T</td>
+<td style="text-align: center;">~0.112</td>
+<td style="text-align: center;">~0.079</td>
+<td style="text-align: left;">仅标题验证器</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o 个性化 Router</td>
+<td style="text-align: center;">~0.115</td>
+<td style="text-align: center;">~0.082</td>
+<td style="text-align: left;">用户无关权重</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o 验证器预训练</td>
+<td style="text-align: center;">~0.113</td>
+<td style="text-align: center;">~0.080</td>
+<td style="text-align: left;">直接联合训练</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o <span class="arithmatex">\(\mathcal{L}_m\)</span></td>
+<td style="text-align: center;">~0.117</td>
+<td style="text-align: center;">~0.083</td>
+<td style="text-align: left;">无单调性正则</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>VRec</strong></td>
+<td style="text-align: center;"><strong>0.1213</strong></td>
+<td style="text-align: center;"><strong>0.0862</strong></td>
+<td style="text-align: left;">全组件</td>
+</tr>
+</tbody>
+</table>
+<p>验证器维度扩展（表 2，CDs）：Category 0.1074 → +Title 0.1168 → +CF <strong>0.1223</strong>（R@10）。</p>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>验证步是收益主源，且随步数可扩展</strong>：去掉验证器即退回 LatentR3（CDs R@10 从 0.1213 跌至约 0.098）；VRec 在 <span class="arithmatex">\(m\)</span> 从 1 增至 10 时性能单调上升并于 6–10 步饱和，而 LatentR3 在 1 步即达峰后持续退化——直接证伪"推理步越多越好"的旧假设。</li>
+<li><strong>语义维度贡献大于协同维度，但维度互补</strong>：CDs 上 Category+Title 带来 +8.8% R@10，再加 CF 仅再 +4.7%；而 MicroLens 因文本噪声大，CF 验证器反超标题验证器，说明验证维度需按数据模态自适应选择。</li>
+<li><strong>验证开销可忽略、验证器容量存在甜点</strong>：10 步推理下平均仅增 0.59% 时延（0.03%–1.33%）；验证器 3 层 2048 隐维最优，继续加宽加深因组级类别仅约 20 类而出现过拟合；<span class="arithmatex">\(\beta\)</span>呈倒 U 型（过强验证器与推荐目标冲突），<span class="arithmatex">\(\gamma\)</span> 单调增益后饱和。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>范式贡献</strong>：将"验证"显式插入推理链，<code>reason-verify-recommend</code> 交错结构可迁移到任何隐空间推理的生成式推荐/检索任务。</li>
-<li><strong>代理任务设计巧妙</strong>：把不可监督的"推理正确性"转化为可监督的"群体级偏好预测"，用熵作置信度、末层权重作引导原型，工程上轻量（线性头/MLP）且与 LLM 主干解耦。</li>
-<li><strong>单调性正则</strong>：以熵单调下降约束推理逐步收敛，是对"验证器跨步共享导致捷径学习"的针对性补丁，思路可复用到多步推理的 RL/自训练场景。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议透明度不足</strong>：抽取文本未给出数据集统计、划分策略、Full-Ranking vs. Sampled Ranking、显著性检验，审稿中会被要求补充；若采用采样排序则结论强度打折。</li>
-<li><strong>代理任务的有效性边界</strong>：群体级偏好（粗粒度如"hip-hop"）与个体细粒度偏好存在 gap，熵低≠推理正确，仅保证"与粗粒度偏好一致"，可能奖励"安全但平庸"的推理。</li>
-<li><strong>验证器预训练依赖推荐器生成质量</strong>：正负样本由预训练推荐器成败划分，存在自举偏差（bootstrap bias），失败样本的推理未必"错"，只是未命中目标。</li>
-<li><strong>效率声明需实证</strong>：虽理论复杂度验证模块相对 LLM 可忽略，但 <span class="arithmatex">\(m\)</span> 步交错验证的<strong>实际推理延迟 (ms/request)</strong> 与峰值显存未在可见文本报告，端到端生成场景下延迟敏感。</li>
-<li><strong>可复现性</strong>：代码已开源（Verifiable-Rec），但抽取文本缺失关键实验细节，复现需依赖完整版与仓库。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 LatentR3 的"纯隐推理无校验"，VRec 在推理链中插入轻量验证算子；相比 Self-Refine/CRITIC/ToT 等依赖<strong>显式文本 CoT</strong> 的外部验证器，本文直接在<strong>隐表征</strong>上验证，避免 CoT 标注成本与解码开销；相比 Self-Consistency 的多采样聚合，本文用单次前向的熵与分类权重，无需多次采样。</li>
+<li><strong>可迁移亮点</strong>: ① "熵作反馈 + 末层权重作原型"的免标签验证信号，可迁移到任何隐空间推理的序列任务；② 单调性正则 <span class="arithmatex">\(\max(0,f^t-f^{t-1})\)</span> 是极低成本的多步推理稳定器，可套用于扩散/多步生成推荐。</li>
+<li><strong>审稿级局限批判</strong>: ① 评测协议未明确 Full-Ranking 还是采样排序，且 Goodreads 上相对 LatentR3 仅 +3.0%，增益显著性存疑；② 组级偏好标签依赖类别元数据或 k-means 聚类，MicroLens/Goodreads 缺类别时维度受限；③ 隐空间推理的可解释性仅停留在"验证器预测可读"层面，未做用户研究验证解释一致性。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐（抽取文本缺失关键协议与数值，暂评三星，待完整版核实）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （首次将可验证推理引入隐空间生成式推荐，"熵反馈+权重原型"设计简洁且有退化分布的理论论证）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （四数据集+九基线+完整消融与效率分析，但排序协议未披露、部分数据集增益偏小）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （范式对比图与公式链条清晰，退化分布与复杂度分析到位，Router 与验证器符号略密）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （0.59% 时延开销、代码开源、Meta 工业背景，验证器可插拔于任意隐推理推荐器）</li>
 </ul>
 
 

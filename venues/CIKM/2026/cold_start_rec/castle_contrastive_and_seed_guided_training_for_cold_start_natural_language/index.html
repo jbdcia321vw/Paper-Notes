@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,7 +4220,7 @@
 <li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>自然语言搜索上线前既无真实查询、也无相关性标签，构成双重冷启动。CASTLE 用去标识预订会话中的「已订 vs 未订」房源对作为对比锚点，配合约 500 条用户调研种子查询，让 LLM 生成「使 <span class="arithmatex">\(l^+\)</span> 比 <span class="arithmatex">\(l^-\)</span> 更相关」的查询，从而<strong>同时产出查询与构造式标签</strong>（无需 LLM 事后判定）。在 Airbnb 结构化目录数据上，查询长度分布对真实用户的 KL 从最优基线 9.33 降至 1.01（9.2×），属性类型 KL 0.08 甚至优于调研种子本身（0.09）；200 组三元组人工标注一致率 91–93%，合成数据微调使 EBR 成对准确率 +17.7pp、LLM 重排 +26.4pp。</p>
+<p>自然语言搜索上线前既无真实查询、也无相关性标签，构成双重冷启动。CASTLE 用去标识预订会话中的「已订 vs 未订」房源对作为对比锚点，配合约 500 条用户调研种子查询，让 LLM 生成「使 <span class="arithmatex">\(l^+\)</span>比<span class="arithmatex">\(l^-\)</span> 更相关」的查询，从而<strong>同时产出查询与构造式标签</strong>（无需 LLM 事后判定）。在 Airbnb 结构化目录数据上，查询长度分布对真实用户的 KL 从最优基线 9.33 降至 1.01（9.2×），属性类型 KL 0.08 甚至优于调研种子本身（0.09）；200 组三元组人工标注一致率 91–93%，合成数据微调使 EBR 成对准确率 +17.7pp、LLM 重排 +26.4pp。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 结构化筛选（目的地/日期/人数/设施）精确但无法表达开放式偏好；LLM 使自然语言搜索可行，但上线前无流量可训练。</li>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>从去标识预订会话采样搜索上下文（地点/日期/人数），取已订/高互动房源为 <span class="arithmatex">\(l^+\)</span>、同搜索低互动房源为 <span class="arithmatex">\(l^-\)</span>，用目录属性（设施、房型、位置、评分、评论摘要）富化两者；再从约 500 条调研种子中抽一条作语言模板，按三种提示变体构造 prompt，令 LLM 输出「使 <span class="arithmatex">\(l^+\)</span> 主题上优于 <span class="arithmatex">\(l^-\)</span>」的查询 <span class="arithmatex">\(q\)</span>，三元组 <span class="arithmatex">\((q,l^+,l^-)\)</span> 的标签由构造保证。生成结果经去重/黑名单/一致性校验入库，日更约 1 万条，供 EBR 与排序模型微调及离线评测。</p>
+<p>从去标识预订会话采样搜索上下文（地点/日期/人数），取已订/高互动房源为 <span class="arithmatex">\(l^+\)</span>、同搜索低互动房源为<span class="arithmatex">\(l^-\)</span>，用目录属性（设施、房型、位置、评分、评论摘要）富化两者；再从约 500 条调研种子中抽一条作语言模板，按三种提示变体构造 prompt，令 LLM 输出「使<span class="arithmatex">\(l^+\)</span>主题上优于<span class="arithmatex">\(l^-\)</span>」的查询<span class="arithmatex">\(q\)</span>，三元组<span class="arithmatex">\((q,l^+,l^-)\)</span> 的标签由构造保证。生成结果经去重/黑名单/一致性校验入库，日更约 1 万条，供 EBR 与排序模型微调及离线评测。</p>
 <pre class="mermaid"><code>flowchart TD
     A["预订会话: 搜索上下文 + 已订/未订房源对"] --&gt; B["目录属性富化 (设施/房型/评分/评论摘要)"]
     S["~500 条调研种子查询"] --&gt; C["提示构造: Seed Controlled / Freeform / Variety"]
@@ -4236,7 +4247,7 @@
 <li>
 <p><strong>对比式联合生成（标签由构造，而非判定）</strong>：痛点是无标签且 LLM 判定有偏。核心是把相关性变成生成约束——prompt 明示「Listing 1 主题上更相关，请找出使之为真的查询」，于是 <span class="arithmatex">\(l^+ \succ l^-\)</span> 是确定性输入。形式化目标为最小化合成与真实查询分布的 KL：
 $<span class="arithmatex">\(\min_\theta \; D_{\mathrm{KL}}\big(P_{\text{true}}(q)\,\|\,P_{\text{synth}}(q)\big),\quad P_{\text{synth}}(q)=\mathbb{E}_{t\sim P(t),\,e\sim P(e)}\big[P_{\text{LLM}}(q\mid t,e)\big]\)</span>$
-将查询分解为语言模板 <span class="arithmatex">\(t\)</span>（种子）与目录实体 <span class="arithmatex">\(e\)</span>（对比对）两个可独立优化的因子。直觉：模板管「像人话」，实体管「有据可查」，二者解耦后各自可单独调优，且属性 grounding 从构造上杜绝了 passage 方法「编造设施」的假阳性。</p>
+将查询分解为语言模板 <span class="arithmatex">\(t\)</span>（种子）与目录实体<span class="arithmatex">\(e\)</span>（对比对）两个可独立优化的因子。直觉：模板管「像人话」，实体管「有据可查」，二者解耦后各自可单独调优，且属性 grounding 从构造上杜绝了 passage 方法「编造设施」的假阳性。</p>
 </li>
 <li>
 <p><strong>三种提示变体 + 显式多样性机制（防查询坍缩）</strong>：单一 prompt 无法同时满足真实/多样/可扩展。Seed Controlled 严格套用种子句式保真实；Seed Freeform 把种子当风格示例放词汇变化；Variety 放宽约束、提高温度探索多意图与罕见属性组合。生产用 80/20 混合。配套护栏：平台术语黑名单（"entire home"/"superhost"）、上下文去具体化（城市名→"near Eiffel Tower"、人数→"large group"）、JSON 结构化输出（含 justification 与 key_attributes）。效果：长度标准差从无种子基线的 0.99 拉到 2.48，覆盖全部三个词数桶。</p>
@@ -4482,12 +4493,18 @@ $<span class="arithmatex">\(\min_\theta \; D_{\mathrm{KL}}\big(P_{\text{true}}(q
 <li><strong>质量主导规模，而非数量</strong>：5K 之后评估准确率在 10K/20K 完全持平（0.869），50K 仅再涨 1.5pp，训练准确率早已饱和在 0.90。这直接论证了作者把工程投入放在生成保真度（种子引导、对比 grounding、难负例）而非扩量上的合理性。</li>
 <li><strong>标签保真度经得起人工检验，但 LLM 自评不可信</strong>：GPT-4/4o/5 在 GPT 生成对上准确率 0.994/0.988/0.990，而人工一致率仅 91–93%，6–8pp 的落差量化了自偏好偏差；对比标签因「由构造确定」在设计上不可能错，故训练用对比标签、评测才用 VJ 的分工是必要的。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: InPars/Promptagator 在单文档 passage 上生成查询，<strong>结构上无法产出排序标签</strong>；LLM-as-judge 路线先有查询再打标，受自偏好污染。CASTLE 的本质差异是把「查询」与「标签」合并为一次受约束的生成，标签成为输入而非输出，从而绕开判定环节。</li>
 <li><strong>可迁移亮点</strong>: ① 「让 LLM 生成使 A 优于 B 成立的查询」这一构造式打标范式，可直接迁移到电商图文匹配、短视频冷启动等有隐式偏好对（点击 vs 曝光未点）的场景；② 训练/评测标签源分离 + 属性锚定 CoT，是抑制 LLM 自偏好的低成本工程手段。</li>
 <li><strong>审稿级局限批判</strong>: ① 评测以<strong>分布 KL 与 2-candidate 成对准确率</strong>为主，缺少全库 Full-Ranking 的 NDCG/Recall 与线上 A/B，合成数据对真实排序收益的因果证据偏弱；② 对比对采样自预订会话，系统性偏向高转化房源，作者自承对新房源/冷门市场存在公平性风险；③ 三类失败模式（多意图、1–2 词极短查询、vibe 体验型）尚未解决，短查询占比 3.9% vs. 真实 34.9% 的差距仍显著。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 统一复现11种反事实解释方法，提出item/list双层与隐式/显式双格式评测协议，揭示效果-稀疏性权衡与图解释器可扩展性瓶颈">
+        <meta name="description" content="[SIGIR 2026][去偏公平与工业架构] 统一复现11种反事实解释器，首次提出列表级Top-K评估协议与PN-R位置敏感指标，揭示显式格式下有效性-稀疏性权衡与图解释器可扩展性瓶颈。">
       
       
       
@@ -108,20 +108,18 @@
 
 
 
-<meta name="keywords" content="SIGIR, 去偏公平、可信隐私与工业架构, 重排/可解释性评测, 反事实解释, 可复现性基准, 列表级评测" />
+<meta name="keywords" content="SIGIR 2026, 去偏公平与工业架构, 重排, 反事实解释, 可复现性基准" />
 
 
-<meta property="article:tag" content="SIGIR" />
+<meta property="article:tag" content="SIGIR 2026" />
 
-<meta property="article:tag" content="去偏公平、可信隐私与工业架构" />
+<meta property="article:tag" content="去偏公平与工业架构" />
 
-<meta property="article:tag" content="重排/可解释性评测" />
+<meta property="article:tag" content="重排" />
 
 <meta property="article:tag" content="反事实解释" />
 
 <meta property="article:tag" content="可复现性基准" />
-
-<meta property="article:tag" content="列表级评测" />
 
 
 
@@ -131,10 +129,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/from_top_1_to_top_k_a_reproducibility_study_and_benchmarking_of_counterfact/" />
 <meta property="og:title" content="[Paper Note] From Top-1 to Top-K: A Reproducibility Study and Benchmarking of Counterfactual Explanations for Recommender Systems" />
-<meta property="og:description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 统一复现11种反事实解释方法，提出item/list双层与隐式/显式双格式评测协议，揭示效果-稀疏性权衡与图解释器可扩展性瓶颈" />
+<meta property="og:description" content="[SIGIR 2026][去偏公平与工业架构] 统一复现11种反事实解释器，首次提出列表级Top-K评估协议与PN-R位置敏感指标，揭示显式格式下有效性-稀疏性权衡与图解释器可扩展性瓶颈。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] From Top-1 to Top-K: A Reproducibility Study and Benchmarking of Counterfactual Explanations for Recommender Systems" />
-<meta name="twitter:description" content="[SIGIR 2026][去偏公平、可信隐私与工业架构] 统一复现11种反事实解释方法，提出item/list双层与隐式/显式双格式评测协议，揭示效果-稀疏性权衡与图解释器可扩展性瓶颈" />
+<meta name="twitter:description" content="[SIGIR 2026][去偏公平与工业架构] 统一复现11种反事实解释器，首次提出列表级Top-K评估协议与PN-R位置敏感指标，揭示显式格式下有效性-稀疏性权衡与图解释器可扩展性瓶颈。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +158,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] From Top-1 to Top-K: A Reproducibility Study and Benchmarking of Counterfactual Explanations for Recommender Systems",
   "headline": "[Paper Note] From Top-1 to Top-K: A Reproducibility Study and Benchmarking of Counterfactual Explanations for Recommender Systems",
-  "description": "[SIGIR 2026][\u53bb\u504f\u516c\u5e73\u3001\u53ef\u4fe1\u9690\u79c1\u4e0e\u5de5\u4e1a\u67b6\u6784] \u7edf\u4e00\u590d\u73b011\u79cd\u53cd\u4e8b\u5b9e\u89e3\u91ca\u65b9\u6cd5\uff0c\u63d0\u51faitem/list\u53cc\u5c42\u4e0e\u9690\u5f0f/\u663e\u5f0f\u53cc\u683c\u5f0f\u8bc4\u6d4b\u534f\u8bae\uff0c\u63ed\u793a\u6548\u679c-\u7a00\u758f\u6027\u6743\u8861\u4e0e\u56fe\u89e3\u91ca\u5668\u53ef\u6269\u5c55\u6027\u74f6\u9888",
+  "description": "[SIGIR 2026][\u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784] \u7edf\u4e00\u590d\u73b011\u79cd\u53cd\u4e8b\u5b9e\u89e3\u91ca\u5668\uff0c\u9996\u6b21\u63d0\u51fa\u5217\u8868\u7ea7Top-K\u8bc4\u4f30\u534f\u8bae\u4e0ePN-R\u4f4d\u7f6e\u654f\u611f\u6307\u6807\uff0c\u63ed\u793a\u663e\u5f0f\u683c\u5f0f\u4e0b\u6709\u6548\u6027-\u7a00\u758f\u6027\u6743\u8861\u4e0e\u56fe\u89e3\u91ca\u5668\u53ef\u6269\u5c55\u6027\u74f6\u9888\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/from_top_1_to_top_k_a_reproducibility_study_and_benchmarking_of_counterfact/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/from_top_1_to_top_k_a_reproducibility_study_and_benchmarking_of_counterfact/",
   "inLanguage": "zh-CN",
@@ -168,18 +166,17 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR, \u53bb\u504f\u516c\u5e73\u3001\u53ef\u4fe1\u9690\u79c1\u4e0e\u5de5\u4e1a\u67b6\u6784, \u91cd\u6392/\u53ef\u89e3\u91ca\u6027\u8bc4\u6d4b, \u53cd\u4e8b\u5b9e\u89e3\u91ca, \u53ef\u590d\u73b0\u6027\u57fa\u51c6, \u5217\u8868\u7ea7\u8bc4\u6d4b",
+  "keywords": "SIGIR 2026, \u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784, \u91cd\u6392, \u53cd\u4e8b\u5b9e\u89e3\u91ca, \u53ef\u590d\u73b0\u6027\u57fa\u51c6",
   "about": [
-    { "@type": "Thing", "name": "SIGIR" },
-    { "@type": "Thing", "name": "\u53bb\u504f\u516c\u5e73\u3001\u53ef\u4fe1\u9690\u79c1\u4e0e\u5de5\u4e1a\u67b6\u6784" },
-    { "@type": "Thing", "name": "\u91cd\u6392/\u53ef\u89e3\u91ca\u6027\u8bc4\u6d4b" },
+    { "@type": "Thing", "name": "SIGIR 2026" },
+    { "@type": "Thing", "name": "\u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784" },
+    { "@type": "Thing", "name": "\u91cd\u6392" },
     { "@type": "Thing", "name": "\u53cd\u4e8b\u5b9e\u89e3\u91ca" },
-    { "@type": "Thing", "name": "\u53ef\u590d\u73b0\u6027\u57fa\u51c6" },
-    { "@type": "Thing", "name": "\u5217\u8868\u7ea7\u8bc4\u6d4b" }
+    { "@type": "Thing", "name": "\u53ef\u590d\u73b0\u6027\u57fa\u51c6" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3994,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4008,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4016,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4039,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4069,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4092,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4100,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4116,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4181,9 +4156,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][去偏公平、可信隐私与工业架构] 统一复现11种反事实解释方法，提出item/list双层与隐式/显式双格式评测协议，揭示效果-稀疏性权衡与图解释器可扩展性瓶颈</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][去偏公平与工业架构] 统一复现11种反事实解释器，首次提出列表级Top-K评估协议与PN-R位置敏感指标，揭示显式格式下有效性-稀疏性权衡与图解释器可扩展性瓶颈。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR · 去偏公平、可信隐私与工业架构 · 重排/可解释性评测 · 反事实解释 · 可复现性基准 · 列表级评测</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 去偏公平与工业架构 · 重排 · 反事实解释 · 可复现性基准</p>
   
 </aside>
   
@@ -4197,21 +4172,21 @@
       
       
       
-        <span class="md-tag">SIGIR</span>
+        <span class="md-tag">SIGIR 2026</span>
       
     
       
       
       
       
-        <span class="md-tag">去偏公平、可信隐私与工业架构</span>
+        <span class="md-tag">去偏公平与工业架构</span>
       
     
       
       
       
       
-        <span class="md-tag">重排/可解释性评测</span>
+        <span class="md-tag">重排</span>
       
     
       
@@ -4228,13 +4203,6 @@
         <span class="md-tag">可复现性基准</span>
       
     
-      
-      
-      
-      
-        <span class="md-tag">列表级评测</span>
-      
-    
   </nav>
 
 
@@ -4244,137 +4212,269 @@
 
 <h1 id="from-top-1-to-top-k-a-reproducibility-study-and-benchmarking-of-counterfactual-explanations-for-recommender-systems-top-1-top-k">From Top-1 to Top-K: A Reproducibility Study and Benchmarking of Counterfactual Explanations for Recommender Systems (从 Top-1 到 Top-K：推荐系统反事实解释的可复现性研究与基准测试)</h1>
 <ul>
-<li><strong>会议/期刊</strong>: SIGIR 2026 (第49届国际ACM SIGIR会议，Melbourne, VIC, Australia)</li>
-<li><strong>推荐链路定位</strong>: 重排/可解释性评测 (Re-ranking / Explainability Evaluation) — 面向已训练推荐模型的<strong>事后解释 (Post-hoc Explanation)</strong> 与可信评测</li>
-<li><strong>研究方向</strong>: 去偏公平、可信隐私与工业架构 (主) / 对话推荐与智能体仿真 (次，因解释生成与用户交互理解相关)</li>
-<li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2604.19663v1">https://arxiv.org/abs/2604.19663v1</a></li>
-<li><strong>开源代码</strong>: <a href="https://github.com/L2R-UET/CFExpRec">https://github.com/L2R-UET/CFExpRec</a></li>
+<li><strong>会议/期刊</strong>: SIGIR 2026</li>
+<li><strong>作者与机构</strong>: Quang-Huy Nguyen, Thanh-Hai Nguyen, Khac-Manh Thai 等 (VNU University of Engineering and Technology; Delft University of Technology)</li>
+<li><strong>推荐链路定位</strong>: 重排 / 解释层（后置解释生成，不改变推荐主链路）</li>
+<li><strong>研究方向</strong>: 去偏公平与工业架构 / 图神经网络推荐</li>
+<li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2604.19663v1">论文原文链接</a></li>
+<li><strong>开源代码</strong>: <a href="https://github.com/L2R-UET/CFExpRec">开源代码仓库链接</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对推荐系统反事实解释 (CE) 领域"各方法自定协议、无法公平比较"的碎片化痛点，本文系统复现并重实现 11 种 CE 方法（6 种推荐原生 + 5 种 GNN 解释器迁移），提出沿<strong>解释格式 (隐式/显式) × 评测层级 (item/list) × 扰动范围 (用户向量/交互图)</strong> 三维度的统一基准框架，首次将评测从 Top-1 扩展到 Top-K 列表级，并新增位置敏感的 PN-R 指标。在 3 个真实数据集、6 个推荐模型上的实验表明：效果-稀疏性权衡高度依赖方法与设置，item 级与 list 级结论基本一致，而图解释器在大图上存在显著可扩展性瓶颈。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>推荐系统反事实解释（CE）领域长期存在评估碎片化问题：各方法使用不同数据集、推荐器、指标乃至解释格式（隐式重要性分数 vs. 显式交互扰动集），导致结论无法公平比较。本文系统复现并重新实现 11 种 SOTA CE 方法（含 6 种推荐原生解释器与 5 种迁移自 GNN 的解释器），提出统一基准框架，沿「解释格式 × 评估层级 × 扰动范围」三维度评估，并<strong>首次将评估从单物品级扩展到 Top-K 列表级</strong>，新增位置敏感的 PN-R 指标。在 3 个数据集、6 个推荐器上的实验表明：显式格式下有效性-稀疏性存在强权衡，列表级与物品级结论高度一致，而多种图解释器在大图上存在严重可扩展性瓶颈（OOM 或数千秒级推理）。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 反事实解释通过回答"若用户行为发生何种最小改变，推荐结果会如何变化"的 what-if 问题，为用户提供可操作、可理解的洞察，同时帮助工程师调试模型。现有 CE 方法按输出格式分为两大类：<strong>隐式方法</strong>（输出每个历史交互的重要性分数，如 LIME-RS、SHAP、LXR）与<strong>显式方法</strong>（直接输出需增删的交互子集，如 PRINCE、ACCENT、GREASE）。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>协议异质性</strong>：不同方法使用不同数据集、推荐器、指标甚至解释格式，导致无法公平比较（表 1 系统对比了各方法原始论文的评测维度，可见无任何方法同时覆盖隐式/显式、item/list、向量/图、效果/稀疏/复杂度全部维度）。</li>
-<li><strong>Top-1 视角局限</strong>：绝大多数方法仅解释单个推荐物品，而现代推荐系统输出的是 top-K 排序列表，缺乏列表级解释与评测框架。</li>
-<li><strong>图推荐器覆盖缺失</strong>：多数 CE 方法仅针对用户直接交互过的物品，无法为基于全交互图的 GNN 推荐器生成忠实解释。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 解释目标（重要性分数 vs. 交互子集）与推荐器输入表征（用户向量 vs. 交互图）的异质性，使得"用同一套指标公平比较"在数学上并不平凡——隐式方法需通过逐步掩码来间接评估，显式方法则直接测量扰动效果，二者需要统一的扰动协议才能对齐。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者提出以<strong>扰动 (Perturbation)</strong> 为统一语言：无论隐式还是显式，最终都归结为"对输入施加扰动后 top-K 列表的变化程度"。据此设计 POS-P/NEG-P（隐式）、PN-S/PN-R（显式）等指标，并将评测层级从 item 级自然推广到 list 级，从而在单一框架下容纳所有方法。</li>
+<li><strong>主流范式</strong>: CE 通过寻找「最小交互改动使推荐结果翻转」来提供可操作解释，分为隐式（输出交互重要性掩码）与显式（直接输出需增删的交互子集）两大范式。</li>
+<li><strong>前人局限</strong>: 其一，各方法自带定制指标（POS-P/NEG-P 用于隐式，PN-S 用于显式），跨范式无法直接比较；其二，几乎所有方法仅解释单个推荐物品，而真实系统输出的是 Top-K 排序列表，单物品结论能否外推到列表级完全未知。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 解释器的「有效性」与「稀疏性」并非单调正相关，且图解释器依赖的 <span class="arithmatex">\(k\)</span>-hop 子图假设在推荐场景下未必成立——因为单边扰动会通过消息传递影响多个节点表征。</li>
+<li><strong>本文切入点</strong>: 构建模型无关的统一评估协议，将 11 种解释器置于同一实验台，并把评估粒度从 Top-1 推进到 Top-K。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户集 <span class="arithmatex">\(\mathcal{U}\)</span>、物品集 <span class="arithmatex">\(\mathcal{I}\)</span>、交互集 <span class="arithmatex">\(\mathcal{E}\)</span>，建模为二部图 <span class="arithmatex">\(G=(\mathcal{U}\cup\mathcal{I},\mathcal{E})\)</span>，二元交互矩阵 <span class="arithmatex">\(X\in\{0,1\}^{|\mathcal{U}|\times|\mathcal{I}|}\)</span>。</li>
-<li>用户 <span class="arithmatex">\(u\)</span> 的交互向量 <span class="arithmatex">\(x_u\in\{0,1\}^{|\mathcal{I}|}\)</span>，<span class="arithmatex">\(x_u[i]=1\)</span> 表示用户曾交互过物品 <span class="arithmatex">\(i\)</span>；<span class="arithmatex">\(\mathcal{I}_u\)</span> 为用户交互过的物品集合。</li>
-<li>已训练推荐模型 <span class="arithmatex">\(f_\theta\)</span>（参数 <span class="arithmatex">\(\theta\)</span> 在解释过程中<strong>固定不变</strong>），对候选物品 <span class="arithmatex">\(i\in\mathcal{I}\setminus\mathcal{I}_u\)</span> 打分 <span class="arithmatex">\(f_\theta(i,x_u)\)</span>，按分数降序排列，<span class="arithmatex">\(\text{rank}(i;x_u)\)</span> 为物品 <span class="arithmatex">\(i\)</span> 的排名位置。</li>
-<li>仅关注 top-<span class="arithmatex">\(K\)</span> 推荐，即 <span class="arithmatex">\(\text{rank}(i;x_u)\le K\)</span>。</li>
-<li><strong>隐式格式</strong>：解释器输出掩码 <span class="arithmatex">\(m\in[0,1]^{|\mathcal{I}|}\)</span>，每个元素反映对应历史交互的重要性。</li>
-<li><strong>显式格式</strong>：解释器直接输出扰动后的用户向量 <span class="arithmatex">\(x_u^p\in\{0,1\}^{|\mathcal{I}|}\)</span>。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流向：训练推荐模型 <span class="arithmatex">\(f_\theta\)</span>（MF/VAE/DiffRec/LightGCN/GFormer/SimGCL）→ 对每个用户-物品对或 top-K 列表调用 CE 解释器（隐式输出重要性掩码，显式输出扰动向量）→ 按统一协议施加扰动（隐式按重要性排序逐步掩码，显式直接应用扰动）→ 计算效果、稀疏性、复杂度三类指标。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>本文不提出新解释算法，而是构建一个<strong>评估基准框架</strong>：固定已训练推荐器 <span class="arithmatex">\(f_\theta\)</span> 的参数，对每个用户采样其 Top-K 列表，分别以隐式/显式两种格式生成反事实解释，再在物品级与列表级两个层级上，通过逐步扰动（隐式）或直接干预（显式）测量推荐结果的变化，同时记录稀疏性与推理耗时。框架的核心贡献在于将异构解释器的输出统一映射到可比较的扰动序列上。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 用户交互向量 x_u / 用户-物品交互图 G"] --&gt; B["已训练推荐模型 f_θ (MF/VAE/DiffRec/LightGCN/GFormer/SimGCL)"]
-    B --&gt; C["CE 解释器层: 隐式(重要性掩码 m) / 显式(扰动向量 x_u^p)"]
-    C --&gt; D["统一扰动协议: 逐步掩码(隐式) / 直接应用(显式)"]
-    D --&gt; E["评测层: item级 vs list级 × 效果(POS-P/NEG-P/PN-S/PN-R) + 稀疏性(Gini/#Perturb) + 复杂度(推理时间)"]</code></pre>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 三维度基准协议 (Benchmarking Protocol)</strong></p>
-<ul>
-<li><strong>解释格式</strong>：隐式（重要性分数）vs. 显式（交互子集）。</li>
-<li><strong>评测层级</strong>：item 级（为 top-K 中每个物品各生成一个 CE，目标是使该物品移出列表）vs. list 级（为整个 top-K 列表生成<strong>单一</strong> CE，目标是使列表中所有物品同时被移除）。</li>
-<li><strong>扰动范围</strong>：用户交互向量（MF/VAE/DiffRec）vs. 用户-物品交互图（LightGCN/GFormer/SimGCL）。</li>
-</ul>
-<p><strong>(2) 效果指标 (Effectiveness Metrics)</strong></p>
-<p>隐式格式采用扰动曲线指标。设 <span class="arithmatex">\(T\)</span> 为扰动步数，每步移除 <span class="arithmatex">\((100/T)\%\)</span> 的交互：</p>
-<div class="arithmatex">\[\text{POS-P@K}(u{-}i)=\frac{1}{T}\sum_{t=1}^{T}\mathbb{1}\big[\text{rank}(i;x_u^{(t,pos)})\le K\big]\]</div>
-<div class="arithmatex">\[\text{POS-P@K}(u)=\frac{1}{TK}\sum_{t=1}^{T}\sum_{k=1}^{K}\mathbb{1}\big[\text{rank}(i_k;x_u^{(t,pos)})\le K\big]\]</div>
-<p>其中 <span class="arithmatex">\(x_u^{(t,pos)}\)</span> 表示按重要性<strong>降序</strong>移除交互后的扰动输入（NEG-P 则按升序）。POS-P 越低说明移除高重要性交互能快速使目标物品排名下降，NEG-P 越高说明移除低重要性交互几乎无影响，二者共同反映解释的充分性。</p>
-<p>显式格式采用必要性概率指标：</p>
-<div class="arithmatex">\[\text{PN-S@K}(u{-}i)=\mathbb{1}\big[\text{rank}(i;x_u^p)&gt;K\big]\]</div>
-<div class="arithmatex">\[\text{PN-S@K}(u)=\frac{1}{K}\sum_{k=1}^{K}\mathbb{1}\big[\text{rank}(i_k;x_u^p)&gt;K\big]\]</div>
-<p><strong>本文新增的位置敏感指标 PN-R</strong>（借鉴 NDCG 的位置感知设计），对高排名位置的变化赋予更大权重：</p>
-<div class="arithmatex">\[\text{PN-R@K}(u)=1-\frac{\sum_{k=1}^{K}\mathbb{1}\big[\text{rank}(i_k;x_u^p)\le K\big]/\log_2\big(\text{rank}(i_k;x_u^p)+1\big)}{\sum_{k=1}^{K}1/\log_2(k+1)}\]</div>
-<p>物理直觉：若 CE 导致 top-K 中高位置物品被替换，说明解释对模型输出产生了更强、更有意义的改变，应获得更高分数。</p>
-<p><strong>(3) 稀疏性指标 (Sparsity Metrics)</strong></p>
-<p>隐式格式采用 <strong>Gini Index</strong>（分数越集中说明解释越聚焦于少数关键交互）：</p>
-<div class="arithmatex">\[\text{Gini}=1-2\sum_{k=1}^{|\mathcal{I}_u|}\left(\frac{\hat{m}_s[k]}{\|\hat{m}_s\|_1}\cdot\frac{|\mathcal{I}_u|-k+0.5}{|\mathcal{I}_u|}\right)\]</div>
-<p>其中 <span class="arithmatex">\(\hat{m}_s\)</span> 为 min-max 归一化后升序排列的重要性分数。显式格式直接计算扰动数量：</p>
-<div class="arithmatex">\[\#\text{Perturb}=\sum_{i\in\mathcal{I}_u}\mathbb{1}\big[x_u^p[i]\neq x_u[i]\big]\]</div>
-<p><strong>(4) 被评测的 11 种解释器</strong></p>
-<ul>
-<li><strong>推荐原生 (6种)</strong>：LIME-RS（线性代理模型）、SHAP（Shapley 值）、PRINCE（Personalized PageRank + 随机游走）、ACCENT（影响函数）、LXR（自监督掩码优化，显式格式用阈值 0.5 二值化）、GREASE（代理模型 + 图结构干预）。</li>
-<li><strong>GNN 解释器迁移 (5种)</strong>：CF-GNNExplainer 等原用于节点/图分类的方法，被适配到推荐场景，以支持对 GNN 推荐器的解释。</li>
-</ul>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 本文为<strong>基准评测研究</strong>，不提出新的训练目标；各解释器沿用其原始论文的优化目标（如 LXR 的掩码优化损失、GREASE 的代理模型损失）。推荐模型 <span class="arithmatex">\(f_\theta\)</span> 在解释过程中参数冻结。</li>
-<li><strong>训练负采样策略</strong>: 原文未报告（评测聚焦于解释生成，不涉及推荐模型训练阶段的负采样细节）。</li>
-<li><strong>时间与空间复杂度</strong>: 复杂度以<strong>生成单个 CE 的推理时间</strong>衡量。隐式方法需 <span class="arithmatex">\(T\)</span> 步扰动评估（每步一次前向传播），显式方法需一次扰动应用。图解释器（如 GREASE、CF-GNNExplainer）需在图上做子图搜索或梯度优化，在大规模推荐图上表现出显著的可扩展性瓶颈（原文定性报告，未给出精确 ms 数值）。</li>
-</ul>
+    A["已训练推荐器 f_θ (MF/VAE/DiffRec/LightGCN/GFormer/SimGCL)"] --&gt; B["采样用户 Top-K 列表"]
+    B --&gt; C["解释器生成 CE (隐式掩码 / 显式扰动集)"]
+    C --&gt; D["物品级评估: 单目标物品是否被移除"]
+    C --&gt; E["列表级评估: 整个 Top-K 是否被改写"]
+    D --&gt; F["有效性 POS-P/PN-S + 稀疏性 Gini/#Perturb + 耗时"]
+    E --&gt; F</code></pre>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>列表级评估协议与 PN-R 指标</strong>：痛点在于原 PN-S 仅统计「被移除物品比例」，对所有排名位置一视同仁，无法区分「挤掉第 1 名」与「挤掉第 5 名」的解释力度差异。本文借鉴 NDCG 的位置折扣思想，定义
+$<span class="arithmatex">\(\text{PN-R}@K(u)=1-\frac{\sum_{k=1}^{K}\mathbb{I}[\text{rank}(i_k;\mathbf{x}_u^p)\le K]/\log_2(\text{rank}(i_k;\mathbf{x}_u^p)+1)}{\sum_{k=1}^{K}1/\log_2(k+1)}\)</span>$
+高排名物品被替换时折扣惩罚更重，从而奖励「撼动头部」的解释。直觉上，这使列表级评估具备排序敏感性，而非仅计数。</p>
+</li>
+<li>
+<p><strong>隐式格式的扰动序列化评估</strong>：隐式解释器只输出重要性分数 <span class="arithmatex">\(\mathbf{m}\in[0,1]^{|\mathcal{I}|}\)</span>，无法直接得到扰动集。本文按分数降序（POS-P）与升序（NEG-P）逐步置零交互，共<span class="arithmatex">\(T=10\)</span>步，每步移除<span class="arithmatex">\(100/T\%\)</span> 的交互：
+$<span class="arithmatex">\(\text{POS-P}@K(u)=\frac{1}{TK}\sum_{t=1}^{T}\sum_{k=1}^{K}\mathbb{I}[\text{rank}(i_k;\mathbf{x}_u^{(t,pos)})\le K]\)</span>$
+POS-P 越低说明高重要性交互被移除后目标越快掉出榜单，NEG-P 越高说明低重要性交互几乎无影响，二者共同刻画解释的充分性。</p>
+</li>
+<li>
+<p><strong>扰动范围的四级消融设计</strong>：针对图解释器普遍采用的 <span class="arithmatex">\(k\)</span>-hop 子图裁剪，本文设计 Full /<span class="arithmatex">\(k\)</span>-hop / Indirect（仅保留用户-目标物品间<span class="arithmatex">\(k\)</span>-hop 路径）/ User-only 四种范围，系统检验「缩小搜索空间是否损失解释质量」。这一设计直接挑战了 GNN 解释领域「节点表征仅依赖<span class="arithmatex">\(k\)</span>-hop 邻域故可安全裁剪」的默认假设。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文使用 3 个真实数据集（Amazon 等），具体统计见下表：</li>
+<li><strong>数据集与预处理</strong>:</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2604.19663v1/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">数据集</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Interactions</th>
+<th style="text-align: center;">稀疏度</th>
+<th style="text-align: left;">特征/场景说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Amazon (Fashion)</td>
+<td style="text-align: center;">1,275</td>
+<td style="text-align: center;">1,374</td>
+<td style="text-align: center;">6,973</td>
+<td style="text-align: center;">99.60%</td>
+<td style="text-align: left;">评分 &gt;3 视为正交互，过滤交互数 &lt;3 的用户/物品</td>
+</tr>
+<tr>
+<td style="text-align: left;">ML1M</td>
+<td style="text-align: center;">6,037</td>
+<td style="text-align: center;">3,381</td>
+<td style="text-align: center;">575,128</td>
+<td style="text-align: center;">97.18%</td>
+<td style="text-align: left;">经典电影推荐基准</td>
+</tr>
+<tr>
+<td style="text-align: left;">Yahoo</td>
+<td style="text-align: center;">13,797</td>
+<td style="text-align: center;">4,604</td>
+<td style="text-align: center;">365,750</td>
+<td style="text-align: center;">99.42%</td>
+<td style="text-align: left;">大规模稀疏新闻/音乐场景</td>
+</tr>
+</tbody>
+</table>
 <ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文未在提取文本中明确报告划分策略细节（需查阅原文第 3.3/3.4 节完整版）；从评测性质看，解释评测基于已训练模型的固定输出，不涉及未来信息泄露风险。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 采用 <strong>Full-Ranking</strong> 语义下的 top-K 列表评测（对候选物品全量打分后取 top-K），item 级与 list 级两种粒度。</li>
-<li><strong>评价指标与显著性检验</strong>: 效果指标 POS-P@K、NEG-P@K、PN-S@K、PN-R@K；稀疏性指标 Gini Index、#Perturb；复杂度指标为单次 CE 推理时间。原文未报告配对显著性检验（如 <span class="arithmatex">\(p&lt;0.05\)</span>）。</li>
+<li><strong>数据划分与防穿越</strong>: 采用 <code>8:1:1</code> 比例划分训练/验证/测试，验证集连续 20 轮不提升即早停；解释生成阶段随机采样 500 用户评估，其余用户供 LXR、CLEAR 等需预训练的方法使用。</li>
+<li><strong>排名评测协议</strong>: 采用 <code>Full-Ranking</code> 语义下的 Top-K 列表评估（<span class="arithmatex">\(K\in\{3,5\}\)</span>），隐式格式扰动步数固定<span class="arithmatex">\(T=10\)</span>；所有指标报告均值与标准差。</li>
+<li><strong>对比基线与超参设置</strong>: 6 个推荐器（MF、VAE、DiffRec、LightGCN、GFormer、SimGCL）× 11 个解释器（LIME-RS、SHAP、PRINCE、ACCENT、LXR、GREASE、CF-GNNExplainer、CF2、CLEAR、UNR-Explainer、C2Explainer）。所有超参经 Optuna 以 POS-P/PN-S 为目标重新调优，确保公平性。</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>以 MF 为推荐模型、显式格式下的对比结果见下表（S@K 即 PN-S@K，R@K 即 PN-R@K，#P@K 即 #Perturb@K，粗体为最优解释器，下划线为次优）：</p>
-<figure class="paper-figure">
-  <img alt="表 4" src="../../../../../assets/papers/2604.19663v1/table_4.png" /><figcaption>表 4</figcaption>
-</figure>
-<p>隐式格式下不同用户向量推荐模型（MF/VAE/DiffRec）的性能对比见图 1（P 表示 POS-P）：</p>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2604.19663v1/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<p>图格式下不同图推荐模型（LightGCN/GFormer/SimGCL）在显式格式下的性能对比见图 2：</p>
-<figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2604.19663v1/figure_2.png" /><figcaption>图 2</figcaption>
-</figure>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>本文为基准研究，<strong>未设置传统意义上的模块消融</strong>，而是通过<strong>控制变量式的多维度交叉分析</strong>替代：固定数据集切换推荐器（6 种）、固定推荐器切换解释格式（隐式/显式）、固定格式切换评测层级（item/list）。核心发现：解释器性能在 item 级与 list 级评测间<strong>基本保持一致</strong>，说明此前基于 item 级的结论具有一定可迁移性；但效果-稀疏性权衡在显式格式下高度依赖具体方法与设置。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
+<p><strong>隐式格式 + MF 推荐器（Amazon，物品级）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">解释器</th>
+<th style="text-align: center;">POS-P@3↓</th>
+<th style="text-align: center;">NEG-P@3↑</th>
+<th style="text-align: center;">Gini@3↑</th>
+<th style="text-align: center;">POS-P@5↓</th>
+<th style="text-align: center;">NEG-P@5↑</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">LIME-RS</td>
+<td style="text-align: center;">0.1471</td>
+<td style="text-align: center;">0.1495</td>
+<td style="text-align: center;">0.4256</td>
+<td style="text-align: center;">0.1682</td>
+<td style="text-align: center;">0.1719</td>
+</tr>
+<tr>
+<td style="text-align: left;">SHAP</td>
+<td style="text-align: center;">0.1312</td>
+<td style="text-align: center;">0.1575</td>
+<td style="text-align: center;">0.1396</td>
+<td style="text-align: center;">0.1570</td>
+<td style="text-align: center;">0.1798</td>
+</tr>
+<tr>
+<td style="text-align: left;">ACCENT</td>
+<td style="text-align: center;">0.1491</td>
+<td style="text-align: center;">0.1453</td>
+<td style="text-align: center;">0.4818</td>
+<td style="text-align: center;">0.1696</td>
+<td style="text-align: center;">0.1688</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LXR</strong></td>
+<td style="text-align: center;"><strong>0.1161</strong></td>
+<td style="text-align: center;"><strong>0.1805</strong></td>
+<td style="text-align: center;"><strong>0.4809</strong></td>
+<td style="text-align: center;"><strong>0.1481</strong></td>
+<td style="text-align: center;"><strong>0.1916</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>显式格式 + LightGCN 推荐器（Amazon，物品级）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">解释器</th>
+<th style="text-align: center;">PN-S@3↑</th>
+<th style="text-align: center;">#Perturb@3↓</th>
+<th style="text-align: center;">PN-S@5↑</th>
+<th style="text-align: center;">#Perturb@5↓</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">GREASE</td>
+<td style="text-align: center;"><strong>0.8513</strong></td>
+<td style="text-align: center;">4.99</td>
+<td style="text-align: center;"><strong>0.8392</strong></td>
+<td style="text-align: center;">9.29</td>
+</tr>
+<tr>
+<td style="text-align: left;">CF-GNNExplainer</td>
+<td style="text-align: center;">0.4467</td>
+<td style="text-align: center;"><strong>1.12</strong></td>
+<td style="text-align: center;">0.3064</td>
+<td style="text-align: center;"><strong>0.77</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">CF2</td>
+<td style="text-align: center;">0.5422</td>
+<td style="text-align: center;">24.87</td>
+<td style="text-align: center;">0.4247</td>
+<td style="text-align: center;">24.79</td>
+</tr>
+<tr>
+<td style="text-align: left;">CLEAR</td>
+<td style="text-align: center;">0.6340</td>
+<td style="text-align: center;">9.25</td>
+<td style="text-align: center;">0.6876</td>
+<td style="text-align: center;">9.39</td>
+</tr>
+<tr>
+<td style="text-align: left;">UNR-Explainer</td>
+<td style="text-align: center;">0.5836</td>
+<td style="text-align: center;">1.85</td>
+<td style="text-align: center;">0.4833</td>
+<td style="text-align: center;">2.05</td>
+</tr>
+<tr>
+<td style="text-align: left;">C2Explainer</td>
+<td style="text-align: center;">0.6100</td>
+<td style="text-align: center;">157.39</td>
+<td style="text-align: center;">0.5220</td>
+<td style="text-align: center;">111.33</td>
+</tr>
+</tbody>
+</table>
+<p><strong>显式格式 + LightGCN（ML1M，物品级）</strong>：CF2 的 PN-S@3 达 0.5453 但需 <strong>62,125</strong> 次扰动；C2Explainer 达 0.9753 但需 <strong>222,184</strong> 次扰动，稀疏性完全崩溃。</p>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<p><strong>图扰动范围消融（Amazon + LightGCN，列表级 PN-R@5）</strong>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">解释器</th>
+<th style="text-align: center;">Full</th>
+<th style="text-align: center;"><span class="arithmatex">\(k\)</span>-hop</th>
+<th style="text-align: center;">Indirect</th>
+<th style="text-align: center;">User-only</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">CF2</td>
+<td style="text-align: center;">最优</td>
+<td style="text-align: center;">下降</td>
+<td style="text-align: center;">无稳定增益</td>
+<td style="text-align: center;">弱于 <span class="arithmatex">\(k\)</span>-hop</td>
+</tr>
+<tr>
+<td style="text-align: left;">CF-GNNExplainer</td>
+<td style="text-align: center;">基准</td>
+<td style="text-align: center;">相当</td>
+<td style="text-align: center;">无稳定增益</td>
+<td style="text-align: center;">相当</td>
+</tr>
+<tr>
+<td style="text-align: left;">GREASE</td>
+<td style="text-align: center;">基准</td>
+<td style="text-align: center;">相当</td>
+<td style="text-align: center;">无稳定增益</td>
+<td style="text-align: center;">相当</td>
+</tr>
+<tr>
+<td style="text-align: left;">CLEAR</td>
+<td style="text-align: center;">基准</td>
+<td style="text-align: center;"><strong>提升</strong></td>
+<td style="text-align: center;">无稳定增益</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td style="text-align: left;">UNR-Explainer</td>
+<td style="text-align: center;">基准</td>
+<td style="text-align: center;"><strong>提升</strong></td>
+<td style="text-align: center;">无稳定增益</td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>有效性-稀疏性权衡在显式格式下普遍成立但非绝对</strong>：ML1M 上 CF2 与 C2Explainer 以数万至数十万次扰动换取最高 PN-S，而 Amazon 上 UNR-Explainer 以平均不足 3 次扰动即取得更优有效性，说明「高有效性必然低稀疏」的直觉依赖于数据集密度与优化策略（从大边集收缩 vs. 从小边集扩张）。</li>
+<li><strong>列表级与物品级结论高度一致，但存在个别反例</strong>：LXR 在隐式格式下于 Amazon/Yahoo 两个层级均领先，LXR 在显式格式下物品级与列表级分数几乎重合（Amazon PN-S@3 物品级 0.7420 vs. 列表级 0.7660）；但 CLEAR 在 Amazon 上物品级排名第二、列表级却跌至倒数第二，提示单层级评估可能误导。</li>
+<li><strong>图解释器可扩展性是硬瓶颈</strong>：CLEAR 在 ML1M/Yahoo 直接 OOM；CF2 在 Yahoo 列表级需 1,688 秒/次解释；C2Explainer 在 ML1M 需 22 万次扰动。相比之下，预训练类方法（LXR 推理 0.001–0.004 秒）与搜索类方法（UNR-Explainer 0.78–213 秒）在效率上更具部署可行性。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>位置分桶分析</strong>: 图 3 展示了用户向量解释器在 item 级评测下随物品在 top-5 列表中位置变化的性能；图 4 展示了图解释器在 top-3（左）与 top-5（右）列表中不同位置物品的性能。这揭示了 CE 效果对目标物品排名位置的敏感性。</li>
-</ul>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2604.19663v1/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 4" src="../../../../../assets/papers/2604.19663v1/figure_4.png" /><figcaption>图 4</figcaption>
-</figure>
-<ul>
-<li><strong>关键超参数敏感度</strong>: 原文未系统报告温度系数、损失权重等超参敏感度（基准研究性质决定）。</li>
-<li><strong>线上 A/B 测试结果</strong>: 原文仅包含离线实验，<strong>未报告线上 A/B 测试</strong>。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>统一扰动语言</strong>：以"扰动后 top-K 变化"为统一评测语言，巧妙化解隐式/显式格式的异质性，该思路可直接迁移到其他可解释性评测（如特征归因、样例解释）。</li>
-<li><strong>PN-R 指标设计</strong>：借鉴 NDCG 位置折扣，将列表级解释评测从"是否移除"细化到"在何位置被替换"，对重排/列表级解释研究具有普适价值。</li>
-<li><strong>GNN 解释器迁移</strong>：将 5 种通用 GNN 解释器适配到推荐场景，填补了图推荐器解释评测的空白。</li>
-<li><strong>开源完整</strong>：代码仓库完整可复现，对社区贡献显著。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>缺乏统计显著性检验</strong>：未报告多随机种子方差或配对检验，部分结论（如 item/list 一致性）的稳健性存疑。</li>
-<li><strong>复杂度报告偏定性</strong>：图解释器的"可扩展性瓶颈"仅定性描述，缺少精确的 ms/request 与峰值显存数据，工业落地参考价值受限。</li>
-<li><strong>数据集与推荐器覆盖有限</strong>：仅 3 个数据集、6 个推荐器，且未涵盖工业级大规模场景与序列/生成式推荐器。</li>
-<li><strong>超参敏感度缺失</strong>：LXR 的阈值 0.5 等关键设置未做敏感性分析，可能影响显式格式结论的普适性。</li>
-<li><strong>无用户研究</strong>：作为可解释性研究，缺少人类用户对解释可理解性/可操作性的主观评估，仅依赖自动指标。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 LXR 原文仅报告隐式格式单物品指标、GREASE 仅在 Amazon 类小图上验证，本文首次将二者与 5 种通用 GNN 解释器置于同一协议下；与既有可复现性研究（如公平性复现、可解释性复现）相比，本文的独特增量在于<strong>列表级评估维度</strong>与<strong>扰动范围的系统消融</strong>。</li>
+<li><strong>可迁移亮点</strong>: (1) PN-R 的位置折扣设计可直接迁移到任何「列表改写质量」评估场景（如重排多样性、去偏干预效果度量）；(2) 四级扰动范围消融范式可用于检验任何图解释器的子图裁剪假设是否成立。</li>
+<li><strong>审稿级局限批判</strong>: 其一，CLEAR 在 ML1M/Yahoo 的 OOM 导致图解释器跨数据集结论不完整，削弱了「可扩展性瓶颈」论断的普适性证据；其二，仅采样 500 用户评估且未报告置信区间外的显著性检验，小样本下方差较大（表中标准差常达 0.2–0.4），部分排名差异可能不显著。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐（基准研究，创新在于协议统一与 PN-R 指标，而非新算法）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐（三维度协议设计严谨、11 方法 × 6 模型 × 3 数据集覆盖广，但缺显著性检验）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐（符号定义清晰、指标公式完整、表 1 协议对比一目了然）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐（完整开源、统一基准，对可信推荐与可解释性工程落地价值极高）</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （非新算法，但列表级评估协议与 PN-R 指标填补了 CE 评估空白，扰动范围消融具方法论价值）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （3 数据集 × 6 推荐器 × 11 解释器，Optuna 统一调参，但 500 用户采样与 OOM 缺口略损完整性）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （三维度协议定义清晰，公式与指标推导完整，表格信息密度高）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （全代码开源，直接给出各解释器推理耗时与可扩展性边界，对线上解释服务选型具直接指导意义）</li>
 </ul>
 
 

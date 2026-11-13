@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>框架挂在既有 DCN 排序模型之上，共享底层特征表示，并行接两个轻量头：EPE Critic Head（MSE 回归期望预测误差）与 Bayesian Prior Head（输出 Beta 分布参数，取先验方差为认知不确定性）。离线用留出集按分位数校准出阈值 <span class="arithmatex">\(\tau_{point},\tau_{prob}\)</span>；线上服务时按用户活跃度分流：LAU 若任一不确定性超阈值则扣减分数 <span class="arithmatex">\(D\)</span>，HAU 则加上 <span class="arithmatex">\(\omega\cdot U_{HAU}\)</span> 的探索奖励，最后统一排序。Critic 训练时冻结主模型，用"前一日 checkpoint 在当日样本上的真实误差"作标签，避免反馈回路。</p>
+<p>框架挂在既有 DCN 排序模型之上，共享底层特征表示，并行接两个轻量头：EPE Critic Head（MSE 回归期望预测误差）与 Bayesian Prior Head（输出 Beta 分布参数，取先验方差为认知不确定性）。离线用留出集按分位数校准出阈值 <span class="arithmatex">\(\tau_{point},\tau_{prob}\)</span>；线上服务时按用户活跃度分流：LAU 若任一不确定性超阈值则扣减分数<span class="arithmatex">\(D\)</span>，HAU 则加上<span class="arithmatex">\(\omega\cdot U_{HAU}\)</span> 的探索奖励，最后统一排序。Critic 训练时冻结主模型，用"前一日 checkpoint 在当日样本上的真实误差"作标签，避免反馈回路。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户-物品特征 x"] --&gt; B["共享 DCN 表示 h(x)"]
     B --&gt; C["CTR 点估计 f(x)"]
@@ -4245,13 +4256,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>EPE Critic：把"模型会不会错"变成一个可回归的标量</strong>：点估计模型无置信度，本文定义逐样本期望预测误差 <span class="arithmatex">\(\mathrm{EPE}(x)=\mathbb{E}_\Theta\mathbb{E}_{Y|x}[\ell(Y,f_\Theta(x))]\)</span>，平方损失下可分解为模型偏差 + 模型方差 + 数据噪声三项。Critic 输入拼接外部特征、中间嵌入与最终输出 <span class="arithmatex">\(z_\Theta(x)=[x\,\|\,h_\Theta(x)\,\|\,f_\Theta(x)]\)</span>，以历史 checkpoint 的真实泛化误差 <span class="arithmatex">\(e_j^{(k)}=\ell(y_j^{(k)},f_{\Theta^{(k-1)}}(x_j^{(k)}))\)</span> 为标签做 MSE 回归。直觉：让网络学会"在哪些输入上自己容易翻车"，且只需一次前向，零额外延迟。</p>
+<p><strong>EPE Critic：把"模型会不会错"变成一个可回归的标量</strong>：点估计模型无置信度，本文定义逐样本期望预测误差 <span class="arithmatex">\(\mathrm{EPE}(x)=\mathbb{E}_\Theta\mathbb{E}_{Y|x}[\ell(Y,f_\Theta(x))]\)</span>，平方损失下可分解为模型偏差 + 模型方差 + 数据噪声三项。Critic 输入拼接外部特征、中间嵌入与最终输出<span class="arithmatex">\(z_\Theta(x)=[x\,\|\,h_\Theta(x)\,\|\,f_\Theta(x)]\)</span>，以历史 checkpoint 的真实泛化误差<span class="arithmatex">\(e_j^{(k)}=\ell(y_j^{(k)},f_{\Theta^{(k-1)}}(x_j^{(k)}))\)</span> 为标签做 MSE 回归。直觉：让网络学会"在哪些输入上自己容易翻车"，且只需一次前向，零额外延迟。</p>
 </li>
 <li>
-<p><strong>经验贝叶斯先验方差：不采样也能拆出认知不确定性</strong>：概率模型输出输入相关的先验 <span class="arithmatex">\(p(\theta|\gamma(x))\)</span>，由全方差公式 <span class="arithmatex">\(\mathrm{Var}(Y|x)=\mathbb{E}_{\theta|x}[\mathrm{Var}(Y|\theta)]+\mathrm{Var}_{\theta|x}(\mathbb{E}[Y|\theta])\)</span> 拆为数据噪声与模型不确定性，取后者 <span class="arithmatex">\(U_{prob}(x)\equiv\mathrm{Var}_{\theta|x}(\mathbb{E}[Y|\theta])\)</span>。实现上用 Beta 先验 <span class="arithmatex">\(\theta\sim\mathrm{Beta}(\alpha(x),\beta(x))\)</span>，<span class="arithmatex">\(\alpha=1+\mathrm{softplus}(u(x))\)</span>、<span class="arithmatex">\(\beta=1+\mathrm{softplus}(v(x))\)</span>，闭式方差 <span class="arithmatex">\(U_{prob}=\frac{\alpha\beta}{(\alpha+\beta)^2(\alpha+\beta+1)}\)</span>，训练用 type-II 最大边际似然。直觉：边际化潜变量天然保留参数不确定性，且计算量与普通头无异。</p>
+<p><strong>经验贝叶斯先验方差：不采样也能拆出认知不确定性</strong>：概率模型输出输入相关的先验 <span class="arithmatex">\(p(\theta|\gamma(x))\)</span>，由全方差公式<span class="arithmatex">\(\mathrm{Var}(Y|x)=\mathbb{E}_{\theta|x}[\mathrm{Var}(Y|\theta)]+\mathrm{Var}_{\theta|x}(\mathbb{E}[Y|\theta])\)</span>拆为数据噪声与模型不确定性，取后者<span class="arithmatex">\(U_{prob}(x)\equiv\mathrm{Var}_{\theta|x}(\mathbb{E}[Y|\theta])\)</span>。实现上用 Beta 先验<span class="arithmatex">\(\theta\sim\mathrm{Beta}(\alpha(x),\beta(x))\)</span>，<span class="arithmatex">\(\alpha=1+\mathrm{softplus}(u(x))\)</span>、<span class="arithmatex">\(\beta=1+\mathrm{softplus}(v(x))\)</span>，闭式方差<span class="arithmatex">\(U_{prob}=\frac{\alpha\beta}{(\alpha+\beta)^2(\alpha+\beta+1)}\)</span>，训练用 type-II 最大边际似然。直觉：边际化潜变量天然保留参数不确定性，且计算量与普通头无异。</p>
 </li>
 <li>
-<p><strong>分层排序干预与训练目标</strong>：LAU 侧 <span class="arithmatex">\(r^{final}_{u,i}=r_{u,i}-D\cdot\mathbb{I}[U_{point}&gt;\tau_{point}\ \text{or}\ U_{prob}&gt;\tau_{prob}]\)</span>；HAU 侧 <span class="arithmatex">\(r^{final}_{u,i}=r_{u,i}+\omega\cdot\max(U_{point},U_{prob})\)</span>，遵循"面对不确定性要乐观"的 UCB 原则。阈值取校准集 <span class="arithmatex">\(q=0.95\)</span> 分位数，<span class="arithmatex">\(D,\omega\)</span> 由线上 A/B 调参；无负采样环节（非召回任务），推理开销仅为两个轻量 MLP 头。</p>
+<p><strong>分层排序干预与训练目标</strong>：LAU 侧 <span class="arithmatex">\(r^{final}_{u,i}=r_{u,i}-D\cdot\mathbb{I}[U_{point}&gt;\tau_{point}\ \text{or}\ U_{prob}&gt;\tau_{prob}]\)</span>；HAU 侧<span class="arithmatex">\(r^{final}_{u,i}=r_{u,i}+\omega\cdot\max(U_{point},U_{prob})\)</span>，遵循"面对不确定性要乐观"的 UCB 原则。阈值取校准集<span class="arithmatex">\(q=0.95\)</span>分位数，<span class="arithmatex">\(D,\omega\)</span> 由线上 A/B 调参；无负采样环节（非召回任务），推理开销仅为两个轻量 MLP 头。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4283,7 +4294,7 @@
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 按日滚动训练；Critic 标签严格使用"未见过当日样本的上一日 checkpoint"计算误差，天然防穿越；另设留出校准集做分位数阈值。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 离线用 AURC（风险-覆盖率曲线下面积）、Pearson/Spearman 相关性、以及"不确定性分桶 vs 线上实测 MSE"的单调性 sanity check；线上为 14 天 cohort 分流 A/B，指标含 HLT7、VWR、App Stay Duration、Live Watch Time、HLT-efficiency、Show Tag/U、Top1 Tag UV Ratio，显著性 <span class="arithmatex">\(p&lt;0.05\)</span>。</li>
-<li><strong>对比基线与超参设置</strong>: 基线为 Multi-head Ensemble（共享嵌入与 cross 层，末端分 <span class="arithmatex">\(H=10\)</span> 头取头间方差）与 MC Dropout（<span class="arithmatex">\(p=0.1\)</span>，<span class="arithmatex">\(T=10\)</span> 次前向）；主模型为 DCN，不确定性头共享特征表示。</li>
+<li><strong>对比基线与超参设置</strong>: 基线为 Multi-head Ensemble（共享嵌入与 cross 层，末端分 <span class="arithmatex">\(H=10\)</span>头取头间方差）与 MC Dropout（<span class="arithmatex">\(p=0.1\)</span>，<span class="arithmatex">\(T=10\)</span> 次前向）；主模型为 DCN，不确定性头共享特征表示。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4448,12 +4459,18 @@
 <figure class="paper-figure">
   <img alt="图2：A/B 测试结果：14 天内每日累计提升，95% 置信区间。(a) HLT7 的结果。(b) 有价值观看时长占比的结果。" src="../../../../../assets/papers/2605.17788v2/figure_2.png" /><figcaption>图2：A/B 测试结果：14 天内每日累计提升，95% 置信区间。(a) HLT7 的结果。(b) 有价值观看时长占比的结果。</figcaption>
 </figure>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 MC Dropout（<span class="arithmatex">\(T\)</span> 次前向、延迟不可接受）与 Conformal Prediction（全局阈值、排序不变），本文以单次前向的 Critic + 闭式 Beta 方差实现逐样本细粒度估计；相比 CREU 等冷启动不确定性工作，本文首次把同一不确定性信号按用户生命周期<strong>反向使用</strong>（LAU 规避、HAU 探索），并给出 14 天线上证据。</li>
 <li><strong>可迁移亮点</strong>: (i) "用上一日 checkpoint 在当日样本上的真实误差作 Critic 标签"的防泄漏训练范式，可直接迁移到任何日更排序系统的置信度建模；(ii) 分位数校准 + 分层干预的解耦设计，使阈值与干预强度可独立 A/B 调参，工程上极易灰度。</li>
 <li><strong>审稿级局限批判</strong>: (i) 评估高度依赖线上间接指标，认知不确定性本身无 ground-truth，离线仅靠相关性/单调性 sanity check 支撑，缺乏公开数据集复现；(ii) Beta 先验对多模态复杂行为可能过简，且 LAU 内部异质子群未细分，对直播场景的突发分布漂移敏感；降权带来的长期数据获取损失（探索-利用的跨期权衡）未做建模。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

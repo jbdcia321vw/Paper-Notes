@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,7 +4220,7 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/best99317/multiturn_rl">https://github.com/best99317/multiturn_rl</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>多轮对话推荐的核心难题是"该问什么"：现有做法要么用独立 RL Agent 在模板化动作空间（多选/Yes-No）里学策略，要么用 LLM-Judge 打分衡量"交互性"，但都无法量化<strong>一次追问究竟带来了多少有用的偏好信息</strong>。本文提出以推荐列表的<strong>采样熵下降量</strong>作为信息增益奖励——对同一对话重复采样 <span class="arithmatex">\(n\)</span> 条 top-<span class="arithmatex">\(m\)</span> 列表，用加权经验熵刻画助手的不确定性，把"助手回合 + 用户回应"前后的熵差作为奖励，在<strong>不依赖真值推荐</strong>的前提下筛选 SFT 样本或构造 DPO 偏好对。在 INSPIRED 与 ReDial 上，DPO (Turn Entropy) 将 INSPIRED Hit@1 从 3.15% 提至 3.32%、模拟对话命中率提至 27.94%，ReDial 模拟命中率最高达 32.83%（+2.80pt），且达成真值所需轮数普遍下降。</p>
+<p>多轮对话推荐的核心难题是"该问什么"：现有做法要么用独立 RL Agent 在模板化动作空间（多选/Yes-No）里学策略，要么用 LLM-Judge 打分衡量"交互性"，但都无法量化<strong>一次追问究竟带来了多少有用的偏好信息</strong>。本文提出以推荐列表的<strong>采样熵下降量</strong>作为信息增益奖励——对同一对话重复采样 <span class="arithmatex">\(n\)</span>条 top-<span class="arithmatex">\(m\)</span> 列表，用加权经验熵刻画助手的不确定性，把"助手回合 + 用户回应"前后的熵差作为奖励，在<strong>不依赖真值推荐</strong>的前提下筛选 SFT 样本或构造 DPO 偏好对。在 INSPIRED 与 ReDial 上，DPO (Turn Entropy) 将 INSPIRED Hit@1 从 3.15% 提至 3.32%、模拟对话命中率提至 27.94%，ReDial 模拟命中率最高达 32.83%（+2.80pt），且达成真值所需轮数普遍下降。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: LLM 直接充当对话推荐器（CRS），通过多轮自然语言交互澄清意图、细化推荐；策略优化侧则流行"独立 RL Agent 决定问/推 + LLM 只负责生成话术"的两段式架构，或用 CollabLLM 式的 LLM-Judge 交互性奖励做通用主动性训练。</li>
@@ -4222,7 +4233,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>给定部分对话 <span class="arithmatex">\(C\)</span>，用固定 prompt 让助手重复采样 <span class="arithmatex">\(n\)</span> 条 top-<span class="arithmatex">\(m\)</span> 推荐列表，聚合为经验物品分布并计算（加权）熵 <span class="arithmatex">\(H_w(C)\)</span>；对每个助手回合 <span class="arithmatex">\(A_t\)</span>，将其与所诱发的用户回应 <span class="arithmatex">\(U_{t+1}\)</span> 拼接后重算熵，二者之差即该回合的信息增益奖励。该奖励不参与梯度反传，而是作为<strong>数据侧信号</strong>：SFT 阶段按奖励高低筛选高质量对话样本，DPO 阶段对同一 prompt 的两条候选回复做全对话 rollout、以奖励高者为 chosen 构造偏好对，最终用 LoRA 微调 Llama-3.2-1B-Instruct。</p>
+<p>给定部分对话 <span class="arithmatex">\(C\)</span>，用固定 prompt 让助手重复采样<span class="arithmatex">\(n\)</span>条 top-<span class="arithmatex">\(m\)</span>推荐列表，聚合为经验物品分布并计算（加权）熵<span class="arithmatex">\(H_w(C)\)</span>；对每个助手回合<span class="arithmatex">\(A_t\)</span>，将其与所诱发的用户回应<span class="arithmatex">\(U_{t+1}\)</span> 拼接后重算熵，二者之差即该回合的信息增益奖励。该奖励不参与梯度反传，而是作为<strong>数据侧信号</strong>：SFT 阶段按奖励高低筛选高质量对话样本，DPO 阶段对同一 prompt 的两条候选回复做全对话 rollout、以奖励高者为 chosen 构造偏好对，最终用 LoRA 微调 Llama-3.2-1B-Instruct。</p>
 <pre class="mermaid"><code>flowchart TD
     A["部分对话 C1 + 固定采样 Prompt"] --&gt; B["重复采样 n 条 top-m 列表"]
     B --&gt; C["加权经验熵 H_w(C1)"]
@@ -4233,15 +4244,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>加权经验熵不确定性估计（Weighted Entropy）</strong>：痛点在于 LLM 无显式 logits 分布可用，且平铺计数忽略排序位置。作者对 <span class="arithmatex">\(n\)</span> 条采样列表统计物品出现频次 <span class="arithmatex">\(c(r)\)</span> 得经验分布 <span class="arithmatex">\(p(r)=c(r)/(mn)\)</span>，并引入对数衰减位置权重 <span class="arithmatex">\(w_j = 1/\log_2(j+1)\)</span> 得加权分布 <span class="arithmatex">\(p_w(r)\)</span>，最终
+<p><strong>加权经验熵不确定性估计（Weighted Entropy）</strong>：痛点在于 LLM 无显式 logits 分布可用，且平铺计数忽略排序位置。作者对 <span class="arithmatex">\(n\)</span>条采样列表统计物品出现频次<span class="arithmatex">\(c(r)\)</span>得经验分布<span class="arithmatex">\(p(r)=c(r)/(mn)\)</span>，并引入对数衰减位置权重<span class="arithmatex">\(w_j = 1/\log_2(j+1)\)</span>得加权分布<span class="arithmatex">\(p_w(r)\)</span>，最终
 $<span class="arithmatex">\(H_w(C)=-\sum_{r\in R} p_w(r)\log_2 p_w(r).\)</span>$
 直觉：助手越"心里有数"，多次采样越收敛到同一批电影，熵越低；位置权重让 top-1 的稳定性比第 5 位更能左右不确定性。</p>
 </li>
 <li>
-<p><strong>回合级 vs 对话级熵减奖励（Turn / Conv Entropy Reduction）</strong>：回合级奖励 <span class="arithmatex">\(I_T(A_1)=H_w(C_1)-H_w(C_2)\)</span> 只归因于"本回合问句 + 紧随其后的用户回应"，信用分配精准但短视；对话级奖励 <span class="arithmatex">\(I_C(A_1)=H_w(C_1)-H_w(C)\)</span> 将整条 rollout 至终止对话的熵减全部记在该回合头上，鼓励"为后续铺路"的提问。二者构成两种奖励变体，实验显示回合级更适合 DPO 的细粒度偏好，对话级在 ReDial 的模拟对话命中率上更优。</p>
+<p><strong>回合级 vs 对话级熵减奖励（Turn / Conv Entropy Reduction）</strong>：回合级奖励 <span class="arithmatex">\(I_T(A_1)=H_w(C_1)-H_w(C_2)\)</span>只归因于"本回合问句 + 紧随其后的用户回应"，信用分配精准但短视；对话级奖励<span class="arithmatex">\(I_C(A_1)=H_w(C_1)-H_w(C)\)</span> 将整条 rollout 至终止对话的熵减全部记在该回合头上，鼓励"为后续铺路"的提问。二者构成两种奖励变体，实验显示回合级更适合 DPO 的细粒度偏好，对话级在 ReDial 的模拟对话命中率上更优。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：无显式损失公式创新，奖励仅用于数据构造——SFT 取奖励 top-<span class="arithmatex">\(k\)</span> 对话（INSPIRED 801 / ReDial 8631，与基线等预算对齐）；DPO 沿用标准 pairwise 目标，chosen/rejected 由奖励重标注（同一批生成对仅换标签，隔离奖励效应）。推理时无需采样熵计算，单次前向生成即可，<strong>在线开销与普通 SFT/DPO 模型完全一致</strong>；熵计算仅发生在离线数据构建阶段（每回合 <span class="arithmatex">\(2n\)</span> 次列表生成）。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：无显式损失公式创新，奖励仅用于数据构造——SFT 取奖励 top-<span class="arithmatex">\(k\)</span>对话（INSPIRED 801 / ReDial 8631，与基线等预算对齐）；DPO 沿用标准 pairwise 目标，chosen/rejected 由奖励重标注（同一批生成对仅换标签，隔离奖励效应）。推理时无需采样熵计算，单次前向生成即可，<strong>在线开销与普通 SFT/DPO 模型完全一致</strong>；熵计算仅发生在离线数据构建阶段（每回合<span class="arithmatex">\(2n\)</span> 次列表生成）。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4458,12 +4469,18 @@ $<span class="arithmatex">\(H_w(C)=-\sum_{r\in R} p_w(r)\log_2 p_w(r).\)</span>$
 <li><strong>免真值奖励可反超真值奖励</strong>：CollabLLM 奖励显式包含 ground-truth hit 项，而熵减奖励完全不看真值，却在 INSPIRED DPO 上 Hit@1 反超 0.17pt、SimHit 反超 1.34pt——说明真值命中是稀疏且滞后的信号，熵减提供了更密集的回合级信用分配。</li>
 <li><strong>对话效率与推荐质量同向改善</strong>：SFT (Raw) 在 INSPIRED 上轮数反而升至 4.12（人类对话不够主动），而 Conv Entropy 降至 2.94、ReDial DPO 降至 2.74，说明模型学会了"先问后推"的策略性追问，而非机械堆砌推荐。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 [5,6] 的独立 RL Agent + 模板动作空间，本文在<strong>单一 LLM 内</strong>完成开放式对话与推荐，接口更自然；相比 CollabLLM [21] 的 LLM-Judge 交互性奖励，本文用可复现的熵减量替代主观打分，且奖励与推荐目标同构；相比 Kweon et al. [12] 在固定对话态上用 Plackett–Luce 估计排序不确定性，本文改为<strong>跨轮次追踪采样列表经验熵的变化</strong>，把静态不确定性度量转化为动态交互价值信号。</li>
 <li><strong>可迁移亮点</strong>: ① "采样熵差 = 信息增益"可作为任何生成式系统的<strong>免标注回合级信用分配</strong>工具（如 Agent 工具调用、检索增强追问）；② 用同一批生成对仅重标注奖励的对照设计，是隔离"奖励 vs 数据"贡献的干净实验范式，值得复用。</li>
 <li><strong>审稿级局限批判</strong>: ① 评测完全依赖自动指标与 LLM 用户模拟器，缺乏真人评估，模拟器偏好可能系统性放大"追问型"策略；② 熵估计固定 <span class="arithmatex">\(n=m=5\)</span> 且假设基座模型能直接命名候选物品，对需外部检索的大规模/动态目录场景，熵需改在检索排序上计算，成本与有效性均未验证；③ 奖励仅用于离线数据筛选，未接入 PPO/GRPO 等 on-policy RL，策略提升上限受限。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

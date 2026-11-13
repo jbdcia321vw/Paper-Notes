@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,17 +4230,17 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/RegionCh/BLADE">https://github.com/RegionCh/BLADE</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>LLM4Rec 的 token 级目标无法优化 NDCG、公平性等列表级不可微指标；推理期 Best-of-N 虽能直接优化，但延迟随 <span class="arithmatex">\(N\)</span> 线性增长。BoN Alignment 试图把搜索能力蒸馏进权重，却因<strong>静态参考分布</strong>导致「无差别监督」与「梯度衰减」两大瓶颈。BLADE 将 BoN 目标重构为贝叶斯后验：以静态参考为 Beta 先验、当前 batch rollout 为动态证据，得到自演化目标 <span class="arithmatex">\(\hat F_{\text{BLADE}}\)</span>，再经 GRPO 优化。在三个真实数据集上，Amazon CDs 的 NDCG@5 相对最强基线 BoN Alignment 提升 <strong>23.1%</strong>，且推理开销与静态对齐持平（1×）。</p>
+<p>LLM4Rec 的 token 级目标无法优化 NDCG、公平性等列表级不可微指标；推理期 Best-of-N 虽能直接优化，但延迟随 <span class="arithmatex">\(N\)</span>线性增长。BoN Alignment 试图把搜索能力蒸馏进权重，却因<strong>静态参考分布</strong>导致「无差别监督」与「梯度衰减」两大瓶颈。BLADE 将 BoN 目标重构为贝叶斯后验：以静态参考为 Beta 先验、当前 batch rollout 为动态证据，得到自演化目标<span class="arithmatex">\(\hat F_{\text{BLADE}}\)</span>，再经 GRPO 优化。在三个真实数据集上，Amazon CDs 的 NDCG@5 相对最强基线 BoN Alignment 提升 <strong>23.1%</strong>，且推理开销与静态对齐持平（1×）。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 生成式推荐把用户历史序列化为 prompt，让 LLM 自回归生成物品标题列表；训练以 SFT + DPO 为主，目标停留在 token 似然或 pair-wise 偏好层面。</li>
-<li><strong>前人局限</strong>: ① 推理期 BoN 采样 <span class="arithmatex">\(N\)</span> 个候选按列表奖励择优，效果显著但延迟线性膨胀（<span class="arithmatex">\(N{=}4\)</span> 时耗时 4×），无法在线部署；② BoN Alignment 用<strong>固定参考分布</strong>估计奖励分位数，一旦策略生成超越参考经验上界的候选，分位数饱和为 1，优质候选被赋予相同目标概率（无差别监督），且 <span class="arithmatex">\(\log F_{\text{ref}}\to 0\)</span> 使梯度迅速消失（梯度衰减），训练提前停滞。</li>
+<li><strong>前人局限</strong>: ① 推理期 BoN 采样 <span class="arithmatex">\(N\)</span>个候选按列表奖励择优，效果显著但延迟线性膨胀（<span class="arithmatex">\(N{=}4\)</span>时耗时 4×），无法在线部署；② BoN Alignment 用<strong>固定参考分布</strong>估计奖励分位数，一旦策略生成超越参考经验上界的候选，分位数饱和为 1，优质候选被赋予相同目标概率（无差别监督），且<span class="arithmatex">\(\log F_{\text{ref}}\to 0\)</span> 使梯度迅速消失（梯度衰减），训练提前停滞。</li>
 <li><strong>核心洞察 (Key Insight)</strong>: 静态参考只是对奖励分布的<strong>先验信念</strong>，而非真值；策略自身实时 rollout 携带了关于当前能力的最新证据，二者应以贝叶斯方式融合，使目标分布随策略共同演化。</li>
 <li><strong>本文切入点</strong>: 把 CDF 估计 <span class="arithmatex">\(\theta_r=F(r)\)</span> 建模为阈值相关的 Beta 随机变量，用共轭更新融合先验与在线证据，得到「自演化目标」，从根上消除饱和与梯度衰减。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>BLADE 沿用「SFT 冷启动 → 对齐训练」两阶段。对齐阶段每个 batch 内：策略 <span class="arithmatex">\(\pi_\theta\)</span> 对同一用户上下文采样 <span class="arithmatex">\(G\)</span> 条候选列表；对每条候选计算列表级奖励 <span class="arithmatex">\(R(y_i)\)</span>（NDCG 或 Recall）；以静态参考集 <span class="arithmatex">\(\mathcal{D}_{\text{ref}}\)</span>（<span class="arithmatex">\(M\)</span> 条）的计数统计为 Beta 先验，以当前 batch 的组内计数为动态证据，做共轭后验更新得到 <span class="arithmatex">\(\hat F_{\text{BLADE}}(R(y_i))\)</span>；将其转为代理奖励 <span class="arithmatex">\(r_i\)</span> 送入 GRPO 计算组内相对优势并更新策略。关键工程点在于<strong>共享采样</strong>：同一批 rollout 既作贝叶斯证据又作 GRPO 基线样本，目标估计零额外开销。</p>
+<p>BLADE 沿用「SFT 冷启动 → 对齐训练」两阶段。对齐阶段每个 batch 内：策略 <span class="arithmatex">\(\pi_\theta\)</span>对同一用户上下文采样<span class="arithmatex">\(G\)</span>条候选列表；对每条候选计算列表级奖励<span class="arithmatex">\(R(y_i)\)</span>（NDCG 或 Recall）；以静态参考集<span class="arithmatex">\(\mathcal{D}_{\text{ref}}\)</span>（<span class="arithmatex">\(M\)</span>条）的计数统计为 Beta 先验，以当前 batch 的组内计数为动态证据，做共轭后验更新得到<span class="arithmatex">\(\hat F_{\text{BLADE}}(R(y_i))\)</span>；将其转为代理奖励<span class="arithmatex">\(r_i\)</span> 送入 GRPO 计算组内相对优势并更新策略。关键工程点在于<strong>共享采样</strong>：同一批 rollout 既作贝叶斯证据又作 GRPO 基线样本，目标估计零额外开销。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户历史 → Prompt x"] --&gt; B["策略 πθ 采样 G 条候选列表"]
     B --&gt; C["计算列表级奖励 R(y_i)"]
@@ -4242,16 +4253,16 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>贝叶斯动态估计器（Bayesian Dynamic Estimator）</strong>：静态 CDF 在 <span class="arithmatex">\(R(y)&gt;R_{\max}\)</span> 处饱和，导致优质候选无法区分。BLADE 令 <span class="arithmatex">\(\theta_r\sim\text{Beta}(\alpha_r,\beta_r)\)</span>，先验取 <span class="arithmatex">\(\alpha_r^0=N^{&lt;r}_{\text{ref}},\ \beta_r^0=M-N^{&lt;r}_{\text{ref}}\)</span>，对 batch 似然施加幂次 <span class="arithmatex">\(\tau\)</span> 后取后验均值：</li>
+<li><strong>贝叶斯动态估计器（Bayesian Dynamic Estimator）</strong>：静态 CDF 在 <span class="arithmatex">\(R(y)&gt;R_{\max}\)</span>处饱和，导致优质候选无法区分。BLADE 令<span class="arithmatex">\(\theta_r\sim\text{Beta}(\alpha_r,\beta_r)\)</span>，先验取<span class="arithmatex">\(\alpha_r^0=N^{&lt;r}_{\text{ref}},\ \beta_r^0=M-N^{&lt;r}_{\text{ref}}\)</span>，对 batch 似然施加幂次<span class="arithmatex">\(\tau\)</span> 后取后验均值：</li>
 </ol>
 <div class="arithmatex">\[\hat F_{\text{BLADE}}(r)=\frac{N^{&lt;r}_{\text{ref}}+\tau\cdot N^{&lt;r}_{\text{batch}}}{M+\tau\cdot G}\]</div>
-<p>直觉：分母随 batch 规模同步扩张，使分位数不再钉死在 1，高奖励区重新获得排序区分度；<span class="arithmatex">\(\tau\)</span> 控制「先验稳定 vs. 证据自适应」的权衡，<span class="arithmatex">\(\tau{=}0\)</span> 退化为静态 BoN Alignment。</p>
+<p>直觉：分母随 batch 规模同步扩张，使分位数不再钉死在 1，高奖励区重新获得排序区分度；<span class="arithmatex">\(\tau\)</span>控制「先验稳定 vs. 证据自适应」的权衡，<span class="arithmatex">\(\tau{=}0\)</span> 退化为静态 BoN Alignment。</p>
 <ol>
 <li>
-<p><strong>自演化代理奖励 + GRPO 优化</strong>：将后验分位数转为 <span class="arithmatex">\(r_i=(N-1)\log\hat F_{\text{BLADE}}(R(y_i))\)</span>，代入 GRPO 的组内标准化优势 <span class="arithmatex">\(A_i=(r_i-\mu_G)/\sigma_G\)</span>，配合裁剪重要性比与 KL 正则。由于 <span class="arithmatex">\(\hat F\)</span> 随策略提升而持续下移，<span class="arithmatex">\(\log\hat F\)</span> 不会趋零，梯度信号在整个训练轨迹上保持有效——这正是突破静态上界的机制来源。</p>
+<p><strong>自演化代理奖励 + GRPO 优化</strong>：将后验分位数转为 <span class="arithmatex">\(r_i=(N-1)\log\hat F_{\text{BLADE}}(R(y_i))\)</span>，代入 GRPO 的组内标准化优势<span class="arithmatex">\(A_i=(r_i-\mu_G)/\sigma_G\)</span>，配合裁剪重要性比与 KL 正则。由于<span class="arithmatex">\(\hat F\)</span>随策略提升而持续下移，<span class="arithmatex">\(\log\hat F\)</span> 不会趋零，梯度信号在整个训练轨迹上保持有效——这正是突破静态上界的机制来源。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：总目标即 GRPO 代理目标（裁剪 ratio + <span class="arithmatex">\(\beta\)</span> 项 KL 到参考策略），<strong>无需负采样</strong>（组内相对比较替代负例）；奖励可为 NDCG/Recall 或复合奖励 <span class="arithmatex">\(R_{\text{fair}}=R_{\text{NDCG}}-\lambda\cdot\text{MGU}\)</span>、<span class="arithmatex">\(R_{\text{div}}=R_{\text{NDCG}}+\lambda\cdot\text{ILD}\)</span>。推理时单次贪心解码，成本与 SFT 相同（44.56s），远低于 BoN(<span class="arithmatex">\(N{=}4\)</span>) 的 178.24s。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：总目标即 GRPO 代理目标（裁剪 ratio + <span class="arithmatex">\(\beta\)</span>项 KL 到参考策略），<strong>无需负采样</strong>（组内相对比较替代负例）；奖励可为 NDCG/Recall 或复合奖励<span class="arithmatex">\(R_{\text{fair}}=R_{\text{NDCG}}-\lambda\cdot\text{MGU}\)</span>、<span class="arithmatex">\(R_{\text{div}}=R_{\text{NDCG}}+\lambda\cdot\text{ILD}\)</span>。推理时单次贪心解码，成本与 SFT 相同（44.56s），远低于 BoN(<span class="arithmatex">\(N{=}4\)</span>) 的 178.24s。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4299,7 +4310,7 @@
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 滑窗序列划分；对齐阶段仅在 4,096 训练 / 512 验证采样子集上训练，但<strong>全部结果在完整测试集上报告</strong>，避免子集评估偏差。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 生成式列表评测，指标为 NDCG@{3,5} 与 Recall@{3,5}；所有训练类方法统一<strong>贪心解码</strong>以保证可复现；另用 MGU（越低越好）与 ILD（越高越好）评估列表级公平性与多样性。</li>
-<li><strong>对比基线与超参设置</strong>: 基线含 SFT（BIGRec）、S-DPO、ReRe、SPRec、Beam Search、<span class="arithmatex">\(D^3\)</span>、List DPO、BoN Alignment；骨干为 Llama-3.2-1B-Instruct，<span class="arithmatex">\(G{=}16\)</span>，<span class="arithmatex">\(M{=}128\)</span>，<span class="arithmatex">\(\tau\in\{0.1,0.3,0.5,1.0\}\)</span>，对齐学习率 <span class="arithmatex">\(5\times10^{-6}\)</span>，3 epoch，4×A100。</li>
+<li><strong>对比基线与超参设置</strong>: 基线含 SFT（BIGRec）、S-DPO、ReRe、SPRec、Beam Search、<span class="arithmatex">\(D^3\)</span>、List DPO、BoN Alignment；骨干为 Llama-3.2-1B-Instruct，<span class="arithmatex">\(G{=}16\)</span>，<span class="arithmatex">\(M{=}128\)</span>，<span class="arithmatex">\(\tau\in\{0.1,0.3,0.5,1.0\}\)</span>，对齐学习率<span class="arithmatex">\(5\times10^{-6}\)</span>，3 epoch，4×A100。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4420,12 +4431,12 @@
 <td style="text-align: left;">持续上升，突破静态上界</td>
 </tr>
 <tr>
-<td style="text-align: left;">No Prior (<span class="arithmatex">\(M{=}0\)</span>), <span class="arithmatex">\(G{=}2\)</span></td>
+<td style="text-align: left;">No Prior (<span class="arithmatex">\(M{=}0\)</span>),<span class="arithmatex">\(G{=}2\)</span></td>
 <td style="text-align: center;">相对 BLADE 低 5.3%</td>
 <td style="text-align: left;">小样本下先验缺失导致估计方差大</td>
 </tr>
 <tr>
-<td style="text-align: left;">No Prior (<span class="arithmatex">\(M{=}0\)</span>), <span class="arithmatex">\(G{=}16\)</span></td>
+<td style="text-align: left;">No Prior (<span class="arithmatex">\(M{=}0\)</span>),<span class="arithmatex">\(G{=}16\)</span></td>
 <td style="text-align: center;">相对 BLADE 低 1.7%</td>
 <td style="text-align: left;">证据充足后差距收窄</td>
 </tr>
@@ -4438,16 +4449,22 @@
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>静态上界被实证打破</strong>：<span class="arithmatex">\(\tau{=}0\)</span> 的 Recall 曲线在约 2k 步后停滞，而 <span class="arithmatex">\(\tau{=}0.3\)</span> 持续攀升；CDs 上 NDCG@5 相对 BoN Alignment 提升 23.1%，说明饱和监督确实是性能天花板的主因，而非模型容量。</li>
-<li><strong>先验是低资源稳定器</strong>：<span class="arithmatex">\(G{=}2\)</span> 时无先验版本相对落后 5.3%，<span class="arithmatex">\(G{=}16\)</span> 时仅落后 1.7%——贝叶斯先验的价值随采样预算减少而放大，使 BLADE 在受限算力下仍可用。</li>
-<li><strong><span class="arithmatex">\(\tau\)</span> 存在甜点区且指标可控</strong>：<span class="arithmatex">\(\tau\)</span> 过小被次优先验锚死、过大引入 batch 高方差，中等值最优；BLADE-R 在 Recall 上占优、BLADE-N 在 NDCG 上占优，公平性/多样性实验中所有 <span class="arithmatex">\(\lambda\)</span> 点均 Pareto 支配 SFT 基线（<span class="arithmatex">\(\lambda\approx0.5\)</span> 为甜点）。</li>
+<li><strong>静态上界被实证打破</strong>：<span class="arithmatex">\(\tau{=}0\)</span>的 Recall 曲线在约 2k 步后停滞，而<span class="arithmatex">\(\tau{=}0.3\)</span> 持续攀升；CDs 上 NDCG@5 相对 BoN Alignment 提升 23.1%，说明饱和监督确实是性能天花板的主因，而非模型容量。</li>
+<li><strong>先验是低资源稳定器</strong>：<span class="arithmatex">\(G{=}2\)</span>时无先验版本相对落后 5.3%，<span class="arithmatex">\(G{=}16\)</span> 时仅落后 1.7%——贝叶斯先验的价值随采样预算减少而放大，使 BLADE 在受限算力下仍可用。</li>
+<li><strong><span class="arithmatex">\(\tau\)</span>存在甜点区且指标可控</strong>：<span class="arithmatex">\(\tau\)</span>过小被次优先验锚死、过大引入 batch 高方差，中等值最优；BLADE-R 在 Recall 上占优、BLADE-N 在 NDCG 上占优，公平性/多样性实验中所有<span class="arithmatex">\(\lambda\)</span>点均 Pareto 支配 SFT 基线（<span class="arithmatex">\(\lambda\approx0.5\)</span> 为甜点）。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 vBoN/BoN Alignment 的本质区别在于参考分布<strong>是否冻结</strong>——前者用固定 <span class="arithmatex">\(\mathcal{D}_{\text{ref}}\)</span> 估计分位数，BLADE 用共轭后验让其随策略演化；与 S-DPO/List DPO 相比，BLADE 优化的是列表级不可微奖励而非 pair-wise 偏好；与 ReRe/SPRec 相比，BLADE 无需 beam search 或自博弈负例构造，且目标估计零额外开销。</li>
 <li><strong>可迁移亮点</strong>: ① 「静态先验 + 幂次缩放动态证据」的 Beta 共轭估计器可直接移植到任何需要在线估计分位数/ CDF 的 RL 对齐场景（如 CTR 校准、多样性约束）；② 共享采样使目标估计与策略梯度复用同一批 rollout，是低成本在线对齐的通用工程范式。</li>
-<li><strong>审稿级局限批判</strong>: ① 实验骨干仅 1B 模型、三个中等规模数据集，未验证 7B+ 与工业级候选空间下的表现，且 Steam/Goodreads 提升幅度仅 1–3%，统计显著性未报告；② <span class="arithmatex">\(\tau\)</span> 需在 <span class="arithmatex">\(\{0.1,0.3,0.5,1.0\}\)</span> 上网格搜索，且公平性/多样性依赖手工复合奖励权重 <span class="arithmatex">\(\lambda\)</span>，超参敏感度与多目标自动权衡仍是开放问题。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 实验骨干仅 1B 模型、三个中等规模数据集，未验证 7B+ 与工业级候选空间下的表现，且 Steam/Goodreads 提升幅度仅 1–3%，统计显著性未报告；② <span class="arithmatex">\(\tau\)</span>需在<span class="arithmatex">\(\{0.1,0.3,0.5,1.0\}\)</span>上网格搜索，且公平性/多样性依赖手工复合奖励权重<span class="arithmatex">\(\lambda\)</span>，超参敏感度与多目标自动权衡仍是开放问题。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

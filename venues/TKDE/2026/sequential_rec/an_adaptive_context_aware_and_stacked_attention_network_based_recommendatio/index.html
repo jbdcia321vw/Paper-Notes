@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,7 +4220,7 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/solitude6060/An-Adaptive-Context-Aware-and-Stacked-Attention-Network-Based-Recommendation-System">GitHub 仓库</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>针对用户偏好随年龄/社交而漂移、RNN 序列模型只重近期行为且难并行的问题，本文提出 Contextual User Preference Attention Model：先用「上下文物品注意力」在固定时间窗内聚合交互物品为上下文向量 <span class="arithmatex">\(C\)</span>（叠加正弦位置编码），再用「堆叠多头用户注意力」把用户嵌入反复投影到多子空间重构偏好 <span class="arithmatex">\(y_m\)</span>，最后以 <span class="arithmatex">\(y_m^\top p_c\)</span> 打分、BPR 成对训练。在 MovieLens-100k / Pinterest / Beauty 上采用 Leave-One-Out + 100 负采样排序，HR/NDCG/MRR@10 相对最强基线最高提升 10.35%（MRR@10）。</p>
+<p>针对用户偏好随年龄/社交而漂移、RNN 序列模型只重近期行为且难并行的问题，本文提出 Contextual User Preference Attention Model：先用「上下文物品注意力」在固定时间窗内聚合交互物品为上下文向量 <span class="arithmatex">\(C\)</span>（叠加正弦位置编码），再用「堆叠多头用户注意力」把用户嵌入反复投影到多子空间重构偏好<span class="arithmatex">\(y_m\)</span>，最后以<span class="arithmatex">\(y_m^\top p_c\)</span> 打分、BPR 成对训练。在 MovieLens-100k / Pinterest / Beauty 上采用 Leave-One-Out + 100 负采样排序，HR/NDCG/MRR@10 相对最强基线最高提升 10.35%（MRR@10）。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 协同过滤（BPR/NCF/NAIS）建模静态全局偏好；会话推荐（GRU4REC/SASRec）用 RNN 或自注意力建模短期序列。</li>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为用户嵌入 <span class="arithmatex">\(q_i\)</span> 与固定时间窗内最近 <span class="arithmatex">\(t\)</span> 个交互物品嵌入 <span class="arithmatex">\(p_1,\dots,p_t\)</span>。Contextual Item Attention 先算物品注意力权重并加权求和得到上下文物品表示 <span class="arithmatex">\(C\)</span>（物品嵌入先叠加正弦位置编码）；Multi-Head User Attention 将 <span class="arithmatex">\(q_i\)</span> 线性投影到 <span class="arithmatex">\(h\)</span> 个子空间，与 <span class="arithmatex">\(C\)</span> 做点积注意力后加权聚合为用户偏好 <span class="arithmatex">\(y\)</span>；堆叠 <span class="arithmatex">\(m\)</span> 层时以 <span class="arithmatex">\(y_{m-1}\)</span> 替代 <span class="arithmatex">\(q_i\)</span> 迭代精炼。最终以 <span class="arithmatex">\(y_m^\top p_c\)</span> 对候选物品打分排序，BPR 成对损失端到端训练。</p>
+<p>输入为用户嵌入 <span class="arithmatex">\(q_i\)</span>与固定时间窗内最近<span class="arithmatex">\(t\)</span>个交互物品嵌入<span class="arithmatex">\(p_1,\dots,p_t\)</span>。Contextual Item Attention 先算物品注意力权重并加权求和得到上下文物品表示<span class="arithmatex">\(C\)</span>（物品嵌入先叠加正弦位置编码）；Multi-Head User Attention 将<span class="arithmatex">\(q_i\)</span>线性投影到<span class="arithmatex">\(h\)</span>个子空间，与<span class="arithmatex">\(C\)</span>做点积注意力后加权聚合为用户偏好<span class="arithmatex">\(y\)</span>；堆叠<span class="arithmatex">\(m\)</span>层时以<span class="arithmatex">\(y_{m-1}\)</span>替代<span class="arithmatex">\(q_i\)</span>迭代精炼。最终以<span class="arithmatex">\(y_m^\top p_c\)</span> 对候选物品打分排序，BPR 成对损失端到端训练。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户嵌入 q_i + 窗口内物品 p_1..p_t (+PE)"] --&gt; B["Contextual Item Attention: α=softmax(q_i^T p_t), C=Σα_t p_t"]
     B --&gt; C["Stacked Multi-Head User Attention: d_n=W_n y_{m-1}, β_n=C^T d_n, y_m=Σβ_n d_n"]
@@ -4229,9 +4240,9 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>上下文物品注意力 + 位置编码（窗口内重要性重分配）</strong>：痛点是把窗口内物品一视同仁或被最近物品主导。核心算子为 <span class="arithmatex">\(\alpha_t=\mathrm{softmax}(q_i^\top p_t)\)</span>、<span class="arithmatex">\(C=\sum_t \alpha_t p_t\)</span>，并在输入侧叠加 <span class="arithmatex">\(p_t \leftarrow p_t + PE_{pos}\)</span>（正弦/余弦，<span class="arithmatex">\(pos\)</span> 为交互顺序）。直觉：<span class="arithmatex">\(q_i\)</span> 作为 query 让「与用户当前画像契合」的物品获得高权重，偏好漂移时权重自然迁移；位置编码提供相对顺序信号，使注意力可学习「越近越重要」的偏移。</li>
-<li><strong>堆叠多头用户注意力（子空间重构偏好）</strong>：单头点积只能刻画一个偏好方向。将用户表示并行投影 <span class="arithmatex">\(h\)</span> 次得 <span class="arithmatex">\(d_n=W_n q_i\)</span>，以 <span class="arithmatex">\(\beta_n=C^\top d_n\)</span> 为权重聚合 <span class="arithmatex">\(y=\sum_{n=1}^{h}\beta_n d_n\)</span>；堆叠层中 <span class="arithmatex">\(d_n^m=W_n^m y_{m-1}\)</span>、<span class="arithmatex">\(y_m=\sum_n \beta_n^m d_n^m\)</span>。直觉：不同头对应「电影类型/商品品类」等不同偏好侧面，堆叠则反复投影以剥离出更本质的偏好基底，等价于在偏好空间做逐层解耦。</li>
-<li><strong>训练目标、负采样与推理效率</strong>：损失为 BPR 成对形式 <span class="arithmatex">\(\min \sum_{(i,j,k)\in D} -\log\sigma(y_i^\top p_j - y_i^\top p_k)\)</span>，其中用户嵌入被替换为注意力输出 <span class="arithmatex">\(y_i\)</span>；每正样本随机采 10 个未观测负样本（沿用 NCF 策略），Adam 优化，学习率 0.001，嵌入维度 <span class="arithmatex">\(k=32\)</span>，BPR 预训练初始化。时间/空间复杂度 <span class="arithmatex">\(O(hmk^2+tk^2)\)</span> 与 <span class="arithmatex">\(O(|I|k+|U|k+k^2hm)\)</span>，全注意力可并行，作者称 GPU 下比 RNN 类快 5 倍以上；在线打分与标准 MF 同为 <span class="arithmatex">\(O(k)\)</span>。</li>
+<li><strong>上下文物品注意力 + 位置编码（窗口内重要性重分配）</strong>：痛点是把窗口内物品一视同仁或被最近物品主导。核心算子为 <span class="arithmatex">\(\alpha_t=\mathrm{softmax}(q_i^\top p_t)\)</span>、<span class="arithmatex">\(C=\sum_t \alpha_t p_t\)</span>，并在输入侧叠加<span class="arithmatex">\(p_t \leftarrow p_t + PE_{pos}\)</span>（正弦/余弦，<span class="arithmatex">\(pos\)</span>为交互顺序）。直觉：<span class="arithmatex">\(q_i\)</span> 作为 query 让「与用户当前画像契合」的物品获得高权重，偏好漂移时权重自然迁移；位置编码提供相对顺序信号，使注意力可学习「越近越重要」的偏移。</li>
+<li><strong>堆叠多头用户注意力（子空间重构偏好）</strong>：单头点积只能刻画一个偏好方向。将用户表示并行投影 <span class="arithmatex">\(h\)</span>次得<span class="arithmatex">\(d_n=W_n q_i\)</span>，以<span class="arithmatex">\(\beta_n=C^\top d_n\)</span>为权重聚合<span class="arithmatex">\(y=\sum_{n=1}^{h}\beta_n d_n\)</span>；堆叠层中<span class="arithmatex">\(d_n^m=W_n^m y_{m-1}\)</span>、<span class="arithmatex">\(y_m=\sum_n \beta_n^m d_n^m\)</span>。直觉：不同头对应「电影类型/商品品类」等不同偏好侧面，堆叠则反复投影以剥离出更本质的偏好基底，等价于在偏好空间做逐层解耦。</li>
+<li><strong>训练目标、负采样与推理效率</strong>：损失为 BPR 成对形式 <span class="arithmatex">\(\min \sum_{(i,j,k)\in D} -\log\sigma(y_i^\top p_j - y_i^\top p_k)\)</span>，其中用户嵌入被替换为注意力输出<span class="arithmatex">\(y_i\)</span>；每正样本随机采 10 个未观测负样本（沿用 NCF 策略），Adam 优化，学习率 0.001，嵌入维度<span class="arithmatex">\(k=32\)</span>，BPR 预训练初始化。时间/空间复杂度<span class="arithmatex">\(O(hmk^2+tk^2)\)</span>与<span class="arithmatex">\(O(|I|k+|U|k+k^2hm)\)</span>，全注意力可并行，作者称 GPU 下比 RNN 类快 5 倍以上；在线打分与标准 MF 同为<span class="arithmatex">\(O(k)\)</span>。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4278,7 +4289,7 @@
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: <code>Leave-One-Out</code>——每用户最后一条交互作测试真值，其余训练；输入序列为窗口 <span class="arithmatex">\(t=5\)</span> 的连续物品预测下一物品。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: <code>Sampled Ranking</code>——每测试正样本随机配 100 个用户未交互负样本共同排序，报告 HR@10 / NDCG@10 / MRR@10（二值相关性）。</li>
-<li><strong>对比基线与超参设置</strong>: BPR、NCF、NAIS、GRU4REC、SASRec 五类基线；<span class="arithmatex">\(k=32\)</span>，堆叠层数 <span class="arithmatex">\(\{0,1,2,3\}\)</span>、头数 <span class="arithmatex">\(\{1..6\}\)</span> 网格搜索，窗口 <span class="arithmatex">\(\{2..7\}\)</span>；未报告显著性检验。</li>
+<li><strong>对比基线与超参设置</strong>: BPR、NCF、NAIS、GRU4REC、SASRec 五类基线；<span class="arithmatex">\(k=32\)</span>，堆叠层数<span class="arithmatex">\(\{0,1,2,3\}\)</span>、头数<span class="arithmatex">\(\{1..6\}\)</span>网格搜索，窗口<span class="arithmatex">\(\{2..7\}\)</span>；未报告显著性检验。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4438,12 +4449,18 @@
 <li><strong>位置编码并非普适增益</strong>：去掉 PE 后 Pinterest 的 HR 反升 0.0018（0.9064 vs 0.9046），因该数据集交互序列极短、顺序信息噪声大于信号；而 ML-100k 上去掉 PE 使 NDCG 掉 0.0202，验证 PE 的价值与序列长度正相关。</li>
 <li><strong>RNN 的稀疏性失效被定量证实</strong>：GRU 在稠密 ML-100k 上 HR 0.7256 位列第二，但在 Pinterest/Beauty 上 HR 仅 0.8415/0.4337 全面垫底，与本文注意力模型在 Beauty 上 4.66% 的 HR 领先形成对照，说明并行注意力对短序列更鲁棒。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 SASRec 的自注意力编码器-解码器，本文不做序列自注意力而是「用户 query 引导的物品注意力 + 用户侧多头重构」，把建模重心从物品转移序列移到用户偏好子空间；相比 NAIS 的物品相似度注意力，本文额外引入时间窗上下文与堆叠结构；相比 GRU4REC，彻底摆脱循环依赖，稀疏短序列下优势明显。</li>
 <li><strong>可迁移亮点</strong>: ① 用「上一轮偏好输出替代用户嵌入」作为堆叠层输入的残差式迭代，可低成本移植到任何双塔召回的用户塔；② 位置编码按数据集稀疏度自适应开关（短序列关闭）是实用的工程 trick。</li>
 <li><strong>审稿级局限批判</strong>: ① 评估仅用 100 负采样的 Sampled Ranking，未做 Full-Ranking，且未报告显著性检验，0.32% 的 Pinterest 提升可信度存疑；② 窗口长度 <span class="arithmatex">\(t\)</span>、层数、头数均需按数据集手工调参，缺乏自适应机制；③ 与 SASRec 等强序列基线相比提升幅度在稀疏集上偏小，且未与近年图/对比学习序列模型对比。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

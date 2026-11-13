@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4244,7 +4255,7 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>分解嵌入融合 DEF（保住预训练语义）</strong>：痛点是分词后码本向量被丢弃、token 嵌入从零学起。做法是把第 <span class="arithmatex">\(i\)</span> 层码本 <span class="arithmatex">\(C_i\in\mathbb{R}^{K\times d}\)</span> 整体冻结为语义通道 <span class="arithmatex">\(E_{\text{pre}}\)</span>，另设同形状可学协同通道 <span class="arithmatex">\(E_{\text{collab}}\)</span>，各自线性投影 + LayerNorm 后拼接融合：</li>
+<li><strong>分解嵌入融合 DEF（保住预训练语义）</strong>：痛点是分词后码本向量被丢弃、token 嵌入从零学起。做法是把第 <span class="arithmatex">\(i\)</span>层码本<span class="arithmatex">\(C_i\in\mathbb{R}^{K\times d}\)</span>整体冻结为语义通道<span class="arithmatex">\(E_{\text{pre}}\)</span>，另设同形状可学协同通道<span class="arithmatex">\(E_{\text{collab}}\)</span>，各自线性投影 + LayerNorm 后拼接融合：</li>
 </ol>
 <div class="arithmatex">\[e_{\text{fused}}=W_{\text{fuse}}\big[\mathrm{LN}(W_{\text{pre}}e_{\text{pre}})\;\|\;\mathrm{LN}(W_{\text{collab}}e_{\text{collab}})\big]\]</div>
 <p>直觉：两通道维度对齐（同为 <span class="arithmatex">\(K\times d\)</span>）使融合成为"语义先验 + 交互证据"的可学习加权，稀疏物品可直接借用预训练语义兜底，而非被少量交互带偏。</p>
@@ -4252,9 +4263,9 @@
 <li><strong>上下文 token 组合 CTC（破解前缀歧义）</strong>：痛点是静态 ID 让不同语境物品共享前缀。做法是以历史融合嵌入的注意力池化向量 <span class="arithmatex">\(u_c\)</span> 为 query，对<strong>同一 RQ-VAE 量化层</strong>的全部候选 token 做 softmax 组合：</li>
 </ol>
 <div class="arithmatex">\[\tilde e_c=\sum_{c'\in\mathcal{N}(c)}\frac{\exp(\langle W_q u_c, W_k e_{c'}\rangle)}{\sum_{c''}\exp(\langle W_q u_c, W_k e_{c''}\rangle)}\,e_{c'},\qquad e_{\text{final}}=\alpha\tilde e_c+(1-\alpha)e_c^{\text{static}}\]</div>
-<p>直觉：候选集取整层码本，等价于允许模型"借用"预训练中未被激活的码本容量，把死码本变成可插值的语义基；<span class="arithmatex">\(\alpha\)</span> 控制语境改写强度，<span class="arithmatex">\(\alpha\)</span> 过大（0.7）会因单 token 欠训练而崩溃。</p>
+<p>直觉：候选集取整层码本，等价于允许模型"借用"预训练中未被激活的码本容量，把死码本变成可插值的语义基；<span class="arithmatex">\(\alpha\)</span>控制语境改写强度，<span class="arithmatex">\(\alpha\)</span> 过大（0.7）会因单 token 欠训练而崩溃。</p>
 <ol>
-<li><strong>可学 BOS 查询 + 训练目标</strong>：首 token 承载粗粒度类别语义，错则全序列错。用 <span class="arithmatex">\(N\)</span> 个可学查询 <span class="arithmatex">\(Q_{\text{BOS}}\in\mathbb{R}^{N\times d}\)</span> 以同一组合算子生成上下文相关的 BOS 嵌入，替代零向量。总损失即标准自回归下一 token 交叉熵 <span class="arithmatex">\(\mathcal{L}=-\sum_l \log p(c_{i_t,l}\mid X_u,c_{&lt;l})\)</span>，<strong>无需负采样</strong>（全库 softmax 由生成式解码隐式完成）；额外开销为每物品 <span class="arithmatex">\(O(d^2)\)</span> 融合 + <span class="arithmatex">\(O(Ld^2)\)</span> 上下文池化 + 每 token <span class="arithmatex">\(O(Kd^2)\)</span> 组合，均与 <span class="arithmatex">\(L\)</span> 线性、远低于骨干自注意力的 <span class="arithmatex">\(O(L^2d)\)</span>。</li>
+<li><strong>可学 BOS 查询 + 训练目标</strong>：首 token 承载粗粒度类别语义，错则全序列错。用 <span class="arithmatex">\(N\)</span>个可学查询<span class="arithmatex">\(Q_{\text{BOS}}\in\mathbb{R}^{N\times d}\)</span>以同一组合算子生成上下文相关的 BOS 嵌入，替代零向量。总损失即标准自回归下一 token 交叉熵<span class="arithmatex">\(\mathcal{L}=-\sum_l \log p(c_{i_t,l}\mid X_u,c_{&lt;l})\)</span>，<strong>无需负采样</strong>（全库 softmax 由生成式解码隐式完成）；额外开销为每物品<span class="arithmatex">\(O(d^2)\)</span>融合 +<span class="arithmatex">\(O(Ld^2)\)</span>上下文池化 + 每 token<span class="arithmatex">\(O(Kd^2)\)</span>组合，均与<span class="arithmatex">\(L\)</span>线性、远低于骨干自注意力的<span class="arithmatex">\(O(L^2d)\)</span>。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4461,12 +4472,18 @@
 <li><strong>死码本被激活，且激活量随数据量自适应</strong>：TIGER 第一层码本仅 25.67%–27.97% 条目被训练使用，DECOR 通过组合把 Instrument/Game 提升到 100%、Scientific 提升到 51.06%——交互量少 20%–50% 的 Scientific 只按需激活，说明组合机制是"按语境取用容量"而非无差别铺满。</li>
 <li><strong>稳定性优于端到端联合训练</strong>：DECOR 在 101 个 epoch 达到峰值 95% Recall，ETEGRec 需 124 个 epoch，且 ETEGRec 在 75–110 epoch 出现明显学习停滞；同时 DECOR 在 batch=128 下每样本仅增 0.85ms（3.85→4.70ms），保留约 82% 吞吐，精度换 5%–14% 提升的性价比极高。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 TIGER 的本质区别是 token 嵌入从"静态查表"变为"冻结语义 + 可学协同 + 上下文组合"的三重动态解释；与 ETEGRec 的区别是不动语义 ID、不重分词，用嵌入层组合替代分词器联合优化，因而避开训练震荡；与 LETTER/CoST 的区别是它们只在预训练阶段改良分词，DECOR 在推荐阶段持续保留并使用预训练语义。</li>
 <li><strong>可迁移亮点</strong>: (i) "冻结预训练码本 + 可学协同嵌入 + 轻量融合"的双通道范式可平移到任何 VQ/RQ 离散 ID 的生成式召回；(ii) 同层码本内软组合相当于把未激活码本当作可插值语义基，这一"激活死码本"技巧对码本利用率低的量化推荐普遍适用。</li>
-<li><strong>审稿级局限批判</strong>: (i) 组合候选集取整层码本（<span class="arithmatex">\(K=256\)</span>），每 token 需 <span class="arithmatex">\(O(Kd^2)\)</span> 注意力，若扩到多层联合候选或更大码本，延迟优势可能收窄，论文仅报告了 <span class="arithmatex">\(K=256\)</span> 的单一配置；(ii) 评估仅限 Amazon 三个 5-core 子集与离线 Full-Ranking，缺少冷启动分桶与线上 A/B，且 <span class="arithmatex">\(\alpha\)</span> 在 0.7 时性能崩溃，说明对超参虽不极端敏感但存在明显失效边界。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: (i) 组合候选集取整层码本（<span class="arithmatex">\(K=256\)</span>），每 token 需<span class="arithmatex">\(O(Kd^2)\)</span>注意力，若扩到多层联合候选或更大码本，延迟优势可能收窄，论文仅报告了<span class="arithmatex">\(K=256\)</span>的单一配置；(ii) 评估仅限 Amazon 三个 5-core 子集与离线 Full-Ranking，缺少冷启动分桶与线上 A/B，且<span class="arithmatex">\(\alpha\)</span> 在 0.7 时性能崩溃，说明对超参虽不极端敏感但存在明显失效边界。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

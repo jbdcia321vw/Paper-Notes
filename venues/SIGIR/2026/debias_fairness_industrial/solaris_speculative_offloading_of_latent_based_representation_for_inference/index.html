@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4245,10 +4256,10 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>投机式异步预计算 + Verifier 门控（Speculative Precompute）</strong>：全量 <code>&lt;user, item&gt;</code> 对预计算在算力/存储上不可行。SOLARIS 复用 VM 当前预测分作为轻量 verifier，仅对高相关对生成表征，等价于在物品空间做一次"投机采样"：设候选集为 <span class="arithmatex">\(\mathcal{C}_u\)</span>，保留集合 <span class="arithmatex">\(\mathcal{S}_u = \text{Top-}k_{c \in \mathcal{C}_u}\big(f_{\text{VM}}(u,c)\big),\ k=0.2|\mathcal{C}_u|\)</span>。直觉上，VM 分数与最终曝光高度相关，因此被保留的对大概率在近期请求中复用，缓存命中率与算力投入形成正反馈。</p>
+<p><strong>投机式异步预计算 + Verifier 门控（Speculative Precompute）</strong>：全量 <code>&lt;user, item&gt;</code> 对预计算在算力/存储上不可行。SOLARIS 复用 VM 当前预测分作为轻量 verifier，仅对高相关对生成表征，等价于在物品空间做一次"投机采样"：设候选集为 <span class="arithmatex">\(\mathcal{C}_u\)</span>，保留集合<span class="arithmatex">\(\mathcal{S}_u = \text{Top-}k_{c \in \mathcal{C}_u}\big(f_{\text{VM}}(u,c)\big),\ k=0.2|\mathcal{C}_u|\)</span>。直觉上，VM 分数与最终曝光高度相关，因此被保留的对大概率在近期请求中复用，缓存命中率与算力投入形成正反馈。</p>
 </li>
 <li>
-<p><strong>分层特征补全（Hierarchical Feature Enrichment）</strong>：异步缓存天然存在覆盖缺口（线上仅 ~40%），长尾物品与新用户尤甚。SOLARIS 设计两级兜底：① <strong>用户聚合表征</strong> <span class="arithmatex">\(\mathbf{e}_u^{\text{agg}} = \frac{1}{|\mathcal{I}_u^{24h}|}\sum_{i \in \mathcal{I}_u^{24h}, i \neq i^*}\mathbf{e}_{u,i}\)</span>，利用短期兴趣一致性把有效覆盖提至 85–90%；② <strong>相似用户插补</strong>：用 FM 生成用户向量并建 KNN 表（<span class="arithmatex">\(K=100\)</span>，余弦相似度），对缺失对取最近邻的 <span class="arithmatex">\(\mathbf{e}_{u',i}\)</span> 做距离加权平均或取单一最近邻，覆盖从 40% 提至 70%。本质是把 CF 假设（相似用户对同一广告反应相近）搬到表征空间做冷启动插补。</p>
+<p><strong>分层特征补全（Hierarchical Feature Enrichment）</strong>：异步缓存天然存在覆盖缺口（线上仅 ~40%），长尾物品与新用户尤甚。SOLARIS 设计两级兜底：① <strong>用户聚合表征</strong> <span class="arithmatex">\(\mathbf{e}_u^{\text{agg}} = \frac{1}{|\mathcal{I}_u^{24h}|}\sum_{i \in \mathcal{I}_u^{24h}, i \neq i^*}\mathbf{e}_{u,i}\)</span>，利用短期兴趣一致性把有效覆盖提至 85–90%；② <strong>相似用户插补</strong>：用 FM 生成用户向量并建 KNN 表（<span class="arithmatex">\(K=100\)</span>，余弦相似度），对缺失对取最近邻的<span class="arithmatex">\(\mathbf{e}_{u',i}\)</span> 做距离加权平均或取单一最近邻，覆盖从 40% 提至 70%。本质是把 CF 假设（相似用户对同一广告反应相近）搬到表征空间做冷启动插补。</p>
 </li>
 <li>
 <p><strong>训练目标、缓存一致性与推理开销</strong>：VM 侧损失即标准 BCE（CTR/CVR 多任务），FM 表征仅作为额外输入特征，不引入额外蒸馏损失项——这是与软标签蒸馏的本质区别：知识以<strong>特征</strong>而非<strong>标签</strong>形式注入，故与任务解耦、可跨任务复用。缓存读取设 TTL（数小时）保证新鲜度；FM 侧持续在线训练以适配分布漂移。推理路径上 VM 只多一次 KV 查询，延迟开销可忽略，FM 计算完全移出关键路径。</p>
@@ -4418,12 +4429,18 @@
 <li><strong>表征迁移显著优于软标签蒸馏</strong>：迁移率从 ~25% 提升至 42%（Instagram）/44%（Facebook），近 2×，且增益同时出现在主任务与辅助任务（Link Click）上，验证了"特征级注入"比"标签级注入"信息带宽更高、任务耦合更弱。</li>
 <li><strong>补全策略质量递减但仍有正收益</strong>：用户聚合表征（+0.03%）优于 KNN 插补（+0.02%），后者仅兑现理论上限的 40%，符合"邻居插补表征质量低于原生表征"的预期——补全是覆盖率的止痛药，而非替代品。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较软标签蒸馏（Hinton 式 KD 及其排序变体），SOLARIS 把知识载体从输出分布换成中间层表征，突破 25% 迁移率天花板并支持推理期持续共享；相较传统 embedding sharing，它用投机预计算把上游模型调用移出关键路径，解决了实时性不可行的问题；相较 LLM 投机解码，它把"草稿-验证"范式迁移到推荐表征缓存，是跨领域类比的成功落地。</li>
 <li><strong>可迁移亮点</strong>: ① "verifier 打分 + Top-k 预计算"的缓存预算分配策略可直接用于任何大模型特征服务；② 用户聚合表征作为覆盖率兜底，是低成本、即插即用的冷启动特征增强手段。</li>
 <li><strong>审稿级局限批判</strong>: ① 全部结论来自 Meta 内部生产环境，无公开数据集复现，verifier 阈值、TTL、KNN 的 <span class="arithmatex">\(K\)</span> 等超参对收益的敏感度未做系统分析，外部泛化性存疑；② 仅适用于精排阶段，粗排候选量放大 100× 后覆盖率与算力约束难以满足，且 KNN 插补仅兑现 40% 上限空间，覆盖补全的天花板尚未打开。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

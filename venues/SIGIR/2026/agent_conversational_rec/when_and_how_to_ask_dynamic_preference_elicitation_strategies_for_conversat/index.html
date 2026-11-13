@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4222,7 +4233,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>COPE 以冻结的 Qwen3-8B 为共享骨干，在其旁挂载多个轻量 LoRA 适配器作为"专家"（推荐专家、属性/物品/混合三类引导专家、通用交互专家）。每轮对话先由共享 LLM 提取上下文隐状态 <span class="arithmatex">\(\mathbf{h}_t\)</span>，再经<strong>两级路由器</strong>依次预测任务意图 <span class="arithmatex">\(a_t\)</span> 与引导策略 <span class="arithmatex">\(\sigma_t\)</span>，据此硬路由激活对应专家生成回复；推荐轮次额外接入物品排序头，用对比损失对齐语义物品嵌入。训练采用教师强制路由（用真值标签选专家，避免路由误差污染专家学习），推理时切换为预测路由。</p>
+<p>COPE 以冻结的 Qwen3-8B 为共享骨干，在其旁挂载多个轻量 LoRA 适配器作为"专家"（推荐专家、属性/物品/混合三类引导专家、通用交互专家）。每轮对话先由共享 LLM 提取上下文隐状态 <span class="arithmatex">\(\mathbf{h}_t\)</span>，再经<strong>两级路由器</strong>依次预测任务意图<span class="arithmatex">\(a_t\)</span>与引导策略<span class="arithmatex">\(\sigma_t\)</span>，据此硬路由激活对应专家生成回复；推荐轮次额外接入物品排序头，用对比损失对齐语义物品嵌入。训练采用教师强制路由（用真值标签选专家，避免路由误差污染专家学习），推理时切换为预测路由。</p>
 <pre class="mermaid"><code>flowchart TD
     A["对话上下文 C_t"] --&gt; B["冻结 LLM 骨干提取 h_t"]
     B --&gt; C["任务路由器 P(a_t|C_t)"]
@@ -4239,13 +4250,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>结构化动作空间与显式决策分解</strong>：传统 LLM4Rec 把决策逻辑隐式埋在 token 序列里（<span class="arithmatex">\(\mathcal{L}_{LM}\)</span> 最大化下一词似然），导致"策略选择"不可监督、不可解释。本文改为显式建模 <span class="arithmatex">\(P(s_t|C_t)=\sum_{A_t}P(s_t|C_t,A_t)P(A_t|C_t)\)</span>，将动作三元组作为中间监督信号。直觉上，这把"生成什么话"与"做什么决策"解耦，使策略层可获得独立标签监督。</p>
+<p><strong>结构化动作空间与显式决策分解</strong>：传统 LLM4Rec 把决策逻辑隐式埋在 token 序列里（<span class="arithmatex">\(\mathcal{L}_{LM}\)</span>最大化下一词似然），导致"策略选择"不可监督、不可解释。本文改为显式建模<span class="arithmatex">\(P(s_t|C_t)=\sum_{A_t}P(s_t|C_t,A_t)P(A_t|C_t)\)</span>，将动作三元组作为中间监督信号。直觉上，这把"生成什么话"与"做什么决策"解耦，使策略层可获得独立标签监督。</p>
 </li>
 <li>
-<p><strong>分层硬路由 MoE（Hierarchical Hard Routing）</strong>：常规 MoE 用于扩容，本文 MoE 用于<strong>分离决策执行通路</strong>。输出为 <span class="arithmatex">\(y_t=\Phi(C_t)+\sum_{k\in\mathcal{E}}\mathbb{I}(\gamma_t=k)\cdot\Delta\Psi_k(C_t)\)</span>，其中 <span class="arithmatex">\(\gamma_t\)</span> 由真值标签（训练）或路由器 argmax（推理）决定，每轮仅激活一个专家、仅更新其参数。硬路由 + 教师强制保证各专家专注学习自身行为模式，避免多目标梯度干扰。</p>
+<p><strong>分层硬路由 MoE（Hierarchical Hard Routing）</strong>：常规 MoE 用于扩容，本文 MoE 用于<strong>分离决策执行通路</strong>。输出为 <span class="arithmatex">\(y_t=\Phi(C_t)+\sum_{k\in\mathcal{E}}\mathbb{I}(\gamma_t=k)\cdot\Delta\Psi_k(C_t)\)</span>，其中<span class="arithmatex">\(\gamma_t\)</span> 由真值标签（训练）或路由器 argmax（推理）决定，每轮仅激活一个专家、仅更新其参数。硬路由 + 教师强制保证各专家专注学习自身行为模式，避免多目标梯度干扰。</p>
 </li>
 <li>
-<p><strong>多任务损失与对比推荐</strong>：总损失 <span class="arithmatex">\(\mathcal{L}_{total}=w_{sft}\mathcal{L}_{sft}+w_{task}\mathcal{L}_{route}^{\alpha}+w_{eli}\mathcal{L}_{route}^{\sigma}+w_{rec}\mathcal{L}_{rec}\)</span>，路由损失为两级交叉熵（策略项仅在 <span class="arithmatex">\(a_t^*=\text{Elicit}\)</span> 时生效）；推荐专家用 InfoNCE 对比损失 <span class="arithmatex">\(\mathcal{L}_{rec}=-\log\frac{\exp(\text{sim}(e_u,e_{i^+})/\tau)}{\sum_j\exp(\text{sim}(e_u,e_{i_j})/\tau)}\)</span>，物品嵌入由预训练 LLM 文本表征初始化。负采样为批内负样本，LoRA rank <span class="arithmatex">\(r=8\)</span>、<span class="arithmatex">\(\alpha=16\)</span>，单卡 A100 即可训练。</p>
+<p><strong>多任务损失与对比推荐</strong>：总损失 <span class="arithmatex">\(\mathcal{L}_{total}=w_{sft}\mathcal{L}_{sft}+w_{task}\mathcal{L}_{route}^{\alpha}+w_{eli}\mathcal{L}_{route}^{\sigma}+w_{rec}\mathcal{L}_{rec}\)</span>，路由损失为两级交叉熵（策略项仅在<span class="arithmatex">\(a_t^*=\text{Elicit}\)</span>时生效）；推荐专家用 InfoNCE 对比损失<span class="arithmatex">\(\mathcal{L}_{rec}=-\log\frac{\exp(\text{sim}(e_u,e_{i^+})/\tau)}{\sum_j\exp(\text{sim}(e_u,e_{i_j})/\tau)}\)</span>，物品嵌入由预训练 LLM 文本表征初始化。负采样为批内负样本，LoRA rank<span class="arithmatex">\(r=8\)</span>、<span class="arithmatex">\(\alpha=16\)</span>，单卡 A100 即可训练。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4453,12 +4464,18 @@
 <li><strong>单适配器"准确率高但对话质量差"的悖论</strong>：w/o all 变体在 Task Acc（0.639）、Eli Acc（0.756）、Recall@10（0.335）三项上反而最高，但成对胜率仅 0.525（Full 为 0.604）。这证明统一模型能拟合标签却生成泛化、无策略针对性的回复，<strong>准确率指标无法替代回复质量评估</strong>，也反证了策略解耦的必要性。</li>
 <li><strong>路由行为自发复现用户研究的阶段规律</strong>：图 5 显示属性型策略集中于早期轮次、物品型集中于后期、混合型全程稳定，且 ELI 状态自转移率低（0.14–0.16）、更多转向 GEN（0.44–0.58），与 328 人用户研究的 63%→35% 交叉趋势一致，说明模型从数据中学到了真实的交互节奏而非过拟合标签。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 ReFICR 等 LLM 增强 CRS 仅靠隐式能力"顺带"做引导，COPE 首次把引导策略作为<strong>可监督的显式决策变量</strong>；相比 MCMIPL 等 RL 主动式方法依赖固定阶段启发式，COPE 用数据驱动的分层路由器实现上下文级策略切换；相比传统属性提问工作（Priyogi、Zou 等）只优化问题池排序，本文把物品型与混合型策略纳入统一动作空间。</li>
 <li><strong>可迁移亮点</strong>: ① "教师强制路由 + 推理预测路由"的两阶段训练范式，可迁移到任何需要解耦多行为模式的 LLM 推荐场景（如探索/利用分离）；② 用成对人工偏好标注 + 胜率评估替代纯准确率，为对话推荐评测提供了更贴近用户体验的补充维度。</li>
 <li><strong>审稿级局限批判</strong>: ① 仅在 InPE（源自 INSPIRED 电影域、999 段对话）单数据集验证，跨域泛化与规模效应未知；② 路由准确率仅 0.617，且 Q1 标注一致性 <span class="arithmatex">\(\alpha=0.244\)</span> 偏低，标签噪声可能同时压低路由上限与评估可信度；③ 多专家 + 两级路由的推理链路比单模型更重，论文未报告延迟与显存开销。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

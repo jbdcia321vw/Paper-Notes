@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/pengyunshan/RF-Inventory">https://github.com/pengyunshan/RF-Inventory</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>R&amp;F（Reach &amp; Frequency）合约广告需要在给定「定向-排期-频控」下实时输出 UV/PV 随预算变化的<strong>完整曲线</strong>，但现有公开广告数据集（Criteo/Avazu/Taobao）以独立 PV/点击为样本单元，既无预算维度也无频控约束，无法刻画曲线的单调性与边际递减结构。本文发布 R&amp;F-Inventory 数据集：以「定向-排期-频控」三元组为上下文，在同一上下文内提供 53 个 CPM 阈值点（0.4–3.0，步长 0.05）的 UV/PV 观测，构成完整预算-效果曲线，并推导理论曝光上限 <span class="arithmatex">\(I_{max}=R\cdot K\cdot\lceil T/W\rceil\)</span> 作为一致性校验。基于该数据定义单点预测与多维单调曲线重建两个基准任务，在联合外推划分（Method 3）下，显式单调约束模型（PWL/SMM/MN）将 PV MAE 从 GBDT 的 442453 降至约 <span class="arithmatex">\(1.0\times10^4\)</span> 量级，且单调违反率降为 0。</p>
+<p>R&amp;F（Reach &amp; Frequency）合约广告需要在给定「定向-排期-频控」下实时输出 UV/PV 随预算变化的<strong>完整曲线</strong>，但现有公开广告数据集（Criteo/Avazu/Taobao）以独立 PV/点击为样本单元，既无预算维度也无频控约束，无法刻画曲线的单调性与边际递减结构。本文发布 R&amp;F-Inventory 数据集：以「定向-排期-频控」三元组为上下文，在同一上下文内提供 53 个 CPM 阈值点（0.4–3.0，步长 0.05）的 UV/PV 观测，构成完整预算-效果曲线，并推导理论曝光上限 <span class="arithmatex">\(I_{max}=R\cdot K\cdot\lceil T/W\rceil\)</span>作为一致性校验。基于该数据定义单点预测与多维单调曲线重建两个基准任务，在联合外推划分（Method 3）下，显式单调约束模型（PWL/SMM/MN）将 PV MAE 从 GBDT 的 442453 降至约<span class="arithmatex">\(1.0\times10^4\)</span> 量级，且单调违反率降为 0。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 广告机器学习研究以 CTR/CVR 点级预估为核心，依赖 Criteo、Avazu、Taobao 等以单次曝光/点击为独立样本的公开日志数据集。</li>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>数据集构造以单用户曝光序列模拟为核心：对每个用户按时间线构造会话序列（每会话可返回 1–2 条广告），给定候选 CPM 阈值，判断一条 R&amp;F 广告能否<strong>替换</strong>序列中实际 CPM 更低的非 R&amp;F 广告且仍满足频控约束（任意连续 <span class="arithmatex">\(W\)</span> 天内曝光不超过 <span class="arithmatex">\(K\)</span> 次）；若可插入，则该用户为当前阈值贡献 1 个 PV 与 1 个 UV。对 53 个 CPM 阈值重复此过程，即得同一 <span class="arithmatex">\((x,T,fc)\)</span> 上下文下的完整预算-效果曲线。数据以六元组 <span class="arithmatex">\(\langle x, T, fc, b, R, I\rangle\)</span> 组织，并按 <span class="arithmatex">\((x,T,fc)\)</span> 分组，每组对应一条曲线。</p>
+<p>数据集构造以单用户曝光序列模拟为核心：对每个用户按时间线构造会话序列（每会话可返回 1–2 条广告），给定候选 CPM 阈值，判断一条 R&amp;F 广告能否<strong>替换</strong>序列中实际 CPM 更低的非 R&amp;F 广告且仍满足频控约束（任意连续 <span class="arithmatex">\(W\)</span>天内曝光不超过<span class="arithmatex">\(K\)</span>次）；若可插入，则该用户为当前阈值贡献 1 个 PV 与 1 个 UV。对 53 个 CPM 阈值重复此过程，即得同一<span class="arithmatex">\((x,T,fc)\)</span>上下文下的完整预算-效果曲线。数据以六元组<span class="arithmatex">\(\langle x, T, fc, b, R, I\rangle\)</span>组织，并按<span class="arithmatex">\((x,T,fc)\)</span> 分组，每组对应一条曲线。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户曝光序列 + 候选CPM阈值"] --&gt; B["替换可行性判定: 实际CPM &lt; 阈值 且 满足(W,K)频控"]
     B --&gt; C["逐阈值累计 UV/PV"]
@@ -4242,10 +4253,10 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>频控-排期耦合的理论曝光上限（数据质量与可行性校验的锚点）</strong>：痛点在于频控规则与排期长度存在强交互，缺少可验证的物理边界。作者推导单用户在整个投放周期内的最大曝光次数 <span class="arithmatex">\(m_{max}(T;W,K)=K\cdot\lceil T/W\rceil\)</span>，进而得到合约总曝光上限 <span class="arithmatex">\(I_{max}=R\cdot K\cdot\lceil T/W\rceil\)</span>。该式既是样本一致性检查工具（筛除越界样本），也可作为模型预测的可行域约束——直觉上，它把「频控窗口 <span class="arithmatex">\(W\)</span> 越短、排期 <span class="arithmatex">\(T\)</span> 越长则上限越高」的业务常识编码为硬边界。</p>
+<p><strong>频控-排期耦合的理论曝光上限（数据质量与可行性校验的锚点）</strong>：痛点在于频控规则与排期长度存在强交互，缺少可验证的物理边界。作者推导单用户在整个投放周期内的最大曝光次数 <span class="arithmatex">\(m_{max}(T;W,K)=K\cdot\lceil T/W\rceil\)</span>，进而得到合约总曝光上限<span class="arithmatex">\(I_{max}=R\cdot K\cdot\lceil T/W\rceil\)</span>。该式既是样本一致性检查工具（筛除越界样本），也可作为模型预测的可行域约束——直觉上，它把「频控窗口<span class="arithmatex">\(W\)</span>越短、排期<span class="arithmatex">\(T\)</span> 越长则上限越高」的业务常识编码为硬边界。</p>
 </li>
 <li>
-<p><strong>偏序单调约束的任务形式化（Task 2 的核心）</strong>：痛点在于预算/排期/CPM 多维同时变化时，全序单调约束会过度限制不可比条件点。作者仅在偏序关系下施加约束：若 <span class="arithmatex">\(T_1\le T_2\)</span> 且 <span class="arithmatex">\(B_1\le B_2\)</span>，则要求 <span class="arithmatex">\(\hat R(u_1)\le\hat R(u_2)\)</span>、<span class="arithmatex">\(\hat I(u_1)\le\hat I(u_2)\)</span>；实际使用中预算可由 <span class="arithmatex">\(\text{CPM}=1000\cdot b/I\)</span> 导出，故简化为 <span class="arithmatex">\((x,W,fc;T,\text{cpm})\to(\hat R,\hat I)\)</span>。这样既避免对不可比点施加无意义约束，又与 R&amp;F 规划逻辑一致。</p>
+<p><strong>偏序单调约束的任务形式化（Task 2 的核心）</strong>：痛点在于预算/排期/CPM 多维同时变化时，全序单调约束会过度限制不可比条件点。作者仅在偏序关系下施加约束：若 <span class="arithmatex">\(T_1\le T_2\)</span>且<span class="arithmatex">\(B_1\le B_2\)</span>，则要求<span class="arithmatex">\(\hat R(u_1)\le\hat R(u_2)\)</span>、<span class="arithmatex">\(\hat I(u_1)\le\hat I(u_2)\)</span>；实际使用中预算可由<span class="arithmatex">\(\text{CPM}=1000\cdot b/I\)</span>导出，故简化为<span class="arithmatex">\((x,W,fc;T,\text{cpm})\to(\hat R,\hat I)\)</span>。这样既避免对不可比点施加无意义约束，又与 R&amp;F 规划逻辑一致。</p>
 </li>
 <li>
 <p><strong>三种外推式数据划分（评估泛化而非记忆）</strong>：不做随机样本级划分，而是在固定定向与频控窗口前提下按业务变量切分——Method 1 按 CPM 阈值切（低 CPM 训练、高 CPM 测试，模拟「保守试投推激进策略」）；Method 2 按排期长度切（短排期训练、长排期测试，对应「短期评估、长期规划」）；Method 3 联合切分，测试集满足 <span class="arithmatex">\(\text{cpm}\ge\tau_{cpm}\wedge T\ge\tau_T\)</span>，是最严苛的「大规模投放」鲁棒性场景。评估侧除 UV/PV 的 MAE/RMSE（含按上下文平均）外，另设 <strong>Violation Rate</strong>（违反偏序单调的点对比例）与 <strong>Violation Magnitude</strong>（违反时的平均下降幅度）两项结构一致性指标。</p>
@@ -4253,7 +4264,7 @@
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集与预处理</strong>: 数据来自快手真实广告系统反馈的离线模拟，不含任何可识别个人信息；CPM 网格为 <span class="arithmatex">\([0.4,3.0]\)</span> 均匀 53 点。原文未在正文给出用户/物品级统计表（资源论文以曲线组为单位组织），核心统计维度为：上下文数 = 不同 <span class="arithmatex">\((x,T,fc)\)</span> 组合数，每上下文 53 个预算观测点。</li>
+<li><strong>数据集与预处理</strong>: 数据来自快手真实广告系统反馈的离线模拟，不含任何可识别个人信息；CPM 网格为 <span class="arithmatex">\([0.4,3.0]\)</span>均匀 53 点。原文未在正文给出用户/物品级统计表（资源论文以曲线组为单位组织），核心统计维度为：上下文数 = 不同<span class="arithmatex">\((x,T,fc)\)</span> 组合数，每上下文 53 个预算观测点。</li>
 </ul>
 <table>
 <thead>
@@ -4268,10 +4279,10 @@
 <tbody>
 <tr>
 <td style="text-align: left;">R&amp;F-Inventory</td>
-<td style="text-align: center;"><span class="arithmatex">\((x,T,fc)\)</span> 上下文</td>
+<td style="text-align: center;"><span class="arithmatex">\((x,T,fc)\)</span>上下文</td>
 <td style="text-align: center;">53 (CPM 0.4–3.0)</td>
 <td style="text-align: center;"><span class="arithmatex">\(x,T,(W,K),b,R,I\)</span></td>
-<td style="text-align: left;">定向-排期-频控三元组，含理论上限 <span class="arithmatex">\(I_{max}\)</span></td>
+<td style="text-align: left;">定向-排期-频控三元组，含理论上限<span class="arithmatex">\(I_{max}\)</span></td>
 </tr>
 </tbody>
 </table>
@@ -4385,12 +4396,18 @@
 <li><strong>弱约束不够用</strong>：Hint 虽把 PV MAE 降到 16227，但违反率仍达 0.31/0.11，证明「软提示」无法保证偏序一致性，业务可用的底线需要硬约束模型。</li>
 <li><strong>UV 与 PV 的最优模型并不一致</strong>：MN 取得最优 UV（MAE 260 / RMSE 338），而 PWL 在 PV 上更优（MAE 10298），印证作者自述的局限——UV/PV 分开建模、不共享底层参数，二者内在耦合关系（UV 是 PV 的去重上界）尚未被利用。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 Criteo/Avazu/Taobao 等点级广告日志，本文首次提供<strong>曲线级监督 + 频控显式建模 + 理论上限校验</strong>；相较 Facebook/Google Reach Planner 等闭源系统，本文是唯一公开可复现的 R&amp;F 库存基准（原文 Table 1 中唯一四项全勾选者）；相较 isotonic regression / lattice / 单调网络等方法学工作，本文补上了它们长期缺失的广告库存评测土壤。</li>
 <li><strong>可迁移亮点</strong>: ①「理论物理上限 → 可行域约束 + 数据质检」这一套做法可直接迁移到任何带容量约束的预估任务（如配送时效、库存销量预估）；②外推式划分（按强度/时长切分而非随机切分）是评估结构约束模型泛化性的通用范式，值得在 CTR 外推、冷启动场景复用。</li>
-<li><strong>审稿级局限批判</strong>: ①数据由离线模拟生成，替换式插入假设（仅替换低 CPM 非 R&amp;F 广告）与真实竞价环境存在偏差，分布漂移风险未量化；②UV/PV 独立建模、频控窗口 <span class="arithmatex">\((W,K)\)</span> 仅作固定特征而未探索其单调性，且理论上限 <span class="arithmatex">\(I_{max}\)</span> 因所有基线均未建模饱和边界而<strong>未纳入评估指标</strong>，使「可行性校验」的实际约束力被削弱；③仅报告 Method 3 的完整结果，Method 1/2 的外推难度梯度分析缺失。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ①数据由离线模拟生成，替换式插入假设（仅替换低 CPM 非 R&amp;F 广告）与真实竞价环境存在偏差，分布漂移风险未量化；②UV/PV 独立建模、频控窗口 <span class="arithmatex">\((W,K)\)</span>仅作固定特征而未探索其单调性，且理论上限<span class="arithmatex">\(I_{max}\)</span> 因所有基线均未建模饱和边界而<strong>未纳入评估指标</strong>，使「可行性校验」的实际约束力被削弱；③仅报告 Method 3 的完整结果，Method 1/2 的外推难度梯度分析缺失。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

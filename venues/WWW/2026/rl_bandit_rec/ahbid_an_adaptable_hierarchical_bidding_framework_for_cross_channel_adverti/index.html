@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>将每个渠道的投放 episode 切为 <span class="arithmatex">\(M\)</span> 个时段，规划器输出 <span class="arithmatex">\(J\times M\)</span> 的目标矩阵 <span class="arithmatex">\(\boldsymbol{\tau}\)</span>（每格含预算消耗与目标 CPC），出价器据此调整对偶参数 <span class="arithmatex">\(\lambda_0,\lambda_1\)</span> 并对每次曝光出价。训练时对轨迹加噪并学习去噪重建；推理时每阶段开始重新生成轨迹，并用已发生阶段真实状态做 inpaint 精修，再交由历史模型与实时模型融合出价。</p>
+<p>将每个渠道的投放 episode 切为 <span class="arithmatex">\(M\)</span>个时段，规划器输出<span class="arithmatex">\(J\times M\)</span>的目标矩阵<span class="arithmatex">\(\boldsymbol{\tau}\)</span>（每格含预算消耗与目标 CPC），出价器据此调整对偶参数<span class="arithmatex">\(\lambda_0,\lambda_1\)</span> 并对每次曝光出价。训练时对轨迹加噪并学习去噪重建；推理时每阶段开始重新生成轨迹，并用已发生阶段真实状态做 inpaint 精修，再交由历史模型与实时模型融合出价。</p>
 <pre class="mermaid"><code>flowchart TD
     A["渠道历史状态 s_{1:J,1:T} + 条件 y(τ)"] --&gt; B["条件扩散规划器 p_θ（约束执行 + inpaint 精修）"]
     B --&gt; C["目标轨迹 τ：各渠道各时段预算/CPC 目标"]
@@ -4241,13 +4252,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>条件扩散目标规划器（把分配变成轨迹分布建模）</strong>：痛点在于 RL 的逐步决策无法利用整条历史轨迹。作者以 MLE 目标 <span class="arithmatex">\(\max_\theta \mathbb{E}_{\tau\sim D}[\log p_\theta(\tau|y(\tau))]\)</span> 学习轨迹分布，条件 <span class="arithmatex">\(y(\tau)\)</span> 含预算、约束与归一化收益 <span class="arithmatex">\(\bar{R}=(R_\tau-R_{min})/(R_{max}-R_{min})\)</span>；生成时置 <span class="arithmatex">\(\bar{R}=1\)</span> 即"取最优收益条件采样"。用 classifier-free guidance 线性组合条件/无条件噪声估计 <span class="arithmatex">\(\hat{\epsilon}_k=\epsilon_\theta(\tau_k,\varnothing)+\omega(\epsilon_\theta(\tau_k,y)-\epsilon_\theta(\tau_k,\varnothing))\)</span>，使生成轨迹朝高收益方向偏移——本质是把"分配策略搜索"转为"条件生成"。</p>
+<p><strong>条件扩散目标规划器（把分配变成轨迹分布建模）</strong>：痛点在于 RL 的逐步决策无法利用整条历史轨迹。作者以 MLE 目标 <span class="arithmatex">\(\max_\theta \mathbb{E}_{\tau\sim D}[\log p_\theta(\tau|y(\tau))]\)</span>学习轨迹分布，条件<span class="arithmatex">\(y(\tau)\)</span>含预算、约束与归一化收益<span class="arithmatex">\(\bar{R}=(R_\tau-R_{min})/(R_{max}-R_{min})\)</span>；生成时置<span class="arithmatex">\(\bar{R}=1\)</span>即"取最优收益条件采样"。用 classifier-free guidance 线性组合条件/无条件噪声估计<span class="arithmatex">\(\hat{\epsilon}_k=\epsilon_\theta(\tau_k,\varnothing)+\omega(\epsilon_\theta(\tau_k,y)-\epsilon_\theta(\tau_k,\varnothing))\)</span>，使生成轨迹朝高收益方向偏移——本质是把"分配策略搜索"转为"条件生成"。</p>
 </li>
 <li>
-<p><strong>约束执行 + 历史 inpaint 精修（保证可行与实时自适应）</strong>：扩散中间步天然带噪、直接算违约无意义，故定义违约强度 <span class="arithmatex">\(V(\tau_k,y)=\kappa_b V_B+\kappa_c V_C\)</span>，并以同噪声水平下真实轨迹的期望违约 <span class="arithmatex">\(V_{GT}\)</span> 做归一化：<span class="arithmatex">\(\mathcal{L}_{final}=\mathcal{L}_{diff}+\xi\cdot \mathcal{L}_{vio}/V_{GT}\)</span>，使高噪声步的违约惩罚自动衰减。推理时每 <span class="arithmatex">\(T\)</span> 阶段后用真实状态 <span class="arithmatex">\(s_{1:J,1:T}\)</span> 替换轨迹前 <span class="arithmatex">\(T\)</span> 列、仅对 <span class="arithmatex">\(m&gt;T\)</span> 的未来目标去噪（式 14），实现"以史为锚"的滚动重规划。</p>
+<p><strong>约束执行 + 历史 inpaint 精修（保证可行与实时自适应）</strong>：扩散中间步天然带噪、直接算违约无意义，故定义违约强度 <span class="arithmatex">\(V(\tau_k,y)=\kappa_b V_B+\kappa_c V_C\)</span>，并以同噪声水平下真实轨迹的期望违约<span class="arithmatex">\(V_{GT}\)</span>做归一化：<span class="arithmatex">\(\mathcal{L}_{final}=\mathcal{L}_{diff}+\xi\cdot \mathcal{L}_{vio}/V_{GT}\)</span>，使高噪声步的违约惩罚自动衰减。推理时每<span class="arithmatex">\(T\)</span>阶段后用真实状态<span class="arithmatex">\(s_{1:J,1:T}\)</span>替换轨迹前<span class="arithmatex">\(T\)</span>列、仅对<span class="arithmatex">\(m&gt;T\)</span> 的未来目标去噪（式 14），实现"以史为锚"的滚动重规划。</p>
 </li>
 <li>
-<p><strong>历史-实时双模型出价与训练开销</strong>：由原始-对偶理论把逐曝光出价压缩为 <span class="arithmatex">\(b^*=\lambda_0 v+\lambda_1\cdot CPC\cdot CTR\)</span>，只需调两个对偶参数。历史模型用线性近似 <span class="arithmatex">\([\Delta\lambda_0,\Delta\lambda_1]^\top=[\boldsymbol{x}]^{-1}[\Delta Cost,\Delta CPC]^\top\)</span>（逆矩阵仅 2 参数 <span class="arithmatex">\(\phi,\varphi\)</span>，直接搜索拟合）；实时模型在滑窗 <span class="arithmatex">\([t-T_0,t]\)</span> 上做周期 LP。融合 <span class="arithmatex">\(\Lambda(t)=\sigma(t)\Lambda_h+(1-\sigma(t))\Lambda_r\)</span>，<span class="arithmatex">\(\sigma(t)=1-\min(\rho t,p)\)</span> 前期偏历史模型抗冷启、后期偏实时模型。总损失即式 (18)；规划器单 episode 复杂度 <span class="arithmatex">\(O(MKH)\)</span>，GPU 加速下生成耗时 0.04s。</p>
+<p><strong>历史-实时双模型出价与训练开销</strong>：由原始-对偶理论把逐曝光出价压缩为 <span class="arithmatex">\(b^*=\lambda_0 v+\lambda_1\cdot CPC\cdot CTR\)</span>，只需调两个对偶参数。历史模型用线性近似<span class="arithmatex">\([\Delta\lambda_0,\Delta\lambda_1]^\top=[\boldsymbol{x}]^{-1}[\Delta Cost,\Delta CPC]^\top\)</span>（逆矩阵仅 2 参数<span class="arithmatex">\(\phi,\varphi\)</span>，直接搜索拟合）；实时模型在滑窗<span class="arithmatex">\([t-T_0,t]\)</span>上做周期 LP。融合<span class="arithmatex">\(\Lambda(t)=\sigma(t)\Lambda_h+(1-\sigma(t))\Lambda_r\)</span>，<span class="arithmatex">\(\sigma(t)=1-\min(\rho t,p)\)</span>前期偏历史模型抗冷启、后期偏实时模型。总损失即式 (18)；规划器单 episode 复杂度<span class="arithmatex">\(O(MKH)\)</span>，GPU 加速下生成耗时 0.04s。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4284,7 +4295,7 @@
 <ul>
 <li><strong>数据划分与防穿越</strong>: 离线采用<strong>虚拟广告系统 (VAS) 仿真</strong>——广告系统模拟器（召回/出价/排序/计费）+ 用户反馈预测器；episode 按日循环离散为 48 个 30 分钟阶段，每阶段曝光量 3,000–25,000 动态变化，属"仿真回放式"评估而非随机切分。</li>
 <li><strong>排名评测协议</strong>: 非排序类指标，采用<strong>全 episode 约束满足评估</strong>：<span class="arithmatex">\(R\)</span>（平均转化数）、<span class="arithmatex">\(CSR\)</span>（CPC 约束满足率，超支 10% 内视为满足）、<span class="arithmatex">\(BCR\)</span>（预算消耗率，预算耗尽即停投故恒 &lt;1）。每模型随机初始化 30 次，取 top-5 均值。</li>
-<li><strong>对比基线与超参</strong>: 基线含 PID、USCB、MCQ(CQL)、ABPlanner、DiffBid、HiBid；规划器用 U-Net，<span class="arithmatex">\(M=48\)</span>，<span class="arithmatex">\(K=30\)</span>，guidance <span class="arithmatex">\(\omega=0.2\)</span>，条件丢弃率 <span class="arithmatex">\(p_u=0.25\)</span>，Adam，bs=256，lr=<span class="arithmatex">\(1e^{-4}\)</span>，1000 epochs。</li>
+<li><strong>对比基线与超参</strong>: 基线含 PID、USCB、MCQ(CQL)、ABPlanner、DiffBid、HiBid；规划器用 U-Net，<span class="arithmatex">\(M=48\)</span>，<span class="arithmatex">\(K=30\)</span>，guidance<span class="arithmatex">\(\omega=0.2\)</span>，条件丢弃率<span class="arithmatex">\(p_u=0.25\)</span>，Adam，bs=256，lr=<span class="arithmatex">\(1e^{-4}\)</span>，1000 epochs。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4378,7 +4389,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>线上 A/B（2025.8.1–8.14，2360 个 campaign，同预算 3,342,847）</strong>：AHBid vs HiBid，<span class="arithmatex">\(R\)</span> 417,268 → 473,892（<strong>+13.57%</strong>），<span class="arithmatex">\(CSR\)</span> 0.836 → 0.904（+4.13%），<span class="arithmatex">\(BCR\)</span> 0.897 → 0.935（+5.06%）。</p>
+<p><strong>线上 A/B（2025.8.1–8.14，2360 个 campaign，同预算 3,342,847）</strong>：AHBid vs HiBid，<span class="arithmatex">\(R\)</span>417,268 → 473,892（<strong>+13.57%</strong>），<span class="arithmatex">\(CSR\)</span>0.836 → 0.904（+4.13%），<span class="arithmatex">\(BCR\)</span> 0.897 → 0.935（+5.06%）。</p>
 <h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
 <p>原文未设标准逐组件消融表，以超参敏感性与状态对比替代：</p>
 <table>
@@ -4435,12 +4446,18 @@
 <li><strong>生成式优于 RL 的误差传播</strong>：DiffBid/AHBid 全面压过 USCB/MCQ，作者归因于对整条轨迹-收益联合分布建模避免了 RL 的逐步误差累积；但 DiffBid 在 AuctionNet 胜 HiBid、在 GenB-4c 反被超越，印证"缺自适应分配"在跨渠道下会崩。</li>
 <li><strong>预算节奏更平滑且利用率更高</strong>：图 5/6 显示 AHBid 单 episode 内预算消耗曲线更贴近理想节奏，四渠道消耗分布更均衡，<span class="arithmatex">\(BCR\)</span> 达 0.936（HiBid 0.869），即同等预算下多花出 6.7 个百分点且不破约束。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 <strong>HiBid</strong>（分层 RL，MDP 逐步决策、无时序全局建模），AHBid 用扩散模型一次性生成整条目标轨迹；相比 <strong>DiffBid</strong>（扩散生成状态轨迹 + 逆动力学出价，纯离线、无跨渠道分配），AHBid 增加渠道维规划、约束执行与历史-实时双模型闭环；相比 <strong>USCB/PID</strong>（单渠道对偶出价），其增量在于把对偶参数的目标由规划器动态给定。</li>
 <li><strong>可迁移亮点</strong>: ① "以真实已发生状态 inpaint 未来段"的滚动重规划范式，可直接迁移到任何长程预算/配额分配任务；② 用 <span class="arithmatex">\(V_{GT}\)</span> 归一化违约损失，解决扩散中间步约束不可评估的通用技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① 离线评估完全依赖自建 VAS 仿真器与用户反馈预测器，仿真偏差可能放大生成式方法的优势，缺乏公开可复现的跨渠道基准；② 历史模型被强假设为线性耦合（式 19–21），在强非线性竞价环境中可能失配；③ 消融以超参曲线替代组件级拆解，约束执行与 inpaint 各自的边际贡献未被定量隔离。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4222,14 +4233,14 @@
 <p>SID 生成式推荐惯用「生成序列是否命中目标 SID 序列」来算 Hit@K，但该协议隐含「SID 序列唯一标识物品」的假设；实测 5 个 Tokenizer × 4 数据集碰撞率高达 30.52%，SID 级 Hit@10 相对物品级虚高最多 103.36%，足以<strong>翻转 Tokenizer 两两排序</strong>。本文提出 CCE（按碰撞组大小分摊物品级信用，免重训）与 ZCR（仅改末级码字的最小代价重分配，匈牙利算法求解），在 4 数据集 5 Tokenizer 上给出首个忠实物品级对比。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>主流范式</strong>: TIGER/RQ-VAE 系将物品量化为长度 <span class="arithmatex">\(L\)</span>、码本 <span class="arithmatex">\(V\)</span> 的离散 SID 序列，自回归生成 beam 候选后，用「目标 SID 是否出现在 Top-K」计算 Hit@K/NDCG@K。</li>
+<li><strong>主流范式</strong>: TIGER/RQ-VAE 系将物品量化为长度 <span class="arithmatex">\(L\)</span>、码本<span class="arithmatex">\(V\)</span> 的离散 SID 序列，自回归生成 beam 候选后，用「目标 SID 是否出现在 Top-K」计算 Hit@K/NDCG@K。</li>
 <li><strong>前人局限</strong>: ① 向量量化本质是<strong>多对一压缩</strong>，相似物品共享码字形成 SID 碰撞（Coll.% 8.52%–30.52%，最大碰撞组达 65 个物品），命中 SID 只等于命中「碰撞组」而非目标物品；② 各 Tokenizer 碰撞率差异巨大（RK-Means 恒高于 RQ-VAE），导致跨 Tokenizer 比较被不同强度的虚高污染。</li>
 <li><strong>核心洞察 (Key Insight)</strong>: 虚高幅度与碰撞率单调正相关；且碰撞根源是<strong>纯文本语义空间把交互模式不同的物品合并</strong>（t-SNE 显示碰撞组在 Qwen3 文本空间近乎重叠，在 PPMI+SVD 协同空间可分）。</li>
 <li><strong>本文切入点</strong>: 不改 Tokenizer、不重训生成器，从「度量修正（CCE）」与「分配修正（ZCR）」两侧同时闭合评估缺口。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为已训练 Tokenizer 的原生 SID 分配与 beam 输出。CCE 分支把每条预测 SID 按其碰撞组 <span class="arithmatex">\(\mathcal{C}(\mathbf{s})=\{i:\mathbf{s}_i=\mathbf{s}\}\)</span> 展开为物品序列，在展开后的物品级 Top-K 上分摊信用；ZCR 分支在量化完成后、生成器训练前，按 <span class="arithmatex">\((L{-}1)\)</span> 前缀分组、仅重分配末级码字构造零碰撞分配，再以同一 T5 生成器重训评估。二者互补：CCE 修正任意碰撞率下的度量，ZCR 提供无碰撞的公平比较底座。</p>
+<p>输入为已训练 Tokenizer 的原生 SID 分配与 beam 输出。CCE 分支把每条预测 SID 按其碰撞组 <span class="arithmatex">\(\mathcal{C}(\mathbf{s})=\{i:\mathbf{s}_i=\mathbf{s}\}\)</span>展开为物品序列，在展开后的物品级 Top-K 上分摊信用；ZCR 分支在量化完成后、生成器训练前，按<span class="arithmatex">\((L{-}1)\)</span> 前缀分组、仅重分配末级码字构造零碰撞分配，再以同一 T5 生成器重训评估。二者互补：CCE 修正任意碰撞率下的度量，ZCR 提供无碰撞的公平比较底座。</p>
 <pre class="mermaid"><code>flowchart TD
     A["物品文本/协同嵌入"] --&gt; B["Tokenizer 原生 SID 分配(含碰撞)"]
     B --&gt; C["CCE: 碰撞组展开 + 分数信用"]
@@ -4243,17 +4254,17 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>CCE 碰撞校正评估（把 SID 命中折算为物品级期望命中）</strong>：痛点是把组命中当物品命中。设目标 SID 在 beam 中排名 <span class="arithmatex">\(r\)</span>、目标组大小 <span class="arithmatex">\(g=|\mathcal{C}(\mathbf{s}_{i_{t+1}})|\)</span>，展开后目标组起始位置 <span class="arithmatex">\(p=1+\sum_{q&lt;r}|\mathcal{C}(\mathbf{s}^{(q)})|\)</span>，落入 Top-K 的组内物品数 <span class="arithmatex">\(m=\min(g,\max\{0,K-p+1\})\)</span>，则
+<p><strong>CCE 碰撞校正评估（把 SID 命中折算为物品级期望命中）</strong>：痛点是把组命中当物品命中。设目标 SID 在 beam 中排名 <span class="arithmatex">\(r\)</span>、目标组大小<span class="arithmatex">\(g=|\mathcal{C}(\mathbf{s}_{i_{t+1}})|\)</span>，展开后目标组起始位置<span class="arithmatex">\(p=1+\sum_{q&lt;r}|\mathcal{C}(\mathbf{s}^{(q)})|\)</span>，落入 Top-K 的组内物品数<span class="arithmatex">\(m=\min(g,\max\{0,K-p+1\})\)</span>，则
 $<span class="arithmatex">\(\text{ItemHit}@K=\frac{m}{g},\qquad \text{ItemNDCG}@K=\frac{1}{g}\sum_{e=1}^{m}\frac{1}{\log_2(p+e)}\)</span>$
-直觉：SID 无法区分组内物品，故对 <span class="arithmatex">\(g\)</span> 个可能位置取均匀期望；<span class="arithmatex">\(g=1\)</span> 时严格退化为标准 Hit/NDCG，单目标场景下 IDCG=1 无需归一化。</p>
+直觉：SID 无法区分组内物品，故对 <span class="arithmatex">\(g\)</span>个可能位置取均匀期望；<span class="arithmatex">\(g=1\)</span> 时严格退化为标准 Hit/NDCG，单目标场景下 IDCG=1 无需归一化。</p>
 </li>
 <li>
-<p><strong>ZCR 零碰撞重分配（保前缀、只动末级、全局最小代价）</strong>：痛点在于 TIGER 追加无语义码会拉长 SID、MQL4GRec 贪心重分配改动过大。ZCR 固定前 <span class="arithmatex">\(L{-}1\)</span> 位，使碰撞分解为各前缀组 <span class="arithmatex">\(\mathcal{P}(\mathbf{p})\)</span> 内独立子问题，最少改动数 <span class="arithmatex">\(\rho_\mathbf{p}=|\mathcal{P}(\mathbf{p})|-|\{s_i^{(L)}\}|\)</span>，再解约束二分匹配：
+<p><strong>ZCR 零碰撞重分配（保前缀、只动末级、全局最小代价）</strong>：痛点在于 TIGER 追加无语义码会拉长 SID、MQL4GRec 贪心重分配改动过大。ZCR 固定前 <span class="arithmatex">\(L{-}1\)</span>位，使碰撞分解为各前缀组<span class="arithmatex">\(\mathcal{P}(\mathbf{p})\)</span>内独立子问题，最少改动数<span class="arithmatex">\(\rho_\mathbf{p}=|\mathcal{P}(\mathbf{p})|-|\{s_i^{(L)}\}|\)</span>，再解约束二分匹配：
 $<span class="arithmatex">\(\min_{\{\hat s_i^{(L)}\}}\sum_{i\in\mathcal{P}(\mathbf{p})}\big[D[i,\hat s_i^{(L)}]-D[i,s_i^{(L)}]\big],\ \ D[i,c]=\|\mathbf{r}_i^{(L-1)}-\mathbf{e}_c^{(L)}\|^2\)</span>$
-约束为恰有 <span class="arithmatex">\(\rho_\mathbf{p}\)</span> 个物品改码且组内码字互异，用匈牙利算法在 <span class="arithmatex">\(O(|\mathcal{P}|^2V)\)</span> 内求解。只动末级的关键理由：残差量化是顺序的，改前级会改变后续残差空间，代价不再可比；容量条件 <span class="arithmatex">\(\max_\mathbf{p}|\mathcal{P}(\mathbf{p})|\le V\)</span> 在全部实验中成立（最大 91 &lt; 256）。</p>
+约束为恰有 <span class="arithmatex">\(\rho_\mathbf{p}\)</span>个物品改码且组内码字互异，用匈牙利算法在<span class="arithmatex">\(O(|\mathcal{P}|^2V)\)</span>内求解。只动末级的关键理由：残差量化是顺序的，改前级会改变后续残差空间，代价不再可比；容量条件<span class="arithmatex">\(\max_\mathbf{p}|\mathcal{P}(\mathbf{p})|\le V\)</span> 在全部实验中成立（最大 91 &lt; 256）。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：本文不引入新损失，生成器统一为 4 层 T5（<span class="arithmatex">\(d_{model}=128\)</span>、6 头、dropout 0.1），以标准下一 SID 交叉熵训练，beam width=20，<strong>无负采样</strong>（全库 beam 生成即隐式全排序）。ZCR 开销为距离矩阵 <span class="arithmatex">\(O(NVd)\)</span>（FAISS 批算）+ 分组匹配，<span class="arithmatex">\(N\le5\times10^4\)</span>、<span class="arithmatex">\(V=256\)</span> 时相对 Tokenizer 训练可忽略。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：本文不引入新损失，生成器统一为 4 层 T5（<span class="arithmatex">\(d_{model}=128\)</span>、6 头、dropout 0.1），以标准下一 SID 交叉熵训练，beam width=20，<strong>无负采样</strong>（全库 beam 生成即隐式全排序）。ZCR 开销为距离矩阵<span class="arithmatex">\(O(NVd)\)</span>（FAISS 批算）+ 分组匹配，<span class="arithmatex">\(N\le5\times10^4\)</span>、<span class="arithmatex">\(V=256\)</span> 时相对 Tokenizer 训练可忽略。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4543,12 +4554,18 @@ $<span class="arithmatex">\(\min_{\{\hat s_i^{(L)}\}}\sum_{i\in\mathcal{P}(\math
 <li><strong>排序翻转是实质性的</strong>：Scientific/Cell/Beauty 三域上 RK-Means 按 H@10 居首、按 IH@10 垫底；RQ-VAE 在 H@10 上压过 LETTER，校正后反被 LETTER 超越——即前作结论可能整体反向。</li>
 <li><strong>ZCR 增益与原生碰撞率成正比</strong>：RK-Means 提升 11.1%–32.4%，QuaSID 仅 0.2%–5.3%；且 ZCR 后 RK-Means+CF 反超 LETTER+ZCR，证明「文本语义合并 + 协同信号可分」是碰撞主因，前置融合比事后修补更有效。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 TIGER（追加无语义尾码，拉长 SID）、MQL4GRec（贪心重分配，局部最优且改动大）、QuaSID（训练期施加分离约束，需重训 Tokenizer）不同，CCE 零成本修正度量、ZCR 保长度且全局最小代价，二者正交可叠加。</li>
 <li><strong>可迁移亮点</strong>: ① 「组展开 + 分数信用」的度量修正范式可迁移到任何多对一离散标识评估（如物品聚类召回、层级码本检索）；② 末级-only 重分配 + 匈牙利算法是保语义前缀的通用去重后处理模板。</li>
 <li><strong>审稿级局限批判</strong>: ① CCE 对组内物品给均匀信用，忽略流行度/上下文，组内排序信息被抹平；② ZCR 最优性依赖 <span class="arithmatex">\(\max_\mathbf{p}|\mathcal{P}(\mathbf{p})|\le V\)</span>，小码本或大量近重复物品（如 Yelp 的 65 家同名 Starbucks）时失效；③ 仅单一 T5 生成器与公开数据集，工业规模下虚高幅度与排序翻转是否同构仍待验证。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4232,7 +4243,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>CoRRe 将推荐拆为三段解耦流水线：先用 LLM 从用户历史序列 <span class="arithmatex">\(\mathbf{u}\)</span> 生成自然语言画像 <span class="arithmatex">\(\mathcal{P}_u\)</span>（含偏好总结与下一件可能购买物品的推测），经文本编码器得到 query 向量 <span class="arithmatex">\(\mathbf{e}_u=\mathrm{Enc}(\mathcal{P}_u)\)</span>；同时将每个物品标题编码为语义向量 <span class="arithmatex">\(\mathbf{e}_i^{\mathrm{SEM}}\)</span>，再依次经过<strong>方向细化</strong>（共购图传播 + 语义残差混合）与<strong>幅度细化</strong>（流行度幂次校准）得到最终物品向量 <span class="arithmatex">\(\mathbf{e}_i\)</span>；最后以点积 <span class="arithmatex">\(\mathbf{e}_u^\top \mathbf{e}_i\)</span> 全库排序取 Top-<span class="arithmatex">\(K\)</span>。整个流程无任何参数训练，超参仅 <span class="arithmatex">\(\lambda,\alpha\)</span> 两个，在验证集上网格搜索。</p>
+<p>CoRRe 将推荐拆为三段解耦流水线：先用 LLM 从用户历史序列 <span class="arithmatex">\(\mathbf{u}\)</span>生成自然语言画像<span class="arithmatex">\(\mathcal{P}_u\)</span>（含偏好总结与下一件可能购买物品的推测），经文本编码器得到 query 向量<span class="arithmatex">\(\mathbf{e}_u=\mathrm{Enc}(\mathcal{P}_u)\)</span>；同时将每个物品标题编码为语义向量<span class="arithmatex">\(\mathbf{e}_i^{\mathrm{SEM}}\)</span>，再依次经过<strong>方向细化</strong>（共购图传播 + 语义残差混合）与<strong>幅度细化</strong>（流行度幂次校准）得到最终物品向量<span class="arithmatex">\(\mathbf{e}_i\)</span>；最后以点积<span class="arithmatex">\(\mathbf{e}_u^\top \mathbf{e}_i\)</span>全库排序取 Top-<span class="arithmatex">\(K\)</span>。整个流程无任何参数训练，超参仅<span class="arithmatex">\(\lambda,\alpha\)</span> 两个，在验证集上网格搜索。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户交互序列 u"] --&gt; B["LLM 生成用户画像 P_u"]
     B --&gt; C["文本编码器 → query e_u"]
@@ -4254,7 +4265,7 @@
 <li><strong>幅度细化 (Magnitude Refinement)</strong>：点积打分同时受方向与模长影响，而 CF 模型中的模长天然编码了流行度/活跃度信息。CoRRe 直接用流行度 <span class="arithmatex">\(p_i=\sum_u R_{ui}\)</span> 做幂次缩放：</li>
 </ol>
 <div class="arithmatex">\[\mathbf{e}_i=\mathbf{e}_i^{\mathrm{DR+MR}}=p_i^{\alpha}\cdot\mathbf{e}_i^{\mathrm{DR}}\]</div>
-<p>直觉：在方向已无法再分的"语义+协同双近邻"候选堆里，模长成为最后一道区分信号；<span class="arithmatex">\(\alpha\)</span> 控制流行度偏置强度，过大则退化为热度推荐（Beauty/Toys 上最优 <span class="arithmatex">\(\alpha\)</span> 偏小即印证此点）。</p>
+<p>直觉：在方向已无法再分的"语义+协同双近邻"候选堆里，模长成为最后一道区分信号；<span class="arithmatex">\(\alpha\)</span>控制流行度偏置强度，过大则退化为热度推荐（Beauty/Toys 上最优<span class="arithmatex">\(\alpha\)</span> 偏小即印证此点）。</p>
 <ol>
 <li><strong>训练目标、负采样与推理效率</strong>：<strong>无损失函数、无负采样、无训练</strong>。全部"学习"来自闭式图传播与幂次校准，推理仅需一次 LLM 画像生成 + 一次文本编码 + 一次矩阵乘检索；物品侧细化可离线预计算并缓存，在线开销与标准双塔向量召回同阶。</li>
 </ol>
@@ -4479,15 +4490,21 @@
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>幅度细化是单点收益最大的模块</strong>：去掉后 Sports H@10 从 0.0453 崩至 0.0220（−51.4%）、Beauty 从 0.0303 跌至 0.0097（−68.0%），远超去掉图传播（−24.3%）与去掉语义锚（−11.0%）。说明在语义+协同都已对齐的候选堆里，模长承载的流行度信息才是最终区分度来源。</li>
-<li><strong>语义与协同缺一不可且域相关</strong>：V2（仅图传播）在 Toys 上 H@10 从 0.0507 跌至 0.0233（−54.0%），而 V1（仅语义）在 Beauty 上跌至 0.0167（−44.9%），与 RQ4 中 Sports 偏好小 <span class="arithmatex">\(\lambda\)</span>（重协同）、Toys 偏好大 <span class="arithmatex">\(\lambda\)</span>（重语义）的超参分布完全一致，证明 <span class="arithmatex">\(\lambda\)</span> 实质是在调节"该域协同信号的信噪比"。</li>
+<li><strong>语义与协同缺一不可且域相关</strong>：V2（仅图传播）在 Toys 上 H@10 从 0.0507 跌至 0.0233（−54.0%），而 V1（仅语义）在 Beauty 上跌至 0.0167（−44.9%），与 RQ4 中 Sports 偏好小 <span class="arithmatex">\(\lambda\)</span>（重协同）、Toys 偏好大<span class="arithmatex">\(\lambda\)</span>（重语义）的超参分布完全一致，证明<span class="arithmatex">\(\lambda\)</span> 实质是在调节"该域协同信号的信噪比"。</li>
 <li><strong>post-LLM 注入显著优于 pre-LLM</strong>：同为免训练，Embed-ItemRAG（pre-LLM）在 Sports 上 H@10 仅 0.0163，甚至低于纯语义 Embed-Semantic 的 0.0200；而 CoRRe 达 0.0453。案例研究（图 3）进一步显示真目标物品排名从语义检索的 Rank 19 → 方向细化 Rank 5 → 幅度细化 Rank 1，逐级跃升。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 Coral/ItemRAG 的本质区别在于协同信号的作用位点——前者把 CF 结果塞进 prompt 或候选池，LLM 仍是语义裁判；CoRRe 让 LLM 只做意图推断，把 CF 直接写进物品向量的方向与模长。与 RLMRec/AlphaRec 相比，CoRRe 无需任何对比学习预训练即可逼近甚至超越（Sports/Toys 全面领先，Beauty 次之）。</li>
 <li><strong>可迁移亮点</strong>: ① "方向-幅度解耦细化"是通用技巧，可套用到任何冻结文本编码器的向量召回系统（如 E-commerce 冷启动物品）；② 用 <span class="arithmatex">\(p_i^\alpha\)</span> 做模长校准等价于给点积检索加了一层可调的流行度先验，实现成本近乎为零。</li>
-<li><strong>审稿级局限批判</strong>: ① 每域仅采样 1,000 用户评测，且未报告全库 Full-Ranking 的绝对规模，统计效力与工业可推广性存疑；② 共购图 <span class="arithmatex">\(\mathbf{A}=\mathbf{R}^\top\mathbf{R}\)</span> 在交互极稀疏时噪声大，论文未讨论图稀疏度对方向细化的影响，也未与 LightGCN 式多层传播做深度对比；③ 依赖 GPT-5.2 生成画像，LLM 调用成本与延迟未量化，且 <span class="arithmatex">\(\lambda,\alpha\)</span> 呈明显域依赖，跨域迁移需重新调参。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 每域仅采样 1,000 用户评测，且未报告全库 Full-Ranking 的绝对规模，统计效力与工业可推广性存疑；② 共购图 <span class="arithmatex">\(\mathbf{A}=\mathbf{R}^\top\mathbf{R}\)</span>在交互极稀疏时噪声大，论文未讨论图稀疏度对方向细化的影响，也未与 LightGCN 式多层传播做深度对比；③ 依赖 GPT-5.2 生成画像，LLM 调用成本与延迟未量化，且<span class="arithmatex">\(\lambda,\alpha\)</span> 呈明显域依赖，跨域迁移需重新调参。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

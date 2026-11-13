@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4222,7 +4233,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为用户-物品交互矩阵 <span class="arithmatex">\(\mathbf{R}\)</span> 与含缺失的多模态张量 <span class="arithmatex">\(\mathbf{F}\)</span>。流程：先由 <span class="arithmatex">\(\mathbf{R}^\top\mathbf{R}\)</span> 投影得到物品-物品共购矩阵并按行 TopN 稀疏化得 <span class="arithmatex">\(\bar{\mathbf{R}}^I\)</span>；对每个模态 <span class="arithmatex">\(m\)</span>，将缺失项置零、保留已知项为占位 <span class="arithmatex">\(P\)</span>，在 <span class="arithmatex">\(\bar{\mathbf{R}}^I\)</span> 上执行传播算子得到填补值，再<strong>回填原始已知特征</strong>（避免污染观测值），最后把完整特征张量送入任意现成多模态推荐器训练。整个填补在预处理阶段完成，不参与推荐模型的反向传播。</p>
+<p>输入为用户-物品交互矩阵 <span class="arithmatex">\(\mathbf{R}\)</span>与含缺失的多模态张量<span class="arithmatex">\(\mathbf{F}\)</span>。流程：先由<span class="arithmatex">\(\mathbf{R}^\top\mathbf{R}\)</span>投影得到物品-物品共购矩阵并按行 TopN 稀疏化得<span class="arithmatex">\(\bar{\mathbf{R}}^I\)</span>；对每个模态<span class="arithmatex">\(m\)</span>，将缺失项置零、保留已知项为占位<span class="arithmatex">\(P\)</span>，在<span class="arithmatex">\(\bar{\mathbf{R}}^I\)</span> 上执行传播算子得到填补值，再<strong>回填原始已知特征</strong>（避免污染观测值），最后把完整特征张量送入任意现成多模态推荐器训练。整个填补在预处理阶段完成，不参与推荐模型的反向传播。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户-物品 R + 含缺失多模态 F"] --&gt; B["投影 R^T R + TopN 稀疏化 → 物品-物品共购图"]
     B --&gt; C["缺失置零, 已知特征存为占位 P"]
@@ -4235,10 +4246,10 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>问题形式化与掩码重定义（区别于传统 ML 缺失）</strong>：传统 ML 缺失是"样本-特征"级随机缺失，可用同特征的其他样本插值；本文缺失是<strong>整条模态向量</strong>级缺失，掩码 <span class="arithmatex">\(\mathbf{B}\in\{0_C,1_C\}^{I\times M}\)</span> 以整块为单位，且只能在<strong>同一模态内</strong>跨物品插值：<span class="arithmatex">\(\hat{\mathbf{F}}_{im}=\text{IMPUTE}(\mathbf{F}_{*m}[\mathbf{B}_{*m}])\)</span>。这一区分决定了必须借助物品间关系（图）而非特征间统计量。</p>
+<p><strong>问题形式化与掩码重定义（区别于传统 ML 缺失）</strong>：传统 ML 缺失是"样本-特征"级随机缺失，可用同特征的其他样本插值；本文缺失是<strong>整条模态向量</strong>级缺失，掩码 <span class="arithmatex">\(\mathbf{B}\in\{0_C,1_C\}^{I\times M}\)</span>以整块为单位，且只能在<strong>同一模态内</strong>跨物品插值：<span class="arithmatex">\(\hat{\mathbf{F}}_{im}=\text{IMPUTE}(\mathbf{F}_{*m}[\mathbf{B}_{*m}])\)</span>。这一区分决定了必须借助物品间关系（图）而非特征间统计量。</p>
 </li>
 <li>
-<p><strong>四种图传播算子（核心增量）</strong>：在稀疏共购图 <span class="arithmatex">\(\bar{\mathbf{R}}^I\)</span> 上迭代传播，每轮将已知特征重置为 <span class="arithmatex">\(P\)</span>：</p>
+<p><strong>四种图传播算子（核心增量）</strong>：在稀疏共购图 <span class="arithmatex">\(\bar{\mathbf{R}}^I\)</span>上迭代传播，每轮将已知特征重置为<span class="arithmatex">\(P\)</span>：</p>
 </li>
 <li>NeighMean（一阶均值）：<span class="arithmatex">\(\mathbf{F}_{*m}=(\mathbf{D}^I)^{-1}\bar{\mathbf{R}}^I\mathbf{F}_{*m}\)</span>；</li>
 <li>MultiHop（对称归一化多跳）：<span class="arithmatex">\(\mathbf{F}^{(t)}_{*m}=(\mathbf{D}^I)^{-0.5}\bar{\mathbf{R}}^I(\mathbf{D}^I)^{-0.5}\mathbf{F}^{(t-1)}_{*m}\)</span>，度归一化防止高度数热门物品在插值中被过度代表，缓解流行度偏置；</li>
@@ -4504,12 +4515,18 @@
 <li><strong>图传播 &gt; 传统/自编码器填补</strong>：在 6 数据集 × 6 推荐器上，图方法几乎总是最优或次优；MGCN-Sports 上 Heat（8.59）比 GLOBALMEAN（8.29）高约 3.6%，且无需训练，而 AutoEnc 仅 5.70。</li>
 <li><strong>超参与同质性敏感</strong>：VBPR 偏好小 TopN（高同质性），MGCN 偏好大 TopN（低同质性），因后者本身在用户-物品图上工作、可从更广邻居获益；整体特征同质性仅落在 [0, 0.20]，是当前性能上限的潜在瓶颈。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比端到端缺失模态方法（生成式重建、模态 VAE、不变学习），本文完全<strong>模型无关、免训练</strong>，可插入 Elliot/MMRec/原生代码库；相比 FREEDOM/BM3 等利用物品-物品相似图的方法，本文的图由<strong>协同共购</strong>而非多模态相似度构建——后者在特征缺失时根本无法计算，这是本质区别。</li>
 <li><strong>可迁移亮点</strong>: ① "缺失置零 + 传播 + 回填已知值"的三步模板可直接迁移到序列推荐/CTR 的侧信息补全；② 用度归一化与图扩散抑制热门物品在插值中的过度代表，是低成本去偏技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① 依赖共购图质量，冷启动物品邻居稀少时插值退化，且可能传播噪声特征；② 仅做同模态插值，未探索跨模态（视觉↔文本）填补；③ 特征同质性普遍偏低（≤0.20），TopN/Hops 需逐模型调参，落地调优成本不低。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

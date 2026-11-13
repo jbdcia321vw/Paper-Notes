@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将 tokenizer 与 recommender 重构为双层优化问题，用元学习+梯度手术对齐语义ID与推荐目标，全库排序下稳定超越 SOTA。">
+        <meta name="description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将分词器与推荐器建模为双层优化，用元学习+梯度手术让推荐损失直接监督RQ-VAE码本，Full-Ranking下全面超越TIGER/LETTER/ETEGRec。">
       
       
       
@@ -108,20 +108,18 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 生成式推荐与离散语义ID, 端到端生成式, 双层优化, 梯度手术, RQ-VAE 语义ID" />
+<meta name="keywords" content="SIGIR 2026, 生成式推荐与离散语义ID, 生成式端到端, 双层优化, 梯度手术" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
 
 <meta property="article:tag" content="生成式推荐与离散语义ID" />
 
-<meta property="article:tag" content="端到端生成式" />
+<meta property="article:tag" content="生成式端到端" />
 
 <meta property="article:tag" content="双层优化" />
 
 <meta property="article:tag" content="梯度手术" />
-
-<meta property="article:tag" content="RQ-VAE 语义ID" />
 
 
 
@@ -131,10 +129,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/bi_level_optimization_for_generative_recommendation_bridging_tokenization_a/" />
 <meta property="og:title" content="[Paper Note] Bi-Level Optimization for Generative Recommendation: Bridging Tokenization and Generation" />
-<meta property="og:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将 tokenizer 与 recommender 重构为双层优化问题，用元学习+梯度手术对齐语义ID与推荐目标，全库排序下稳定超越 SOTA。" />
+<meta property="og:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将分词器与推荐器建模为双层优化，用元学习+梯度手术让推荐损失直接监督RQ-VAE码本，Full-Ranking下全面超越TIGER/LETTER/ETEGRec。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] Bi-Level Optimization for Generative Recommendation: Bridging Tokenization and Generation" />
-<meta name="twitter:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将 tokenizer 与 recommender 重构为双层优化问题，用元学习+梯度手术对齐语义ID与推荐目标，全库排序下稳定超越 SOTA。" />
+<meta name="twitter:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将分词器与推荐器建模为双层优化，用元学习+梯度手术让推荐损失直接监督RQ-VAE码本，Full-Ranking下全面超越TIGER/LETTER/ETEGRec。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +158,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] Bi-Level Optimization for Generative Recommendation: Bridging Tokenization and Generation",
   "headline": "[Paper Note] Bi-Level Optimization for Generative Recommendation: Bridging Tokenization and Generation",
-  "description": "[SIGIR 2026][\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID] \u5c06 tokenizer \u4e0e recommender \u91cd\u6784\u4e3a\u53cc\u5c42\u4f18\u5316\u95ee\u9898\uff0c\u7528\u5143\u5b66\u4e60+\u68af\u5ea6\u624b\u672f\u5bf9\u9f50\u8bed\u4e49ID\u4e0e\u63a8\u8350\u76ee\u6807\uff0c\u5168\u5e93\u6392\u5e8f\u4e0b\u7a33\u5b9a\u8d85\u8d8a SOTA\u3002",
+  "description": "[SIGIR 2026][\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID] \u5c06\u5206\u8bcd\u5668\u4e0e\u63a8\u8350\u5668\u5efa\u6a21\u4e3a\u53cc\u5c42\u4f18\u5316\uff0c\u7528\u5143\u5b66\u4e60+\u68af\u5ea6\u624b\u672f\u8ba9\u63a8\u8350\u635f\u5931\u76f4\u63a5\u76d1\u7763RQ-VAE\u7801\u672c\uff0cFull-Ranking\u4e0b\u5168\u9762\u8d85\u8d8aTIGER/LETTER/ETEGRec\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/bi_level_optimization_for_generative_recommendation_bridging_tokenization_a/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/bi_level_optimization_for_generative_recommendation_bridging_tokenization_a/",
   "inLanguage": "zh-CN",
@@ -168,18 +166,17 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID, \u7aef\u5230\u7aef\u751f\u6210\u5f0f, \u53cc\u5c42\u4f18\u5316, \u68af\u5ea6\u624b\u672f, RQ-VAE \u8bed\u4e49ID",
+  "keywords": "SIGIR 2026, \u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID, \u751f\u6210\u5f0f\u7aef\u5230\u7aef, \u53cc\u5c42\u4f18\u5316, \u68af\u5ea6\u624b\u672f",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID" },
-    { "@type": "Thing", "name": "\u7aef\u5230\u7aef\u751f\u6210\u5f0f" },
+    { "@type": "Thing", "name": "\u751f\u6210\u5f0f\u7aef\u5230\u7aef" },
     { "@type": "Thing", "name": "\u53cc\u5c42\u4f18\u5316" },
-    { "@type": "Thing", "name": "\u68af\u5ea6\u624b\u672f" },
-    { "@type": "Thing", "name": "RQ-VAE \u8bed\u4e49ID" }
+    { "@type": "Thing", "name": "\u68af\u5ea6\u624b\u672f" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -538,7 +535,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#bi-level-optimization-for-generative-recommendation-bridging-tokenization-and-generation-id" class="md-skip">
+        <a href="#bi-level-optimization-for-generative-recommendation-bridging-tokenization-and-generation" class="md-skip">
           跳转至
         </a>
       
@@ -3997,10 +3994,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4008,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4016,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4039,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4069,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4114,10 +4089,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-ablation-study" class="md-nav__link">
+  <a href="#2-ablation-study-beauty" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study, Beauty)
       
     </span>
   </a>
@@ -4125,10 +4100,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4116,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4156,17 +4131,6 @@
     <span class="md-ellipsis">
       
         Rating (四维评分)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        论文图表
       
     </span>
   </a>
@@ -4192,9 +4156,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][生成式推荐与离散语义ID] 将 tokenizer 与 recommender 重构为双层优化问题，用元学习+梯度手术对齐语义ID与推荐目标，全库排序下稳定超越 SOTA。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][生成式推荐与离散语义ID] 将分词器与推荐器建模为双层优化，用元学习+梯度手术让推荐损失直接监督RQ-VAE码本，Full-Ranking下全面超越TIGER/LETTER/ETEGRec。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 生成式推荐与离散语义ID · 端到端生成式 · 双层优化 · 梯度手术 · RQ-VAE 语义ID</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 生成式推荐与离散语义ID · 生成式端到端 · 双层优化 · 梯度手术</p>
   
 </aside>
   
@@ -4222,7 +4186,7 @@
       
       
       
-        <span class="md-tag">端到端生成式</span>
+        <span class="md-tag">生成式端到端</span>
       
     
       
@@ -4239,13 +4203,6 @@
         <span class="md-tag">梯度手术</span>
       
     
-      
-      
-      
-      
-        <span class="md-tag">RQ-VAE 语义ID</span>
-      
-    
   </nav>
 
 
@@ -4253,215 +4210,264 @@
   
 
 
-<h1 id="bi-level-optimization-for-generative-recommendation-bridging-tokenization-and-generation-id">Bi-Level Optimization for Generative Recommendation: Bridging Tokenization and Generation (面向生成式推荐的双层优化：弥合语义ID分词与自回归生成)</h1>
+<h1 id="bi-level-optimization-for-generative-recommendation-bridging-tokenization-and-generation">Bi-Level Optimization for Generative Recommendation: Bridging Tokenization and Generation (面向生成式推荐的双层优化：弥合分词与生成)</h1>
 <ul>
-<li><strong>会议/期刊</strong>: SIGIR 2026 (Accepted)</li>
-<li><strong>推荐链路定位</strong>: 端到端生成式 (End-to-End Generative) — 以自回归方式直接生成下一物品的语义ID，替代传统召回-排序级联</li>
-<li><strong>研究方向</strong>: 生成式推荐与离散语义ID (主) / 序列与会话推荐 (次)</li>
+<li><strong>会议/期刊</strong>: SIGIR 2026</li>
+<li><strong>作者与机构</strong>: Yimeng Bai, Chang Liu, Yang Zhang, Fuli Feng 等（USTC / 北航 / NUS / Upwork）</li>
+<li><strong>推荐链路定位</strong>: 端到端生成式（语义 ID 分词 + 自回归生成）</li>
+<li><strong>研究方向</strong>: 生成式推荐与离散语义 ID / 大语言模型推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2510.21242v2">https://arxiv.org/abs/2510.21242v2</a></li>
 <li><strong>开源代码</strong>: <a href="https://github.com/Ten-Mao/BLOGER">https://github.com/Ten-Mao/BLOGER</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对生成式推荐中 tokenizer（RQ-VAE 语义ID）与 recommender（T5 自回归）分离训练导致的"语义ID与推荐目标错位"痛点，本文将二者重构为<strong>双层优化</strong>问题：内层用 tokenized 序列训练推荐器，外层用"分词损失 + 推荐损失"联合优化 tokenizer，并以 <strong>MAML 元学习 + 梯度手术</strong>高效求解。在 Beauty/Sports/Toys 三个 Amazon 数据集、全库排序协议下，Recall@10 相对最强生成式基线提升约 5%–10%，且计算开销无显著增加。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>生成式推荐中，RQ-VAE 分词器与自回归推荐器长期被"顺序训练"或"交替训练"割裂优化，分词器完全看不到推荐目标，导致语义 ID 与协同信号错位（如"奶粉"与"尿布"被分到无关码字）。本文提出 BLOGER，把二者重构为<strong>双层优化</strong>：内层用固定分词器训练推荐器，外层用"分词损失 + 推荐损失"联合优化分词器，并以 MAML 元梯度近似求解、用梯度手术消解两目标冲突。在 Amazon 三数据集、Leave-One-Out + Full-Ranking 协议下，Beauty R@5 达 0.0444（较 LETTER +4.7%），且训练开销仅比 TIGER 高约 12%。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 生成式推荐（TIGER、LC-Rec、EAGER 等）将下一物品预测重构为"语义ID序列的自回归生成"，核心由两部分组成：(1) <strong>item tokenization</strong>——用层次聚类、残差量化 (RQ-VAE)、并行量化或文本/协同信号把物品映射为定长 token 序列；(2) <strong>autoregressive generation</strong>——用 Transformer (T5) 基于 tokenized 交互历史生成下一物品 ID。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>顺序优化 (Sequential)</strong>：先独立训练 tokenizer 产出静态 ID，再冻结训练推荐器（TIGER、LC-Rec 等）。tokenizer 完全不受推荐目标指导，可能把高频共购的"婴儿奶粉"与"尿布"因模态差异分配到不相关 ID，割裂了用户行为相关性。</li>
-<li><strong>交替优化 (Alternating)</strong>：tokenizer 与推荐器迭代更新（如 LETTER），但仍是两个解耦目标的轮转，未在优化层面显式建模二者的相互依赖。</li>
-<li>上述解耦范式下，语义ID的"信息性"与"推荐对齐性"难以兼得，直接损害依赖 ID 的生成器预测能力。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: tokenizer 的输出是<strong>离散不可微</strong>的 argmax token，推荐损失无法直接反传至 tokenizer；同时分词目标（重构语义嵌入）与推荐目标（预测下一物品）存在<strong>梯度冲突</strong>，简单拼接损失或加深网络无法解决。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: tokenizer 的优劣本质上<strong>反映在推荐器性能上</strong>——好的 token 表征直接带来更准的目标预测；反之推荐器又依赖高质量 ID 建模偏好。因此作者将生成式推荐形式化为<strong>双层优化</strong>（图 1 对比了顺序/交替/双层三种范式），并用<strong>混合表征</strong>（软表征 + stop-gradient 硬表征）打通可微通路，用<strong>元学习</strong>桥接内外层，用<strong>梯度手术</strong>剥离冲突梯度分量。</li>
+<li><strong>主流范式</strong>: TIGER/LETTER 采用<strong>顺序优化</strong>——先独立训练 RQ-VAE 得到静态语义 ID，再冻结分词器训练 T5 推荐器；ETEGRec 采用<strong>交替优化</strong>，靠中间层辅助对齐损失间接耦合两者。</li>
+<li><strong>前人局限</strong>: 其一，分词器训练时<strong>完全无推荐目标梯度</strong>，码本分配只服从重构/文本语义，与协同共现结构脱节；其二，ETEGRec 的辅助损失是手工设计的代理目标，需额外 adapter 层，且并未真正对齐下游推荐损失。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 分词器的优劣<strong>本质上由推荐器性能反映</strong>——好的 ID 让推荐更准，好的推荐器又需要好 ID 建模偏好，二者是天然的双层依赖而非并列任务。</li>
+<li><strong>本文切入点</strong>: 把生成式推荐重写为 bi-level optimization，让推荐损失通过<strong>元梯度</strong>直接回传到分词器参数 <span class="arithmatex">\(\phi\)</span>。</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2510.21242v2/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>物品全集 <span class="arithmatex">\(\mathcal{I}\)</span>，用户历史交互序列 <span class="arithmatex">\(S=[i_1,\dots,i_T]\)</span>，目标预测 <span class="arithmatex">\(i_{T+1}\in\mathcal{I}\)</span>。</li>
-<li>Tokenizer <span class="arithmatex">\(\mathcal{T}_\phi\)</span>（RQ-VAE），Recommender <span class="arithmatex">\(\mathcal{R}_\theta\)</span>（T5 encoder-decoder）。</li>
-<li>物品 <span class="arithmatex">\(i\)</span> 的语义嵌入 <span class="arithmatex">\(\bm{z}\)</span>（预训练文本嵌入或协同嵌入）→ 定长 <span class="arithmatex">\(L\)</span> 个层次 token：<span class="arithmatex">\([c^1,\dots,c^L]=\mathcal{T}_\phi(\bm{z})\)</span>。</li>
-<li>交互序列映射为 token 序列 <span class="arithmatex">\(X=[c^1_1,c^1_2,\dots,c^T_{L-1},c^T_L]\)</span>，目标 <span class="arithmatex">\(Y=[c^{T+1}_1,\dots,c^{T+1}_L]\)</span>。</li>
-<li>码本 <span class="arithmatex">\(\mathcal{C}_l=\{\bm{e}^k_l\}_{k=1}^K\)</span>，码本大小 <span class="arithmatex">\(K\)</span>、层数 <span class="arithmatex">\(L\)</span>、模型维度 <span class="arithmatex">\(d\)</span>、序列长度 <span class="arithmatex">\(T\)</span>。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：物品语义嵌入 <span class="arithmatex">\(\bm{z}\)</span> → RQ-VAE 编码器 MLP → 残差量化得 <span class="arithmatex">\(L\)</span> 个 token → 推荐器查表得硬/软混合表征 → T5 编码历史、解码目标 → 词表内积打分/自回归生成。训练侧：内层更新 <span class="arithmatex">\(\theta\)</span>，外层每 <span class="arithmatex">\(M\)</span> 步用元梯度 + 梯度手术更新 <span class="arithmatex">\(\phi\)</span>。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>输入为用户交互序列 <span class="arithmatex">\(S\)</span>，经 RQ-VAE 分词器<span class="arithmatex">\(\mathcal{T}_\phi\)</span>映射为 4 层残差量化 token 序列<span class="arithmatex">\(X\)</span>；推荐器<span class="arithmatex">\(\mathcal{R}_\theta\)</span>（T5 encoder-decoder）以 token 序列自回归生成目标物品 ID<span class="arithmatex">\(Y\)</span>。训练分两级：内层按式 (14) 用推荐损失更新<span class="arithmatex">\(\theta\)</span>；每<span class="arithmatex">\(M\)</span>步做一次外层更新——先"虚拟"走一步得到试探推荐器<span class="arithmatex">\(\mathcal{R}_{\theta'}\)</span>，再在<span class="arithmatex">\(\theta'\)</span>上计算推荐损失与分词损失的联合梯度更新<span class="arithmatex">\(\phi\)</span>。关键桥梁是<strong>混合表示</strong>：token 嵌入取"硬查表 + 软码本期望"的 stop-gradient 组合，使推荐损失对<span class="arithmatex">\(\phi\)</span> 可微。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 物品语义嵌入 z / 用户历史序列 S"] --&gt; B["Tokenizer T_φ: RQ-VAE 残差量化 (L 层码本)"]
-    B --&gt; C["混合表征 o = s + sg[h - s] (软表征可微)"]
-    C --&gt; D["Recommender R_θ: T5 Encoder-Decoder 自回归生成"]
-    D --&gt; E["词表内积打分 / 生成目标 token 序列 Y"]
-    D --&gt; F["内层: 更新 θ (推荐损失)"]
-    F --&gt; G["外层: 元梯度 + 梯度手术 更新 φ (推荐损失+分词损失)"]
-    G --&gt; B</code></pre>
+    A["交互序列 S"] --&gt; B["RQ-VAE 分词器 T_φ（4层码本）"]
+    B --&gt; C["混合表示 o = s + sg[h - s]"]
+    C --&gt; D["T5 推荐器 R_θ 自回归生成"]
+    D --&gt; E["推荐损失 L_rec"]
+    E --&gt; F["内层更新 θ"]
+    E --&gt; G["试探更新 θ' → 元梯度"]
+    G --&gt; H["梯度手术投影 + 分词损失"]
+    H --&gt; I["外层更新 φ"]</code></pre>
 <figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2510.21242v2/figure_2.png" /><figcaption>图 2</figcaption>
+  <img alt="图2：所提出的BLOGER框架概览，该框架包含编码器-解码器模型架构和定制的学习方案。具体而言，我们基于码本上的分配概率构建混合表示，以确保推荐损失对分词器的可微性。此外，我们采用元学习策略实现高效优化，并应用梯度手术从推荐损失的梯度中提取有益成分。" src="../../../../../assets/papers/2510.21242v2/figure_2.png" /><figcaption>图2：所提出的BLOGER框架概览，该框架包含编码器-解码器模型架构和定制的学习方案。具体而言，我们基于码本上的分配概率构建混合表示，以确保推荐损失对分词器的可微性。此外，我们采用元学习策略实现高效优化，并应用梯度手术从推荐损失的梯度中提取有益成分。</figcaption>
 </figure>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 双层优化重构 (Bi-Level Reformulation)</strong>。将生成式推荐写为嵌套优化：</p>
-<div class="arithmatex">\[\min_{\phi}\ \mathcal{L}_{rec}(\mathcal{T}_\phi,\mathcal{R}_{\theta^*})+\lambda\,\mathcal{L}_{token}(\mathcal{T}_\phi)\quad \text{s.t.}\ \theta^*=\arg\min_\theta \mathcal{L}_{rec}(\mathcal{T}_\phi,\mathcal{R}_\theta)\]</div>
-<p>内层 (2b) 在固定 tokenizer 下训练推荐器；外层 (2a) 寻找使"训练后推荐器"损失最小的 tokenizer，同时兼顾分词损失。<span class="arithmatex">\(\lambda\)</span> 控制分词损失权重。物理直觉：tokenizer 的效用应由下游推荐性能来"背书"，而非仅由重构质量决定。</p>
-<p><strong>(2) RQ-VAE Tokenizer 与分词损失</strong>。编码 <span class="arithmatex">\(\bm{r}=\text{Encoder}_\mathcal{T}(\bm{z})\)</span>，逐层残差量化：</p>
-<div class="arithmatex">\[P(k|\bm{v}_l)=\frac{\exp(-\|\bm{v}_l-\bm{e}^k_l\|^2)}{\sum_{j=1}^K\exp(-\|\bm{v}_l-\bm{e}^j_l\|^2)},\quad c_l=\arg\max_k P(k|\bm{v}_l),\quad \bm{v}_l=\bm{v}_{l-1}-\bm{e}^{c_{l-1}}_{l-1}\]</div>
-<p>重构 <span class="arithmatex">\(\tilde{\bm{r}}=\sum_l \bm{e}^{c_l}_l\)</span>，<span class="arithmatex">\(\tilde{\bm{z}}=\text{Decoder}_\mathcal{T}(\tilde{\bm{r}})\)</span>。分词损失为重构损失 + 两层量化损失（stop-gradient，<span class="arithmatex">\(\beta=0.25\)</span>）：</p>
-<div class="arithmatex">\[\mathcal{L}_{token}=\sum_i\Big(\|\tilde{\bm{z}}-\bm{z}\|^2+\sum_{l=1}^L\|\text{sg}[\bm{v}_l]-\bm{e}^{c_l}_l\|^2+\beta\|\bm{v}_l-\text{sg}[\bm{e}^{c_l}_l]\|^2\Big)\]</div>
-<p><strong>(3) 混合表征打通可微通路</strong>。离散 argmax 不可微，故对 token <span class="arithmatex">\(c^t_l\)</span> 同时取硬表征 <span class="arithmatex">\(\bm{h}^t_l\)</span>（查词表 <span class="arithmatex">\(\bm{E}_V\)</span>）与软表征 <span class="arithmatex">\(\bm{s}^t_l\)</span>（用码本分配概率 <span class="arithmatex">\(P(k|\bm{v}^t_l)\)</span> 零填充至词表大小后对 <span class="arithmatex">\(\bm{E}_V\)</span> 加权平均），构造：</p>
-<div class="arithmatex">\[\bm{o}^t_l=\bm{s}^t_l+\text{sg}[\bm{h}^t_l-\bm{s}^t_l]\]</div>
-<p>前向数值严格等于硬表征，反向梯度仅经软表征流动——这是外层推荐损失能反传到 tokenizer 的关键。</p>
-<p><strong>(4) 元学习求解 + 梯度手术</strong>。内层直接更新 <span class="arithmatex">\(\theta\leftarrow\theta-\eta_R\nabla_\theta\mathcal{L}_{rec}\)</span>；外层先做<strong>试探性更新</strong> <span class="arithmatex">\(\theta'=\theta-\eta_R\nabla_\theta\mathcal{L}_{rec}\)</span>（meta training），再在 <span class="arithmatex">\(\theta'\)</span> 上计算推荐损失并联合分词损失更新 <span class="arithmatex">\(\phi\)</span>（meta testing）：</p>
-<div class="arithmatex">\[\phi\leftarrow\phi-\eta_T\big(\nabla_\phi\mathcal{L}_{rec}(\mathcal{T}_\phi,\mathcal{R}_{\theta'})+\lambda\nabla_\phi\mathcal{L}_{token}(\mathcal{T}_\phi)\big)\]</div>
-<p>元梯度沿链 <span class="arithmatex">\(\nabla_\phi\mathcal{L}_{rec}\to\theta'\to\nabla_\theta\mathcal{L}_{rec}\to\phi\)</span> 反传。作者观察到外层两梯度余弦相似度常为负（冲突模块占比高达 <strong>90%</strong>），故引入<strong>梯度手术</strong>：当 <span class="arithmatex">\(\bm{G}_{rec}\cdot\bm{G}_{token}&lt;0\)</span> 时，将推荐梯度投影到分词梯度的法平面：</p>
-<div class="arithmatex">\[\bm{G}^{proj}_{rec}=\bm{G}_{rec}-\frac{\bm{G}_{rec}\cdot\bm{G}_{token}}{\|\bm{G}_{token}\|^2}\bm{G}_{token}\]</div>
-<p>投影后内积为 0，仅剔除冲突分量、保留有益分量；且该操作<strong>按命名参数组分别执行</strong>，实现更细粒度冲突缓解。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 内层 <span class="arithmatex">\(\mathcal{L}_{rec}=-\sum_{l=1}^L\log P(Y_l|X,Y_{&lt;l})\)</span>（token 级 NLL，自回归）；外层 <span class="arithmatex">\(\mathcal{L}_{outer}=\mathcal{L}_{rec}(\mathcal{T}_\phi,\mathcal{R}_{\theta'})+\lambda\mathcal{L}_{token}(\mathcal{T}_\phi)\)</span>，<span class="arithmatex">\(\lambda\)</span> 为分词损失权重，<span class="arithmatex">\(\beta=0.25\)</span> 为量化损失权重。</li>
-<li><strong>训练负采样策略</strong>: <strong>免负采样</strong>——生成式范式在词表空间做 softmax 自回归，不依赖显式负例采样（原文未报告 BPR/InfoNCE 类负采样）。</li>
-<li><strong>时间与空间复杂度</strong>: 单物品 tokenization 编解码层 <span class="arithmatex">\(\mathcal{O}(d^2)\)</span>，混合表征（码本查找+软表征）<span class="arithmatex">\(\mathcal{O}(LKd)\)</span>，分词损失 <span class="arithmatex">\(\mathcal{O}(d+Ld)\)</span>。外层 <span class="arithmatex">\(\phi\)</span> 更新<strong>每 <span class="arithmatex">\(M\)</span> 步执行一次</strong>（延迟更新使推荐器先充分优化、提供稳定梯度），故整体无显著额外开销（原文声称"no significant additional computational overhead"）。推理为标准自回归/Beam Search 生成，无需 ANN 检索。</li>
-</ul>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>双层优化重构（Bi-Level Reformulation）</strong>：痛点是把分词当预处理、推荐当下游，二者目标不一致。本文写成 <span class="arithmatex">\(\min_\phi \mathcal{L}_{rec}(\mathcal{T}_\phi,\mathcal{R}_{\theta^*})+\lambda\mathcal{L}_{token}(\mathcal{T}_\phi)\)</span>，s.t.<span class="arithmatex">\(\theta^*=\arg\min_\theta \mathcal{L}_{rec}(\mathcal{T}_\phi,\mathcal{R}_\theta)\)</span>。外层目标显式含<span class="arithmatex">\(\theta^*\)</span>，使分词器必须"为推荐而分词"，物理直觉是让 ID 空间沿协同流形而非纯文本流形组织。</p>
+</li>
+<li>
+<p><strong>混合表示实现可微（Mixed Representation）</strong>：离散 argmax 使 <span class="arithmatex">\(\nabla_\phi \mathcal{L}_{rec}=0\)</span>。本文用码本分配概率<span class="arithmatex">\(P(k|\boldsymbol{v}_l)\)</span>对词表嵌入加权得软表示<span class="arithmatex">\(\boldsymbol{s}_{tl}\)</span>，再与硬嵌入<span class="arithmatex">\(\boldsymbol{h}_{tl}\)</span>组合：<span class="arithmatex">\(\boldsymbol{o}_{tl}=\boldsymbol{s}_{tl}+\mathrm{sg}[\boldsymbol{h}_{tl}-\boldsymbol{s}_{tl}]\)</span>。前向数值等于硬嵌入（保证推理一致），反向梯度只走软分支，从而把推荐信号灌入码本。</p>
+</li>
+<li>
+<p><strong>元学习 + 梯度手术（Meta-Gradient &amp; Gradient Surgery）</strong>：外层需 <span class="arithmatex">\(\theta^*\)</span>但全训练不可行，故用一步试探<span class="arithmatex">\(\theta'=\theta-\eta_R\nabla_\theta\mathcal{L}_{rec}\)</span>近似（式 15），再以<span class="arithmatex">\(\nabla_\phi\mathcal{L}_{rec}(\mathcal{T}_\phi,\mathcal{R}_{\theta'})\)</span>回传。实测两梯度余弦相似度常为负（冲突模块占比高达 90%），故当<span class="arithmatex">\(G_{rec}\cdot G_{token}&lt;0\)</span>时投影：<span class="arithmatex">\(G^{proj}_{rec}=G_{rec}-\frac{G_{rec}\cdot G_{token}}{\|G_{token}\|^2}G_{token}\)</span>，按参数组分别执行，保留推荐损失中对分词有益的分量、剔除冲突分量。</p>
+</li>
+<li>
+<p><strong>训练目标与开销</strong>：总损失即式 (16) 的 <span class="arithmatex">\(\nabla_\phi\mathcal{L}_{rec}+\lambda\nabla_\phi\mathcal{L}_{token}\)</span>，<span class="arithmatex">\(\lambda=0.5\)</span>；分词器每 epoch 更新<span class="arithmatex">\(M'=1\sim4\)</span>次。无负采样（seq2seq 全词表 softmax），推理用 Trie 约束解码 + beam=20。复杂度<span class="arithmatex">\(O(TLKd+T^2d+Td^2)\)</span>，与 TIGER 同阶。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 采用 Amazon 三个子集（Beauty / Sports / Toys），遵循 TIGER 等先前工作的预处理与划分。原文表 2 给出统计量（下表数值以原文表 2 为准，此处按原文可提取项列出）：</li>
+<li><strong>数据集与预处理</strong>: Amazon Review 三个子集，均做 <code>5-core</code> 过滤，序列截断/填充至长度 20。</li>
 </ul>
-<p><figure class="paper-figure" markdown="span">
-  <img alt="表 2" src="../../../../../assets/papers/2510.21242v2/table_2.png" /><figcaption>表 2</figcaption>
-</figure></p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
+<th style="text-align: left;">数据集</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Interactions</th>
+<th style="text-align: center;">稀疏度</th>
+<th style="text-align: center;">平均序列长</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">Beauty</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: left;">文本语义嵌入 (RQ-VAE 输入)</td>
+<td style="text-align: center;">22,363</td>
+<td style="text-align: center;">12,101</td>
+<td style="text-align: center;">198,502</td>
+<td style="text-align: center;">99.93%</td>
+<td style="text-align: center;">8.87</td>
 </tr>
 <tr>
-<td style="text-align: left;">Sports</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: left;">文本语义嵌入</td>
+<td style="text-align: left;">Instruments</td>
+<td style="text-align: center;">24,772</td>
+<td style="text-align: center;">9,922</td>
+<td style="text-align: center;">206,153</td>
+<td style="text-align: center;">99.92%</td>
+<td style="text-align: center;">8.32</td>
 </tr>
 <tr>
-<td style="text-align: left;">Toys</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: left;">文本语义嵌入</td>
+<td style="text-align: left;">Arts</td>
+<td style="text-align: center;">45,141</td>
+<td style="text-align: center;">20,956</td>
+<td style="text-align: center;">390,832</td>
+<td style="text-align: center;">99.96%</td>
+<td style="text-align: center;">8.66</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>注：本次提供的 PDF 抽取文本在复杂度分析处截断，表 2 的具体数值未完整呈现，故上表仅标注来源，未臆造数字；"AvgLen" 为物品序列平均长度。</p>
-</blockquote>
 <ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 沿用生成式推荐主流设定（与 TIGER 一致），采用<strong>留一法 (Leave-One-Out)</strong> 式序列划分（最后一项为测试、倒数第二项为验证），属序列推荐标准协议；需注意 LOO 在时序上天然防穿越，但存在"用户级而非全局时间戳"切分的常见局限。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: <strong>Full-Ranking（全库未交互物品排序）</strong>，与 TIGER/LC-Rec 等生成式基线一致，避免采样负例带来的评估偏差。</li>
-<li><strong>评价指标与显著性检验</strong>: Recall@K 与 NDCG@K（缩写 R@K / N@K，K 取 5/10）。Embedding 维度、码本大小 <span class="arithmatex">\(K\)</span>、层数 <span class="arithmatex">\(L\)</span> 按原文超参设置对齐；原文未明确报告多随机种子方差与配对显著性检验（<strong>原文未报告</strong>）。</li>
+<li><strong>数据划分与防穿越</strong>: <code>Leave-One-Out</code>——每用户最后一条为测试、倒数第二条为验证、其余训练。</li>
+<li><strong>排名评测协议</strong>: 无偏 <code>Full-Ranking</code>（全物品集排序），指标 Recall@{5,10}、NDCG@{5,10}；生成时用 Trie 约束解码，beam size = 20。</li>
+<li><strong>对比基线与超参</strong>: 传统方法 MF/LightGCN/Caser/GRU4Rec/HGN/SASRec；生成式 P5/TIGER/OneRec/LETTER/ETEGRec。统一推荐器配置：4 层 encoder+decoder、<span class="arithmatex">\(d=128\)</span>、6 头×64 维、dropout 0.1；RQ-VAE 4 层码本、每层 256 码字、码字维度 32，k-means 初始化；<span class="arithmatex">\(\lambda\)</span>搜索于<span class="arithmatex">\(\{1,5e\text{-}1,\dots,1e\text{-}4\}\)</span>。</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>原文表 3 报告了 BLOGER 与各基线（传统序列模型、TIGER/LC-Rec/EAGER 等生成式方法）在三个数据集上的 Recall@K / NDCG@K，最优与次优分别加粗/下划线：</p>
-<figure class="paper-figure">
-  <img alt="表 3" src="../../../../../assets/papers/2510.21242v2/table_3.png" /><figcaption>表 3</figcaption>
-</figure>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
 <th style="text-align: left;">指标</th>
-<th style="text-align: center;">传统/协同过滤基线</th>
-<th style="text-align: center;">序列/图/生成式最强基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;">SASRec</th>
+<th style="text-align: center;">TIGER</th>
+<th style="text-align: center;">LETTER</th>
+<th style="text-align: center;">ETEGRec</th>
+<th style="text-align: center;"><strong>BLOGER</strong></th>
+<th style="text-align: center;">Improv.(vs 最优基线)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">Beauty</td>
-<td style="text-align: left;">R@5 / R@10 / N@10</td>
-<td style="text-align: center;">原文表 3</td>
-<td style="text-align: center;">原文表 3（最强生成式基线）</td>
-<td style="text-align: center;"><strong>原文表 3 加粗值</strong></td>
-<td style="text-align: center;">原文表 3 报告（约 +5%–10% 量级）</td>
+<td style="text-align: left;">R@5</td>
+<td style="text-align: center;">0.0372</td>
+<td style="text-align: center;">0.0384</td>
+<td style="text-align: center;">0.0424</td>
+<td style="text-align: center;">0.0413</td>
+<td style="text-align: center;"><strong>0.0444</strong></td>
+<td style="text-align: center;">+4.7%</td>
 </tr>
 <tr>
-<td style="text-align: left;">Sports</td>
-<td style="text-align: left;">R@5 / R@10 / N@10</td>
-<td style="text-align: center;">原文表 3</td>
-<td style="text-align: center;">原文表 3</td>
-<td style="text-align: center;"><strong>原文表 3 加粗值</strong></td>
-<td style="text-align: center;">原文表 3 报告</td>
+<td style="text-align: left;">Beauty</td>
+<td style="text-align: left;">N@5</td>
+<td style="text-align: center;">0.0237</td>
+<td style="text-align: center;">0.0256</td>
+<td style="text-align: center;">0.0264</td>
+<td style="text-align: center;">0.0271</td>
+<td style="text-align: center;"><strong>0.0293</strong></td>
+<td style="text-align: center;">+8.1%</td>
 </tr>
 <tr>
-<td style="text-align: left;">Toys</td>
-<td style="text-align: left;">R@5 / R@10 / N@10</td>
-<td style="text-align: center;">原文表 3</td>
-<td style="text-align: center;">原文表 3</td>
-<td style="text-align: center;"><strong>原文表 3 加粗值</strong></td>
-<td style="text-align: center;">原文表 3 报告</td>
+<td style="text-align: left;">Beauty</td>
+<td style="text-align: left;">R@10</td>
+<td style="text-align: center;">0.0602</td>
+<td style="text-align: center;">0.0609</td>
+<td style="text-align: center;">0.0612</td>
+<td style="text-align: center;">0.0632</td>
+<td style="text-align: center;"><strong>0.0654</strong></td>
+<td style="text-align: center;">+3.5%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Instruments</td>
+<td style="text-align: left;">R@5</td>
+<td style="text-align: center;">0.0709</td>
+<td style="text-align: center;">0.0865</td>
+<td style="text-align: center;">0.0872</td>
+<td style="text-align: center;">0.0878</td>
+<td style="text-align: center;"><strong>0.0882</strong></td>
+<td style="text-align: center;">+0.5%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Instruments</td>
+<td style="text-align: left;">N@10</td>
+<td style="text-align: center;">0.0633</td>
+<td style="text-align: center;">0.0799</td>
+<td style="text-align: center;">0.0814</td>
+<td style="text-align: center;">0.0810</td>
+<td style="text-align: center;"><strong>0.0822</strong></td>
+<td style="text-align: center;">+1.0%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Arts</td>
+<td style="text-align: left;">R@5</td>
+<td style="text-align: center;">0.0758</td>
+<td style="text-align: center;">0.0807</td>
+<td style="text-align: center;">0.0841</td>
+<td style="text-align: center;">0.0860</td>
+<td style="text-align: center;"><strong>0.0879</strong></td>
+<td style="text-align: center;">+2.2%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Arts</td>
+<td style="text-align: left;">N@10</td>
+<td style="text-align: center;">0.0693</td>
+<td style="text-align: center;">0.0707</td>
+<td style="text-align: center;">0.0752</td>
+<td style="text-align: center;">0.0759</td>
+<td style="text-align: center;"><strong>0.0777</strong></td>
+<td style="text-align: center;">+2.4%</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>说明：受抽取文本截断影响，表 3 的具体数值未能完整呈现，故未逐格填写以避免臆造；结论为 BLOGER 在三个数据集上<strong>一致优于</strong>所有基线（含最强生成式方法），与摘要"consistently outperforms state-of-the-art"一致。</p>
-</blockquote>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文表 4 在 Beauty 上做消融，验证双层优化、元学习策略与梯度手术各组件的贡献：</p>
-<figure class="paper-figure">
-  <img alt="表 4" src="../../../../../assets/papers/2510.21242v2/table_4.png" /><figcaption>表 4</figcaption>
-</figure>
+<h3 id="2-ablation-study-beauty">2. 消融实验 (Ablation Study, Beauty)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">变体</th>
+<th style="text-align: center;">R@5</th>
+<th style="text-align: center;">N@5</th>
+<th style="text-align: center;">R@10</th>
+<th style="text-align: center;">N@10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>BLOGER</strong></td>
+<td style="text-align: center;">0.0444</td>
+<td style="text-align: center;">0.0293</td>
+<td style="text-align: center;">0.0654</td>
+<td style="text-align: center;">0.0361</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/ LETTER（换更强分词器）</td>
+<td style="text-align: center;"><strong>0.0489</strong></td>
+<td style="text-align: center;"><strong>0.0322</strong></td>
+<td style="text-align: center;"><strong>0.0732</strong></td>
+<td style="text-align: center;"><strong>0.0400</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o GS（去梯度手术）</td>
+<td style="text-align: center;">0.0329</td>
+<td style="text-align: center;">0.0209</td>
+<td style="text-align: center;">0.0530</td>
+<td style="text-align: center;">0.0274</td>
+</tr>
+<tr>
+<td style="text-align: left;">Joint（联合优化替代双层）</td>
+<td style="text-align: center;">0.0418</td>
+<td style="text-align: center;">0.0272</td>
+<td style="text-align: center;">0.0637</td>
+<td style="text-align: center;">0.0342</td>
+</tr>
+<tr>
+<td style="text-align: left;">Joint w/ GS</td>
+<td style="text-align: center;">0.0412</td>
+<td style="text-align: center;">0.0273</td>
+<td style="text-align: center;">0.0631</td>
+<td style="text-align: center;">0.0343</td>
+</tr>
+<tr>
+<td style="text-align: left;">Fixed（冻结分词器≈TIGER）</td>
+<td style="text-align: center;">0.0384</td>
+<td style="text-align: center;">0.0256</td>
+<td style="text-align: center;">0.0609</td>
+<td style="text-align: center;">0.0329</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>梯度手术是命门</strong>：去掉 GS 后 R@5 从 0.0444 暴跌至 0.0329（-25.9%），甚至低于冻结分词器的 0.0384，说明未消解冲突的推荐梯度对分词器是"有害监督"而非弱监督。</li>
+<li><strong>双层结构优于联合优化</strong>：Joint 仅 0.0418，加 GS 也无改善（0.0412），因缺少元梯度信号协调两级；双层 + GS 才把增益兑现，验证"嵌套依赖"不可用单层近似替代。</li>
+<li><strong>增益源于码本利用率而非模型容量</strong>：BLOGER 将第一层码本 Density 从 47% 提至 65%、Entropy 从 6.05 提至 7.14（高层码本已饱和无差异），说明推荐损失像"罗盘"纠正了纯文本视角下的码字分配偏置；同时训练仅 26.6s/epoch vs TIGER 23.7s，测试 66.9s vs 66.7s，几乎零推理代价。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li>移除<strong>双层优化</strong>（退化为顺序/交替范式）→ 性能明显下降，说明显式建模 tokenizer–recommender 相互依赖是核心增益来源。</li>
-<li>移除<strong>梯度手术</strong> → 外层两目标梯度冲突（冲突模块占比可达 90%）导致优化不稳定、性能回落，验证冲突消解的必要性。</li>
-<li>移除<strong>元学习/混合表征</strong> → 推荐损失无法有效反传至 tokenizer，退化为近似顺序训练。</li>
-<li>具体下降幅度以原文表 4 为准（抽取文本截断，未逐项列出）；从设计逻辑看，<strong>双层优化框架本身</strong>贡献最大，梯度手术为稳定器。</li>
-</ul>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
-<ul>
-<li><strong>长尾/冷启动分桶</strong>: 原文未报告按交互频次分桶的细粒度分析（<strong>原文未报告</strong>）。</li>
-<li><strong>关键超参敏感度</strong>: 涉及分词损失权重 <span class="arithmatex">\(\lambda\)</span>、外层更新间隔 <span class="arithmatex">\(M\)</span>、码本大小 <span class="arithmatex">\(K\)</span>、层数 <span class="arithmatex">\(L\)</span>、量化权重 <span class="arithmatex">\(\beta=0.25\)</span>；原文未在抽取文本中给出完整敏感度曲线（<strong>原文未报告</strong>）。</li>
-<li><strong>线上 A/B 测试</strong>: 原文仅包含离线实验，<strong>无线上 A/B 结果</strong>。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>问题重构视角新颖</strong>：首次把"tokenizer–recommender 错位"形式化为双层优化，为生成式推荐提供了统一优化框架，可迁移到多模态语义ID、跨域生成式召回等场景。</li>
-<li><strong>混合表征技巧 (<span class="arithmatex">\(\bm{o}=\bm{s}+\text{sg}[\bm{h}-\bm{s}]\)</span>)</strong> 是打通离散量化可微通路的通用算子，前向保真、反向可导，可复用于任何 VQ/RQ 类离散表征 + 下游任务的联合训练。</li>
-<li><strong>梯度手术按参数组投影</strong> 对多目标（分词 vs 推荐）冲突的细粒度处理，具有较强工程可迁移性。</li>
-<li><strong>效率友好</strong>：外层延迟更新（每 <span class="arithmatex">\(M\)</span> 步）使双层优化不引入显著开销，具备工业落地潜力。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议局限</strong>：仅 Amazon 三子集、LOO 划分、离线 Full-Ranking，缺少工业级大规模数据与线上验证；LOO 划分对时序动态兴趣的刻画有限。</li>
-<li><strong>统计严谨性不足</strong>：未见多随机种子方差、配对显著性检验（<span class="arithmatex">\(p&lt;0.05\)</span>）报告，主实验提升的稳健性有待佐证。</li>
-<li><strong>超参敏感度缺失</strong>：<span class="arithmatex">\(\lambda\)</span>、<span class="arithmatex">\(M\)</span>、<span class="arithmatex">\(K\)</span>、<span class="arithmatex">\(L\)</span> 的敏感度分析在抽取文本中未充分呈现，双层优化的调参成本与稳定性存疑。</li>
-<li><strong>理论保证</strong>：交替式元学习不保证收敛到全局最优（作者亦承认），梯度手术仅消除冲突分量、未论证其对最终 ID 质量的最优性。</li>
-<li><strong>可微近似的偏差</strong>：软表征加权平均是对 argmax 的连续松弛，训练/推理存在 train-test 不一致的潜在风险，原文未量化该 gap。</li>
+<li><strong>与代表作对比</strong>: TIGER/LETTER 是"先分词后推荐"的顺序范式，ID 静态且任务无关；ETEGRec 用中间层辅助损失做交替优化，属代理对齐；BLOGER 首次以元梯度把<strong>真实推荐损失</strong>回传分词器，是任务级而非表征级对齐。</li>
+<li><strong>可迁移亮点</strong>: ①"混合表示 = 硬值 + stop-gradient 软期望"是让离散量化模块端到端可微的通用技巧，可迁移到 VQ 类召回、扩散离散化；②按参数组做梯度投影的手术策略，可直接用于任何"主任务 + 辅助正则"冲突场景。</li>
+<li><strong>审稿级局限批判</strong>: ①仅在三个 Amazon 中小规模数据集验证，未触及工业亿级物品与流式更新场景，可扩展性存疑；②外层每 <span class="arithmatex">\(M\)</span>步才更新一次<span class="arithmatex">\(\phi\)</span>，且<span class="arithmatex">\(\lambda\)</span>、<span class="arithmatex">\(M'\)</span>需逐数据集调参（图 3 显示<span class="arithmatex">\(\lambda\)</span>偏离 0.5 即明显掉点），超参敏感度偏高；③元梯度仅用一步试探近似<span class="arithmatex">\(\theta^*\)</span>，理论上与真实双层最优存在偏差，缺少收敛性分析。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐（双层优化重构 + 混合表征 + 梯度手术组合有新意）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐（Full-Ranking 规范，但数据集与统计检验偏弱）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐（公式推导清晰，双层/元梯度链条完整）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐（开销可控、代码已开源，具备落地潜力）</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （首次将生成式推荐重构为双层优化，元梯度+梯度手术的组合有明确问题驱动，但各组件本身均为已有技术迁移）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （Full-Ranking 无偏评测、11 个基线、消融与码本可视化完整，但数据集仅限 Amazon 三子集，缺工业规模验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （双层公式、混合表示与投影公式推导清晰，复杂度分析到位；元梯度近似的误差界未讨论）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （代码已开源，训练开销仅 +12%、推理零增量，可直接替换 TIGER 训练流程，落地门槛极低）</li>
 </ul>
-<h2 id="_1">论文图表</h2>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2510.21242v2/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
 
 
 

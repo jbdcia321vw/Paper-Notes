@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>给定基座模型 <span class="arithmatex">\(\theta_{base}\)</span> 与 <span class="arithmatex">\(N\)</span> 个目标专家 <span class="arithmatex">\(\theta_i\)</span>，任务向量 <span class="arithmatex">\(\tau_i = \text{vec}(\theta_i) - \text{vec}(\theta_{base})\)</span>。阶段一：对任务向量矩阵 <span class="arithmatex">\(\mathbf{T}\in\mathbb{R}^{N\times D}\)</span> 逐行剪枝得 <span class="arithmatex">\(\tilde{\mathbf{T}}\)</span>，滤除冲突/冗余更新。阶段二：轻量门控 <span class="arithmatex">\(f_\phi\)</span> 将偏好 <span class="arithmatex">\(\boldsymbol{\mu}\in\Delta^{N-1}\)</span> 映射为合并系数 <span class="arithmatex">\(\boldsymbol{\lambda}=f_\phi(\boldsymbol{\mu})\)</span>，合并模型 <span class="arithmatex">\(\bar\theta(\boldsymbol{\mu})=\theta_{base}+\sum_i \lambda_i\tilde{\mathbf{T}}_{i,:}\)</span> 直接产出推荐列表。训练时仅更新门控参数 <span class="arithmatex">\(\phi\)</span>，专家与基座全冻结；推理时单次前向即得系数，无需重训或生成模块。</p>
+<p>给定基座模型 <span class="arithmatex">\(\theta_{base}\)</span>与<span class="arithmatex">\(N\)</span>个目标专家<span class="arithmatex">\(\theta_i\)</span>，任务向量<span class="arithmatex">\(\tau_i = \text{vec}(\theta_i) - \text{vec}(\theta_{base})\)</span>。阶段一：对任务向量矩阵<span class="arithmatex">\(\mathbf{T}\in\mathbb{R}^{N\times D}\)</span>逐行剪枝得<span class="arithmatex">\(\tilde{\mathbf{T}}\)</span>，滤除冲突/冗余更新。阶段二：轻量门控<span class="arithmatex">\(f_\phi\)</span>将偏好<span class="arithmatex">\(\boldsymbol{\mu}\in\Delta^{N-1}\)</span>映射为合并系数<span class="arithmatex">\(\boldsymbol{\lambda}=f_\phi(\boldsymbol{\mu})\)</span>，合并模型<span class="arithmatex">\(\bar\theta(\boldsymbol{\mu})=\theta_{base}+\sum_i \lambda_i\tilde{\mathbf{T}}_{i,:}\)</span>直接产出推荐列表。训练时仅更新门控参数<span class="arithmatex">\(\phi\)</span>，专家与基座全冻结；推理时单次前向即得系数，无需重训或生成模块。</p>
 <pre class="mermaid"><code>flowchart TD
     A["目标专家模型 θ1..θN + 基座 θbase"] --&gt; B["任务向量 τi = θi - θbase"]
     B --&gt; C["阶段一：联合重要性剪枝 → 稀疏 τ̃i"]
@@ -4235,13 +4246,13 @@
 <li>
 <p><strong>联合重要性剪枝（Conflict Mitigation via Pruning）</strong>：痛点在于稠密任务向量跨目标重叠严重、直接合并会互相压制。对每个参数位置 <span class="arithmatex">\(j\)</span> 定义组合得分
 $<span class="arithmatex">\(S_{i,j}=\beta\frac{T_{i,j}^2}{\|\mathbf{T}_{i,:}\|_2^2}+(1-\beta)\big|T_{i,j}\cdot\bar{T}_{i,j}\big|,\quad \bar{T}_{i,j}=\tfrac{1}{N-1}\textstyle\sum_{k\neq i}T_{k,j}\)</span>$
-其中第一项为目标特异性重要性，第二项为跨目标相关性。关键细节：跨目标项取<strong>绝对值</strong>而非符号对齐，因为准确率与多样性的更新方向天然冲突，取模长只度量耦合强度、避免因符号冲突误删对多目标都关键的参数。剪枝量由范数保留率 <span class="arithmatex">\(\rho\)</span> 动态决定（保留 top-<span class="arithmatex">\(k_i\)</span> 使自重要性累计占比 <span class="arithmatex">\(\geq\rho\)</span>），而非固定比例。</p>
+其中第一项为目标特异性重要性，第二项为跨目标相关性。关键细节：跨目标项取<strong>绝对值</strong>而非符号对齐，因为准确率与多样性的更新方向天然冲突，取模长只度量耦合强度、避免因符号冲突误删对多目标都关键的参数。剪枝量由范数保留率 <span class="arithmatex">\(\rho\)</span>动态决定（保留 top-<span class="arithmatex">\(k_i\)</span>使自重要性累计占比<span class="arithmatex">\(\geq\rho\)</span>），而非固定比例。</p>
 </li>
 <li>
-<p><strong>自适应合并与可学习系数（Adaptive Model Merging）</strong>：痛点在于线性区制失效，直接用 <span class="arithmatex">\(\boldsymbol{\mu}\)</span> 当系数无法刻画非线性交互。RecSoup 用单层线性路由 <span class="arithmatex">\(f_\phi\)</span> 学习 <span class="arithmatex">\(\boldsymbol{\lambda}=f_\phi(\boldsymbol{\mu})\)</span>，允许系数放大或抑制某目标、突破输入偏好值的线性约束。与 PWE-MoE 的本质区别在于<strong>基底构造</strong>：门控在剪枝后的纯净子空间上导航，只需学 Pareto 流形坐标，无需同时补偿稠密向量的噪声干扰。</p>
+<p><strong>自适应合并与可学习系数（Adaptive Model Merging）</strong>：痛点在于线性区制失效，直接用 <span class="arithmatex">\(\boldsymbol{\mu}\)</span>当系数无法刻画非线性交互。RecSoup 用单层线性路由<span class="arithmatex">\(f_\phi\)</span>学习<span class="arithmatex">\(\boldsymbol{\lambda}=f_\phi(\boldsymbol{\mu})\)</span>，允许系数放大或抑制某目标、突破输入偏好值的线性约束。与 PWE-MoE 的本质区别在于<strong>基底构造</strong>：门控在剪枝后的纯净子空间上导航，只需学 Pareto 流形坐标，无需同时补偿稠密向量的噪声干扰。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：损失为偏好加权多目标损失 <span class="arithmatex">\(\mathcal{L}(\theta_{merged},\boldsymbol{\mu})=\sum_i \mu_i\mathcal{L}_i(\theta_{merged})\)</span>，仅在小批子集上评估以省算力；准确率专家用 BPR 损失，多样性专家用可微 <span class="arithmatex">\(\alpha\)</span>-NDCG 代理损失。训练负采样 9 个、评估 99 个。推理复杂度：adapter 设定 <span class="arithmatex">\(O(Nd^2)\)</span>、全参数 <span class="arithmatex">\(O(NP)\)</span>，相较超网络的 <span class="arithmatex">\(O(P\cdot H)\)</span> 与扩散的 <span class="arithmatex">\(O(T\cdot P\cdot d)\)</span> 消除了对 <span class="arithmatex">\(d\)</span> 的三次依赖。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：损失为偏好加权多目标损失 <span class="arithmatex">\(\mathcal{L}(\theta_{merged},\boldsymbol{\mu})=\sum_i \mu_i\mathcal{L}_i(\theta_{merged})\)</span>，仅在小批子集上评估以省算力；准确率专家用 BPR 损失，多样性专家用可微<span class="arithmatex">\(\alpha\)</span>-NDCG 代理损失。训练负采样 9 个、评估 99 个。推理复杂度：adapter 设定<span class="arithmatex">\(O(Nd^2)\)</span>、全参数<span class="arithmatex">\(O(NP)\)</span>，相较超网络的<span class="arithmatex">\(O(P\cdot H)\)</span>与扩散的<span class="arithmatex">\(O(T\cdot P\cdot d)\)</span>消除了对<span class="arithmatex">\(d\)</span> 的三次依赖。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4281,7 +4292,7 @@ $<span class="arithmatex">\(S_{i,j}=\beta\frac{T_{i,j}^2}{\|\mathbf{T}_{i,:}\|_2
 <ul>
 <li><strong>数据划分与防穿越</strong>: 序列推荐标准设定，按用户历史序列组织训练/验证/测试（沿用 Paragon 流程）。</li>
 <li><strong>排名评测协议</strong>: <code>Sampled Ranking</code>，训练 9 负样本、评估 99 负样本；指标为 HR@5、NDCG@5、<span class="arithmatex">\(\alpha\)</span>-NDCG@5（多样性）。</li>
-<li><strong>对比基线与超参设置</strong>: 基线含 Retrain（oracle）、MMR（后处理）、CMR/Paragon（参数生成）、Soup/TATR/TIES/DARE/CABS/LwPTV（模型合并）。Embedding 与隐状态维度 <span class="arithmatex">\(d=64\)</span>，Adam 学习率 <span class="arithmatex">\(10^{-3}\)</span>，<span class="arithmatex">\(\beta=0.5\)</span>，<span class="arithmatex">\(\rho\in[0.9,0.95]\)</span>（实际保留率 0.4–0.7）。核心指标：Hypervolume (HV)、Pareto 前沿长度 (LF)、可控性 Contro.（偏好序与指标序的 Kendall 式一致率）。</li>
+<li><strong>对比基线与超参设置</strong>: 基线含 Retrain（oracle）、MMR（后处理）、CMR/Paragon（参数生成）、Soup/TATR/TIES/DARE/CABS/LwPTV（模型合并）。Embedding 与隐状态维度 <span class="arithmatex">\(d=64\)</span>，Adam 学习率<span class="arithmatex">\(10^{-3}\)</span>，<span class="arithmatex">\(\beta=0.5\)</span>，<span class="arithmatex">\(\rho\in[0.9,0.95]\)</span>（实际保留率 0.4–0.7）。核心指标：Hypervolume (HV)、Pareto 前沿长度 (LF)、可控性 Contro.（偏好序与指标序的 Kendall 式一致率）。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4391,12 +4402,18 @@ $<span class="arithmatex">\(S_{i,j}=\beta\frac{T_{i,j}^2}{\|\mathbf{T}_{i,:}\|_2
 <li><strong>可学习系数不可替代</strong>：去掉 MLP 后 ML-1M(SASRec) HV 掉 5.9%、TiSASRec 掉 11.2%，证明线性区制失效下「偏好直接当系数」无法刻画非线性权衡。</li>
 <li><strong>效率与可控性双赢</strong>：推理参数构建延迟 0.041–0.045 ms，较超网络（7.5–9.4 ms）快 <strong>165–228 倍</strong>，较扩散（~87.79 s）快三个数量级；同时三目标（Acc+Div+Fair）设定下 HV 0.6148 仍为最优，验证可扩展性。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 Paragon/CMR 的参数生成，RecSoup 不做参数合成而做参数复用，规避 Lipschitz 平滑约束（定理 5.1 证明 <span class="arithmatex">\(L&lt;L_0\)</span> 时生成映射无法覆盖完整 Pareto 集）；相较 Soup/TATR 的线性/正交合并，RecSoup 用跨目标相关性剪枝 + 非线性门控突破线性区制失效；相较 TIES 仅用自重要性剪枝，额外引入跨目标耦合项。</li>
 <li><strong>可迁移亮点</strong>: ① 跨目标相关性取绝对值的剪枝准则可迁移到任何多任务/多场景模型合并；② 「先净化基底、再学系数」的解耦思路可复用于 LoRA 多适配器融合与多场景 STAR 类模型。</li>
 <li><strong>审稿级局限批判</strong>: ① 剪枝收益条件性明显，在任务向量本就兼容时反而掉点，缺乏自适应判断「何时该剪」的机制；② 实验仅在 64 维小模型与采样排序协议下验证，未报告全库 Full-Ranking 与工业级大模型（含大规模 item embedding）下的延迟表现，全参数合并时 <span class="arithmatex">\(|I|\gg d^2\)</span> 可能主导开销。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

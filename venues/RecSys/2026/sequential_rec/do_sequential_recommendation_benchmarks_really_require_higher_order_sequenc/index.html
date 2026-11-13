@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4242,15 +4253,15 @@
 <li>
 <p><strong>PCTM：把每个历史物品当作独立"专家"（核心创新）</strong>：痛点在于 Transformer 需从稀疏数据中隐式学出转移与近期偏置。PCTM 显式估计方向性下一物品分布，用距离加权因果计数 + Dirichlet 均匀先验平滑：
 $<span class="arithmatex">\(\hat{P}(a\mid b)=\frac{C_{ba}+\tau/|\mathcal{I}|}{C_{b\cdot}+\tau},\qquad C_{ba}=\sum_{d=1}^{W}\gamma_d N^{(d)}_{ba}\)</span>$
-其中 <span class="arithmatex">\(\gamma_1=1\)</span> 固定计数尺度。直觉：高频源物品主要依赖观测转移，稀有源物品回退到先验，<span class="arithmatex">\(\tau\)</span> 控制"需要多少证据"。</p>
+其中 <span class="arithmatex">\(\gamma_1=1\)</span>固定计数尺度。直觉：高频源物品主要依赖观测转移，稀有源物品回退到先验，<span class="arithmatex">\(\tau\)</span> 控制"需要多少证据"。</p>
 </li>
 <li>
-<p><strong>近期双阶段注入 + 对数域专家池化</strong>：近期性同时作用于建表（近距转移权重更高）与打分（近历史物品权重更高），历史核为指数核 <span class="arithmatex">\(E^{(r)}_j\)</span> 或头尾核 <span class="arithmatex">\(H^{(k,\rho,r)}_j\)</span>（前 <span class="arithmatex">\(k\)</span> 个新物品分得 <span class="arithmatex">\(\rho\)</span> 质量，其余均分 <span class="arithmatex">\(1-\rho\)</span>）。最终打分是<strong>对数概率加权和</strong>（等价于逐项专家概率连乘）：
+<p><strong>近期双阶段注入 + 对数域专家池化</strong>：近期性同时作用于建表（近距转移权重更高）与打分（近历史物品权重更高），历史核为指数核 <span class="arithmatex">\(E^{(r)}_j\)</span>或头尾核<span class="arithmatex">\(H^{(k,\rho,r)}_j\)</span>（前<span class="arithmatex">\(k\)</span>个新物品分得<span class="arithmatex">\(\rho\)</span>质量，其余均分<span class="arithmatex">\(1-\rho\)</span>）。最终打分是<strong>对数概率加权和</strong>（等价于逐项专家概率连乘）：
 $<span class="arithmatex">\(s_{\text{PCTM}}(a\mid h)=\sum_{j=1}^{L} w_j \log\hat{P}(a\mid h_{m-j+1})+\lambda\log p_{\text{pop}}(a)\)</span>$
 关键：全程只做逐项证据求和，<strong>从不估计联合项</strong> <span class="arithmatex">\(P(a\mid b,c)\)</span>——这正是"成对充分"的操作化定义。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：PCTM 与 SeqRules <strong>无嵌入、无序列编码器、无梯度训练</strong>，仅离线一遍扫描统计稀疏转移矩阵 <span class="arithmatex">\(C\)</span> 与流行度 <span class="arithmatex">\(p_{\text{pop}}\)</span>（Alg.1），在线对 <span class="arithmatex">\(L\le L_{\max}\)</span> 个历史物品的稀疏行做加权累加（Alg.2），复杂度约为 <span class="arithmatex">\(O(L\cdot\bar{K})\)</span>，天然免负采样；对照模型 FMC+ 则用全库 softmax 交叉熵（因已有工作证明 BCE 单负例显著劣于 softmax）。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：PCTM 与 SeqRules <strong>无嵌入、无序列编码器、无梯度训练</strong>，仅离线一遍扫描统计稀疏转移矩阵 <span class="arithmatex">\(C\)</span>与流行度<span class="arithmatex">\(p_{\text{pop}}\)</span>（Alg.1），在线对<span class="arithmatex">\(L\le L_{\max}\)</span>个历史物品的稀疏行做加权累加（Alg.2），复杂度约为<span class="arithmatex">\(O(L\cdot\bar{K})\)</span>，天然免负采样；对照模型 FMC+ 则用全库 softmax 交叉熵（因已有工作证明 BCE 单负例显著劣于 softmax）。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4435,12 +4446,18 @@ $<span class="arithmatex">\(s_{\text{PCTM}}(a\mid h)=\sum_{j=1}^{L} w_j \log\hat
 <li><strong>四个基准上高阶建模无证据</strong>：SeqRules/PCTM 在 Beauty/Sports/Toys/ML-1M 上分别超 eSASRec 21.3%/14.8%/38.4%/4.4%，且在两套 Transformer 复现（SAS+ 与 eSASRec）上均成立（对 SAS+ 为 9–28%），排除了单一复现偶然性。</li>
 <li><strong>只有 ML-20M 保留真实容量优势</strong>：eSASRec .1969 vs 包络 .1431，27.3% 的 NDCG 无法被成对转移解释——这是唯一可支撑"高阶序列建模有效"的基准，暗示数据规模/序列长度可能是高阶交互显现的必要条件。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与"打乱历史"的顺序敏感性检验 [7] 本质不同——本文承认顺序有信号，但追问该信号是否<strong>可分解为成对项</strong>；与 SASRec 归约分析 [5] 相比，本文把"一阶归约"推进到"多物品成对聚合"，给出更强的下界；与 RSS [9,10] 共享近期性直觉，但将其作为探针而非增强手段。</li>
 <li><strong>可迁移亮点</strong>: ①"成对包络"可作为任何序列/生成式推荐论文的<strong>强制基线</strong>，成本极低（无训练、无 GPU）；②对数域专家池化 + 贝叶斯平滑是稀疏转移统计的稳健工程配方，适合冷启动物品回退。</li>
 <li><strong>审稿级局限批判</strong>: ①<strong>无消融</strong>，PCTM 的平滑、核函数、池化三者贡献未解耦，且超参在 5 个数据集上各自调优，存在探针侧过拟合风险；②仅 5 个数据集、单一 NDCG@10 指标、无时序切分与工业数据，作者自述为 work in progress；③"成对充分"的判定依赖探针强度，若探针调优不足则结论偏保守、调优过度则偏激进，缺少敏感性分析。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐（问题提法比方法更值钱）| 实验扎实度 ⭐⭐⭐（复现严谨但缺消融与规模）| 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （问题提法比方法更值钱）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （复现严谨但缺消融与规模）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

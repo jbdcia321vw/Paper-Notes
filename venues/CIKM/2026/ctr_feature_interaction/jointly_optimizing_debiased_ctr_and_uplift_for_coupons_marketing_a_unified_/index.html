@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 <li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>线上发券使观测点击混杂了用户内在偏好与干预增益，导致 Base CTR 失准、下游排序与计费漂移；且券面额是<strong>多值连续干预</strong>，传统二值 Uplift 模型无法刻画强度-响应曲线。本文提出 UniMVT：用 MoE 解耦混淆/干预敏感表征（DCR 层），在 <strong>logit 空间施加单调线性偏移假设</strong> 定义强度无关的隐单元敏感度 uCATE <span class="arithmatex">\(\eta(x)\)</span>，配合 X-Network 全空间反事实互正则，同时输出去偏 <span class="arithmatex">\(p_0\)</span> 与任意面额的 <span class="arithmatex">\(\tau(x,t)\)</span>。合成 + 快手生产数据上 CS-Qini 大幅领先（如 Syn-1 从 38.12 提至 103.09），线上 A/B 券收入 +18.14%、ROI +8.80、券侧 PCOC 误差降 86.51%。</p>
+<p>线上发券使观测点击混杂了用户内在偏好与干预增益，导致 Base CTR 失准、下游排序与计费漂移；且券面额是<strong>多值连续干预</strong>，传统二值 Uplift 模型无法刻画强度-响应曲线。本文提出 UniMVT：用 MoE 解耦混淆/干预敏感表征（DCR 层），在 <strong>logit 空间施加单调线性偏移假设</strong> 定义强度无关的隐单元敏感度 uCATE <span class="arithmatex">\(\eta(x)\)</span>，配合 X-Network 全空间反事实互正则，同时输出去偏<span class="arithmatex">\(p_0\)</span>与任意面额的<span class="arithmatex">\(\tau(x,t)\)</span>。合成 + 快手生产数据上 CS-Qini 大幅领先（如 Syn-1 从 38.12 提至 103.09），线上 A/B 券收入 +18.14%、ROI +8.80、券侧 PCOC 误差降 86.51%。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 工业界普遍采用「两阶段」——上游 CTR 模型（MMoE/PLE 类 MTL）预测点击，下游独立 Uplift 模型（S/T-Learner、CFRNet、DRNet、VCNet、DESCN）仅在 treated 样本上估计增量。</li>
@@ -4230,7 +4241,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入用户画像、直播间上下文与券描述（面额/样式）经 Embedding 层得 <span class="arithmatex">\(x_i\)</span>；DCR 层用三组专家（Base/Shared/Treatment）+ 双门控 + Stop-Gradient 解耦出基线表征 <span class="arithmatex">\(u_0\)</span> 与干预敏感表征 <span class="arithmatex">\(u_t\)</span>，并以正交惩罚强制专家参数空间不重叠。HTE 网络分两条塔：Base Tower 由 <span class="arithmatex">\(u_0\)</span> 估 <span class="arithmatex">\(p_0(x)\)</span>；Treatment Tower 由 <span class="arithmatex">\(u_t\)</span> 与券嵌入（经 TA-Gate 逐层调制）估 <span class="arithmatex">\(p_t(x,t)\)</span> 与 <span class="arithmatex">\(\eta(x)\)</span>。X-Network 在 logit 空间做"加/减 <span class="arithmatex">\(\hat t \cdot \hat\eta\)</span>"的反事实重构，用 MSE 把 treated 监督传导到 control（反之亦然）。推理时对候选面额网格算 <span class="arithmatex">\(\Delta\text{CTR}\)</span> 与 ROI，取 <span class="arithmatex">\(\arg\max\)</span> 且过阈值 <span class="arithmatex">\(\lambda\)</span> 才发券。</p>
+<p>输入用户画像、直播间上下文与券描述（面额/样式）经 Embedding 层得 <span class="arithmatex">\(x_i\)</span>；DCR 层用三组专家（Base/Shared/Treatment）+ 双门控 + Stop-Gradient 解耦出基线表征<span class="arithmatex">\(u_0\)</span>与干预敏感表征<span class="arithmatex">\(u_t\)</span>，并以正交惩罚强制专家参数空间不重叠。HTE 网络分两条塔：Base Tower 由<span class="arithmatex">\(u_0\)</span>估<span class="arithmatex">\(p_0(x)\)</span>；Treatment Tower 由<span class="arithmatex">\(u_t\)</span>与券嵌入（经 TA-Gate 逐层调制）估<span class="arithmatex">\(p_t(x,t)\)</span>与<span class="arithmatex">\(\eta(x)\)</span>。X-Network 在 logit 空间做"加/减<span class="arithmatex">\(\hat t \cdot \hat\eta\)</span>"的反事实重构，用 MSE 把 treated 监督传导到 control（反之亦然）。推理时对候选面额网格算<span class="arithmatex">\(\Delta\text{CTR}\)</span>与 ROI，取<span class="arithmatex">\(\arg\max\)</span>且过阈值<span class="arithmatex">\(\lambda\)</span> 才发券。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户/上下文/券特征 x"] --&gt; B["DCR: MoE 解耦 + 正交惩罚"]
     B --&gt; C["u0 → Base Tower → p0"]
@@ -4244,22 +4255,22 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>DCR 解耦层（MoE + Stop-Gradient + 正交惩罚）</strong>：痛点是不解耦则混杂特征污染干预信号。做法是双门控分别聚合 <span class="arithmatex">\(\text{CONCAT}(H_b, H_s, \text{SG}(H_t))\)</span> 与 <span class="arithmatex">\(\text{CONCAT}(\text{SG}(H_b), H_s, H_t)\)</span>，阻断冲突目标的梯度泄漏但保留共享混杂通路；再加 <span class="arithmatex">\(\mathcal{R}_{orth}=\sum_l\sum_{(u,v)\in\{(b,s),(t,s),(b,t)\}}\|(\Theta^l_u)^\top\Theta^l_v\|_F^2\)</span> 压低专家参数相关性。直觉：让"谁会被发券"与"谁对券敏感"在表征层就分开，从源头切断选择偏置。</p>
+<p><strong>DCR 解耦层（MoE + Stop-Gradient + 正交惩罚）</strong>：痛点是不解耦则混杂特征污染干预信号。做法是双门控分别聚合 <span class="arithmatex">\(\text{CONCAT}(H_b, H_s, \text{SG}(H_t))\)</span>与<span class="arithmatex">\(\text{CONCAT}(\text{SG}(H_b), H_s, H_t)\)</span>，阻断冲突目标的梯度泄漏但保留共享混杂通路；再加<span class="arithmatex">\(\mathcal{R}_{orth}=\sum_l\sum_{(u,v)\in\{(b,s),(t,s),(b,t)\}}\|(\Theta^l_u)^\top\Theta^l_v\|_F^2\)</span> 压低专家参数相关性。直觉：让"谁会被发券"与"谁对券敏感"在表征层就分开，从源头切断选择偏置。</p>
 </li>
 <li>
-<p><strong>Latent Unit Sensitivity (uCATE) 与 logit 单调线性假设</strong>：痛点是在 <span class="arithmatex">\([0,1]\)</span> 概率尺度上直接线性建模会越界且无法表达饱和。本文改在 logit 空间设 <span class="arithmatex">\(\text{logit}(p_t(x))-\text{logit}(p_0(x))=\eta(x)\cdot t,\ \eta(x)&gt;0\)</span>，于是
+<p><strong>Latent Unit Sensitivity (uCATE) 与 logit 单调线性假设</strong>：痛点是在 <span class="arithmatex">\([0,1]\)</span>概率尺度上直接线性建模会越界且无法表达饱和。本文改在 logit 空间设<span class="arithmatex">\(\text{logit}(p_t(x))-\text{logit}(p_0(x))=\eta(x)\cdot t,\ \eta(x)&gt;0\)</span>，于是
 $<span class="arithmatex">\(\tau(x,t)=\sigma\big(\text{logit}(p_0(x))+\eta(x)\cdot t\big)-p_0(x).\)</span>$
-<span class="arithmatex">\(\eta\)</span> 用 ReLU 保证非负（满足单调性），CATE 的饱和非线性由 sigmoid 自动生成。直觉：把"面额大小"与"用户敏感度"乘性分离，<span class="arithmatex">\(\eta\)</span> 成为跨面额可比的排序键，直接服务 ROI 约束下的分配。</p>
+<span class="arithmatex">\(\eta\)</span>用 ReLU 保证非负（满足单调性），CATE 的饱和非线性由 sigmoid 自动生成。直觉：把"面额大小"与"用户敏感度"乘性分离，<span class="arithmatex">\(\eta\)</span> 成为跨面额可比的排序键，直接服务 ROI 约束下的分配。</p>
 </li>
 <li>
-<p><strong>X-Network 反事实互正则 + 训练目标</strong>：control 组无观测面额，故设辅助强度头 <span class="arithmatex">\(\hat t=\sigma(\text{MLP}(\text{SG}(u_t)))\cdot(t_{\max}-t_{\min})+t_{\min}\)</span>，仅在 treated 上以 <span class="arithmatex">\(\lambda_1\)</span> MSE + <span class="arithmatex">\(\lambda_2\)</span> MAE 训练后外推到 control。反事实重构：treated 侧 <span class="arithmatex">\(\hat p'_t=\sigma(\sigma^{-1}(\hat p_0)+t\hat\eta)\)</span>，control 侧 <span class="arithmatex">\(\hat p'_0=\sigma(\sigma^{-1}(\hat p_t(\hat t))-\hat t\hat\eta)\)</span>，以 MSE 对齐真实标签。总损失
+<p><strong>X-Network 反事实互正则 + 训练目标</strong>：control 组无观测面额，故设辅助强度头 <span class="arithmatex">\(\hat t=\sigma(\text{MLP}(\text{SG}(u_t)))\cdot(t_{\max}-t_{\min})+t_{\min}\)</span>，仅在 treated 上以<span class="arithmatex">\(\lambda_1\)</span>MSE +<span class="arithmatex">\(\lambda_2\)</span>MAE 训练后外推到 control。反事实重构：treated 侧<span class="arithmatex">\(\hat p'_t=\sigma(\sigma^{-1}(\hat p_0)+t\hat\eta)\)</span>，control 侧<span class="arithmatex">\(\hat p'_0=\sigma(\sigma^{-1}(\hat p_t(\hat t))-\hat t\hat\eta)\)</span>，以 MSE 对齐真实标签。总损失
 $<span class="arithmatex">\(\mathcal{L}=\lambda_b\mathcal{L}_{base}+\lambda_t\mathcal{L}_{treat}+\lambda_t\mathcal{L}_{t}+\lambda_X\mathcal{L}_{X}+\lambda_o\mathcal{R}_{orth},\)</span>$
 负样本即同 batch 内未点击曝光（BCE 隐式负采样），无额外 hard negative 挖掘；推理仅两次 MLP 前向 + 网格枚举，开销与常规精排同量级。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集与预处理</strong>: 三个合成集（Syn-1/2/3，各 80k 训练 / 8k 测试，测试集<strong>纯 RCT 无偏样本</strong>；Syn-1/2 面额单峰分布、Syn-3 多峰模拟券档位；通过令 <span class="arithmatex">\(T\)</span> 与 <span class="arithmatex">\(X\)</span> 相关注入真实选择偏置）+ 快手直播券生产数据（含自然流量与多档干预流量）。</li>
+<li><strong>数据集与预处理</strong>: 三个合成集（Syn-1/2/3，各 80k 训练 / 8k 测试，测试集<strong>纯 RCT 无偏样本</strong>；Syn-1/2 面额单峰分布、Syn-3 多峰模拟券档位；通过令 <span class="arithmatex">\(T\)</span>与<span class="arithmatex">\(X\)</span> 相关注入真实选择偏置）+ 快手直播券生产数据（含自然流量与多档干预流量）。</li>
 </ul>
 <table>
 <thead>
@@ -4304,8 +4315,8 @@ $<span class="arithmatex">\(\mathcal{L}=\lambda_b\mathcal{L}_{base}+\lambda_t\ma
 </table>
 <ul>
 <li><strong>数据划分与防穿越</strong>: 合成集固定训练/测试切分，测试集仅取 RCT 样本以保证无偏评估；生产集按时间切分离线验证。</li>
-<li><strong>排名评测协议</strong>: Base CTR 用 AUC / LogLoss（control 无干预下的反事实转化概率）；Uplift 用 <strong>CS-AUUC</strong> 与 <strong>CS-Qini</strong>——按预测 <span class="arithmatex">\(\hat\eta\)</span> 排序取 top-<span class="arithmatex">\(\phi\)</span> 分桶，桶内对 <span class="arithmatex">\(Y\)</span> 关于 <span class="arithmatex">\(T\)</span> 回归得斜率 <span class="arithmatex">\(\hat\beta(\phi)\)</span>，<span class="arithmatex">\(\text{CS-AUUC}=\int_0^1\hat\beta(\phi)\cdot\phi N\,d\phi\)</span>，CS-Qini 再减全局斜率基线。属<strong>全样本排序 + 分桶回归斜率</strong>协议，非采样负例排序。</li>
-<li><strong>对比基线与超参</strong>: S/T-Learner、CFRNet、FlexTENet、DRNet、VCNet、DESCN 共 7 个；二值干预基线统一以 <span class="arithmatex">\(t\)</span> 作输入、取 <span class="arithmatex">\(t=1\)</span> 折算单位 Uplift 以对齐比较。</li>
+<li><strong>排名评测协议</strong>: Base CTR 用 AUC / LogLoss（control 无干预下的反事实转化概率）；Uplift 用 <strong>CS-AUUC</strong> 与 <strong>CS-Qini</strong>——按预测 <span class="arithmatex">\(\hat\eta\)</span>排序取 top-<span class="arithmatex">\(\phi\)</span>分桶，桶内对<span class="arithmatex">\(Y\)</span>关于<span class="arithmatex">\(T\)</span>回归得斜率<span class="arithmatex">\(\hat\beta(\phi)\)</span>，<span class="arithmatex">\(\text{CS-AUUC}=\int_0^1\hat\beta(\phi)\cdot\phi N\,d\phi\)</span>，CS-Qini 再减全局斜率基线。属<strong>全样本排序 + 分桶回归斜率</strong>协议，非采样负例排序。</li>
+<li><strong>对比基线与超参</strong>: S/T-Learner、CFRNet、FlexTENet、DRNet、VCNet、DESCN 共 7 个；二值干预基线统一以 <span class="arithmatex">\(t\)</span>作输入、取<span class="arithmatex">\(t=1\)</span> 折算单位 Uplift 以对齐比较。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4476,16 +4487,22 @@ $<span class="arithmatex">\(\mathcal{L}=\lambda_b\mathcal{L}_{base}+\lambda_t\ma
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>Uplift 排序能力是主战场，CTR 只是"不退化"</strong>：UniMVT 在 Prod 上 AUC 仅比 VCNet 高 0.74%，但 CS-Qini 从 0.0005 跃至 0.0293（约 58 倍）；说明传统模型被面额绝对值 <span class="arithmatex">\(t\)</span> 带偏，把"大额券"误当"高敏感用户"，而 <span class="arithmatex">\(\eta(x)\)</span> 的强度无关性才是排序增益来源。</li>
+<li><strong>Uplift 排序能力是主战场，CTR 只是"不退化"</strong>：UniMVT 在 Prod 上 AUC 仅比 VCNet 高 0.74%，但 CS-Qini 从 0.0005 跃至 0.0293（约 58 倍）；说明传统模型被面额绝对值 <span class="arithmatex">\(t\)</span>带偏，把"大额券"误当"高敏感用户"，而<span class="arithmatex">\(\eta(x)\)</span> 的强度无关性才是排序增益来源。</li>
 <li><strong>logit 线性假设是命门，去掉即崩塌</strong>：w/o Logit Space 与 Unconstrained 两变体 AUC 仍高达 0.94+，CS-Qini 却跌到 0.0008/0.0004（近乎随机），证明深度网络在纯事实拟合下会过拟合观测偏置，结构因果先验不可替代。</li>
 <li><strong>X-Network 与 DCR 各司其职、缺一不可</strong>：去反事实损失使 CS-Qini 从 0.0293 掉到 0.0042（-86%），去正交正则掉到 0.0097，去 Shared Experts 掉到 0.0132；线上侧 UniMVT 相对两阶段基线券收入 +18.14%、ROI +8.80、券侧 PCOC 误差降 86.51%，校准改善与离线结论一致。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 DRNet/VCNet 的分段或变系数曲线拟合，UniMVT 用单标量 <span class="arithmatex">\(\eta\)</span> + logit 线性把连续干预降维，参数更少、跨面额可比；相比 DESCN 的全空间交叉网络，本文额外引入显式表征解耦与反事实互正则，解决"统一模型仍被混杂污染"的问题；相比两阶段工业方案，消除了 <span class="arithmatex">\(\Delta p \neq p_t-p_0\)</span> 的逻辑不自洽。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 DRNet/VCNet 的分段或变系数曲线拟合，UniMVT 用单标量 <span class="arithmatex">\(\eta\)</span>+ logit 线性把连续干预降维，参数更少、跨面额可比；相比 DESCN 的全空间交叉网络，本文额外引入显式表征解耦与反事实互正则，解决"统一模型仍被混杂污染"的问题；相比两阶段工业方案，消除了<span class="arithmatex">\(\Delta p \neq p_t-p_0\)</span> 的逻辑不自洽。</li>
 <li><strong>可迁移亮点</strong>: ① logit 空间乘性分离"干预强度 × 用户敏感度"的建模套路，可直接迁移到动态定价、补贴力度、推送频次等连续干预场景；② Stop-Gradient + 正交惩罚的 MoE 解耦，是处理"策略变量与用户特征强相关"的通用去混杂手段。</li>
-<li><strong>审稿级局限批判</strong>: ① logit 线性单调假设较强，对存在"阈值效应/非单调反感"的品类的适用性未验证，且 <span class="arithmatex">\(\eta&gt;0\)</span> 的 ReLU 约束排除了负向干预；② 合成集测试仅用 RCT 样本，离线 Uplift 评估仍依赖强假设，线上仅报告相对增益、缺置信区间与长期留存观察；③ 面额网格枚举 + ROI 阈值 <span class="arithmatex">\(\lambda\)</span> 的敏感性未做扫参分析。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① logit 线性单调假设较强，对存在"阈值效应/非单调反感"的品类的适用性未验证，且 <span class="arithmatex">\(\eta&gt;0\)</span>的 ReLU 约束排除了负向干预；② 合成集测试仅用 RCT 样本，离线 Uplift 评估仍依赖强假设，线上仅报告相对增益、缺置信区间与长期留存观察；③ 面额网格枚举 + ROI 阈值<span class="arithmatex">\(\lambda\)</span> 的敏感性未做扫参分析。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

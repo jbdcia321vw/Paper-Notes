@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][跨域与多场景推荐] 用神经ODE建模连续时间行为偏好演化，LLM+反事实扰动提取时间敏感语义，门控自适应控制跨域迁移权重以缓解负迁移。">
+        <meta name="description" content="[SIGIR 2026][跨域与多场景推荐] 用神经 ODE 解耦长短期行为、LLM 离散时间 token 反事实增强语义、门控自适应域迁移，1:999 采样排序下 MRR 最高提升 30.5%。">
       
       
       
@@ -108,20 +108,20 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 跨域与多场景推荐, 召回, 神经ODE连续时间建模, LLM时间语义与反事实增强, 跨域序列推荐" />
+<meta name="keywords" content="SIGIR 2026, 跨域与多场景推荐, 精排, 神经 ODE, 时间感知语义, 反事实对比学习" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
 
 <meta property="article:tag" content="跨域与多场景推荐" />
 
-<meta property="article:tag" content="召回" />
+<meta property="article:tag" content="精排" />
 
-<meta property="article:tag" content="神经ODE连续时间建模" />
+<meta property="article:tag" content="神经 ODE" />
 
-<meta property="article:tag" content="LLM时间语义与反事实增强" />
+<meta property="article:tag" content="时间感知语义" />
 
-<meta property="article:tag" content="跨域序列推荐" />
+<meta property="article:tag" content="反事实对比学习" />
 
 
 
@@ -131,10 +131,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/cross_domain_multi_scenario/bridging_behavior_and_semantics_for_time_aware_cross_domain_sequential_reco/" />
 <meta property="og:title" content="[Paper Note] Bridging Behavior and Semantics for Time-aware Cross-Domain Sequential Recommendation" />
-<meta property="og:description" content="[SIGIR 2026][跨域与多场景推荐] 用神经ODE建模连续时间行为偏好演化，LLM+反事实扰动提取时间敏感语义，门控自适应控制跨域迁移权重以缓解负迁移。" />
+<meta property="og:description" content="[SIGIR 2026][跨域与多场景推荐] 用神经 ODE 解耦长短期行为、LLM 离散时间 token 反事实增强语义、门控自适应域迁移，1:999 采样排序下 MRR 最高提升 30.5%。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] Bridging Behavior and Semantics for Time-aware Cross-Domain Sequential Recommendation" />
-<meta name="twitter:description" content="[SIGIR 2026][跨域与多场景推荐] 用神经ODE建模连续时间行为偏好演化，LLM+反事实扰动提取时间敏感语义，门控自适应控制跨域迁移权重以缓解负迁移。" />
+<meta name="twitter:description" content="[SIGIR 2026][跨域与多场景推荐] 用神经 ODE 解耦长短期行为、LLM 离散时间 token 反事实增强语义、门控自适应域迁移，1:999 采样排序下 MRR 最高提升 30.5%。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +160,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] Bridging Behavior and Semantics for Time-aware Cross-Domain Sequential Recommendation",
   "headline": "[Paper Note] Bridging Behavior and Semantics for Time-aware Cross-Domain Sequential Recommendation",
-  "description": "[SIGIR 2026][\u8de8\u57df\u4e0e\u591a\u573a\u666f\u63a8\u8350] \u7528\u795e\u7ecfODE\u5efa\u6a21\u8fde\u7eed\u65f6\u95f4\u884c\u4e3a\u504f\u597d\u6f14\u5316\uff0cLLM+\u53cd\u4e8b\u5b9e\u6270\u52a8\u63d0\u53d6\u65f6\u95f4\u654f\u611f\u8bed\u4e49\uff0c\u95e8\u63a7\u81ea\u9002\u5e94\u63a7\u5236\u8de8\u57df\u8fc1\u79fb\u6743\u91cd\u4ee5\u7f13\u89e3\u8d1f\u8fc1\u79fb\u3002",
+  "description": "[SIGIR 2026][\u8de8\u57df\u4e0e\u591a\u573a\u666f\u63a8\u8350] \u7528\u795e\u7ecf ODE \u89e3\u8026\u957f\u77ed\u671f\u884c\u4e3a\u3001LLM \u79bb\u6563\u65f6\u95f4 token \u53cd\u4e8b\u5b9e\u589e\u5f3a\u8bed\u4e49\u3001\u95e8\u63a7\u81ea\u9002\u5e94\u57df\u8fc1\u79fb\uff0c1:999 \u91c7\u6837\u6392\u5e8f\u4e0b MRR \u6700\u9ad8\u63d0\u5347 30.5%\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/cross_domain_multi_scenario/bridging_behavior_and_semantics_for_time_aware_cross_domain_sequential_reco/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/cross_domain_multi_scenario/bridging_behavior_and_semantics_for_time_aware_cross_domain_sequential_reco/",
   "inLanguage": "zh-CN",
@@ -168,18 +168,18 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u8de8\u57df\u4e0e\u591a\u573a\u666f\u63a8\u8350, \u53ec\u56de, \u795e\u7ecfODE\u8fde\u7eed\u65f6\u95f4\u5efa\u6a21, LLM\u65f6\u95f4\u8bed\u4e49\u4e0e\u53cd\u4e8b\u5b9e\u589e\u5f3a, \u8de8\u57df\u5e8f\u5217\u63a8\u8350",
+  "keywords": "SIGIR 2026, \u8de8\u57df\u4e0e\u591a\u573a\u666f\u63a8\u8350, \u7cbe\u6392, \u795e\u7ecf ODE, \u65f6\u95f4\u611f\u77e5\u8bed\u4e49, \u53cd\u4e8b\u5b9e\u5bf9\u6bd4\u5b66\u4e60",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u8de8\u57df\u4e0e\u591a\u573a\u666f\u63a8\u8350" },
-    { "@type": "Thing", "name": "\u53ec\u56de" },
-    { "@type": "Thing", "name": "\u795e\u7ecfODE\u8fde\u7eed\u65f6\u95f4\u5efa\u6a21" },
-    { "@type": "Thing", "name": "LLM\u65f6\u95f4\u8bed\u4e49\u4e0e\u53cd\u4e8b\u5b9e\u589e\u5f3a" },
-    { "@type": "Thing", "name": "\u8de8\u57df\u5e8f\u5217\u63a8\u8350" }
+    { "@type": "Thing", "name": "\u7cbe\u6392" },
+    { "@type": "Thing", "name": "\u795e\u7ecf ODE" },
+    { "@type": "Thing", "name": "\u65f6\u95f4\u611f\u77e5\u8bed\u4e49" },
+    { "@type": "Thing", "name": "\u53cd\u4e8b\u5b9e\u5bf9\u6bd4\u5b66\u4e60" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3997,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4011,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4019,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4072,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4095,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4103,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4119,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4181,9 +4159,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][跨域与多场景推荐] 用神经ODE建模连续时间行为偏好演化，LLM+反事实扰动提取时间敏感语义，门控自适应控制跨域迁移权重以缓解负迁移。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][跨域与多场景推荐] 用神经 ODE 解耦长短期行为、LLM 离散时间 token 反事实增强语义、门控自适应域迁移，1:999 采样排序下 MRR 最高提升 30.5%。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 跨域与多场景推荐 · 召回 · 神经ODE连续时间建模 · LLM时间语义与反事实增强 · 跨域序列推荐</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 跨域与多场景推荐 · 精排 · 神经 ODE · 时间感知语义 · 反事实对比学习</p>
   
 </aside>
   
@@ -4211,28 +4189,28 @@
       
       
       
-        <span class="md-tag">召回</span>
+        <span class="md-tag">精排</span>
       
     
       
       
       
       
-        <span class="md-tag">神经ODE连续时间建模</span>
+        <span class="md-tag">神经 ODE</span>
       
     
       
       
       
       
-        <span class="md-tag">LLM时间语义与反事实增强</span>
+        <span class="md-tag">时间感知语义</span>
       
     
       
       
       
       
-        <span class="md-tag">跨域序列推荐</span>
+        <span class="md-tag">反事实对比学习</span>
       
     
   </nav>
@@ -4244,213 +4222,348 @@
 
 <h1 id="bridging-behavior-and-semantics-for-time-aware-cross-domain-sequential-recommendation">Bridging Behavior and Semantics for Time-aware Cross-Domain Sequential Recommendation (桥接行为与语义的时间感知跨域序列推荐)</h1>
 <ul>
-<li><strong>会议/期刊</strong>: SIGIR 2026 (第49届国际ACM SIGIR会议，Melbourne, VIC, Australia)</li>
-<li><strong>推荐链路定位</strong>: 召回 (Retrieval) — 跨域序列下一物品预测 (Next-Item Prediction)</li>
-<li><strong>研究方向</strong>: 跨域与多场景推荐 (主) / 序列与会话推荐 (次)</li>
+<li><strong>会议/期刊</strong>: SIGIR 2026</li>
+<li><strong>作者与机构</strong>: Zhida Qin, Zemu Liu, Haoyan Fu, Tianyu Huang, Gangyi Ding (北京理工大学)；Chong Zhang (西安交通大学)；Yidong Li (北京交通大学)</li>
+<li><strong>推荐链路定位</strong>: 精排（跨域序列 Next-Item 预测）</li>
+<li><strong>研究方向</strong>: 跨域与多场景推荐 / 序列与会话推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2605.02369v1">https://arxiv.org/abs/2605.02369v1</a></li>
-<li><strong>开源代码</strong>: 暂未开源（原文与预提取均未发现开源代码链接）</li>
+<li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对跨域序列推荐 (CDSR) 中"同一时间间隔在不同域对应不同偏好漂移程度"与"语义偏好被当作时不变静态特征"两大痛点，本文提出 BST-CDSR：用神经 ODE + 事件驱动 GRU 解耦长短期行为偏好并做连续时间演化，用 LLM 对离散化时间间隔 token 建模时间感知语义并施加反事实扰动增强时间敏感性，最后用时间偏好引导的门控自适应控制跨域迁移权重以抑制负迁移。在三个真实数据集上，模型在 HR@10/NDCG@10 等指标上一致优于强基线（具体数值见原文表 2）。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>现有 CDSR 方法把跨域序列当作等间隔时间轴处理，且把 LLM 语义偏好视为时间不变特征，导致同一时间间隔在不同域引发不同偏好漂移、情境性语义被误当作稳定兴趣而引发负迁移。本文提出 BST-CDSR：用双状态神经 ODE 在连续时间上演化长短期行为偏好，用离散时间 gap token + 反事实扰动让 LLM 生成时间敏感语义，再用时间-偏好混合门控自适应控制域迁移强度。在 Food-Kitchen / Movie-Book / Art-Office 三组数据集、1:999 采样排序协议下，MRR 相对最强基线 LLM-EDT 提升 15.9%–30.5%。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 跨域序列推荐 (CDSR) 通过联合建模用户在多个域（如 Movie / Book / Food）上的行为序列来缓解交互稀疏。主流范式分两支：(1) 纯 ID 行为路线，依赖全重叠用户、显式对齐跨域行为相关性（如跨域序列迁移模型）；(2) 近期 LLM 语义注入路线，如 LLM4CDSR 用 LLM 学习统一跨域语义表征、URLLM 用 LLM 抽取物品属性语义构建物品-属性图。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>忽略域相关的交互频率与兴趣衰减速率</strong>：同一时间间隔（如一周）在电影域可能已发生多次兴趣漂移，在图书域却可能兴趣稳定。原文图 1(a) 显示电影域单日交互占比约 54.6%，图书域约 45.5%，长间隔 (&gt;7天) 占比分别为 10.7% 与 15.0%，说明域间时间模式显著异质。</li>
-<li><strong>将语义偏好视为时不变静态特征</strong>：部分语义交互源于情境需求（如圣诞节看圣诞电影），节日过后兴趣即消失；把"情境语义"误当"稳定偏好"并在跨域迁移中传播，会直接导致负迁移。</li>
-<li><strong>离散序列编码器只在交互点更新</strong>：交互之间的偏好连续演化与长间隔的累积影响无法被捕捉。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 跨域时间错位下如何准确建模偏好演化？如何建模时间依赖语义以防止负迁移？简单特征拼接或加深网络无法解决，因为混合域序列会模糊域特有的时间信号，且 LLM 对绝对数值时间推理能力有限（原文引用 [14,17]）。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 原文第 2 节数据洞察——(i) 交互间隔高度非均匀且域相关（图 1(a)）；(ii) 物品语义与交互时间强相关，代表性电影（如 A Merry Friggin' Christmas、Christmas Lodge、Whiskey Tango Foxtrot）的交互频率呈现与语义一致的明显时间聚集（图 1(b)）。由此得出：时间携带排序之外的丰富信息，必须把域相关交互间隔与语义-时间相关性显式注入模型。</li>
+<li><strong>主流范式</strong>: CDSR 以完全重叠用户为桥梁，用对比学习（C2DSR）、外部注意力（EA-GCL）、多粒度兴趣（Tri-CDR）或 LLM 语义增强（LLM4CDSR、LLM-EDT）对齐跨域序列表征。</li>
+<li><strong>前人局限一</strong>: 所有方法默认跨域时间间隔"等距"，忽略域特异交互频率与兴趣衰减率。图 1(a) 显示 Movie 域单日交互占比 54.6%，Book 域仅 45.5%，且 Book 域 &gt;7 天长间隔占比高出 5%——同一周间隔在 Movie 域可能已数次兴趣漂移，在 Book 域却几乎无变化。</li>
+<li><strong>前人局限二</strong>: 语义被建模为静态实体。图 1(b) 中圣诞主题电影、婚礼题材、战争片均呈明显时间聚类峰值，说明部分交互由情境驱动而非稳定偏好；把这类语义跨域迁移即是负迁移的直接来源。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 时间不只是排序信号，而是携带域特异漂移速率与语义时效性的双重信息；行为侧需连续时间演化，语义侧需时间敏感性约束。</li>
+<li><strong>本文切入点</strong>: 在行为建模、语义建模、域迁移三个阶段同时注入时间因素，形成"行为 ODE + 反事实语义 + 门控迁移"的闭环。</li>
 </ul>
 <figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2605.02369v1/figure_1.png" /><figcaption>图 1</figcaption>
+  <img alt="图1：行为与语义的数据分析。(a) 行为视角：不同领域中交互时间间隔的分布；(b) 语义视角：具有强时间相关性的代表性电影条目的交互时间线。" src="../../../../../assets/papers/2605.02369v1/figure_1.png" /><figcaption>图1：行为与语义的数据分析。(a) 行为视角：不同领域中交互时间间隔的分布；(b) 语义视角：具有强时间相关性的代表性电影条目的交互时间线。</figcaption>
 </figure>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>双域场景：域 <span class="arithmatex">\(A\)</span> 与域 <span class="arithmatex">\(B\)</span>，物品集 <span class="arithmatex">\(I^A\)</span>、<span class="arithmatex">\(I^B\)</span>，共享时间空间 <span class="arithmatex">\(T\)</span>。</li>
-<li>用户 <span class="arithmatex">\(u\)</span> 的交互记为物品-时间对 <span class="arithmatex">\((i,t)\)</span>，两域序列：</li>
-<li><span class="arithmatex">\(S^A=\{(i^A_k,t^A_k)\}_{k=1}^{n}\)</span>，<span class="arithmatex">\(S^B=\{(i^B_k,t^B_k)\}_{k=1}^{m}\)</span></li>
-<li>按时间合并构造统一跨域序列 <span class="arithmatex">\(S^M\)</span>。</li>
-<li>任务：预测各域下一物品 <span class="arithmatex">\(i^A_{n+1}\)</span>、<span class="arithmatex">\(i^B_{m+1}\)</span>。</li>
-<li>嵌入维度统一为 <span class="arithmatex">\(d\)</span>；序列短于长度 <span class="arithmatex">\(N\)</span> 时零向量填充。</li>
-<li>物品嵌入表：域专属 <span class="arithmatex">\(M^A\in\mathbb{R}^{|I^A|\times d}\)</span>、<span class="arithmatex">\(M^B\in\mathbb{R}^{|I^B|\times d}\)</span>，域共享 <span class="arithmatex">\(M^M\in\mathbb{R}^{(|I^A|+|I^B|)\times d}\)</span>。</li>
-<li>时间编码：绝对时间查表 <span class="arithmatex">\(M^{at}\in\mathbb{R}^{|T|\times d}\)</span>；相对时间间隔 <span class="arithmatex">\(\Delta_i=t_i-t_{i-1}\)</span>（<span class="arithmatex">\(\Delta_1=-1\)</span> 标记序列起点），对数离散化 <span class="arithmatex">\(pos_i=\lfloor a\log(\Delta_i+2)\rfloor\)</span> 后查表 <span class="arithmatex">\(M^{rt}\in\mathbb{R}^{|P|\times d}\)</span>。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：域 A / 域 B / 混合域三条序列分别经嵌入层 → 行为偏好演化模块（长短期 ODE + 门控融合）→ 与 LLM 时间语义表征融合 → 时间偏好引导的域迁移门控 → 输出各域推荐打分。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>对域 A、域 B 及按时间合并的混合域 M 三条序列，先做物品嵌入与绝对/相对时间嵌入（相对间隔经 <span class="arithmatex">\(pos_i=\lfloor a\log(\Delta_i+2)\rfloor\)</span>离散化查表）。行为分支用 Transformer 编码事件级表征后送入双状态神经 ODE，输出长短期融合偏好<span class="arithmatex">\(\boldsymbol{z}_N\)</span>；语义分支把 <code>[Domain][Title][Gap]</code> 序列喂入 LLM 取末位隐状态，经 PCA+Adapter 降维得<span class="arithmatex">\(\boldsymbol{z}_{\text{LLM}}\)</span>，并以小/大范围 gap 扰动构造反事实对比。两分支求和得<span class="arithmatex">\(\boldsymbol{o}^A,\boldsymbol{o}^B\)</span>，再与混合域偏好表征<span class="arithmatex">\(\boldsymbol{r}^A,\boldsymbol{r}^B\)</span>按门控权重<span class="arithmatex">\(w^A,w^B\)</span> 加权，softmax 输出下一物品分布。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 域A/域B/混合域序列 (物品ID + 绝对时间 + 相对间隔)"] --&gt; B["嵌入层: 物品嵌入 + 绝对/相对时间嵌入"]
-    B --&gt; C["行为偏好演化: 长/短期神经ODE + 事件驱动GRU + 时间感知门控融合"]
-    A --&gt; D["时间语义生成: 离散[Gap] token + LLM + 反事实扰动对比"]
-    C --&gt; E["行为-语义融合表征 r_A / r_B"]
-    D --&gt; E
-    E --&gt; F["时间偏好引导域迁移门控: o = o·w + r·(1-w)"]
-    F --&gt; G["各域下一物品打分预测"]</code></pre>
+    A["域A/域B/混合域序列 + 绝对&amp;相对时间嵌入"] --&gt; B["Transformer 事件编码"]
+    B --&gt; C["双状态神经 ODE: 长/短期连续演化 + GRU 事件驱动更新"]
+    A --&gt; D["离散 Gap Token 提示 + LLM 语义编码"]
+    D --&gt; E["小/大范围反事实扰动对比"]
+    C --&gt; F["时间感知门控融合 o^A, o^B"]
+    E --&gt; F
+    F --&gt; G["时间-偏好混合门控域迁移 w^A, w^B"]
+    G --&gt; H["Softmax Next-Item 预测"]</code></pre>
 <figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2605.02369v1/figure_2.png" /><figcaption>图 2</figcaption>
+  <img alt="图2：所提方法的整体架构。该模型由三个关键组件构成：(i) 时间感知的行为偏好演化模块（绿色），(ii) 时间反事实增强的语义偏好生成器（蓝色），以及 (iii) 用于最终推荐的时间偏好引导的自适应域迁移（橙色）。" src="../../../../../assets/papers/2605.02369v1/figure_2.png" /><figcaption>图2：所提方法的整体架构。该模型由三个关键组件构成：(i) 时间感知的行为偏好演化模块（绿色），(ii) 时间反事实增强的语义偏好生成器（蓝色），以及 (iii) 用于最终推荐的时间偏好引导的自适应域迁移（橙色）。</figcaption>
 </figure>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 行为偏好演化模块（长短期解耦 + 连续时间 ODE）</strong></p>
-<ul>
-<li>先用 Transformer 层得到物品级瞬时偏好 <span class="arithmatex">\(E=\mathrm{Att}(\mathrm{Emb}(S))\)</span>，<span class="arithmatex">\(\bm{e}_t\in E\)</span> 为第 <span class="arithmatex">\(t\)</span> 次交互的离散瞬时偏好。</li>
-<li><strong>长期偏好</strong>：交互之间按神经 ODE 平滑演化，归一化间隔 <span class="arithmatex">\(\tilde{\Delta}_t=\log_2(\Delta_t+2)/\log_2(\Delta_{max}+2)\)</span>：
-  $<span class="arithmatex">\(\frac{d\bm{h}^L_t}{dt}=f_L(\bm{h}^L_t,\tilde{\Delta}_t)\)</span>$
-  实践中用一阶 Euler 近似：<span class="arithmatex">\(\bm{h}^L_{t'}=\bm{h}^L_t+\tilde{\Delta}_t\cdot f_L(\bm{h}^L_t,\tilde{\Delta}_t)\)</span>；观测到交互 <span class="arithmatex">\(i_{t+1}\)</span> 后做事件驱动更新：<span class="arithmatex">\(\bm{h}^L_{t+1}=\mathrm{GRU}(\bm{e}_{t+1},\bm{h}^L_{t'})\)</span>。</li>
-<li><strong>短期偏好</strong>：同构但参数独立，捕捉快速变化的瞬时意图。</li>
-<li><strong>时间感知门控融合</strong>：
-  $<span class="arithmatex">\(\bm{g}_{t+1}=\sigma(W[\bm{h}^L_{t+1},\bm{h}^S_{t+1},\tilde{\Delta}_t]),\quad \bm{z}_{t+1}=\bm{g}_{t+1}\odot\bm{h}^S_{t+1}+(1-\bm{g}_{t+1})\odot\bm{h}^L_{t+1}\)</span>$
-  物理直觉：门控输入含归一化间隔，使模型能按时间间隔长短动态调节长短期依赖权重。取最后一步 <span class="arithmatex">\(\bm{z}_N\)</span> 作为域 A/B 的行为偏好。</li>
-</ul>
-<p><strong>(2) 时间反事实增强语义偏好生成器</strong></p>
-<ul>
-<li><strong>离散时间提示构造</strong>：LLM 对连续数值时间推理能力弱，故将 <span class="arithmatex">\(\Delta_i\)</span> 映射为离散 token <span class="arithmatex">\([\mathrm{Gap}]_j=\phi(\Delta_i)\in V_{gap}\)</span>，并在每条交互文本前加域 token（<span class="arithmatex">\([\mathrm{A\_Domain}]\)</span>/<span class="arithmatex">\([\mathrm{B\_Domain}]\)</span>），使 LLM 能识别域切换。提示模板为 "You will act as a time-aware preference interpreter..."。</li>
-<li><strong>语义抽取与降维</strong>：<span class="arithmatex">\(\bm{Z}_{LLM}=\mathrm{LLM}(x)\in\mathbb{R}^{L\times D_{LLM}}\)</span>，取最后有效 token 隐状态，经 PCA 降维 <span class="arithmatex">\(f_{PCA}:\mathbb{R}^{D_{LLM}}\to\mathbb{R}^{D_{Mid}}\)</span> 再经适配层 <span class="arithmatex">\(f_{Adapt}:\mathbb{R}^{D_{Mid}}\to\mathbb{R}^{d}\)</span> 得 <span class="arithmatex">\(\bm{z}_{LLM}\)</span>（沿用 LLMEmb 思路）。</li>
-<li><strong>反事实时间敏感性增强</strong>：在保留交互语义的前提下扰动时间模式，构造原始序列 <span class="arithmatex">\(\bm{z}_{LLM}\)</span>、小扰动 <span class="arithmatex">\(\bm{z}_{small}\)</span>、大扰动 <span class="arithmatex">\(\bm{z}_{big}\)</span> 三视图，用反事实对比损失 <span class="arithmatex">\(\mathcal{L}_{cf}\)</span> 迫使语义表征对时间偏移敏感（原文该小节在提取文本中被截断，具体扰动幅度与对比形式以原文 4.3.2 节为准）。</li>
-</ul>
-<p><strong>(3) 时间偏好引导的域迁移模块</strong></p>
-<ul>
-<li>对每个域，用时间模式 <span class="arithmatex">\(\Delta T\)</span> 与偏好相关性经门控产生迁移权重 <span class="arithmatex">\(w_A\)</span>、<span class="arithmatex">\(w_B\)</span>，最终表征为源域表征与目标域表征的凸组合：
-  $<span class="arithmatex">\(\bm{o}_A=\bm{o}_A\cdot w_A+\bm{r}_A\cdot(1-w_A),\quad \bm{o}_B=\bm{o}_B\cdot w_B+\bm{r}_B\cdot(1-w_B)\)</span>$
-  其中 <span class="arithmatex">\(\bm{r}_A,\bm{r}_B\)</span> 为行为-语义融合表征。物理直觉：当源域语义是情境性、时间上不可迁移时，门控自动压低迁移权重，从而缓解负迁移。</li>
-</ul>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>：总损失由推荐主损失 <span class="arithmatex">\(\mathcal{L}_{rec}\)</span>、反事实对比损失 <span class="arithmatex">\(\mathcal{L}_{cf}\)</span>、长期平滑正则 <span class="arithmatex">\(\mathcal{L}_L\)</span>、短期对比对齐正则 <span class="arithmatex">\(\mathcal{L}_S\)</span> 组成（原文未在提取文本中给出总损失显式加权公式，权重系数以原文为准）：</li>
-<li>长期正则（短间隔强约束、长间隔弱约束）：
-    $<span class="arithmatex">\(\mathcal{L}_L=\sum_{t=2}^{N}(1-\tilde{\Delta}_t)\|\bm{h}^L_t-\bm{h}^L_{t-1}\|_2^2\)</span>$</li>
-<li>短期对比对齐（<span class="arithmatex">\(\bm{h}^S_t\)</span> 与自身 <span class="arithmatex">\(\bm{e}_t\)</span> 拉近、与同 batch 其他交互推远，温度 <span class="arithmatex">\(\tau\)</span>）：
-    $<span class="arithmatex">\(\mathcal{L}_S=-\sum_t\log\frac{\exp(\mathrm{sim}(\bm{h}^S_t,\bm{e}_t)/\tau)}{\sum_j\exp(\mathrm{sim}(\bm{h}^S_t,\bm{e}_j)/\tau)}\)</span>$</li>
-<li><strong>训练负采样策略</strong>：<span class="arithmatex">\(\mathcal{L}_S\)</span> 采用 in-batch 负样本（同 batch 其他交互）；推荐主损失 <span class="arithmatex">\(\mathcal{L}_{rec}\)</span> 的具体负采样形式原文提取文本未完整给出，需以原文为准。</li>
-<li><strong>时间与空间复杂度</strong>：ODE 用一阶 Euler 单步近似，避免昂贵数值积分求解器；LLM 语义表征为离线预抽取（PCA + 适配层降维），在线仅做查表与轻量门控融合；原文未报告具体训练单 epoch 耗时、推理延迟 (ms/request) 与峰值显存。</li>
-</ul>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>双状态神经 ODE 行为偏好演化</strong>：离散序列编码器只在交互点更新，无法刻画交互间的渐变漂移与长间隔累积效应。本文将偏好拆为长期 <span class="arithmatex">\(\boldsymbol{h}^L\)</span>与短期<span class="arithmatex">\(\boldsymbol{h}^S\)</span>，交互间用一阶 Euler 近似求解<span class="arithmatex">\(\frac{d\boldsymbol{h}^L_t}{dt}=f_L(\boldsymbol{h}^L_t,\tilde{\Delta}_t)\)</span>，即<span class="arithmatex">\(\boldsymbol{h}^{L\prime}_t=\boldsymbol{h}^L_t+\tilde{\Delta}_t\cdot f_L(\boldsymbol{h}^L_t,\tilde{\Delta}_t)\)</span>；交互发生时再以<span class="arithmatex">\(\boldsymbol{h}^L_{t+1}=\text{GRU}(\boldsymbol{e}_{t+1},\boldsymbol{h}^{L\prime}_t)\)</span>做事件驱动跳变。直觉是"平滑漂移 + 脉冲更新"两段式动力学恰好对应真实兴趣的渐变与突变。融合门控<span class="arithmatex">\(\boldsymbol{g}_{t+1}=\sigma(\boldsymbol{W}[\boldsymbol{h}^L_{t+1},\boldsymbol{h}^S_{t+1},\tilde{\Delta}_t])\)</span> 显式以归一化间隔为条件，使长间隔自动偏向长期状态。</p>
+</li>
+<li>
+<p><strong>时间反事实增强的语义生成器</strong>：LLM 对绝对数值时间推理能力弱，且无约束时要么忽略时间、要么对噪声时间过度敏感。本文将间隔映射为离散 token <code>[Gap]</code>，并构造同组小扰动 <span class="arithmatex">\(\boldsymbol{x}_{\text{small}}\)</span>与跨组大扰动<span class="arithmatex">\(\boldsymbol{x}_{\text{big}}\)</span>，用排序式反事实目标约束：<span class="arithmatex">\(\mathcal{L}_1=-\log\sigma\big((\text{sim}(\boldsymbol{z}_{\text{LLM}},\boldsymbol{z}_{\text{small}})-\text{sim}(\boldsymbol{z}_{\text{LLM}},\boldsymbol{z}_{\text{big}}))/\tau\big)\)</span>，<span class="arithmatex">\(\mathcal{L}_2\)</span>进一步要求<span class="arithmatex">\(\boldsymbol{z}_{\text{big}}\)</span>与 batch 内 top-<span class="arithmatex">\(K\)</span> 负样本可分。物理直觉：语义表征应对微小时间抖动鲁棒、对真实时间模式切换敏感，从而剥离"情境语义"与"稳定偏好"。</p>
+</li>
+<li>
+<p><strong>时间-偏好引导的域迁移与训练目标</strong>：用户跨域切换模式高度异质，固定迁移强度必然负迁移。本文用域感知间隔序列 <span class="arithmatex">\(\Delta T^M=\{(\text{dom}_i,\Delta^M_{t_i})\}\)</span>经注意力得时间因子<span class="arithmatex">\(\boldsymbol{u}\)</span>，用混合域偏好池化得相关性因子<span class="arithmatex">\(\boldsymbol{r}\)</span>，门控输出<span class="arithmatex">\(w^A=\sigma(f_{\text{gate}}([\boldsymbol{W}^A_t[\boldsymbol{u}^A_t,\boldsymbol{u}^M_t],\boldsymbol{W}^A_r[\boldsymbol{r}^A,\boldsymbol{r}^B]]))\)</span>。总损失<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{\text{main}}+\lambda_1\mathcal{L}_{\text{ODE}}+\lambda_2\mathcal{L}_{\text{sem}}\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{\text{ODE}}\)</span>含长期平滑正则<span class="arithmatex">\(\sum_t(1-\tilde{\Delta}_t)\|\boldsymbol{h}^L_t-\boldsymbol{h}^L_{t-1}\|_2^2\)</span>与短期对比对齐<span class="arithmatex">\(\mathcal{L}_S\)</span>；主损失为逐域交叉熵，负采样为全库 softmax（训练时即全物品归一化），推理无额外负采样开销，但需一次 LLM 前向（离线可缓存）。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文使用三个真实数据集（Movie-Book 及 Food-Kitchen 等，表 1 给出统计量）。提取文本中表 1 的具体数值未完整呈现，以下仅列出原文明确提及的信息，其余以原文表 1 为准：</li>
+<li><strong>数据集与预处理</strong>: 沿用 C2DSR 的域配对与过滤协议，三组双域数据集：</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Movie-Book</td>
-<td style="text-align: center;">原文表 1（提取文本未给出具体数值）</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: left;">物品标题文本 (LLM 语义输入)</td>
-</tr>
-<tr>
-<td style="text-align: left;">Food-Kitchen</td>
-<td style="text-align: center;">原文表 1（提取文本未给出具体数值）</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: left;">物品标题文本 (LLM 语义输入)</td>
-</tr>
-<tr>
-<td style="text-align: left;">第三个数据集</td>
-<td style="text-align: center;">原文表 1（提取文本未给出具体数值）</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: left;">-</td>
-</tr>
-</tbody>
-</table>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2605.02369v1/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
-<ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文提取文本未明确说明划分策略（LOO / Ratio / 全局时间戳切分），需以原文实验设置章节为准；鉴于任务为带时间戳的下一物品预测，存在按时间顺序切分的可能性，但<strong>原文未报告</strong>，此处不做臆断。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 原文提取文本未明确标注 Full-Ranking 还是 Sampled Ranking，需以原文为准。</li>
-<li><strong>评价指标与显著性检验</strong>: 原文表 2 报告 HR@10、NDCG@10 等指标（具体指标集合以原文表 2 为准）；是否进行配对显著性检验<strong>原文未报告</strong>。</li>
-</ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
-<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>原文表 2 报告 BST-CDSR 与全部基线在三个数据集上的性能，摘要与结论均声明"consistently outperforms baselines"。由于提取文本未包含表 2 的具体数值，此处不臆造数字，具体数值请查阅原文表 2：</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">传统/协同过滤基线</th>
-<th style="text-align: center;">序列/图/多模态最强基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: left;">域</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Train</th>
+<th style="text-align: center;">#Valid</th>
+<th style="text-align: center;">#Test</th>
+<th style="text-align: center;">平均长度</th>
+<th style="text-align: center;">稀疏度</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Movie-Book</td>
-<td style="text-align: left;">HR@10 / NDCG@10</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;"><strong>原文表 2</strong></td>
-<td style="text-align: center;">原文表 2</td>
-</tr>
-<tr>
 <td style="text-align: left;">Food-Kitchen</td>
-<td style="text-align: left;">HR@10 / NDCG@10</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;"><strong>原文表 2</strong></td>
-<td style="text-align: center;">原文表 2</td>
+<td style="text-align: left;">Food</td>
+<td style="text-align: center;">29,207</td>
+<td style="text-align: center;">34,117</td>
+<td style="text-align: center;">8,173</td>
+<td style="text-align: center;">8,406</td>
+<td style="text-align: center;">6.2</td>
+<td style="text-align: center;">99.94%</td>
 </tr>
 <tr>
-<td style="text-align: left;">第三数据集</td>
-<td style="text-align: left;">HR@10 / NDCG@10</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;">原文表 2</td>
-<td style="text-align: center;"><strong>原文表 2</strong></td>
-<td style="text-align: center;">原文表 2</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Kitchen</td>
+<td style="text-align: center;">34,886</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">6.0</td>
+<td style="text-align: center;">99.95%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Movie-Book</td>
+<td style="text-align: left;">Movie</td>
+<td style="text-align: center;">36,845</td>
+<td style="text-align: center;">58,515</td>
+<td style="text-align: center;">7,644</td>
+<td style="text-align: center;">7,708</td>
+<td style="text-align: center;">6.4</td>
+<td style="text-align: center;">99.92%</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Book</td>
+<td style="text-align: center;">63,937</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">5.6</td>
+<td style="text-align: center;">99.96%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Art-Office</td>
+<td style="text-align: left;">Art</td>
+<td style="text-align: center;">47,365</td>
+<td style="text-align: center;">37,654</td>
+<td style="text-align: center;">6,251</td>
+<td style="text-align: center;">6,199</td>
+<td style="text-align: center;">5.6</td>
+<td style="text-align: center;">99.97%</td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">Office</td>
+<td style="text-align: center;">47,868</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">5.8</td>
+<td style="text-align: center;">99.96%</td>
 </tr>
 </tbody>
 </table>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2605.02369v1/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文表 3 在两个数据集上对核心组件做消融（行为偏好演化、时间反事实语义生成、时间偏好引导域迁移等），验证各模块贡献。提取文本未给出具体下降幅度数值，需以原文表 3 为准；消融是否严格控制参数量对齐<strong>原文未报告</strong>。</p>
-<figure class="paper-figure">
-  <img alt="表 3" src="../../../../../assets/papers/2605.02369v1/table_3.png" /><figcaption>表 3</figcaption>
-</figure>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
 <ul>
-<li><strong>时间分布分桶表现</strong>: 原文图 3 在 Food-Kitchen 数据集上按不同时间分布与基线做性能对比，用于验证模型在异质时间间隔下的鲁棒性（具体分桶数值以原文图 3 为准）。</li>
-<li><strong>关键超参数敏感度</strong>: 温度系数 <span class="arithmatex">\(\tau\)</span>、ODE 归一化参数 <span class="arithmatex">\(a\)</span>、损失权重等敏感度分析<strong>原文提取文本未报告</strong>，需以原文为准。</li>
-<li><strong>线上 A/B 测试结果</strong>: 原文仅包含离线实验，<strong>未报告</strong>线上 A/B 测试。</li>
+<li><strong>数据划分与防穿越</strong>: 按 8:1:1 比例划分训练/验证/测试，序列按时间戳排序，预测各域下一物品。</li>
+<li><strong>排名评测协议</strong>: <code>Sampled Ranking</code>，每个测试正样本配 999 个随机负样本（1:999），指标 MRR、N@5/10、H@1/5/10。</li>
+<li><strong>对比基线与超参</strong>: 基线含单域（SASRec、TiSASRec、CL4SRec、IOCRec）、CDSR（C2DSR、EA-GCL、Tri-CDR、ABXI）、LLM-based CDSR（LLMCDSR、LLM4CDSR、LLM-EDT，均用 Llama2-7B）。嵌入维度与 batch size 均为 256，学习率 5e-4（Adam），<span class="arithmatex">\(\lambda_1=0.01\)</span>、<span class="arithmatex">\(\lambda_2=0.001\)</span>，单卡 RTX 3090。</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2605.02369v1/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">数据集/域</th>
+<th style="text-align: left;">指标</th>
+<th style="text-align: center;">SASRec</th>
+<th style="text-align: center;">C2DSR</th>
+<th style="text-align: center;">Tri-CDR</th>
+<th style="text-align: center;">LLM4CDSR</th>
+<th style="text-align: center;">LLM-EDT</th>
+<th style="text-align: center;"><strong>BST-CDSR</strong></th>
+<th style="text-align: center;">Improv.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Food</td>
+<td style="text-align: left;">MRR</td>
+<td style="text-align: center;">0.0917</td>
+<td style="text-align: center;">0.1246</td>
+<td style="text-align: center;">0.1195</td>
+<td style="text-align: center;">0.1410</td>
+<td style="text-align: center;">0.1493</td>
+<td style="text-align: center;"><strong>0.1949</strong></td>
+<td style="text-align: center;">+30.54%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Food</td>
+<td style="text-align: left;">H@10</td>
+<td style="text-align: center;">0.1800</td>
+<td style="text-align: center;">0.1843</td>
+<td style="text-align: center;">0.2087</td>
+<td style="text-align: center;">0.2176</td>
+<td style="text-align: center;">0.2213</td>
+<td style="text-align: center;"><strong>0.2547</strong></td>
+<td style="text-align: center;">+15.09%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Kitchen</td>
+<td style="text-align: left;">MRR</td>
+<td style="text-align: center;">0.0588</td>
+<td style="text-align: center;">0.0830</td>
+<td style="text-align: center;">0.0713</td>
+<td style="text-align: center;">0.1019</td>
+<td style="text-align: center;">0.1047</td>
+<td style="text-align: center;"><strong>0.1213</strong></td>
+<td style="text-align: center;">+15.85%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Kitchen</td>
+<td style="text-align: left;">H@10</td>
+<td style="text-align: center;">0.1210</td>
+<td style="text-align: center;">0.1276</td>
+<td style="text-align: center;">0.1367</td>
+<td style="text-align: center;">0.1415</td>
+<td style="text-align: center;">0.1428</td>
+<td style="text-align: center;"><strong>0.1585</strong></td>
+<td style="text-align: center;">+10.99%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Movie</td>
+<td style="text-align: left;">MRR</td>
+<td style="text-align: center;">0.0673</td>
+<td style="text-align: center;">0.0719</td>
+<td style="text-align: center;">0.0712</td>
+<td style="text-align: center;">0.1053</td>
+<td style="text-align: center;">0.1095</td>
+<td style="text-align: center;"><strong>0.1383</strong></td>
+<td style="text-align: center;">+26.30%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Movie</td>
+<td style="text-align: left;">H@1</td>
+<td style="text-align: center;">0.0333</td>
+<td style="text-align: center;">0.0490</td>
+<td style="text-align: center;">0.0272</td>
+<td style="text-align: center;">0.0759</td>
+<td style="text-align: center;">0.0820</td>
+<td style="text-align: center;"><strong>0.1116</strong></td>
+<td style="text-align: center;">+36.10%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Book</td>
+<td style="text-align: left;">MRR</td>
+<td style="text-align: center;">0.0457</td>
+<td style="text-align: center;">0.0673</td>
+<td style="text-align: center;">0.0617</td>
+<td style="text-align: center;">0.0869</td>
+<td style="text-align: center;">0.0917</td>
+<td style="text-align: center;"><strong>0.1123</strong></td>
+<td style="text-align: center;">+22.46%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Art</td>
+<td style="text-align: left;">MRR</td>
+<td style="text-align: center;">0.1168</td>
+<td style="text-align: center;">0.1504</td>
+<td style="text-align: center;">0.1434</td>
+<td style="text-align: center;">0.1923</td>
+<td style="text-align: center;">0.2010</td>
+<td style="text-align: center;"><strong>0.2475</strong></td>
+<td style="text-align: center;">+23.13%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Office</td>
+<td style="text-align: left;">MRR</td>
+<td style="text-align: center;">0.1053</td>
+<td style="text-align: center;">0.1372</td>
+<td style="text-align: center;">0.1355</td>
+<td style="text-align: center;">0.1729</td>
+<td style="text-align: center;">0.1805</td>
+<td style="text-align: center;"><strong>0.2170</strong></td>
+<td style="text-align: center;">+20.22%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Office</td>
+<td style="text-align: left;">H@10</td>
+<td style="text-align: center;">0.2112</td>
+<td style="text-align: center;">0.2012</td>
+<td style="text-align: center;">0.2211</td>
+<td style="text-align: center;">0.2521</td>
+<td style="text-align: center;">0.2629</td>
+<td style="text-align: center;"><strong>0.2905</strong></td>
+<td style="text-align: center;">+10.50%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">变体</th>
+<th style="text-align: center;">Food MRR</th>
+<th style="text-align: center;">Food N@10</th>
+<th style="text-align: center;">Movie MRR</th>
+<th style="text-align: center;">Movie H@10</th>
+<th style="text-align: center;">Book MRR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Single-ODE</td>
+<td style="text-align: center;">0.1687</td>
+<td style="text-align: center;">0.1731</td>
+<td style="text-align: center;">0.1236</td>
+<td style="text-align: center;">0.1532</td>
+<td style="text-align: center;">0.0950</td>
+</tr>
+<tr>
+<td style="text-align: left;">Dual LS-ODE</td>
+<td style="text-align: center;">0.1712</td>
+<td style="text-align: center;">0.1753</td>
+<td style="text-align: center;">0.1271</td>
+<td style="text-align: center;">0.1562</td>
+<td style="text-align: center;">0.0964</td>
+</tr>
+<tr>
+<td style="text-align: left;">+Semantic</td>
+<td style="text-align: center;">0.1887</td>
+<td style="text-align: center;">0.1959</td>
+<td style="text-align: center;">0.1329</td>
+<td style="text-align: center;">0.1814</td>
+<td style="text-align: center;">0.1091</td>
+</tr>
+<tr>
+<td style="text-align: left;">+CF-Enhance</td>
+<td style="text-align: center;">0.1890</td>
+<td style="text-align: center;">0.1965</td>
+<td style="text-align: center;">0.1374</td>
+<td style="text-align: center;">0.1876</td>
+<td style="text-align: center;">0.1100</td>
+</tr>
+<tr>
+<td style="text-align: left;">Exact-time</td>
+<td style="text-align: center;">0.1935</td>
+<td style="text-align: center;">0.2015</td>
+<td style="text-align: center;">0.1368</td>
+<td style="text-align: center;">0.1832</td>
+<td style="text-align: center;">0.1095</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>BST-CDSR</strong></td>
+<td style="text-align: center;"><strong>0.1949</strong></td>
+<td style="text-align: center;"><strong>0.2028</strong></td>
+<td style="text-align: center;"><strong>0.1383</strong></td>
+<td style="text-align: center;"><strong>0.1928</strong></td>
+<td style="text-align: center;"><strong>0.1123</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>语义分支是最大增益源，但必须配反事实约束</strong>：从 Dual LS-ODE 到 +Semantic，Food MRR 从 0.1712 跳到 0.1887（+10.2%），远超 ODE 解耦本身的 +1.5%；而纯语义分支实验中 Title+Time 在 Kitchen/Book 上反而低于 Title-only（0.1040 vs 0.1053），只有叠加 +CF-Enhance 才在所有域一致提升（Movie MRR 0.0925→0.1041），证明无约束的时间 token 会引入噪声。</li>
+<li><strong>离散 gap token 优于精确时间戳</strong>：Exact-time 变体在 Movie（0.1368 vs 0.1383）、Book（0.1095 vs 0.1123）、Food（0.1935 vs 0.1949）全面落后，定量印证 LLM 对绝对数值时间推理能力不足，离散化是更 LLM-friendly 的时间注入方式。</li>
+<li><strong>时间越不规则，ODE 优势越大</strong>：在 Food-Kitchen 按间隔方差分桶后，Bucket 2（最不规则）上 BST-CDSR 相对最优基线的 NDCG@10 提升达 59.9%（域 A）与 40.9%（域 B），显著高于 Bucket 0 的 46.8%/36.1%；同时 Bucket 1 绝对性能最高，因其序列最长且时间结构相对连贯。此外注入 20% 噪声后 Food MRR 仍为 0.1754，高于无噪声的 LLM-EDT（0.1493），负迁移抑制有效。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>连续时间 + 事件驱动的双状态 ODE 范式</strong>：长短期解耦 + Euler 单步近似在工程上廉价，可迁移到任意带时间戳的序列推荐（如 POI、电商会话）。</li>
-<li><strong>离散 [Gap] token + 反事实扰动</strong>：绕开 LLM 数值时间推理弱的缺陷，用离散 token 让 LLM 感知时间，再用反事实对比增强时间敏感性，这一"离散化 + 反事实"组合对 LLM4Rec 的时间建模具有普适参考价值。</li>
-<li><strong>门控式域迁移权重</strong>：用时间模式与偏好相关性显式控制迁移强度，是缓解 CDSR 负迁移的轻量可插拔设计。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议披露不足</strong>：提取文本未明确数据划分（是否全局时间戳切分）、候选集打分协议（Full vs Sampled Ranking）与显著性检验，审稿中会要求补充；若采用随机比例划分而非时间切分，则存在未来信息泄露风险。</li>
-<li><strong>LLM 依赖的离线成本与可复现性</strong>：LLM 语义表征需离线预抽取，PCA + 适配层的具体维度 <span class="arithmatex">\(D_{Mid}\)</span>、所用 LLM 型号与推理成本原文提取文本未给出；且代码未开源，复现门槛高。</li>
-<li><strong>反事实扰动设计细节缺失</strong>：小/大扰动的幅度定义与 <span class="arithmatex">\(\mathcal{L}_{cf}\)</span> 的具体形式在提取文本中被截断，若扰动幅度为手工设定，则超参敏感度可能较高。</li>
-<li><strong>仅双域设定</strong>：方法限定域 A/域 B 两域，向多域（&gt;2）扩展时的门控组合复杂度与负迁移控制未讨论。</li>
-<li><strong>效率数据缺失</strong>：未报告训练耗时、推理延迟与显存，工业落地价值难以评估。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: C2DSR 用对比学习对齐跨域表征但完全无视时间间隔；LLM4CDSR 抽取统一语义嵌入却把语义当静态特征；LLM-EDT 做域感知画像增强但迁移强度固定。本文是首个在行为演化、语义生成、域迁移三阶段统一注入时间因素的 CDSR 框架，且用反事实目标显式区分情境语义与稳定偏好。</li>
+<li><strong>可迁移亮点</strong>: (1) "小扰动应鲁棒、大扰动应可分"的排序式反事实目标可直接迁移到任何用 LLM 编码结构化元信息（价格、地理位置、时间）的推荐场景；(2) 以归一化间隔 <span class="arithmatex">\(\tilde{\Delta}_t\)</span> 作为门控条件输入的时间感知融合，可低成本替换现有序列模型中的固定位置编码。</li>
+<li><strong>审稿级局限批判</strong>: (1) 语义分支依赖 Llama2-7B 前向，虽可离线缓存，但序列级 prompt 随长度线性增长，工业级万级候选场景的推理与存储开销未做量化；(2) 评估仅用 1:999 采样排序，未报告 Full-Ranking 结果，且三组数据集均为双域配对设定，多域（≥3）与冷启动用户场景下的域迁移门控有效性缺乏验证。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐（ODE 连续时间 + LLM 反事实时间语义 + 门控域迁移的三段式组合有新意，但各组件单独看均有先例）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐（三数据集 + 消融 + 时间分布分析较完整，但划分协议、排序协议与显著性检验披露不足）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐（符号与公式清晰，ODE 与正则设计动机明确；部分模块细节在正文中依赖原文补充）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐（Euler 近似与离线 LLM 抽取利于落地，但代码未开源、效率数据缺失、LLM 成本未评估）</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （双状态 ODE + 反事实时间语义 + 门控迁移的三段式时间注入组合新颖，但各单点均有前人影子，属系统性整合创新）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （三数据集六域、11 个基线、消融/分桶/噪声/可视化五类分析齐全，但仅采样排序、缺 Full-Ranking 与显著性检验）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （ODE 离散化与反事实损失公式清晰，Euler 近似误差与 LLM 分支复杂度未展开分析）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （ODE 与门控模块轻量易部署，但 LLM 语义分支的离线成本与未开源削弱了直接复现价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>Fave 采用渐进式两阶段训练，全程由双端语义对齐约束语义空间稳定。Stage 1（基础流形构建）：目标物品嵌入作为终点 <span class="arithmatex">\(x_1\)</span>，高斯噪声为起点 <span class="arithmatex">\(x_0\)</span>，线性插值得 <span class="arithmatex">\(x_t\)</span>，网络以“双时间”参数化 <span class="arithmatex">\((t,r)\)</span> 预测瞬时速度场，并用恢复损失 + 目标端交叉熵 + 源端历史重建稳定流形。Stage 2（单步整合）：冻结嵌入层，将起点替换为历史物品的 Bernoulli 掩码嵌入（语义锚先验），把瞬时速度重铸为区间平均速度，用匹配损失 + JVP 曲率惩罚强制轨迹笔直，推理时单次前向即得 <span class="arithmatex">\(\hat{x}_1\)</span>，与全库物品内积排序。</p>
+<p>Fave 采用渐进式两阶段训练，全程由双端语义对齐约束语义空间稳定。Stage 1（基础流形构建）：目标物品嵌入作为终点 <span class="arithmatex">\(x_1\)</span>，高斯噪声为起点<span class="arithmatex">\(x_0\)</span>，线性插值得<span class="arithmatex">\(x_t\)</span>，网络以“双时间”参数化<span class="arithmatex">\((t,r)\)</span>预测瞬时速度场，并用恢复损失 + 目标端交叉熵 + 源端历史重建稳定流形。Stage 2（单步整合）：冻结嵌入层，将起点替换为历史物品的 Bernoulli 掩码嵌入（语义锚先验），把瞬时速度重铸为区间平均速度，用匹配损失 + JVP 曲率惩罚强制轨迹笔直，推理时单次前向即得<span class="arithmatex">\(\hat{x}_1\)</span>，与全库物品内积排序。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户历史序列 s_u + 目标物品 i_{l+1}"] --&gt; B["Stage1: 高斯先验线性插值 + 双时间流模型"]
     B --&gt; C["双端对齐: L_rec + L_tgt + L_src 构建偏好流形"]
@@ -4255,7 +4266,7 @@ $<span class="arithmatex">\(\mathcal{L}_{cons} = \big\| [\bar{v}_\theta, 1, 0] \
 最小化流加速度即“拉直”轨迹，使单步位移即可精确落点，同时防止模式坍缩（多样性分析佐证）。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：Stage 2 总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{match}+\gamma\mathcal{L}_{cons}+\alpha\mathcal{L}_{tgt}+\beta\mathcal{L}_{src}\)</span>（最优 <span class="arithmatex">\(\alpha=0.5,\beta=0.2,\gamma=0.1,\rho=0.75\)</span>）。训练采用全库 softmax 交叉熵（<span class="arithmatex">\(\mathcal{L}_{tgt}\)</span> 分母遍历全部物品），<strong>无需显式负采样</strong>；推理为单次前向 + 全库内积，FLOPs 仅 0.04G、延迟 4.44ms。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：Stage 2 总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{match}+\gamma\mathcal{L}_{cons}+\alpha\mathcal{L}_{tgt}+\beta\mathcal{L}_{src}\)</span>（最优<span class="arithmatex">\(\alpha=0.5,\beta=0.2,\gamma=0.1,\rho=0.75\)</span>）。训练采用全库 softmax 交叉熵（<span class="arithmatex">\(\mathcal{L}_{tgt}\)</span> 分母遍历全部物品），<strong>无需显式负采样</strong>；推理为单次前向 + 全库内积，FLOPs 仅 0.04G、延迟 4.44ms。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4445,16 +4456,22 @@ $<span class="arithmatex">\(\mathcal{L}_{cons} = \big\| [\bar{v}_\theta, 1, 0] \
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>先验与匹配损失是命脉</strong>：去掉语义锚先验（换回高斯噪声）ML-100k N@20 从 10.79 暴跌至 8.85（−18.0%），去掉 <span class="arithmatex">\(\mathcal{L}_{match}\)</span> 跌至 8.88，二者降幅远大于去掉 <span class="arithmatex">\(\mathcal{L}_{cons}\)</span>（10.37）或整个 Stage 2（10.46），说明“起点语义化 + 终点对齐”贡献了主要收益，曲率约束是锦上添花的效率保障。</li>
+<li><strong>先验与匹配损失是命脉</strong>：去掉语义锚先验（换回高斯噪声）ML-100k N@20 从 10.79 暴跌至 8.85（−18.0%），去掉 <span class="arithmatex">\(\mathcal{L}_{match}\)</span>跌至 8.88，二者降幅远大于去掉<span class="arithmatex">\(\mathcal{L}_{cons}\)</span>（10.37）或整个 Stage 2（10.46），说明“起点语义化 + 终点对齐”贡献了主要收益，曲率约束是锦上添花的效率保障。</li>
 <li><strong>稠密数据吃精细约束、稀疏数据吃核心映射</strong>：ML-100k 上各消融变体差异显著（H@20 跨度 5.48），而 Beauty 上变体间差距仅约 0.19，印证极稀疏场景弱交互信号限制了轨迹级正则的收益，核心组件比精细优化更关键。</li>
 <li><strong>单步不牺牲多样性</strong>：Fave 的 ILD=0.4348 高于多步 FMRec 的 0.3786 与 AutoSeqRec 的 0.3350，同时 N@20 最高（10.79），说明平均速度场对任意先验采样点都引导至目标分布的不同区域，避免了单步生成退化为确定性点估计的模式坍缩。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 FMRec（流匹配 + 直线轨迹但仍需多步从噪声积分），Fave 把“起点”和“步数”两个维度同时改造——语义锚先验解决起点、平均速度场解决步数；相比 DiffuRec（随机扩散、高多样性低精度），Fave 以确定性单步同时取得更高精度与更高 ILD；相比 AutoSeqRec（自编码重建），Fave 在连续流形上建模偏好演化而非矩阵重构。</li>
 <li><strong>可迁移亮点</strong>: ① “掩码历史嵌入作先验 + 保留率 <span class="arithmatex">\(\rho\)</span> 调参”可迁移到任何生成式召回的先验设计；② 用 JVP 计算方向导数替代显式 Jacobian 的曲率正则，可低成本嵌入其他 ODE/扩散推荐模型的直线化训练。</li>
 <li><strong>审稿级局限批判</strong>: ① 效率对比仅在单卡 L40、batch 级统计，未报告工业级全库 ANN 检索下的端到端 QPS 与冷启动用户（历史为空时锚先验失效）表现；② 三数据集规模偏小（最大 Steam 仅 28 万交互），且 Stage 2 需冻结嵌入层，两阶段超参（<span class="arithmatex">\(\alpha,\beta,\gamma,\rho\)</span>）共 4 个，调参成本与跨域鲁棒性存疑。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4246,7 +4257,7 @@
 </li>
 </ol>
 <div class="arithmatex">\[y_{c} = \alpha_{m(c)} + \beta^{\top} x_{c} + \varepsilon_{c}, \qquad y_c = \begin{cases} 1/r_c &amp; \text{副本被返回} \\ 0 &amp; \text{未上榜} \end{cases}\]</div>
-<p>其中 <span class="arithmatex">\(\alpha_{m(c)}\)</span> 为匹配集固定效应，吸收 Feed、快照时间、文本内容及所有组内公共冲击；标准误按"跨快照共享同一文本的文本组"聚类，并用 Benjamini–Hochberg 在特征块内（<span class="arithmatex">\(q_{\text{blk}}\)</span>）与全局（<span class="arithmatex">\(q_{\text{all}}\)</span>）双重控制 FDR。这样做的直觉是：把公平性比较严格限制在"唯一变量是作者"的反事实内，避免跨 Feed、跨文本的混淆。</p>
+<p>其中 <span class="arithmatex">\(\alpha_{m(c)}\)</span>为匹配集固定效应，吸收 Feed、快照时间、文本内容及所有组内公共冲击；标准误按"跨快照共享同一文本的文本组"聚类，并用 Benjamini–Hochberg 在特征块内（<span class="arithmatex">\(q_{\text{blk}}\)</span>）与全局（<span class="arithmatex">\(q_{\text{all}}\)</span>）双重控制 FDR。这样做的直觉是：把公平性比较严格限制在"唯一变量是作者"的反事实内，避免跨 Feed、跨文本的混淆。</p>
 <ol>
 <li><strong>训练目标、负采样与推理效率</strong>：本文为<strong>测量型审计研究，无模型训练、无负采样、无在线推理开销</strong>。其"估计目标"是最小化混淆的组间比较——通过固定效应与置换检验（permutation test）、多向聚类、逐 Feed 留一（250 次重拟合）等稳健性手段替代传统训练正则。逐 Feed 留一后全部 250 次重拟合系数仍为负，99.6% 满足 <span class="arithmatex">\(p&lt;0.05\)</span>，说明结论非单一 Feed 驱动。</li>
 </ol>
@@ -4278,8 +4289,8 @@
 </table>
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 非传统训练/测试划分，而是<strong>快照时间对齐</strong>——每份副本必须发布于该快照生成之前，且组内创建时间跨度受限，防止"后发帖先上榜"的时间穿越混淆；作者历史仅取快照之前的日志（左删失，作者自述为局限）。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 采用<strong>真实线上 Top-50 全列表输出</strong>（等价于无偏 Full-Ranking 的截断观测），未上榜副本记零曝光；主指标 RR <span class="arithmatex">\(=1/r\)</span>，辅以 DCG <span class="arithmatex">\(=1/\log_2(r+1)\)</span>；另报告"是否被返回"的二值结果（30 分钟跨度下新作者返回概率降 27 个百分点）。</li>
-<li><strong>对比基线与超参设置</strong>: 无模型基线，对照组为<strong>匹配集内其他副本</strong>（互为反事实）；关键超参为时间跨度上限（120/60/30 分钟）、文本匹配规则（字节级 vs. 两种宽松规则）、同媒体规格（same-media specification）；显著性以 <span class="arithmatex">\(p&lt;0.05\)</span> 与 BH-FDR 的 <span class="arithmatex">\(q_{\text{blk}}/q_{\text{all}}\)</span> 双标准判定。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 采用<strong>真实线上 Top-50 全列表输出</strong>（等价于无偏 Full-Ranking 的截断观测），未上榜副本记零曝光；主指标 RR <span class="arithmatex">\(=1/r\)</span>，辅以 DCG<span class="arithmatex">\(=1/\log_2(r+1)\)</span>；另报告"是否被返回"的二值结果（30 分钟跨度下新作者返回概率降 27 个百分点）。</li>
+<li><strong>对比基线与超参设置</strong>: 无模型基线，对照组为<strong>匹配集内其他副本</strong>（互为反事实）；关键超参为时间跨度上限（120/60/30 分钟）、文本匹配规则（字节级 vs. 两种宽松规则）、同媒体规格（same-media specification）；显著性以 <span class="arithmatex">\(p&lt;0.05\)</span>与 BH-FDR 的<span class="arithmatex">\(q_{\text{blk}}/q_{\text{all}}\)</span> 双标准判定。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4402,12 +4413,18 @@
 <li><strong>作者历史是唯一可测的主导信号，且强于粉丝量</strong>：新作者 −0.061 RR 惩罚在控制到达顺序（−0.049）、剔除高产账号（−0.063）、逐 Feed 留一后全部保持；在 6,768 组"新作者 vs 老作者"对决中新作者仅 16% 排名更优，即便在 746 组"新作者粉丝更多"的对决中仍 74% 落败——粉丝规模无法抵消 Feed 内的历史曝光惯性。</li>
 <li><strong>内容侧因素被系统性排除</strong>：304 个媒体与帖型特征经 BH-FDR 校正后无一显著，意味着"加图、改帖型"无法解释也无法弥补曝光鸿沟；这与集中式推荐中经典的流行度偏置反馈回路同构，只是发生在数千个独立运营的 Feed 内部。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: ① 相比 Singh &amp; Joachims 等<strong>公平排序</strong>工作（设计单一排序器的最优曝光分配），本文不设计算法而是<strong>测量已部署排序器的实际分配</strong>；② 相比 Reddit 重复发图实验等<strong>注入式审计</strong>，本文利用自然重复帖，零账号、零注入、样本量高两个数量级；③ 相比 Bluesky 生态测绘工作（仅刻画网络与 Feed 目录），本文首次打开 Feed 内部曝光黑箱。</li>
 <li><strong>可迁移亮点</strong>: ① "字节级同文本 + 同快照 + 年龄对齐 + 匹配集固定效应"是一套可直接复用的<strong>无注入公平审计模板</strong>，Feed 运营方可用自家日志监控同类鸿沟；② 用"到达顺序控制"与"逐 Feed 留一"排除替代解释的稳健性套路，可迁移到任何黑箱排序器的因果归因研究。</li>
 <li><strong>审稿级局限批判</strong>: ① 多数自定义 Feed 算法为黑箱，作者历史仅观测于 3 个月采集窗内（左删失），存在未观测混淆（如账号审核状态、线程位置）；② 结论为<strong>关联而非因果</strong>，且仅覆盖 Top-50 截断输出与 250 个出现重复帖的 Feed，对长尾 Feed 与深层排名（50 名之后）的泛化性未知；③ 3 页短文，未提供 Feed 算法类型（如基于关注图 vs. 基于标签）的分层分析。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][生成式推荐与离散语义ID] 基于MLLM与树状码本的通用物品分词器，融合多模态重建与协同对齐，实现跨域可迁移生成式推荐。">
+        <meta name="description" content="[SIGIR 2026][生成式推荐与离散语义ID] 用 MLLM+树状码本构建跨域通用物品分词器，结合内容重建与共现协同对齐，实现可迁移生成式推荐，全库排序下全面超越基线。">
       
       
       
@@ -131,10 +131,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/universal_item_tokenization_for_transferable_generative_recommendation/" />
 <meta property="og:title" content="[Paper Note] Universal Item Tokenization for Transferable Generative Recommendation" />
-<meta property="og:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 基于MLLM与树状码本的通用物品分词器，融合多模态重建与协同对齐，实现跨域可迁移生成式推荐。" />
+<meta property="og:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 用 MLLM+树状码本构建跨域通用物品分词器，结合内容重建与共现协同对齐，实现可迁移生成式推荐，全库排序下全面超越基线。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] Universal Item Tokenization for Transferable Generative Recommendation" />
-<meta name="twitter:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 基于MLLM与树状码本的通用物品分词器，融合多模态重建与协同对齐，实现跨域可迁移生成式推荐。" />
+<meta name="twitter:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 用 MLLM+树状码本构建跨域通用物品分词器，结合内容重建与共现协同对齐，实现可迁移生成式推荐，全库排序下全面超越基线。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +160,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] Universal Item Tokenization for Transferable Generative Recommendation",
   "headline": "[Paper Note] Universal Item Tokenization for Transferable Generative Recommendation",
-  "description": "[SIGIR 2026][\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID] \u57fa\u4e8eMLLM\u4e0e\u6811\u72b6\u7801\u672c\u7684\u901a\u7528\u7269\u54c1\u5206\u8bcd\u5668\uff0c\u878d\u5408\u591a\u6a21\u6001\u91cd\u5efa\u4e0e\u534f\u540c\u5bf9\u9f50\uff0c\u5b9e\u73b0\u8de8\u57df\u53ef\u8fc1\u79fb\u751f\u6210\u5f0f\u63a8\u8350\u3002",
+  "description": "[SIGIR 2026][\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID] \u7528 MLLM+\u6811\u72b6\u7801\u672c\u6784\u5efa\u8de8\u57df\u901a\u7528\u7269\u54c1\u5206\u8bcd\u5668\uff0c\u7ed3\u5408\u5185\u5bb9\u91cd\u5efa\u4e0e\u5171\u73b0\u534f\u540c\u5bf9\u9f50\uff0c\u5b9e\u73b0\u53ef\u8fc1\u79fb\u751f\u6210\u5f0f\u63a8\u8350\uff0c\u5168\u5e93\u6392\u5e8f\u4e0b\u5168\u9762\u8d85\u8d8a\u57fa\u7ebf\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/universal_item_tokenization_for_transferable_generative_recommendation/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/universal_item_tokenization_for_transferable_generative_recommendation/",
   "inLanguage": "zh-CN",
@@ -178,8 +178,8 @@
     { "@type": "Thing", "name": "\u8de8\u57df\u8fc1\u79fb" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3997,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4011,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4019,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4072,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4095,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4103,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4119,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4156,17 +4134,6 @@
     <span class="md-ellipsis">
       
         Rating (四维评分)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        论文图表
       
     </span>
   </a>
@@ -4192,7 +4159,7 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][生成式推荐与离散语义ID] 基于MLLM与树状码本的通用物品分词器，融合多模态重建与协同对齐，实现跨域可迁移生成式推荐。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][生成式推荐与离散语义ID] 用 MLLM+树状码本构建跨域通用物品分词器，结合内容重建与共现协同对齐，实现可迁移生成式推荐，全库排序下全面超越基线。</p>
   
   <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 生成式推荐与离散语义ID · 生成式端到端 · 通用物品分词 · 树状码本 · 跨域迁移</p>
   
@@ -4256,167 +4223,291 @@
 <h1 id="universal-item-tokenization-for-transferable-generative-recommendation">Universal Item Tokenization for Transferable Generative Recommendation (面向可迁移生成式推荐的通用物品分词)</h1>
 <ul>
 <li><strong>会议/期刊</strong>: SIGIR 2026</li>
-<li><strong>推荐链路定位</strong>: 端到端生成式 (End-to-End Generative)</li>
-<li><strong>研究方向</strong>: 生成式推荐与离散语义ID / 跨域与多场景推荐</li>
+<li><strong>作者与机构</strong>: Bowen Zheng, Wayne Xin Zhao, Ji-Rong Wen (中国人民大学高瓴人工智能学院)；Hongyu Lu, Yu Chen (腾讯微信)</li>
+<li><strong>推荐链路定位</strong>: 端到端生成式（物品分词器 + 生成式推荐器）</li>
+<li><strong>研究方向</strong>: 生成式推荐与离散语义 ID / 跨域与多场景推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2504.04405v3">https://arxiv.org/abs/2504.04405v3</a></li>
 <li><strong>开源代码</strong>: <a href="https://github.com/RUCAIBox/UTGRec">https://github.com/RUCAIBox/UTGRec</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对现有生成式推荐中物品分词器（tokenizer）与推荐器均为"域内专用"、难以跨域迁移的痛点，本文提出 UTGRec：以 Qwen2-VL 多模态大模型为骨干，将物品图文内容压缩为 <span class="arithmatex">\(L\)</span> 个隐状态，经前缀残差操作与树状码本（根码本+共享叶码本）离散化为语义 ID；并通过原始内容重建（文本 NLL + 图像扩散损失）与协同知识整合（共现对齐 InfoNCE + 共现重建）联合预训练分词器，再以多域预训练+下游微调范式训练生成式推荐器。在四个公开数据集的全库排序协议下，UTGRec 全面超越传统与生成式基线，且跨域迁移场景提升显著。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>现有生成式推荐的分词器（RQ-VAE/层次聚类）与推荐器均为<strong>域内专属</strong>，换域即失效。UTGRec 用 MLLM（Qwen2-VL-2B）把物品图文压缩为 <span class="arithmatex">\(L\)</span> 个内容表征，经<strong>前缀残差 + 树状码本</strong>离散化为语义 ID，并以<strong>原始内容重建 + 共现物品对齐/重建</strong>联合训练，得到跨域通用分词器；再在多域混合码序列上预训练 T5 推荐器并做"冻结码本矩阵、仅调投影"的轻量微调。在 4 个 Amazon 下游域、Leave-One-Out + Full-Ranking 协议下，Recall@10 相对最强基线提升 4.4%–9.7%，且模型加深时性能持续上涨而非过拟合。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 生成式推荐将每个物品表示为一串离散码（语义 ID），再用 T5 类 seq2seq 模型自回归生成目标物品标识，实现 next-item 预测。物品分词（item tokenization）是该范式的核心，主流做法包括共现矩阵分解、层次聚类与多级向量量化（RQ-VAE）。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>域内专用性</strong>：分词器通常在单一域上用预编码物品 embedding 训练（如 RQ-VAE + MLP 编码器），学到的码本与推荐器难以迁移或适配到新域。</li>
-<li><strong>语义表达不足</strong>：简单算法（K-means）或浅层架构难以刻画多域间多样且复杂的物品语义；预编码 embedding 无法与分词器联合训练，限制了语义学习潜力。</li>
-<li><strong>码本坍缩</strong>：多域场景下仅少数码本向量被激活，码本利用率低，破坏多域语义融合。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 多域物品语义高度异构，需要兼具强内容理解与泛化能力的分词器骨干；同时必须在学习物品语义的同时有效注入推荐场景特有的协同信号——简单拼接特征或直接多域联合训练均无法同时满足这两点。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者以多模态大模型（MLLM）作为通用内容理解骨干，用"树状码本共享"缓解多域码本坍缩，并用"共现物品相似"这一推荐先验把协同信号直接注入分词器训练，从而得到可跨域迁移的通用分词器。</li>
+<li><strong>主流范式</strong>: 生成式推荐将物品映射为多级码序列（语义 ID），用 T5 自回归生成目标 ID；分词器多基于单域预编码 embedding 训练 RQ-VAE 或做层次聚类。</li>
+<li><strong>前人局限</strong>: ①分词器与推荐器均域内专属，跨域无法迁移；直接把 K-means/RQ-VAE(MLP) 扩到多域，难以刻画多域异构语义，且预编码 embedding 无法与分词器联合优化。②多域下码本<strong>表征坍缩</strong>严重——每域仅少数码本向量被激活，破坏多域融合。</li>
+<li><strong>核心洞察</strong>: 物品图文内容本身携带跨域通用语义，而共现关系携带推荐专属协同知识；二者应在<strong>同一个可联合训练的分词器</strong>内被同时编码，而非事后拼接。</li>
+<li><strong>本文切入点</strong>: 以 MLLM 为编码骨干 + 树状共享码本 + 内容/协同双路重建，把"分词器"从域内组件升级为可预训练、可微调的通用基础设施。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>物品集 <span class="arithmatex">\(\mathcal{I}\)</span>，用户历史交互序列 <span class="arithmatex">\(S=[i_1,i_2,\dots,i_n]\)</span>（按时间排序），目标为预测 <span class="arithmatex">\(i_{n+1}\)</span>。</li>
-<li>每个物品 <span class="arithmatex">\(i\)</span> 关联文本 <span class="arithmatex">\(T_i\)</span>（标题、属性、类目）与图像 <span class="arithmatex">\(V_i\)</span>。</li>
-<li>物品被分词为长度 <span class="arithmatex">\(L\)</span> 的码序列 <span class="arithmatex">\([c_1,\dots,c_L]\)</span> 作为其标识；序列 <span class="arithmatex">\(S\)</span> 与目标物品分别被分词为码序列 <span class="arithmatex">\(X=[c_1^1,\dots,c_L^n]\)</span> 与 <span class="arithmatex">\(Y=[c_1^{n+1},\dots,c_L^{n+1}]\)</span>。</li>
-<li>生成目标：<span class="arithmatex">\(P(Y|X)=\prod_{l=1}^{L}P(c_l^{n+1}\mid X,c_1^{n+1},\dots,c_{l-1}^{n+1})\)</span>。</li>
-<li>关键维度：MLLM 隐状态 <span class="arithmatex">\(\mathbf{H}\in\mathbb{R}^{L\times d}\)</span>；码本维度 <span class="arithmatex">\(d_c\)</span>；码本大小 <span class="arithmatex">\(K\)</span>；码本参数化为 <span class="arithmatex">\(\mathbf{E}\mathbf{W}\)</span>（<span class="arithmatex">\(\mathbf{E}\in\mathbb{R}^{K\times d_c}\)</span>，<span class="arithmatex">\(\mathbf{W}\in\mathbb{R}^{d_c\times d_c}\)</span>）。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：物品图文 <span class="arithmatex">\(\to\)</span> MLLM（Qwen2-VL）压缩为 <span class="arithmatex">\(L\)</span> 个内容隐状态 <span class="arithmatex">\(\to\)</span> 前缀残差操作得到基础表示与多级增量表示 <span class="arithmatex">\(\to\)</span> 树状码本量化得到码序列 <span class="arithmatex">\(\to\)</span> 双轻量解码器重建原始文本/图像 + 共现物品对齐与重建 <span class="arithmatex">\(\to\)</span> 联合训练分词器 <span class="arithmatex">\(\to\)</span> 多域预训练生成式推荐器 <span class="arithmatex">\(\to\)</span> 下游域微调。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>物品图文经提示模板送入 Qwen2-VL-2B，输出 <span class="arithmatex">\(L\)</span>个 code token 隐状态<span class="arithmatex">\(\mathbf{H}\in\mathbb{R}^{L\times d}\)</span>作为压缩内容表征；经前缀残差拆为基本表征与多级增量表征，分别由根码本与共享叶码本量化得到语义 ID<span class="arithmatex">\([c_1,\dots,c_L]\)</span>。训练侧用双轻量解码器从离散表征重建原始文本与图像，并引入共现物品的对比对齐与跨物品重建注入协同信号。下游阶段：先用通用分词器把多域交互序列统一编码、混合预训练 T5 推荐器，再在新域上冻结码本矩阵、仅微调投影矩阵与推荐器。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 物品图像 V_i + 文本 T_i + 提示模板"] --&gt; B["MLLM 编码: Qwen2-VL 输出 L 个隐状态 H"]
-    B --&gt; C["前缀残差操作: 基础表示 + 多级增量表示"]
-    C --&gt; D["树状码本量化: 根码本(基础) + 共享叶码本(增量)"]
-    D --&gt; E["双轻量解码器: 文本重建(NLL) + 图像重建(扩散损失)"]
-    D --&gt; F["协同整合: 共现对齐(InfoNCE) + 共现重建"]
-    E --&gt; G["通用物品分词器 (码序列作为语义ID)"]
-    F --&gt; G
-    G --&gt; H["生成式推荐器: 多域预训练 + 下游微调"]
-    H --&gt; I["自回归生成目标物品语义ID"]</code></pre>
-<p>图 1 展示了 UTGRec 的整体框架，包含通用物品分词与"内容重建+协同整合"两大组件。</p>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 基于 MLLM 的物品内容编码</strong>：将图文组织为提示模板（视觉起止符 + 图像占位 + 文本占位 + <span class="arithmatex">\(L\)</span> 个新增 <code>&lt;CODE_i&gt;</code> 码 token），输入 Qwen2-VL，取码 token 对应隐状态 <span class="arithmatex">\(\mathbf{H}=[\bm{h}_1,\dots,\bm{h}_L]=\text{MLLM}(P(V_i,T_i))\)</span> 作为压缩后的物品内容表示，实现"由粗到细"的多粒度压缩。</p>
-<p><strong>(2) 前缀残差 + 树状码本离散化</strong>：先经 MLP 投影到 <span class="arithmatex">\(\mathbf{H}'\in\mathbb{R}^{L\times d_c}\)</span>，再做前缀残差 <span class="arithmatex">\(\tilde{\bm{h}}_l=\bm{h}'_l-\bm{h}'_{l-1}\)</span>（<span class="arithmatex">\(l\ge2\)</span>），<span class="arithmatex">\(\tilde{\bm{h}}_1=\bm{h}'_1\)</span>。与 RQ 的递归相减不同，该操作提取相对前缀的增量信息，缓解多级表示高度相似导致的"前缀码相同则后续码也相同"问题。量化规则：
-$<span class="arithmatex">\(c_l=\begin{cases}\arg\min_j\|\tilde{\bm{h}}_l-\bm{e}^r_j\mathbf{W}^r\|_2^2, &amp; l=1\\ \arg\min_j\|\tilde{\bm{h}}_l-\bm{e}^f_j\mathbf{W}^f\|_2^2, &amp; l&gt;1\end{cases}\)</span>$
-根码本 <span class="arithmatex">\(\mathbf{C}^r=\mathbf{E}^r\mathbf{W}^r\)</span> 编码基础内容，叶码本 <span class="arithmatex">\(\mathbf{C}^f=\mathbf{E}^f\mathbf{W}^f\)</span> 在多级增量表示间共享，促进多域融合并提升码本利用率；码本参数化为 <span class="arithmatex">\(\mathbf{E}\mathbf{W}\)</span> 使各域梯度驱动整个码本空间更新，缓解表示坍缩。码本损失 <span class="arithmatex">\(\mathcal{L}_{Code}=\frac12(\mathcal{L}_r+\mathcal{L}_f)\)</span>，含 stop-gradient 与承诺项 <span class="arithmatex">\(\beta=0.25\)</span>。</p>
-<p><strong>(3) 原始内容重建 + 协同知识整合</strong>：由码本查表并按前缀残差逆操作递归还原离散内容表示 <span class="arithmatex">\(\hat{\bm{h}}_l=\hat{\bm{h}}_{l-1}+\bm{e}^f_{c_l}\mathbf{W}^f\)</span>，得 <span class="arithmatex">\(\hat{\mathbf{H}}\)</span>。文本侧拼接 100% mask token 后用单层 Transformer 双向解码，损失 <span class="arithmatex">\(\mathcal{L}_t=-\sum_{x\in T_i}\log P(x|\text{Dec}_t(\mathbf{H}_t))\)</span>；图像侧用小型扩散模型，损失 <span class="arithmatex">\(\mathcal{L}_v=\text{DiffLoss}(\text{Dec}_v(\mathbf{H}_v),V_i)\)</span>；<span class="arithmatex">\(\mathcal{L}_{Raw}=\mathcal{L}_t+\alpha\mathcal{L}_v\)</span>。协同侧以序列内一跳邻居为正例，构造共现对齐损失（逐层 InfoNCE，批内负例天然跨域混合）：
-$<span class="arithmatex">\(\mathcal{L}_{Ali}=-\sum_{l=1}^{L}\log\frac{\exp(\cos(\bm{h}_l,\bm{h}^+_l)/\tau)}{\sum_{\hat{\bm{h}}_l\in\mathcal{B}_l}\exp(\cos(\bm{h}_l,\hat{\bm{h}}_l)/\tau)}\)</span>$
-以及负例无关的共现重建 <span class="arithmatex">\(\mathcal{L}_{Re}=\mathcal{L}_t^++\alpha\mathcal{L}_v^+\)</span>，隐式迫使离散表示编码正例语义。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>分词器总损失</strong>：<span class="arithmatex">\(\mathcal{L}_T=\mathcal{L}_{Raw}+\lambda\mathcal{L}_{Code}+\mu\mathcal{L}_{Ali}+\eta\mathcal{L}_{Re}\)</span>，<span class="arithmatex">\(\lambda,\mu,\eta\)</span> 为权衡超参，<span class="arithmatex">\(\beta=0.25\)</span>，温度 <span class="arithmatex">\(\tau\)</span> 为 InfoNCE 温度超参。</li>
-<li><strong>负采样策略</strong>：共现对齐采用 <strong>In-batch 负采样</strong>（批内随机构造，负例跨多域混合，促进跨域知识融合）；共现重建为负例无关设计，规避"离散表示被多物品共享导致负例不可靠"的问题；生成式推荐器为自回归生成，无需显式负采样。</li>
-<li><strong>复杂度</strong>：离线需 MLLM 前向编码 + 码本量化 + 双解码器重建，训练成本主要来自 MLLM 骨干；在线推理为自回归生成语义 ID，需 Beam Search 约束解码（原文未报告具体 ms/request 延迟与峰值显存）。</li>
-</ul>
+    A["物品图文 + 提示模板"] --&gt; B["MLLM 编码 (Qwen2-VL-2B)"]
+    B --&gt; C["前缀残差 + 树状码本量化"]
+    C --&gt; D["语义 ID 序列"]
+    C --&gt; E["双解码器内容重建"]
+    C --&gt; F["共现对齐 + 共现重建"]
+    D --&gt; G["多域混合预训练 T5 → 下游微调"]</code></pre>
+<figure class="paper-figure">
+  <img alt="图1：UTGRec的整体框架。" src="../../../../../assets/papers/2504.04405v3/figure_1.png" /><figcaption>图1：UTGRec的整体框架。</figcaption>
+</figure>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li><strong>树状码本 + 前缀残差（解决码本坍缩与码间高相似）</strong>：MLLM 压出的 <span class="arithmatex">\(L\)</span>个表征同源、高度相似，导致同前缀物品后缀码也雷同；且多域下码本碎片化。本文先做前缀残差<span class="arithmatex">\(\tilde{\boldsymbol{h}}_l=\boldsymbol{h}'_l-\boldsymbol{h}'_{l-1}\ (l\ge 2)\)</span>提取增量信息，再将码本参数化为<span class="arithmatex">\(\mathbf{C}_r=\mathbf{E}_r\mathbf{W}_r\)</span>、<span class="arithmatex">\(\mathbf{C}_f=\mathbf{E}_f\mathbf{W}_f\)</span>，根码本管基本表征、叶码本被所有增量层<strong>共享</strong>。量化式为<span class="arithmatex">\(c_l=\arg\min_j\|\tilde{\boldsymbol{h}}_l-\boldsymbol{e}^{(r/f)}_j\mathbf{W}^{(r/f)}\|_2^2\)</span>。共享叶码本 + 投影矩阵联合更新使各域梯度共同驱动整个码本空间，抑制碎片化。</li>
+<li><strong>原始内容重建 + 协同知识注入（解决"语义通用但不懂推荐"）</strong>：以往用预编码 embedding 作重建目标，信息有损。本文把离散表征逆残差还原为 <span class="arithmatex">\(\hat{\mathbf{H}}\)</span>，拼接 mask token 后由单层 Transformer 文本解码器做 100% 掩码的 MLM 式重建，图像侧用小型扩散模型以扩散损失重建：<span class="arithmatex">\(\mathcal{L}_{Raw}=\mathcal{L}_t+\alpha\mathcal{L}_v\)</span>。协同侧基于"共现即相似"，对共现正样本做 InfoNCE 对齐<span class="arithmatex">\(\mathcal{L}_{Ali}\)</span>（批内负样本天然跨域混合），并<strong>用当前物品的离散表征去重建正样本内容</strong><span class="arithmatex">\(\mathcal{L}_{Re}=\mathcal{L}_t^++\alpha\mathcal{L}_v^+\)</span>——该损失与负样本无关，规避了"共享码本导致正负样本表征重叠"使对比学习失真的问题。</li>
+<li><strong>训练目标与迁移策略</strong>：分词器总损失 <span class="arithmatex">\(\mathcal{L}_T=\mathcal{L}_{Raw}+\lambda\mathcal{L}_{Code}+\mu\mathcal{L}_{Ali}+\eta\mathcal{L}_{Re}\)</span>（<span class="arithmatex">\(\lambda=200\)</span>，<span class="arithmatex">\(\alpha=3,\mu=0.01,\eta=0.03\)</span>）。推荐器用标准 NLL<span class="arithmatex">\(\mathcal{L}_R=-\sum_l\log P(c_l^{n+1}\mid X,c_{&lt;l}^{n+1})\)</span>，T5 骨干、beam=50。码冲突处理上，不用额外无语义码，而是把末级码重指派为次近邻码。下游微调<strong>冻结<span class="arithmatex">\(\mathbf{E}_r,\mathbf{E}_f\)</span>、只调<span class="arithmatex">\(\mathbf{W}_r,\mathbf{W}_f\)</span></strong>，保住预训练码间关联。</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文使用四个公开数据集（含 Amazon 类目与 Instrument 等），预处理统计见下表（表 1，Avg.len 为物品序列平均长度）：</li>
+<li><strong>数据集与预处理</strong>: Amazon 2023 评论集，5 域预训练 + 4 域下游，全部 <code>5-core</code> 过滤，序列按时间排序、截断至 20：</li>
 </ul>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
+<th style="text-align: left;">数据集</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Interactions</th>
+<th style="text-align: center;">稀疏度</th>
+<th style="text-align: left;">角色</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">原文表 1 所列四数据集</td>
-<td style="text-align: center;">原文未在正文报告</td>
-<td style="text-align: center;">原文未在正文报告</td>
-<td style="text-align: center;">原文未在正文报告</td>
-<td style="text-align: center;">原文未在正文报告</td>
-<td style="text-align: left;">图文多模态（标题/属性/类目 + 图像）</td>
+<td style="text-align: left;">Pre-training (5 域合并)</td>
+<td style="text-align: center;">999,334</td>
+<td style="text-align: center;">344,412</td>
+<td style="text-align: center;">8,609,909</td>
+<td style="text-align: center;">99.997%</td>
+<td style="text-align: left;">预训练</td>
+</tr>
+<tr>
+<td style="text-align: left;">Instrument</td>
+<td style="text-align: center;">57,439</td>
+<td style="text-align: center;">24,587</td>
+<td style="text-align: center;">511,836</td>
+<td style="text-align: center;">99.964%</td>
+<td style="text-align: left;">下游</td>
+</tr>
+<tr>
+<td style="text-align: left;">Scientific</td>
+<td style="text-align: center;">50,985</td>
+<td style="text-align: center;">25,848</td>
+<td style="text-align: center;">412,947</td>
+<td style="text-align: center;">99.969%</td>
+<td style="text-align: left;">下游</td>
+</tr>
+<tr>
+<td style="text-align: left;">Game</td>
+<td style="text-align: center;">94,762</td>
+<td style="text-align: center;">25,612</td>
+<td style="text-align: center;">814,586</td>
+<td style="text-align: center;">99.966%</td>
+<td style="text-align: left;">下游</td>
+</tr>
+<tr>
+<td style="text-align: left;">Office</td>
+<td style="text-align: center;">223,308</td>
+<td style="text-align: center;">77,551</td>
+<td style="text-align: center;">1,577,570</td>
+<td style="text-align: center;">99.991%</td>
+<td style="text-align: left;">下游</td>
 </tr>
 </tbody>
 </table>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2504.04405v3/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
 <ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 采用序列推荐的 <strong>Leave-One-Out (留一法)</strong> 式划分（最后一项为测试、倒数第二项为验证，符合该文引用范式 [11,41] 的通行做法；原文正文未逐字复述，属该范式默认设定）。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: <strong>Full-Ranking（全库未交互物品排序）</strong>，与生成式基线（TIGER、LC-Rec 等）保持一致。</li>
-<li><strong>评价指标与显著性检验</strong>: 采用 <code>Recall@K</code>、<code>NDCG@K</code> 等序列推荐标准指标；表 2 中 "*" 表示在配对 <span class="arithmatex">\(t\)</span>-test 下 <span class="arithmatex">\(p&lt;0.01\)</span> 的统计显著性。</li>
+<li><strong>数据划分与防穿越</strong>: <code>Leave-One-Out</code>——每用户最后一项为测试、倒数第二项为验证、其余训练。</li>
+<li><strong>排名评测协议</strong>: 无偏 <code>Full-Ranking</code>（全物品集排序），指标 Recall@{5,10}、NDCG@{5,10}；生成式模型统一 beam size = 50。</li>
+<li><strong>对比基线与超参</strong>: 三类基线——传统序列（GRU4Rec/BERT4Rec/SASRec/FMLP-Rec）、内容迁移（FDSA/S3-Rec/UniSRec/VQ-Rec/MISSRec）、生成式（TIGER/LETTER/TIGER<span class="arithmatex">\(_M\)</span>）。码本根 256 / 叶 512（总向量数与 TIGER 对齐），<span class="arithmatex">\(L=3\)</span>，LoRA 微调 MLLM，显著性用配对 t 检验<span class="arithmatex">\(p&lt;0.01\)</span>。</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>表 2 报告了传统基线（如 GRU4Rec、SASRec、BERT4Rec）与生成式基线（如 TIGER、LC-Rec、ETEGRec）及本文方法的整体对比，最优与次优分别以粗体、下划线标注：</p>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2504.04405v3/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
 <th style="text-align: left;">指标</th>
-<th style="text-align: center;">传统/协同过滤基线</th>
-<th style="text-align: center;">序列/图/多模态最强基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;">MISSRec</th>
+<th style="text-align: center;">TIGER</th>
+<th style="text-align: center;">LETTER</th>
+<th style="text-align: center;">TIGER<span class="arithmatex">\(_M\)</span></th>
+<th style="text-align: center;"><strong>UTGRec</strong></th>
+<th style="text-align: center;">Improv.</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">四公开数据集</td>
-<td style="text-align: left;">Recall@K / NDCG@K</td>
-<td style="text-align: center;">见原文表 2</td>
-<td style="text-align: center;">见原文表 2（生成式基线最强）</td>
-<td style="text-align: center;"><strong>最优（粗体）</strong></td>
-<td style="text-align: center;">显著（<span class="arithmatex">\(p&lt;0.01\)</span>，具体数值见原文表 2）</td>
+<td style="text-align: left;">Instrument</td>
+<td style="text-align: left;">R@10</td>
+<td style="text-align: center;">0.0590</td>
+<td style="text-align: center;">0.0564</td>
+<td style="text-align: center;">0.0580</td>
+<td style="text-align: center;">0.0551</td>
+<td style="text-align: center;"><strong>0.0616</strong></td>
+<td style="text-align: center;">+4.4%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Instrument</td>
+<td style="text-align: left;">N@10</td>
+<td style="text-align: center;">0.0307</td>
+<td style="text-align: center;">0.0306</td>
+<td style="text-align: center;">0.0313</td>
+<td style="text-align: center;">0.0298</td>
+<td style="text-align: center;"><strong>0.0334</strong></td>
+<td style="text-align: center;">+6.7%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Scientific</td>
+<td style="text-align: left;">R@10</td>
+<td style="text-align: center;">0.0452</td>
+<td style="text-align: center;">0.0422</td>
+<td style="text-align: center;">0.0435</td>
+<td style="text-align: center;">0.0437</td>
+<td style="text-align: center;"><strong>0.0481</strong></td>
+<td style="text-align: center;">+6.4%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Scientific</td>
+<td style="text-align: left;">N@10</td>
+<td style="text-align: center;">0.0237</td>
+<td style="text-align: center;">0.0226</td>
+<td style="text-align: center;">0.0232</td>
+<td style="text-align: center;">0.0233</td>
+<td style="text-align: center;"><strong>0.0255</strong></td>
+<td style="text-align: center;">+7.6%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Game</td>
+<td style="text-align: left;">R@10</td>
+<td style="text-align: center;">0.0862</td>
+<td style="text-align: center;">0.0868</td>
+<td style="text-align: center;">0.0877</td>
+<td style="text-align: center;">0.0873</td>
+<td style="text-align: center;"><strong>0.0909</strong></td>
+<td style="text-align: center;">+3.7%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Game</td>
+<td style="text-align: left;">N@10</td>
+<td style="text-align: center;">0.0426</td>
+<td style="text-align: center;">0.0467</td>
+<td style="text-align: center;">0.0473</td>
+<td style="text-align: center;">0.0472</td>
+<td style="text-align: center;"><strong>0.0491</strong></td>
+<td style="text-align: center;">+3.8%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Office</td>
+<td style="text-align: left;">R@10</td>
+<td style="text-align: center;">0.0374</td>
+<td style="text-align: center;">0.0417</td>
+<td style="text-align: center;">0.0421</td>
+<td style="text-align: center;">0.0400</td>
+<td style="text-align: center;"><strong>0.0462</strong></td>
+<td style="text-align: center;">+9.7%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Office</td>
+<td style="text-align: left;">N@10</td>
+<td style="text-align: center;">0.0200</td>
+<td style="text-align: center;">0.0241</td>
+<td style="text-align: center;">0.0243</td>
+<td style="text-align: center;">0.0234</td>
+<td style="text-align: center;"><strong>0.0269</strong></td>
+<td style="text-align: center;">+10.7%</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>说明：受提取文本所限，表 2 的具体数值未在正文中逐格呈现，此处严格标注"见原文表 2"，不做数值臆造。</p>
-</blockquote>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文通过移除原始内容重建、共现对齐、共现重建及树状码本等组件验证各模块贡献（具体下降幅度见原文消融表，正文提取未含逐项数值）。从设计逻辑看：树状码本共享主要缓解多域码本坍缩、提升码本利用率；共现对齐与共现重建负责注入协同信号，是跨域迁移增益的关键来源。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
+<p>（Improv. 相对最强非本文基线；全部提升在 <span class="arithmatex">\(p&lt;0.01\)</span> 下显著。）</p>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">变体</th>
+<th style="text-align: center;">Instrument R@10</th>
+<th style="text-align: center;">Instrument N@10</th>
+<th style="text-align: center;">Scientific R@10</th>
+<th style="text-align: center;">Scientific N@10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">(0) UTGRec</td>
+<td style="text-align: center;"><strong>0.0616</strong></td>
+<td style="text-align: center;"><strong>0.0334</strong></td>
+<td style="text-align: center;"><strong>0.0481</strong></td>
+<td style="text-align: center;"><strong>0.0255</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">(1) w/o TreeCode</td>
+<td style="text-align: center;">0.0591</td>
+<td style="text-align: center;">0.0319</td>
+<td style="text-align: center;">0.0457</td>
+<td style="text-align: center;">0.0239</td>
+</tr>
+<tr>
+<td style="text-align: left;">(2) w/o <span class="arithmatex">\(\mathcal{L}_{Ali}\)</span></td>
+<td style="text-align: center;">0.0599</td>
+<td style="text-align: center;">0.0321</td>
+<td style="text-align: center;">0.0464</td>
+<td style="text-align: center;">0.0243</td>
+</tr>
+<tr>
+<td style="text-align: left;">(3) w/o <span class="arithmatex">\(\mathcal{L}_{Re}\)</span></td>
+<td style="text-align: center;">0.0607</td>
+<td style="text-align: center;">0.0326</td>
+<td style="text-align: center;">0.0468</td>
+<td style="text-align: center;">0.0246</td>
+</tr>
+<tr>
+<td style="text-align: left;">(4) w/o FT(T)</td>
+<td style="text-align: center;">0.0551</td>
+<td style="text-align: center;">0.0302</td>
+<td style="text-align: center;">0.0415</td>
+<td style="text-align: center;">0.0218</td>
+</tr>
+<tr>
+<td style="text-align: left;">(5) Full FT</td>
+<td style="text-align: center;">0.0559</td>
+<td style="text-align: center;">0.0304</td>
+<td style="text-align: center;">0.0423</td>
+<td style="text-align: center;">0.0225</td>
+</tr>
+<tr>
+<td style="text-align: left;">(6) w/o PT(R)</td>
+<td style="text-align: center;">0.0583</td>
+<td style="text-align: center;">0.0315</td>
+<td style="text-align: center;">0.0451</td>
+<td style="text-align: center;">0.0236</td>
+</tr>
+<tr>
+<td style="text-align: left;">(7) w/o PT</td>
+<td style="text-align: center;">0.0575</td>
+<td style="text-align: center;">0.0310</td>
+<td style="text-align: center;">0.0444</td>
+<td style="text-align: center;">0.0232</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>分词器微调是迁移的命门</strong>：去掉分词器微调（变体 4）掉点最狠，Instrument R@10 从 0.0616 跌至 0.0551（−10.6%），甚至低于"完全不预训练"（变体 7，0.0575）——说明新域码字纠缠必须靠域内微调解开，否则预训练反而成负担；而全量微调码本（变体 5，0.0559）同样崩，证实"冻结 <span class="arithmatex">\(\mathbf{E}\)</span>、只调<span class="arithmatex">\(\mathbf{W}\)</span>"是保住码间关联的关键。</li>
+<li><strong>协同信号与树状码本各自贡献可加</strong>：去掉 <span class="arithmatex">\(\mathcal{L}_{Ali}\)</span>/<span class="arithmatex">\(\mathcal{L}_{Re}\)</span> 分别掉 2.8%/1.5%（Instrument R@10），二者叠加的协同注入约贡献 4%；树状码本相对 RQ-VAE 式多级码本带来约 4% 增益，印证共享叶码本缓解了多域码本坍缩。</li>
+<li><strong>可扩展性与长尾双赢</strong>：TIGER/LETTER 加到 3 层以上即过拟合掉点，UTGRec 在 1→6 层持续上涨（图 2）；按物品流行度分桶后，UTGRec 在 [0,20) 冷门桶相对 TIGER 的 Recall@10 提升最大（图 4），而 UniSRec/MISSRec 仅在冷门桶占优、热门桶反被生成式模型反超——通用分词器把跨域内容先验真正转化成了长尾收益。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>长尾物品表现</strong>：图 4 对比了不同物品流行度分组下的性能，UTGRec 在长尾物品上相对基线的优势更为明显（得益于内容语义对稀疏交互的补充）。</li>
-<li><strong>模型规模影响</strong>：图 2 展示了不同模型规模下的性能对比，验证规模扩展带来的收益趋势。</li>
-<li><strong>超参敏感度</strong>：图 3 在 Instrument 数据集上对关键超参（如码本大小 <span class="arithmatex">\(K\)</span>、码长 <span class="arithmatex">\(L\)</span>、损失权重 <span class="arithmatex">\(\alpha/\lambda/\mu/\eta\)</span>、温度 <span class="arithmatex">\(\tau\)</span>）进行调参分析。</li>
-</ul>
-<figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2504.04405v3/figure_2.png" /><figcaption>图 2</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2504.04405v3/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 4" src="../../../../../assets/papers/2504.04405v3/figure_4.png" /><figcaption>图 4</figcaption>
-</figure>
-<ul>
-<li><strong>线上 A/B 测试结果</strong>: 原文仅包含离线实验，未报告线上 A/B 结果。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>通用分词器范式</strong>：以 MLLM 为骨干 + 树状码本共享，把"域内分词"升级为"跨域通用分词"，可直接迁移到其他需要语义 ID 的生成式检索/推荐任务。</li>
-<li><strong>码本参数化 <span class="arithmatex">\(\mathbf{E}\mathbf{W}\)</span> + 前缀残差</strong>：同时缓解多域码本坍缩与多级表示高相似问题，工程上易复用。</li>
-<li><strong>协同信号注入分词器</strong>：共现对齐（批内跨域负例）+ 负例无关共现重建，为"内容语义与协同语义联合学习"提供了干净的设计。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估细节披露不足</strong>：正文提取未见数据集统计量、划分与指标 K 值的逐项明示，复现需依赖代码仓库；表 2 数值未在正文完整呈现，削弱可核查性。</li>
-<li><strong>效率缺失</strong>：MLLM 编码 + 扩散图像解码带来较高离线预训练成本，在线自回归解码延迟与显存均未报告，工业落地说服力不足。</li>
-<li><strong>迁移设定边界</strong>：跨域迁移实验主要围绕公开 Amazon 类目，缺少与强跨域基线（CDR 方法）的直接对比，迁移增益的归因（内容 vs. 协同）可进一步解耦分析。</li>
-<li><strong>码本共享的副作用</strong>：叶码本跨域共享虽提升利用率，但可能引入域间语义干扰，原文未做细粒度域冲突分析。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: TIGER/LETTER 的 RQ-VAE 分词器绑定单域预编码 embedding，LETTER 虽加协同正则但仍域内闭环；UniSRec/VQ-Rec/MISSRec 虽做跨域通用表征，却仍停留在"序列表征 vs 候选表征算相似度"的传统范式。UTGRec 的本质差异是把通用性下沉到<strong>分词器层</strong>，使生成式检索范式首次具备跨域迁移能力。</li>
+<li><strong>可迁移亮点</strong>: ①"冻结码本矩阵、只微调投影矩阵"的轻量域适应策略，可直接搬到任何 VQ/RQ 类语义 ID 体系的冷启动迁移；②用"当前物品离散表征重建正样本内容"替代对比学习，规避共享码本下正负样本表征重叠的失真，是一个通用的协同注入技巧。</li>
+<li><strong>审稿级局限批判</strong>: ①分词器依赖 Qwen2-VL-2B + LoRA + 16 卡预训练 3 epoch，物品侧编码开销与工程成本远高于 RQ-VAE，论文未给出 tokenization 离线耗时与在线生成延迟的量化对比；②下游仅 4 个 Amazon 域、且预训练/下游同源同平台，跨平台（如 Amazon→淘宝）与严格零样本（不微调）场景未验证，"通用"边界仍待检验。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （首次把物品分词器做成可预训练可迁移的通用组件，树状共享码本 + 负样本无关的共现重建设计有巧思）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （Full-Ranking + Leave-One-Out + <span class="arithmatex">\(p&lt;0.01\)</span> 显著性，12 个基线三类覆盖，消融 7 变体完整；扣分在仅 Amazon 单平台）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （公式链条清晰、码本损失与残差逆运算交代完整，但 MLLM 提示模板与码冲突重指派细节略简）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （代码已开源、微调策略轻量可落地；但 MLLM 分词器的离线编码成本是大规模上线的现实门槛）</li>
 </ul>
-<h2 id="_1">论文图表</h2>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2504.04405v3/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
 
 
 

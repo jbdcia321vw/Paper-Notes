@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,17 +4220,17 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/niez233/HADSF">开源代码仓库链接</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>针对 LLM 从自由评论文本抽取方面-观点时<strong>缺乏范围控制</strong>（冗余、低频噪声、语义重叠标签）与<strong>幻觉无法量化</strong>两大痛点，HADSF 提出两阶段框架：Stage I 用多采样共识+嵌入聚类归纳紧凑的语料级方面词表 <span class="arithmatex">\(A^*\)</span>，Stage II 以 <span class="arithmatex">\(A^*\)</span> 为显式约束、结合用户-物品历史先验做受控三元组抽取；并首次提出 ADR/OFR 两个幻觉度量，揭示幻觉与评分预测误差的<strong>非单调关系</strong>。在约 300 万条评论、1.5B–70B 模型上，TGNN-aspect 在三个数据集 MSE 全面最优（如 Musical 1.0960 vs. TGNN 1.1289），且 8B 级小模型即可媲美 70B。</p>
+<p>针对 LLM 从自由评论文本抽取方面-观点时<strong>缺乏范围控制</strong>（冗余、低频噪声、语义重叠标签）与<strong>幻觉无法量化</strong>两大痛点，HADSF 提出两阶段框架：Stage I 用多采样共识+嵌入聚类归纳紧凑的语料级方面词表 <span class="arithmatex">\(A^*\)</span>，Stage II 以<span class="arithmatex">\(A^*\)</span> 为显式约束、结合用户-物品历史先验做受控三元组抽取；并首次提出 ADR/OFR 两个幻觉度量，揭示幻觉与评分预测误差的<strong>非单调关系</strong>。在约 300 万条评论、1.5B–70B 模型上，TGNN-aspect 在三个数据集 MSE 全面最优（如 Musical 1.0960 vs. TGNN 1.1289），且 8B 级小模型即可媲美 70B。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 评论驱动推荐从主题模型（CTR/TIM）→ 神经注意力（NARRE/DAML）→ LLM 抽取结构化偏好表征（EXP3RT/Rec-SAVER），后者语义对齐更强但抽取过程完全自由。</li>
 <li><strong>前人局限</strong>: ① 无范围控制地挖掘自由文本，同一问题被拆成大量语义重叠的碎片化标签，低频属性沦为统计噪声；② 幻觉评估仅停留在"生成列表里数编造物品"，无法刻画幻觉如何传导为下游推荐误差；③ 模型规模与幻觉、推荐质量之间的成本-质量权衡完全空白。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 作者用互信息-泛化界论证——受控表征 <span class="arithmatex">\(z_{ctrl}\)</span> 满足 <span class="arithmatex">\(I(z_{ctrl};X)\le I(z_{free};X)\)</span> 且 <span class="arithmatex">\(\dim(z_{ctrl})=K\ll\dim(z_{free})\)</span>，测试风险 <span class="arithmatex">\(\mathbb{E}_{test}\lesssim \mathbb{E}_{train}+\mathcal{O}(\sqrt{\text{Comp}(z)/n})\)</span>，故<strong>先建立紧凑、任务对齐的方面空间再学推荐</strong>可收紧泛化项；同时实证发现幻觉并非越低越好。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 作者用互信息-泛化界论证——受控表征 <span class="arithmatex">\(z_{ctrl}\)</span>满足<span class="arithmatex">\(I(z_{ctrl};X)\le I(z_{free};X)\)</span>且<span class="arithmatex">\(\dim(z_{ctrl})=K\ll\dim(z_{free})\)</span>，测试风险<span class="arithmatex">\(\mathbb{E}_{test}\lesssim \mathbb{E}_{train}+\mathcal{O}(\sqrt{\text{Comp}(z)/n})\)</span>，故<strong>先建立紧凑、任务对齐的方面空间再学推荐</strong>可收紧泛化项；同时实证发现幻觉并非越低越好。</li>
 <li><strong>本文切入点</strong>: 用"语料级方面词表"作为语义控制旋钮，把无约束生成转为受控抽取，并配套可解释幻觉度量做诊断。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>HADSF 分两阶段闭环：Stage I 对全语料做 <span class="arithmatex">\(K\)</span> 次独立子采样，每次先让 LLM 压缩长评论为高密度摘要、再抽取方面词，随后用句向量凝聚聚类合并同义项（"ambiance/atmosphere/environment"），按频率归一化相似度选出簇代表，得到紧凑词表 <span class="arithmatex">\(A^*\)</span>；Stage II 按时间戳顺序遍历交互，用 <span class="arithmatex">\(A^*\)</span> 全局引导 + 用户/物品历史方面记忆 <span class="arithmatex">\(H_{ui}(\tau)\)</span> 构造个性化提示，抽取 (方面, 观点, 情感) 三元组并回写更新记忆。抽取结果作为结构化特征注入 EFM/ANR/TGNN 等评分预测器。</p>
+<p>HADSF 分两阶段闭环：Stage I 对全语料做 <span class="arithmatex">\(K\)</span>次独立子采样，每次先让 LLM 压缩长评论为高密度摘要、再抽取方面词，随后用句向量凝聚聚类合并同义项（"ambiance/atmosphere/environment"），按频率归一化相似度选出簇代表，得到紧凑词表<span class="arithmatex">\(A^*\)</span>；Stage II 按时间戳顺序遍历交互，用<span class="arithmatex">\(A^*\)</span>全局引导 + 用户/物品历史方面记忆<span class="arithmatex">\(H_{ui}(\tau)\)</span> 构造个性化提示，抽取 (方面, 观点, 情感) 三元组并回写更新记忆。抽取结果作为结构化特征注入 EFM/ANR/TGNN 等评分预测器。</p>
 <pre class="mermaid"><code>flowchart TD
     A["原始评论语料 D"] --&gt; B["多采样共识: K次子采样→压缩→抽方面"]
     B --&gt; C["嵌入聚类归一化 → 紧凑词表 A*"]
@@ -4235,13 +4246,13 @@
 <li>
 <p><strong>多采样共识 + 频率归一化聚类代表选择</strong>：单次 LLM 抽取方差大、同义方面泛滥。对 <span class="arithmatex">\(K\)</span> 次子采样结果取并集后做凝聚聚类，簇代表按
 $<span class="arithmatex">\(\tilde{a}_c=\arg\max_{a'\in C_c}\sum_{a''\in C_c}\frac{\text{freq}(a'')}{\sum_{x\in C_c}\text{freq}(x)}\,\hat{\phi}(a')^\top\hat{\phi}(a'')\)</span>$
-选取——即"既高频又与簇内成员语义最居中"的词。直觉：把长尾同义噪声压成 <span class="arithmatex">\(K\)</span> 个高信息量锚点，直接降低 <span class="arithmatex">\(I(z;X)\)</span> 与维度，从而收紧泛化界（图 3 显示聚类后方面相似度热图明显更独立）。</p>
+选取——即"既高频又与簇内成员语义最居中"的词。直觉：把长尾同义噪声压成 <span class="arithmatex">\(K\)</span>个高信息量锚点，直接降低<span class="arithmatex">\(I(z;X)\)</span> 与维度，从而收紧泛化界（图 3 显示聚类后方面相似度热图明显更独立）。</p>
 </li>
 <li>
-<p><strong>时间序动态个性化抽取</strong>：静态词表无法刻画兴趣漂移。维护 <span class="arithmatex">\(H_{ui}(\tau)=\{a\in A^*\mid \exists(u,i',\cdot,\cdot,t),t&lt;\tau\}\cup\{a\in A^*\mid\exists(u',i,\cdot,\cdot,t),t&lt;\tau\}\)</span>，即"用户历史关注方面 ∪ 物品被他人强调的方面"，拼入提示 <span class="arithmatex">\(P_{dynamic}=[P_{global}[A^*];P_{personal}[H_{ui}(\tau)];P_{extract}[r]]\)</span>，抽取后 <span class="arithmatex">\(H_{ui}(\tau^+)=H_{ui}(\tau)\cup\{a_j\}\)</span>。直觉：把协同信号以"方面先验"形式注入 LLM，使抽取既受全局约束又随个体演化。</p>
+<p><strong>时间序动态个性化抽取</strong>：静态词表无法刻画兴趣漂移。维护 <span class="arithmatex">\(H_{ui}(\tau)=\{a\in A^*\mid \exists(u,i',\cdot,\cdot,t),t&lt;\tau\}\cup\{a\in A^*\mid\exists(u',i,\cdot,\cdot,t),t&lt;\tau\}\)</span>，即"用户历史关注方面 ∪ 物品被他人强调的方面"，拼入提示<span class="arithmatex">\(P_{dynamic}=[P_{global}[A^*];P_{personal}[H_{ui}(\tau)];P_{extract}[r]]\)</span>，抽取后<span class="arithmatex">\(H_{ui}(\tau^+)=H_{ui}(\tau)\cup\{a_j\}\)</span>。直觉：把协同信号以"方面先验"形式注入 LLM，使抽取既受全局约束又随个体演化。</p>
 </li>
 <li>
-<p><strong>幻觉度量 ADR/OFR 与训练/推理开销</strong>：ADR 统计抽取方面落在 <span class="arithmatex">\(A^*\)</span> 外的比例 <span class="arithmatex">\(\text{ADR}=\frac{1}{|S|}\sum\frac{|\{a\notin A^*\}|}{|s|}\)</span>；OFR 用跨度级最大余弦相似度 <span class="arithmatex">\(\text{SemSim}(o,r)=\max_{r_{s:e}\in\mathcal{S}_{L,\Delta}(r)}\frac{\langle\psi(o),\psi(r_{s:e})\rangle}{\|\psi(o)\|\|\psi(r_{s:e})\|}\)</span> 衡量观点是否有原文依据（<span class="arithmatex">\(\Delta=2\)</span> 容差）。框架本身<strong>无训练损失</strong>（纯抽取管线），下游沿用各 backbone 原损失；抽取为离线一次性成本，在线仅需查表注入特征，无额外推理延迟。</p>
+<p><strong>幻觉度量 ADR/OFR 与训练/推理开销</strong>：ADR 统计抽取方面落在 <span class="arithmatex">\(A^*\)</span>外的比例<span class="arithmatex">\(\text{ADR}=\frac{1}{|S|}\sum\frac{|\{a\notin A^*\}|}{|s|}\)</span>；OFR 用跨度级最大余弦相似度<span class="arithmatex">\(\text{SemSim}(o,r)=\max_{r_{s:e}\in\mathcal{S}_{L,\Delta}(r)}\frac{\langle\psi(o),\psi(r_{s:e})\rangle}{\|\psi(o)\|\|\psi(r_{s:e})\|}\)</span>衡量观点是否有原文依据（<span class="arithmatex">\(\Delta=2\)</span> 容差）。框架本身<strong>无训练损失</strong>（纯抽取管线），下游沿用各 backbone 原损失；抽取为离线一次性成本，在线仅需查表注入特征，无额外推理延迟。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4287,7 +4298,7 @@ $<span class="arithmatex">\(\tilde{a}_c=\arg\max_{a'\in C_c}\sum_{a''\in C_c}\fr
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分与防穿越</strong>: 按时间戳排序处理交互，历史记忆 <span class="arithmatex">\(H_{ui}(\tau)\)</span> 严格只使用 <span class="arithmatex">\(t&lt;\tau\)</span> 的交互，属<strong>全局时间戳切分</strong>式防穿越。</li>
+<li><strong>数据划分与防穿越</strong>: 按时间戳排序处理交互，历史记忆 <span class="arithmatex">\(H_{ui}(\tau)\)</span>严格只使用<span class="arithmatex">\(t&lt;\tau\)</span> 的交互，属<strong>全局时间戳切分</strong>式防穿越。</li>
 <li><strong>排名评测协议</strong>: 本文任务为<strong>评分预测</strong>而非排序，采用 MSE / MAE 回归误差，非 Full-Ranking 或 Sampled Ranking。</li>
 <li><strong>对比基线与超参</strong>: 三类基线——传统 CF（PMF/EFM）、评论感知神经模型（ANR/NARRE/DeepCoNN/RGCL/TGNN）、LLM-as-Recommender（GPT-4o/Rec-SAVER/EXP3RT）。抽取用 LLaMA3.3-70B（20% 采样、重复 5 次），细粒度抽取用 LLaMA3.1-8B；LLM 基线用 QLoRA 微调 LLaMA3-8B；5 个随机种子取均值，<span class="arithmatex">\(p&lt;0.05\)</span> 显著性检验。</li>
 </ul>
@@ -4454,12 +4465,18 @@ $<span class="arithmatex">\(\tilde{a}_c=\arg\max_{a'\in C_c}\sum_{a''\in C_c}\fr
 <li><strong>幻觉-性能呈非单调关系</strong>：Qwen2.5-32B 的 ADR 极低（Musical 0.0073、Yelp 0.0042）但 MSE 并非最优；LLaMA3.1-8B 的 ADR 反而最高（0.1153）却在 ANR/TGNN 上取得最佳或次佳 MSE——适度"抽象/改写"扩大方面覆盖有益，过度保守抑制语义多样性反而有害。</li>
 <li><strong>规模不保证质量，CoT 蒸馏反成噪声</strong>：70B/32B 并不稳定优于 8B/14B 中型模型；DeepSeek-R1 蒸馏版（8B/14B）在所有非蒸馏变体面前<strong>全面落后</strong>，多步 CoT 为语义抽取注入冗余复杂度。此外仅用 20% 评论抽取即可达 CER≈1（Top-20 方面重叠 90%），大幅降低抽取成本。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 EXP3RT/Rec-SAVER 的"自由抽取+CoT 推理"，HADSF 的核心差异是<strong>先建词表再受控抽取</strong>，把开放生成转为闭集约束；相较 NARRE/TGNN 的注意力/主题图，本文用 LLM 语义锚点替代启发式主题，且首次给出幻觉与下游误差的定量关联。</li>
 <li><strong>可迁移亮点</strong>: ① "多采样共识 + 频率归一化聚类代表"可作为任何 LLM 标签体系归纳的通用去噪配方；② ADR/OFR 的跨度级 grounding 度量可直接迁移到 LLM 生成式推荐/解释生成的忠实性评估。</li>
-<li><strong>审稿级局限批判</strong>: ① 幻觉度量依赖句向量相似度与 <span class="arithmatex">\(\Delta\)</span> 容差，对长观点与领域术语敏感，且 ADR 以 <span class="arithmatex">\(A^*\)</span> 为真值基准，词表本身偏差会被继承；② 抽取为离线管线，词表需按域重建，跨域冷启动与在线增量更新成本未评估；③ 主实验仅覆盖评分预测，缺少排序/Top-N 与真实 A/B 验证。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 幻觉度量依赖句向量相似度与 <span class="arithmatex">\(\Delta\)</span>容差，对长观点与领域术语敏感，且 ADR 以<span class="arithmatex">\(A^*\)</span> 为真值基准，词表本身偏差会被继承；② 抽取为离线管线，词表需按域重建，跨域冷启动与在线增量更新成本未评估；③ 主实验仅覆盖评分预测，缺少排序/Top-N 与真实 A/B 验证。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

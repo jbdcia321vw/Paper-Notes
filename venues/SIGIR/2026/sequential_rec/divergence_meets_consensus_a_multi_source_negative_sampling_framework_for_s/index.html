@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][序列与会话推荐] 借鉴最近发展区理论提出 Teacher-Peer-Self 多源负采样框架，以分歧重排提升多样性、共识蒸馏复用打分，六数据集五骨干稳定超越 SOTA。">
+        <meta name="description" content="[SIGIR 2026][序列与会话推荐] 借鉴 ZPD 理论构建 Teacher-Peer-Self 多源负采样，用分歧重排提升多样性、共识蒸馏复用打分开销，六数据集全库排序下 Recall@20 最高提升 27.3%。">
       
       
       
@@ -108,7 +108,7 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 序列与会话推荐, 召回, 负采样, 知识蒸馏, 多源打分" />
+<meta name="keywords" content="SIGIR 2026, 序列与会话推荐, 召回, 负采样, 知识蒸馏, 难负例挖掘" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
@@ -121,7 +121,7 @@
 
 <meta property="article:tag" content="知识蒸馏" />
 
-<meta property="article:tag" content="多源打分" />
+<meta property="article:tag" content="难负例挖掘" />
 
 
 
@@ -131,10 +131,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/sequential_rec/divergence_meets_consensus_a_multi_source_negative_sampling_framework_for_s/" />
 <meta property="og:title" content="[Paper Note] Divergence Meets Consensus: A Multi-Source Negative Sampling Framework for Sequential Recommendation" />
-<meta property="og:description" content="[SIGIR 2026][序列与会话推荐] 借鉴最近发展区理论提出 Teacher-Peer-Self 多源负采样框架，以分歧重排提升多样性、共识蒸馏复用打分，六数据集五骨干稳定超越 SOTA。" />
+<meta property="og:description" content="[SIGIR 2026][序列与会话推荐] 借鉴 ZPD 理论构建 Teacher-Peer-Self 多源负采样，用分歧重排提升多样性、共识蒸馏复用打分开销，六数据集全库排序下 Recall@20 最高提升 27.3%。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] Divergence Meets Consensus: A Multi-Source Negative Sampling Framework for Sequential Recommendation" />
-<meta name="twitter:description" content="[SIGIR 2026][序列与会话推荐] 借鉴最近发展区理论提出 Teacher-Peer-Self 多源负采样框架，以分歧重排提升多样性、共识蒸馏复用打分，六数据集五骨干稳定超越 SOTA。" />
+<meta name="twitter:description" content="[SIGIR 2026][序列与会话推荐] 借鉴 ZPD 理论构建 Teacher-Peer-Self 多源负采样，用分歧重排提升多样性、共识蒸馏复用打分开销，六数据集全库排序下 Recall@20 最高提升 27.3%。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +160,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] Divergence Meets Consensus: A Multi-Source Negative Sampling Framework for Sequential Recommendation",
   "headline": "[Paper Note] Divergence Meets Consensus: A Multi-Source Negative Sampling Framework for Sequential Recommendation",
-  "description": "[SIGIR 2026][\u5e8f\u5217\u4e0e\u4f1a\u8bdd\u63a8\u8350] \u501f\u9274\u6700\u8fd1\u53d1\u5c55\u533a\u7406\u8bba\u63d0\u51fa Teacher-Peer-Self \u591a\u6e90\u8d1f\u91c7\u6837\u6846\u67b6\uff0c\u4ee5\u5206\u6b67\u91cd\u6392\u63d0\u5347\u591a\u6837\u6027\u3001\u5171\u8bc6\u84b8\u998f\u590d\u7528\u6253\u5206\uff0c\u516d\u6570\u636e\u96c6\u4e94\u9aa8\u5e72\u7a33\u5b9a\u8d85\u8d8a SOTA\u3002",
+  "description": "[SIGIR 2026][\u5e8f\u5217\u4e0e\u4f1a\u8bdd\u63a8\u8350] \u501f\u9274 ZPD \u7406\u8bba\u6784\u5efa Teacher-Peer-Self \u591a\u6e90\u8d1f\u91c7\u6837\uff0c\u7528\u5206\u6b67\u91cd\u6392\u63d0\u5347\u591a\u6837\u6027\u3001\u5171\u8bc6\u84b8\u998f\u590d\u7528\u6253\u5206\u5f00\u9500\uff0c\u516d\u6570\u636e\u96c6\u5168\u5e93\u6392\u5e8f\u4e0b Recall@20 \u6700\u9ad8\u63d0\u5347 27.3%\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/sequential_rec/divergence_meets_consensus_a_multi_source_negative_sampling_framework_for_s/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/sequential_rec/divergence_meets_consensus_a_multi_source_negative_sampling_framework_for_s/",
   "inLanguage": "zh-CN",
@@ -168,18 +168,18 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u5e8f\u5217\u4e0e\u4f1a\u8bdd\u63a8\u8350, \u53ec\u56de, \u8d1f\u91c7\u6837, \u77e5\u8bc6\u84b8\u998f, \u591a\u6e90\u6253\u5206",
+  "keywords": "SIGIR 2026, \u5e8f\u5217\u4e0e\u4f1a\u8bdd\u63a8\u8350, \u53ec\u56de, \u8d1f\u91c7\u6837, \u77e5\u8bc6\u84b8\u998f, \u96be\u8d1f\u4f8b\u6316\u6398",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u5e8f\u5217\u4e0e\u4f1a\u8bdd\u63a8\u8350" },
     { "@type": "Thing", "name": "\u53ec\u56de" },
     { "@type": "Thing", "name": "\u8d1f\u91c7\u6837" },
     { "@type": "Thing", "name": "\u77e5\u8bc6\u84b8\u998f" },
-    { "@type": "Thing", "name": "\u591a\u6e90\u6253\u5206" }
+    { "@type": "Thing", "name": "\u96be\u8d1f\u4f8b\u6316\u6398" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3997,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4011,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4019,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4072,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4095,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4103,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4119,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4156,17 +4134,6 @@
     <span class="md-ellipsis">
       
         Rating (四维评分)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        论文图表
       
     </span>
   </a>
@@ -4192,9 +4159,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][序列与会话推荐] 借鉴最近发展区理论提出 Teacher-Peer-Self 多源负采样框架，以分歧重排提升多样性、共识蒸馏复用打分，六数据集五骨干稳定超越 SOTA。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][序列与会话推荐] 借鉴 ZPD 理论构建 Teacher-Peer-Self 多源负采样，用分歧重排提升多样性、共识蒸馏复用打分开销，六数据集全库排序下 Recall@20 最高提升 27.3%。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 序列与会话推荐 · 召回 · 负采样 · 知识蒸馏 · 多源打分</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 序列与会话推荐 · 召回 · 负采样 · 知识蒸馏 · 难负例挖掘</p>
   
 </aside>
   
@@ -4243,7 +4210,7 @@
       
       
       
-        <span class="md-tag">多源打分</span>
+        <span class="md-tag">难负例挖掘</span>
       
     
   </nav>
@@ -4255,85 +4222,71 @@
 
 <h1 id="divergence-meets-consensus-a-multi-source-negative-sampling-framework-for-sequential-recommendation">Divergence Meets Consensus: A Multi-Source Negative Sampling Framework for Sequential Recommendation (分歧遇见共识：面向序列推荐的多源负采样框架)</h1>
 <ul>
-<li><strong>会议/期刊</strong>: SIGIR 2026 (第 49 届国际 ACM SIGIR 会议，Melbourne, VIC, Australia)</li>
-<li><strong>推荐链路定位</strong>: 召回 (Retrieval) —— 面向序列推荐 Next-Item 预测的训练阶段负采样策略，属于召回/表征学习环节</li>
-<li><strong>研究方向</strong>: 序列与会话推荐 / 自监督对比学习与交互去噪（负采样与难负例挖掘）</li>
+<li><strong>会议/期刊</strong>: SIGIR 2026</li>
+<li><strong>作者与机构</strong>: Yuanzi Li, Lingjie Wang, Jingyu Zhao, Zihang Tian, Yuhan Wang, Lei Wang, Xu Chen（中国人民大学、山东大学、北京大学）</li>
+<li><strong>推荐链路定位</strong>: 召回（序列下一物品预测的训练阶段）</li>
+<li><strong>研究方向</strong>: 序列与会话推荐 / 自监督对比学习与交互去噪</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2605.19651v1">https://arxiv.org/abs/2605.19651v1</a></li>
 <li><strong>开源代码</strong>: <a href="https://github.com/Lyz103/SIGIR26-MDCNS">https://github.com/Lyz103/SIGIR26-MDCNS</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对序列推荐隐式反馈训练中自引导难负采样 (L1) 的三大痛点——负样本自强化死循环、采样多样性收缩、全候选池打分资源浪费，本文借鉴 Vygotsky 最近发展区 (ZPD) 理论提出 MDCNS：以 Self/Peer/Teacher 三视角多源打分打破闭环，用 Self-Peer 分歧分重排候选以提升多样性，再用 KL 共识蒸馏复用被丢弃的打分信号。在 6 个真实数据集、5 种骨干上一致超越 SOTA 负采样方法，且理论复杂度与 DNS+/MixGCF 同为 <span class="arithmatex">\(O(Nd)\)</span>。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>隐式反馈序列推荐中，主流 L1 级"自引导难负采样"（DNS/DNS+/MixGCF）存在三大痼疾：采样与参数更新耦合形成负向自强化死循环、仅依赖当前模型导致采样多样性坍缩、为选一个负例却要打分整个候选池造成算力浪费。本文提出 MDCNS，以 Vygotsky "最近发展区"理论为隐喻构建 Teacher-Peer-Self 三视角：多源打分注入外部信号打破闭环，分歧重排用 Self-Peer 打分差提升多样性，共识蒸馏用 KL 把教师在全候选池上的分布作为软目标回收算力。在 6 个真实数据集、5 种骨干、BCE/BPR 两种损失下，采用 70/20/10 比例划分 + Full-Ranking 协议，Recall@20 相对最强基线最高提升 27.29%（Beauty），NDCG@20 提升 36.44%。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 序列推荐 (SR) 以用户历史交互序列 <span class="arithmatex">\(S_u=[v_1,\dots,v_{|S_u|}]\)</span> 预测下一交互，主流训练依赖隐式反馈（点击/浏览），因此负采样成为构造对比监督的核心机制。作者将现有负采样分为两级：<strong>L0 启发式</strong>（RNS 均匀采样、PNS 流行度采样、ENS 曝光日志采样）与 <strong>L1 自引导难负采样</strong>（DNS、MixGCF、AdaSIR、GNNO、DNS+、SRNS），后者用模型当前参数实时挖掘难负例。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>负样本自强化死循环</strong>：采样策略与模型当前状态紧耦合，选到坏负例 → 梯度更新退化判别力 → 后续采样质量更差，陷入局部最优；</li>
-<li><strong>采样多样性受限</strong>：仅依赖当前参数，负例被限制在模型当前关注的局部物品空间，采样分布逐轮收缩，泛化受损；</li>
-<li><strong>资源分配低效</strong>：为选 1 个难负例需对整池候选打分，绝大多数分数被丢弃，计算开销与信息增益严重不匹配。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 简单增加候选池规模或加深网络无法解决——问题根源在于"采样器与模型"的闭环耦合本身，而非采样容量；单纯引入随机性又会削弱难负例的信息量。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者借用教育心理学的 <strong>最近发展区 (ZPD)</strong> 理论（图 1）：最优学习发生在 "Teacher-Peer-Self" 协作三元组中，其驱动力是"拓展边界（分歧）"与"巩固知识（共识）"的动态交互。将这一哲学映射到负采样：多源打分提供外部信号打破闭环（分歧），共识蒸馏把被浪费的打分转化为软监督（共识），从而把学习能力从"自达区"扩展到"潜在区"。</li>
+<li><strong>主流范式</strong>: 序列推荐在隐式反馈下依赖负采样构造对比监督。L0 启发式（RNS/PNS/ENS）高效但负例信息量低、梯度易消失；L1 自引导难负采样（DNS、MixGCF、AdaSIR、GNNO、DNS+、SRNS）用当前参数实时挑"最难"候选，成为事实标准。</li>
+<li><strong>前人局限</strong>: 其一，采样策略与模型状态紧耦合，选到坏负例→梯度退化→后续采样更差，形成<strong>负向自强化死循环</strong>并陷入局部最优；其二，仅凭当前参数在模型已关注的局部物品空间内采样，<strong>分布逐轮收缩、多样性丧失</strong>；其三，为挑 1 个负例需对整池打分，<strong>绝大多数分数被丢弃</strong>，算力与信息增益严重失衡。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 作者借 ZPD 教育学理论指出，最优学习不来自孤立自学，而来自"教师-同伴-自我"协作中<strong>边界扩张（分歧）与知识巩固（共识）</strong>的动态张力；L1 的病灶恰是"只有自我、没有他者"。</li>
+<li><strong>本文切入点</strong>: 用同伴模型与集成教师模型引入外部视角打破闭环，用视角间分歧定义"不确定样本"扩充多样性，用教师分布蒸馏把被丢弃的打分转化为训练信号。</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2605.19651v1/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户集 <span class="arithmatex">\(\mathcal{U}\)</span>、物品集 <span class="arithmatex">\(\mathcal{V}\)</span>；用户 <span class="arithmatex">\(u\)</span> 的时序交互序列 <span class="arithmatex">\(S_u=[v_1,v_2,\dots,v_{|S_u|}]\)</span>，<span class="arithmatex">\(v_t\in\mathcal{V}\)</span>。</li>
-<li>目标：<span class="arithmatex">\(\arg\max_{v^*\in\mathcal{V}} P(v_{|S_u|+1}=v^*\mid S_u)\)</span>。</li>
-<li>自模型 <span class="arithmatex">\(M_{self}\)</span>（如 SASRec）、同伴模型 <span class="arithmatex">\(M_{peer}\)</span>（如 Mamba4Rec），二者互为 peer 且训练流程相同；教师模型 <span class="arithmatex">\(M_{teacher}\)</span> 由二者加性聚合而成。</li>
-<li>序列表征 <span class="arithmatex">\(h^{self}_u\)</span>、<span class="arithmatex">\(h^{peer}_u\)</span>；物品嵌入 <span class="arithmatex">\(e_v\)</span>（维度 <span class="arithmatex">\(d\)</span>，原文未单独报告具体 <span class="arithmatex">\(d\)</span> 取值，沿用各骨干默认配置）。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：候选池构造（均匀采样 <span class="arithmatex">\(N\)</span> 个未观测物品）→ 三视角打分（Self/Peer/Teacher）→ 分歧分重排 → 各视角 Top-<span class="arithmatex">\(M\)</span> 池内均匀采样 1 个负例 → 排序损失聚合 → 教师分布对候选池做 KL 共识蒸馏 → 联合优化。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>MDCNS 以 SASRec 为 Self 模型、Mamba4Rec 为 Peer 模型（二者互为同伴、训练流程相同），Teacher 定义为二者打分的加和集成。每步训练先对用户序列均匀采样 <span class="arithmatex">\(N\)</span>个未交互物品构成候选池，三视角分别打分；随后计算 Self 与 Peer 的打分绝对差作为分歧分，叠加到三视角原始分上重排，各视角从 Top-<span class="arithmatex">\(M\)</span> 中均匀抽 1 个负例构成三路排序损失；同时把 Teacher 与 Self 在候选池上的温度 Softmax 分布做 KL 对齐，作为辅助蒸馏损失联合优化。推理阶段仅用 Self 模型，无额外开销。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 用户历史序列 S_u"] --&gt; B["候选池构造: 从 V\\({v+}∪S_u) 均匀采样 N 个物品"]
-    B --&gt; C["多源打分: Self 模型 / Peer 模型 / Teacher(加性聚合) 分别打分"]
-    C --&gt; D["分歧重排: d=|s_self - s_peer|, 加性融合得分歧感知分数"]
-    D --&gt; E["各视角 Top-M 池内均匀采样 1 个难负例"]
-    E --&gt; F["排序损失 L_rec = αL_self + βL_peer + γL_teacher"]
-    C --&gt; G["共识蒸馏: 教师分布 vs 自模型分布 KL 散度 L_dis"]
-    F --&gt; H["联合优化 L = L_rec + μ·L_dis"]
-    G --&gt; H</code></pre>
+    A["用户序列 S_u + 均匀采样候选池 C_N"] --&gt; B["多源打分：Self / Peer / Teacher(加和集成)"]
+    B --&gt; C["分歧重排：d=|s_self-s_peer| 叠加后取 Top-M 随机抽负例"]
+    B --&gt; D["共识蒸馏：Teacher 分布 KL 对齐 Self 分布"]
+    C --&gt; E["三路排序损失 L_rec"]
+    D --&gt; F["蒸馏损失 L_dis"]
+    E --&gt; G["联合优化 L_rec + μ·L_dis"]
+    F --&gt; G</code></pre>
 <figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2605.19651v1/figure_2.png" /><figcaption>图 2</figcaption>
+  <img alt="图2：MDCNS的整体框架。(1) 多源评分，构建候选池并从自我、同伴和教师视角生成相关性评分信号；(2) 分歧重排序，量化自我模型与同伴模型之间的视图分歧分数以对候选重新排序，并从Top-M列表中采样多样化的难负例；以及(3) 共识蒸馏，利用教师在整个候选池上的分布作为软目标来指导自我模型，有效获取共识知识，同时缓解资源低效问题" src="../../../../../assets/papers/2605.19651v1/figure_2.png" /><figcaption>图2：MDCNS的整体框架。(1) 多源评分，构建候选池并从自我、同伴和教师视角生成相关性评分信号；(2) 分歧重排序，量化自我模型与同伴模型之间的视图分歧分数以对候选重新排序，并从Top-M列表中采样多样化的难负例；以及(3) 共识蒸馏，利用教师在整个候选池上的分布作为软目标来指导自我模型，有效获取共识知识，同时缓解资源低效问题</figcaption>
 </figure>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>（1）多源打分 (Multi-source Scoring)</strong>：候选池 <span class="arithmatex">\(C_N\sim\text{Uniform}(\mathcal{V}\setminus(\{v^+_u\}\cup S_u),N)\)</span>；对每个 <span class="arithmatex">\(v\in C_N\)</span> 计算 <span class="arithmatex">\(s^{self}_{u,v}=h^{self}_u\cdot e_v\)</span>、<span class="arithmatex">\(s^{peer}_{u,v}=h^{peer}_u\cdot e_v\)</span>；教师分数定义为加性聚合 <span class="arithmatex">\(s^{teacher}_{u,v}=s^{self}_{u,v}+s^{peer}_{u,v}\)</span>。物理直觉：引入外部视角注入负信号，切断"采样-更新"闭环，使模型跳出次优态。</p>
-<p><strong>（2）分歧重排 (Divergence Re-ranking)</strong>：分歧分 <span class="arithmatex">\(d_{u,v}=|s^{self}_{u,v}-s^{peer}_{u,v}|\)</span>，分歧感知分数 <span class="arithmatex">\(\tilde{s}^{*}_{u,v}=s^{*}_{u,v}+d_{u,v},\ \forall *\in\{self,peer,teacher\}\)</span>。直觉：两模型打分差异大的物品是"不确定样本"，同时具备高相关性与高视角分歧的候选被排到前面，从而兼顾难度与多样性。随后各视角取 Top-<span class="arithmatex">\(M\)</span> 池 <span class="arithmatex">\(\mathcal{H}_*=\text{Top-}M(\{\tilde{s}^{*}_{u,k}\})\)</span>，并在池内均匀采样 1 个负例 <span class="arithmatex">\(v^-_*\sim\text{Uniform}(\mathcal{H}_*)\)</span>，以缓解严格难挖掘带来的假阴性问题并注入随机性。</p>
-<p><strong>（3）共识蒸馏 (Consensus Distillation)</strong>：温度缩放 Softmax 得分布 <span class="arithmatex">\(p^{*}_{u,v}=\exp(s^{*}_{u,v}/\tau)/\sum_{j\in C_N}\exp(s^{*}_{u,j}/\tau)\)</span>，<span class="arithmatex">\(*\in\{self,teacher\}\)</span>；以 KL 散度对齐：<span class="arithmatex">\(\mathcal{L}_{dis}=\tau^2\sum_{v\in C_N}p^{teacher}_{u,v}\log\frac{p^{teacher}_{u,v}}{p^{self}_{u,v}}\)</span>。直觉：难采样只用了 1 个样本，其余 <span class="arithmatex">\(N-1\)</span> 个打分被浪费；蒸馏把教师在整个候选池上的全局排序信号作为软标签保留下来，实现"计算成本的高效利用"。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>：<span class="arithmatex">\(\mathcal{L}_{rec}=\alpha\mathcal{L}_{self}+\beta\mathcal{L}_{peer}+\gamma\mathcal{L}_{teacher}\)</span>，其中 <span class="arithmatex">\(\mathcal{L}_*=\ell(h^{self}_u,e_{v^+_u},e_{v^-_*})\)</span>，<span class="arithmatex">\(\ell(\cdot)\)</span> 可为 BPR 或 BCE；最终 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{rec}+\mu\cdot\mathcal{L}_{dis}\)</span>。超参 <span class="arithmatex">\(\alpha,\beta,\gamma,\mu,\tau\)</span> 及候选池 <span class="arithmatex">\(N\)</span>、Top-<span class="arithmatex">\(M\)</span> 的具体取值原文正文未完整给出（详见原文附录/超参节）。</li>
-<li><strong>训练负采样策略</strong>：多源分歧感知难负例挖掘——三视角各自 Top-<span class="arithmatex">\(M\)</span> 池内均匀采样（非纯贪心 Top-1），兼顾难度、多样性与假阴性抑制；同时以 KL 蒸馏提供免采样的分布级监督。</li>
-<li><strong>时间与空间复杂度</strong>：多源打分 <span class="arithmatex">\(O(Nd)\)</span>，分歧重排 <span class="arithmatex">\(O(N\log M)\)</span>，蒸馏 <span class="arithmatex">\(O(N)\)</span>；因 <span class="arithmatex">\(\log M\ll d\)</span>，总复杂度 <span class="arithmatex">\(O(Nd)\)</span>，与 DNS+、MixGCF 同阶，<strong>不引入额外渐近开销</strong>。推理阶段仅需自模型单塔打分，不涉及 Beam Search 或额外 ANN 结构（原文未报告具体 ms/request 与峰值显存）。</li>
-</ul>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>多源打分（Multi-source Scoring，打破自强化闭环）</strong>：痛点在于单模型自采样形成闭环反馈。本文对候选池 <span class="arithmatex">\(C_N \sim \mathrm{Uniform}(\mathcal{V}\setminus(\{v_u^+\}\cup S_u), N)\)</span>分别用 Self 与 Peer 编码打分<span class="arithmatex">\(s^{self}_{u,v}=h^{self}_u\cdot e_v\)</span>、<span class="arithmatex">\(s^{peer}_{u,v}=h^{peer}_u\cdot e_v\)</span>，并令教师为加和集成<span class="arithmatex">\(s^{teacher}_{u,v}=s^{self}_{u,v}+s^{peer}_{u,v}\)</span>。直觉上，异构架构（Transformer vs. SSM）的归纳偏置差异天然提供"他者视角"，使负例不再由单一模型的偏置主导。</p>
+</li>
+<li>
+<p><strong>分歧重排（Divergence Re-ranking，恢复采样多样性）</strong>：痛点在于难负例集中在模型已高分的狭窄区域。本文把两视角打分绝对差定义为分歧分 <span class="arithmatex">\(d_{u,v}=|s^{self}_{u,v}-s^{peer}_{u,v}|\)</span>，并构造分歧感知分数<span class="arithmatex">\(\tilde{s}^{*}_{u,v}=s^{*}_{u,v}+d_{u,v},\ \forall *\in\{self,peer,teacher\}\)</span>，再对每个视角取 Top-<span class="arithmatex">\(M\)</span>后<strong>均匀随机抽 1 个</strong>：<span class="arithmatex">\(v^-_* \sim \mathrm{Uniform}(\mathrm{Top\text{-}}M(\{\tilde{s}^{*}_{u,k}\}))\)</span>。分歧大意味着两模型"意见不合"，即决策边界附近的<strong>不确定样本</strong>，既难又有信息量；Top-<span class="arithmatex">\(M\)</span> 内随机化则缓解严格难挖掘带来的假阴性风险。</p>
+</li>
+<li>
+<p><strong>共识蒸馏与训练目标（Consensus Distillation，回收算力）</strong>：痛点在于候选池打分只用一个负例、其余分数全废。本文用温度 Softmax 把教师与自我打分转为分布 <span class="arithmatex">\(p^{*}_{u,v}=\exp(s^{*}_{u,v}/\tau)/\sum_{j\in C_N}\exp(s^{*}_{u,j}/\tau)\)</span>，以 KL 散度对齐：<span class="arithmatex">\(\mathcal{L}_{dis}=\tau^2\sum_{v\in C_N}p^{teacher}_{u,v}\log\frac{p^{teacher}_{u,v}}{p^{self}_{u,v}}\)</span>。总损失为<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{rec}+\mu\mathcal{L}_{dis}\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{rec}=\alpha\mathcal{L}_{self}+\beta\mathcal{L}_{peer}+\gamma\mathcal{L}_{teacher}\)</span>，<span class="arithmatex">\(\ell(\cdot)\)</span>可为 BPR 或 BCE。负采样为"候选池均匀采样 + 分歧重排 Top-<span class="arithmatex">\(M\)</span>随机抽取"，无需全库打分；整体复杂度<span class="arithmatex">\(O(Nd)\)</span>，与 DNS+/MixGCF 同阶，无渐近额外开销。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 6 个真实数据集，Amazon 系列（Sports/Beauty/Toys/Health）与 KuaiRand、LastFM 均按与先前工作 [16,48] 一致的 <strong>5-core 过滤</strong>（每个 user/item 至少 5 次交互）；LastFM 以用户给艺术家打的标签作为物品属性。</li>
+<li><strong>数据集与预处理</strong>: 四个 Amazon 品类（5-core 过滤）+ LastFM + KuaiRand，均经相同预处理：</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2605.19651v1/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度 (Sparsity)</th>
-<th style="text-align: center;">平均序列长 (#AvgLen)</th>
+<th style="text-align: left;">数据集</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Interactions</th>
+<th style="text-align: center;">稀疏度</th>
+<th style="text-align: left;">特征/场景说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Health</td>
-<td style="text-align: center;">66,519</td>
-<td style="text-align: center;">28,237</td>
-<td style="text-align: center;">485,163</td>
-<td style="text-align: center;">99.97%</td>
-<td style="text-align: center;">7.3</td>
+<td style="text-align: left;">Beauty</td>
+<td style="text-align: center;">22,363</td>
+<td style="text-align: center;">12,101</td>
+<td style="text-align: center;">198,502</td>
+<td style="text-align: center;">99.93%</td>
+<td style="text-align: left;">Amazon 美妆评论</td>
 </tr>
 <tr>
 <td style="text-align: left;">Sports</td>
@@ -4341,15 +4294,7 @@
 <td style="text-align: center;">18,357</td>
 <td style="text-align: center;">296,337</td>
 <td style="text-align: center;">99.95%</td>
-<td style="text-align: center;">8.3</td>
-</tr>
-<tr>
-<td style="text-align: left;">Beauty</td>
-<td style="text-align: center;">22,363</td>
-<td style="text-align: center;">12,101</td>
-<td style="text-align: center;">198,502</td>
-<td style="text-align: center;">99.93%</td>
-<td style="text-align: center;">8.8</td>
+<td style="text-align: left;">Amazon 运动户外</td>
 </tr>
 <tr>
 <td style="text-align: left;">Toys</td>
@@ -4357,7 +4302,15 @@
 <td style="text-align: center;">11,924</td>
 <td style="text-align: center;">167,597</td>
 <td style="text-align: center;">99.93%</td>
-<td style="text-align: center;">8.6</td>
+<td style="text-align: left;">Amazon 玩具游戏</td>
+</tr>
+<tr>
+<td style="text-align: left;">Health</td>
+<td style="text-align: center;">66,519</td>
+<td style="text-align: center;">28,237</td>
+<td style="text-align: center;">485,163</td>
+<td style="text-align: center;">99.97%</td>
+<td style="text-align: left;">Amazon 健康个护</td>
 </tr>
 <tr>
 <td style="text-align: left;">LastFM</td>
@@ -4365,7 +4318,7 @@
 <td style="text-align: center;">3,646</td>
 <td style="text-align: center;">52,551</td>
 <td style="text-align: center;">98.68%</td>
-<td style="text-align: center;">48.2</td>
+<td style="text-align: left;">音乐艺人标签，平均序列长 48.2</td>
 </tr>
 <tr>
 <td style="text-align: left;">KuaiRand</td>
@@ -4373,60 +4326,256 @@
 <td style="text-align: center;">7,566</td>
 <td style="text-align: center;">231,471</td>
 <td style="text-align: center;">99.83%</td>
-<td style="text-align: center;">12.4</td>
+<td style="text-align: left;">快手随机曝光日志</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文正文（所提供节选）<strong>未明确报告</strong>划分策略；按序列推荐领域惯例应为 Leave-One-Out（末位预测）或时间序切分，具体以原文完整版为准。需注意：候选池构造显式排除 <span class="arithmatex">\(S_u\)</span> 与 <span class="arithmatex">\(v^+_u\)</span>，从协议上规避了把历史/正样本当负例的泄露。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 原文节选<strong>未明确标注</strong>是 Full-Ranking 还是 Sampled Ranking（正负例比例），需以原文实验节完整描述为准；训练阶段候选池为 <span class="arithmatex">\(N\)</span> 个均匀采样负例（Eq. 2）。</li>
-<li><strong>评价指标与显著性检验</strong>: 使用 <strong>Recall (RC)</strong> 与 <strong>NDCG (NG)</strong>；表 3/表 4 中 "*" 表示配对 <span class="arithmatex">\(t\)</span>-检验 <span class="arithmatex">\(p\)</span>-value <span class="arithmatex">\(&lt;0.05\)</span>，即进行了统计显著性检验。Embedding 维度 <span class="arithmatex">\(d\)</span> 沿用各骨干默认设置（原文未在节选中单列对齐说明）。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 采用<strong>比例划分</strong>，70% 训练 / 20% 验证 / 10% 测试；验证集早停（patience=30），测试集报告三次独立运行均值。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 无偏 <strong>Full-Ranking（全库未交互物品排序）</strong>，指标 Recall@K 与 NDCG@K，<span class="arithmatex">\(K\in\{5,10,20\}\)</span>；推理仅用 Self 模型。</li>
+<li><strong>对比基线与超参设置</strong>: 基线含 RNS（L0）与 DNS、MixGCF、AdaSIR、GNNO、DNS+、MixGCF+、SRNS（L1）；骨干覆盖 FMLP4Rec、GRU4Rec、SASRec、LinRec、Mamba4Rec；Embedding 维度 <span class="arithmatex">\(d=64\)</span>，batch=1024，Adam(lr=0.001)，候选池<span class="arithmatex">\(N=100\)</span>，<span class="arithmatex">\(M\in\{1,\dots,5\}\)</span>，<span class="arithmatex">\(\alpha,\beta,\gamma\in[0.5,3.0]\)</span>步长 0.5，<span class="arithmatex">\(\tau\in\{0.7,1.0,10.0\}\)</span>，<span class="arithmatex">\(\mu=1\)</span>；配对 t 检验<span class="arithmatex">\(p&lt;0.05\)</span>。</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>原文表 3 报告了 6 个数据集上的性能对比（最优加粗、次优下划线），表 4 报告了不同序列推荐骨干 + BCE 损失下的对比。由于所提供正文节选未包含表 3/表 4 的具体数值单元格，以下仅给出结论性归纳，<strong>具体数值请以原文表格为准，本文不臆造数据</strong>：</p>
-<figure class="paper-figure">
-  <img alt="表 3" src="../../../../../assets/papers/2605.19651v1/table_3.png" /><figcaption>表 3</figcaption>
-</figure>
+<p>SASRec(BCE) + Mamba4Rec(Peer) 配置下（节选 Beauty / Toys / Sports / LastFM / KuaiRand）：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">数据集</th>
+<th style="text-align: left;">方法</th>
+<th style="text-align: center;">R@5</th>
+<th style="text-align: center;">R@10</th>
+<th style="text-align: center;">R@20</th>
+<th style="text-align: center;">N@5</th>
+<th style="text-align: center;">N@10</th>
+<th style="text-align: center;">N@20</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Beauty</td>
+<td style="text-align: left;">SRNS（最强基线）</td>
+<td style="text-align: center;">0.0487</td>
+<td style="text-align: center;">0.0742</td>
+<td style="text-align: center;">0.1180</td>
+<td style="text-align: center;">0.0334</td>
+<td style="text-align: center;">0.0416</td>
+<td style="text-align: center;">0.0527</td>
+</tr>
+<tr>
+<td style="text-align: left;">Beauty</td>
+<td style="text-align: left;"><strong>MDCNS</strong></td>
+<td style="text-align: center;"><strong>0.0823</strong></td>
+<td style="text-align: center;"><strong>0.1144</strong></td>
+<td style="text-align: center;"><strong>0.1502</strong></td>
+<td style="text-align: center;"><strong>0.0582</strong></td>
+<td style="text-align: center;"><strong>0.0685</strong></td>
+<td style="text-align: center;"><strong>0.0775</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Beauty</td>
+<td style="text-align: left;">Improv.</td>
+<td style="text-align: center;">+39.49%</td>
+<td style="text-align: center;">+33.95%</td>
+<td style="text-align: center;">+27.29%</td>
+<td style="text-align: center;">+39.56%</td>
+<td style="text-align: center;">+37.83%</td>
+<td style="text-align: center;">+36.44%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Toys</td>
+<td style="text-align: left;">SRNS</td>
+<td style="text-align: center;">0.0772</td>
+<td style="text-align: center;">0.0978</td>
+<td style="text-align: center;">0.1308</td>
+<td style="text-align: center;">0.0521</td>
+<td style="text-align: center;">0.0586</td>
+<td style="text-align: center;">0.0668</td>
+</tr>
+<tr>
+<td style="text-align: left;">Toys</td>
+<td style="text-align: left;"><strong>MDCNS</strong></td>
+<td style="text-align: center;"><strong>0.0896</strong></td>
+<td style="text-align: center;"><strong>0.1200</strong></td>
+<td style="text-align: center;"><strong>0.1447</strong></td>
+<td style="text-align: center;"><strong>0.0668</strong></td>
+<td style="text-align: center;"><strong>0.0765</strong></td>
+<td style="text-align: center;"><strong>0.0828</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Toys</td>
+<td style="text-align: left;">Improv.</td>
+<td style="text-align: center;">+16.06%</td>
+<td style="text-align: center;">+21.33%</td>
+<td style="text-align: center;">+7.66%</td>
+<td style="text-align: center;">+28.21%</td>
+<td style="text-align: center;">+30.55%</td>
+<td style="text-align: center;">+22.49%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Sports</td>
+<td style="text-align: left;">DNS+</td>
+<td style="text-align: center;">0.0312</td>
+<td style="text-align: center;">0.0486</td>
+<td style="text-align: center;">0.0713</td>
+<td style="text-align: center;">0.0202</td>
+<td style="text-align: center;">0.0258</td>
+<td style="text-align: center;">0.0316</td>
+</tr>
+<tr>
+<td style="text-align: left;">Sports</td>
+<td style="text-align: left;"><strong>MDCNS</strong></td>
+<td style="text-align: center;"><strong>0.0402</strong></td>
+<td style="text-align: center;"><strong>0.0573</strong></td>
+<td style="text-align: center;"><strong>0.0806</strong></td>
+<td style="text-align: center;"><strong>0.0285</strong></td>
+<td style="text-align: center;"><strong>0.0340</strong></td>
+<td style="text-align: center;"><strong>0.0398</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Sports</td>
+<td style="text-align: left;">Improv.</td>
+<td style="text-align: center;">+23.31%</td>
+<td style="text-align: center;">+17.18%</td>
+<td style="text-align: center;">+13.04%</td>
+<td style="text-align: center;">+32.46%</td>
+<td style="text-align: center;">+26.39%</td>
+<td style="text-align: center;">+25.18%</td>
+</tr>
+<tr>
+<td style="text-align: left;">LastFM</td>
+<td style="text-align: left;">GNNO</td>
+<td style="text-align: center;">0.1185</td>
+<td style="text-align: center;">0.1879</td>
+<td style="text-align: center;">0.2692</td>
+<td style="text-align: center;">0.0790</td>
+<td style="text-align: center;">0.1013</td>
+<td style="text-align: center;">0.1218</td>
+</tr>
+<tr>
+<td style="text-align: left;">LastFM</td>
+<td style="text-align: left;"><strong>MDCNS</strong></td>
+<td style="text-align: center;"><strong>0.1363</strong></td>
+<td style="text-align: center;"><strong>0.2033</strong></td>
+<td style="text-align: center;"><strong>0.2869</strong></td>
+<td style="text-align: center;"><strong>0.0915</strong></td>
+<td style="text-align: center;"><strong>0.1131</strong></td>
+<td style="text-align: center;"><strong>0.1342</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">LastFM</td>
+<td style="text-align: left;">Improv.</td>
+<td style="text-align: center;">+15.02%</td>
+<td style="text-align: center;">+8.20%</td>
+<td style="text-align: center;">+6.58%</td>
+<td style="text-align: center;">+15.82%</td>
+<td style="text-align: center;">+11.65%</td>
+<td style="text-align: center;">+10.18%</td>
+</tr>
+<tr>
+<td style="text-align: left;">KuaiRand</td>
+<td style="text-align: left;">DNS+</td>
+<td style="text-align: center;">0.0542</td>
+<td style="text-align: center;">0.0923</td>
+<td style="text-align: center;">0.1416</td>
+<td style="text-align: center;">0.0344</td>
+<td style="text-align: center;">0.0459</td>
+<td style="text-align: center;">0.0592</td>
+</tr>
+<tr>
+<td style="text-align: left;">KuaiRand</td>
+<td style="text-align: left;"><strong>MDCNS</strong></td>
+<td style="text-align: center;"><strong>0.0617</strong></td>
+<td style="text-align: center;"><strong>0.0992</strong></td>
+<td style="text-align: center;"><strong>0.1592</strong></td>
+<td style="text-align: center;"><strong>0.0368</strong></td>
+<td style="text-align: center;"><strong>0.0487</strong></td>
+<td style="text-align: center;"><strong>0.0637</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">KuaiRand</td>
+<td style="text-align: left;">Improv.</td>
+<td style="text-align: center;">+12.59%</td>
+<td style="text-align: center;">+7.48%</td>
+<td style="text-align: center;">+11.64%</td>
+<td style="text-align: center;">+6.98%</td>
+<td style="text-align: center;">+6.10%</td>
+<td style="text-align: center;">+7.60%</td>
+</tr>
+</tbody>
+</table>
+<p>跨骨干泛化（BCE，Beauty）：LinRec 上 R@5 从 DNS+ 的 0.0617 升至 <strong>0.0818</strong>，FMLP4Rec 上从 0.0635 升至 <strong>0.0872</strong>；BPR 下 GRU4Rec 在 Toys 上 R@5 从 0.0299 升至 <strong>0.0659</strong>，Mamba4Rec 在 Beauty 上从 0.0572 升至 <strong>0.0755</strong>，全部 <span class="arithmatex">\(p&lt;0.05\)</span>。</p>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">变体</th>
+<th style="text-align: center;">Beauty R@5</th>
+<th style="text-align: center;">Beauty N@5</th>
+<th style="text-align: center;">Toys R@5</th>
+<th style="text-align: center;">Toys N@5</th>
+<th style="text-align: center;">Sports R@5</th>
+<th style="text-align: center;">Sports N@5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">MDCNS（完整）</td>
+<td style="text-align: center;"><strong>0.0823</strong></td>
+<td style="text-align: center;"><strong>0.0582</strong></td>
+<td style="text-align: center;"><strong>0.0896</strong></td>
+<td style="text-align: center;"><strong>0.0668</strong></td>
+<td style="text-align: center;"><strong>0.0402</strong></td>
+<td style="text-align: center;"><strong>0.0285</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o CD</td>
+<td style="text-align: center;">0.0697</td>
+<td style="text-align: center;">0.0491</td>
+<td style="text-align: center;">0.0860</td>
+<td style="text-align: center;">0.0600</td>
+<td style="text-align: center;">0.0368</td>
+<td style="text-align: center;">0.0256</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o CD-DR</td>
+<td style="text-align: center;">0.0599</td>
+<td style="text-align: center;">0.0434</td>
+<td style="text-align: center;">0.0819</td>
+<td style="text-align: center;">0.0585</td>
+<td style="text-align: center;">0.0343</td>
+<td style="text-align: center;">0.0226</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o CD-DR-MS（退化为 DNS+）</td>
+<td style="text-align: center;">0.0550</td>
+<td style="text-align: center;">0.0355</td>
+<td style="text-align: center;">0.0721</td>
+<td style="text-align: center;">0.0503</td>
+<td style="text-align: center;">0.0312</td>
+<td style="text-align: center;">0.0202</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>三组件呈"叠加式"贡献，MS 是地基</strong>：Beauty 上去掉 CD 掉 15.31%（R@5），再去掉 DR 掉 27.22%，全部退化为 DNS+ 后掉 33.17%；说明多源打分打破闭环是主要增益来源，分歧重排与蒸馏在其上继续放大收益，三者缺一不可。</li>
+<li><strong>弱同伴也能打，鲁棒性来自机制而非同伴强度</strong>：以 GRU4Rec 替代 Mamba4Rec 作 Peer（MDCNSwts），在 Sports（R@5 0.0433 vs. 0.0402）与 LastFM（0.1384 vs. 0.1363）上甚至反超完整版，Beauty/Toys 略降但仍远超基线——证明分歧重排引入的多样性与难度不依赖强同伴。</li>
+<li><strong>蒸馏损失不收敛反而是好事</strong>：图 3 显示 BCE 与总损失单调下降并稳定，但 KD 损失全程保持显著量级甚至扩大；作者归因于分歧重排持续阻止 Teacher 与 Self 表征同质化，使教师能长期提供有信息量的梯度，从优化动力学角度反证了分歧机制的有效性。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li>MDCNS 在 6 个数据集上<strong>一致优于</strong> SOTA 负采样基线（L0：RNS/PNS/ENS；L1：DNS/MixGCF/AdaSIR/GNNO/DNS+/SRNS），最优与次优分别以加粗/下划线标注，且带 "*" 的结果通过配对 <span class="arithmatex">\(t\)</span>-检验 (<span class="arithmatex">\(p&lt;0.05\)</span>)。</li>
-<li>表 1 的特性对比显示：MDCNS 是唯一同时具备 SGS（自引导采样）、MSS（多源打分）、ERA（高效资源分配）三项能力的方法（L2 级），PRF 列获得三颗 ❍，而 L0 仅 ERA、L1 仅 SGS。</li>
-</ul>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2605.19651v1/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文以 RQ3 提出组件消融问题，但所提供节选未包含消融表格数值。从方法结构可推断消融应覆盖：去除 Peer/Teacher 多源打分（退化为 L1 自引导）、去除分歧重排项 <span class="arithmatex">\(d_{u,v}\)</span>、去除共识蒸馏 <span class="arithmatex">\(\mathcal{L}_{dis}\)</span> 三个变体。<strong>具体下降幅度原文节选未报告</strong>；是否严格控制参数量/图度数等对照变量亦需以原文完整消融节为准。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
-<ul>
-<li><strong>稀疏度分桶</strong>: 原文节选<strong>未报告</strong>按用户/物品交互频次分桶的长尾分析；但数据集稀疏度跨度大（98.68%–99.97%），跨 6 数据集的一致性提升可间接说明对稀疏场景的鲁棒性。</li>
-<li><strong>关键超参数敏感度</strong>: 涉及温度 <span class="arithmatex">\(\tau\)</span>（控制蒸馏分布锐度与梯度幅值）、蒸馏权重 <span class="arithmatex">\(\mu\)</span>、三视角损失权重 <span class="arithmatex">\(\alpha/\beta/\gamma\)</span>、候选池 <span class="arithmatex">\(N\)</span> 与 Top-<span class="arithmatex">\(M\)</span>；原文以 RQ4 讨论训练过程中损失演化，但节选未给出敏感度曲线数值。</li>
-<li><strong>线上 A/B 测试结果</strong>: 原文仅包含离线实验，<strong>未报告线上 A/B 测试</strong>。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>"分歧-共识"双驱动范式</strong>具有强普适性：分歧分 <span class="arithmatex">\(|s^{self}-s^{peer}|\)</span> 作为"不确定性/信息量"代理，可迁移到对比学习数据增广、跨域蒸馏、多模态对齐中的样本筛选；</li>
-<li><strong>计算复用思想</strong>：把难采样本要丢弃的 <span class="arithmatex">\(N-1\)</span> 个打分通过 KL 蒸馏转为软监督，是"零额外渐近开销换性能"的优雅设计，对工业训练效率友好；</li>
-<li><strong>模型无关性</strong>：在 5 种骨干（SASRec、Mamba4Rec 等）与 BPR/BCE 两种损失下均有效，泛化证据较充分。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>双模型训练成本被复杂度分析"掩盖"</strong>：<span class="arithmatex">\(O(Nd)\)</span> 的渐近阶虽与 DNS+ 相同，但 MDCNS 需同时维护 Self 与 Peer 两个完整序列模型（外加教师聚合），实际显存与单 epoch 墙钟时间约为单模型的 2 倍，原文未报告实际耗时/显存对比，这是审稿人最可能追问的点；</li>
-<li><strong>Peer 模型选择缺乏原则性指导</strong>：为何选 Mamba4Rec 作 peer？peer 与 self 的架构差异度如何影响分歧分质量？原文未做 peer 选择的敏感性分析；</li>
-<li><strong>评估协议透明度不足</strong>：节选未明确 Full-Ranking vs Sampled Ranking、数据划分方式与 embedding 维度，削弱了结果的可复现性与跨论文可比性；</li>
-<li><strong>理论包装偏重</strong>：ZPD 教育学类比提供了叙事美感，但方法本质是"双模型分歧 + 集成蒸馏"的标准集成学习思路，理论贡献更多是视角而非新定理；</li>
-<li><strong>假阴性风险仅靠 Top-<span class="arithmatex">\(M\)</span> 内随机采样缓解</strong>，缺乏对负例真实标签的显式校验机制。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 DNS/DNS+ 的本质区别在于负例不再由单一模型自产——DNS+ 仅靠 Top-<span class="arithmatex">\(M\)</span>随机化缓解假阴性，仍困于自强化闭环；与 MixGCF 的图混合增广相比，MDCNS 不依赖交互图且天然支持异构骨干；与 GNNO/SRNS 的假阴性抑制路线相比，本文同时解决闭环、多样性与算力浪费三个正交问题，且复杂度同为<span class="arithmatex">\(O(Nd)\)</span>。</li>
+<li><strong>可迁移亮点</strong>: ①"分歧分叠加进相关性分"是一个极轻量的不确定性度量，可直接移植到 CTR 精排的难样本挖掘或主动学习；②把候选池打分的"废料"用 KL 蒸馏回收，可迁移到任何需要池化打分的采样框架（如对比学习负采样、重排蒸馏）。</li>
+<li><strong>审稿级局限批判</strong>: ①训练期需同时维护 Self/Peer/Teacher 三套前向，显存与算力开销约为单模型 2 倍，论文仅在结论中承认"未来探索更轻量替代"，缺少训练 wall-clock 与显存实测；②教师定义为简单加和集成，缺乏对加权/学习式集成的探索，且 <span class="arithmatex">\(\alpha,\beta,\gamma,\tau\)</span> 四组超参需网格搜索，跨数据集敏感性未做系统分析；③评测仅覆盖公开离线全库排序，无线上 A/B 或工业级延迟数据。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐（多源分歧重排 + 共识蒸馏的组合有巧思，但组件本身在集成学习/蒸馏中不算全新）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐（6 数据集 × 5 骨干 × 2 损失 + 配对 <span class="arithmatex">\(t\)</span>-检验较扎实，但划分/排序协议披露不足、缺实际开销对比）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐（公式与算法 1 清晰完整，复杂度分析规范；ZPD 类比略冗余）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐（代码已开源、模型无关、无额外渐近开销；但双模型训练成本是落地主要门槛）</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （以 ZPD 教育学隐喻系统对应三个工程病灶，分歧分 + 共识蒸馏的组合简洁自洽，但单点算子本身不算全新）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （6 数据集 × 5 骨干 × 2 损失 + Full-Ranking + 配对 t 检验 + 弱到强设定 + 完整消融，覆盖度在负采样论文中属上乘）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （公式与算法伪代码清晰、复杂度分析到位，但 ZPD 理论映射偏修辞，缺少对分歧分有效性的理论刻画）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （代码已开源、推理零额外开销、即插即用；扣分在于训练期双模型前向的工程成本与超参调优负担）</li>
 </ul>
-<h2 id="_1">论文图表</h2>
-<figure class="paper-figure">
-  <img alt="表 4" src="../../../../../assets/papers/2605.19651v1/table_4.png" /><figcaption>表 4</figcaption>
-</figure>
 
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为日志记录 <span class="arithmatex">\((u_i,x_i,y_i,r_i)\)</span>（<span class="arithmatex">\(y_i=\phi(v_i)\)</span> 为 SID 路径，<span class="arithmatex">\(r_i=\sum_m w_m b_{i,m}\)</span> 为多目标标量化效用）与一个 SFT 初始化的 SID 解码器。HRPO 分三阶段闭环：(a) 用固定特征映射 <span class="arithmatex">\(c(u)=g(u)\)</span> 把用户分群，在 SID trie 上聚合各前缀的效用统计并做收缩平滑，得到任意前缀可查询的 <span class="arithmatex">\(\hat\mu(c,y_{1:t})\)</span>；(b) 沿路径做残差分解得 token 信用 <span class="arithmatex">\(\hat r_t\)</span>，累加为 credit-to-go <span class="arithmatex">\(\hat G_t\)</span>；(c) 以冻结参考策略 <span class="arithmatex">\(\pi_{\theta_{old}}\)</span> 采样候选 SID 集合，用 RRPO 的 clip + 组内位置归一化优势 + KL 信任域更新策略，周期性同步 <span class="arithmatex">\(\theta_{old}\leftarrow\theta\)</span>。</p>
+<p>输入为日志记录 <span class="arithmatex">\((u_i,x_i,y_i,r_i)\)</span>（<span class="arithmatex">\(y_i=\phi(v_i)\)</span>为 SID 路径，<span class="arithmatex">\(r_i=\sum_m w_m b_{i,m}\)</span>为多目标标量化效用）与一个 SFT 初始化的 SID 解码器。HRPO 分三阶段闭环：(a) 用固定特征映射<span class="arithmatex">\(c(u)=g(u)\)</span>把用户分群，在 SID trie 上聚合各前缀的效用统计并做收缩平滑，得到任意前缀可查询的<span class="arithmatex">\(\hat\mu(c,y_{1:t})\)</span>；(b) 沿路径做残差分解得 token 信用<span class="arithmatex">\(\hat r_t\)</span>，累加为 credit-to-go<span class="arithmatex">\(\hat G_t\)</span>；(c) 以冻结参考策略<span class="arithmatex">\(\pi_{\theta_{old}}\)</span>采样候选 SID 集合，用 RRPO 的 clip + 组内位置归一化优势 + KL 信任域更新策略，周期性同步<span class="arithmatex">\(\theta_{old}\leftarrow\theta\)</span>。</p>
 <pre class="mermaid"><code>flowchart TD
     A["日志 (u,x,y,r) + SFT 解码器"] --&gt; B["特征分群 c(u) + trie 前缀效用收缩平滑"]
     B --&gt; C["残差 token 信用 r_t 与 credit-to-go G_t"]
@@ -4241,19 +4252,19 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>分群前缀效用与收缩平滑（解决 SID 前缀稀疏）</strong>：长尾前缀曝光极少，逐用户估计不可定义、逐前缀均值高方差。将用户按活跃度/付费档/地域等稳定特征分群 <span class="arithmatex">\(c(u)=g(u)\)</span>，沿 trie 累加 <span class="arithmatex">\(n(c,y_{1:t})\)</span>、<span class="arithmatex">\(s(c,y_{1:t})\)</span>，再向全局均值做伪计数收缩：
+<p><strong>分群前缀效用与收缩平滑（解决 SID 前缀稀疏）</strong>：长尾前缀曝光极少，逐用户估计不可定义、逐前缀均值高方差。将用户按活跃度/付费档/地域等稳定特征分群 <span class="arithmatex">\(c(u)=g(u)\)</span>，沿 trie 累加<span class="arithmatex">\(n(c,y_{1:t})\)</span>、<span class="arithmatex">\(s(c,y_{1:t})\)</span>，再向全局均值做伪计数收缩：
 $<span class="arithmatex">\(\hat\mu(c,y_{1:t})=\frac{s(c,y_{1:t})+\alpha\,\mu_{glob}}{n(c,y_{1:t})+\alpha},\quad \mu_{glob}=\tfrac{1}{|\mathcal D|}\textstyle\sum r(b)\)</span>$
 直觉：<span class="arithmatex">\(\alpha\)</span> 控制方差-偏差权衡，既保留前缀间区分度又不让稀有前缀的噪声污染信用。</p>
 </li>
 <li>
-<p><strong>残差信用与 credit-to-go（解决延迟归因与量纲不可比）</strong>：把 <span class="arithmatex">\(\hat\mu(c,y_{1:t})\)</span> 视为 trie 节点价值，token <span class="arithmatex">\(y_t\)</span> 的信用取父子边际增益 <span class="arithmatex">\(\hat r_t=\hat\mu(c,y_{1:t})-\hat\mu(c,y_{1:t-1})\)</span>（<span class="arithmatex">\(\hat\mu(c,\epsilon)\triangleq\mu_{glob}\)</span>），并累加为
+<p><strong>残差信用与 credit-to-go（解决延迟归因与量纲不可比）</strong>：把 <span class="arithmatex">\(\hat\mu(c,y_{1:t})\)</span>视为 trie 节点价值，token<span class="arithmatex">\(y_t\)</span>的信用取父子边际增益<span class="arithmatex">\(\hat r_t=\hat\mu(c,y_{1:t})-\hat\mu(c,y_{1:t-1})\)</span>（<span class="arithmatex">\(\hat\mu(c,\epsilon)\triangleq\mu_{glob}\)</span>），并累加为
 $<span class="arithmatex">\(\hat G_t(c,y)=\sum_{k=t}^{L}\hat r_k=\hat\mu(c,y_{1:L})-\hat\mu(c,y_{1:t-1})\)</span>$
-望远镜求和保证信用是终端分数的精确分解；<span class="arithmatex">\(\hat G_t\)</span> 表示"超出当前前缀基线的剩余效用"，因此<strong>同一位置 <span class="arithmatex">\(t\)</span> 的不同候选天然可比</strong>，可直接做组内归一化。</p>
+望远镜求和保证信用是终端分数的精确分解；<span class="arithmatex">\(\hat G_t\)</span>表示"超出当前前缀基线的剩余效用"，因此<strong>同一位置<span class="arithmatex">\(t\)</span> 的不同候选天然可比</strong>，可直接做组内归一化。</p>
 </li>
 <li>
-<p><strong>RRPO 保守优化与训练目标</strong>：对每个 context 用 <span class="arithmatex">\(\pi_{\theta_{old}}\)</span> 采样 <span class="arithmatex">\(W\)</span> 条 trie 合法候选，位置级组内标准化得 <span class="arithmatex">\(A_t^{(w)}=(\hat G_t^{(w)}-\overline{\hat G_t})/(\text{Std}+\varepsilon)\)</span>，配合 PPO clip 与 KL 信任域：
+<p><strong>RRPO 保守优化与训练目标</strong>：对每个 context 用 <span class="arithmatex">\(\pi_{\theta_{old}}\)</span>采样<span class="arithmatex">\(W\)</span>条 trie 合法候选，位置级组内标准化得<span class="arithmatex">\(A_t^{(w)}=(\hat G_t^{(w)}-\overline{\hat G_t})/(\text{Std}+\varepsilon)\)</span>，配合 PPO clip 与 KL 信任域：
 $<span class="arithmatex">\(\max_\theta \frac{1}{W}\sum_{w}\sum_{t}\min\big(\rho_{w,t}A_t^{(w)},\ \bar\rho_{w,t}A_t^{(w)}\big)-\beta_{KL}\,\mathrm{KL}_{TR}(\theta)\)</span>$
-其中 <span class="arithmatex">\(\mathrm{KL}_{TR}\)</span> 对 <span class="arithmatex">\(\pi_{\theta_{old}}\)</span> 整条路径做序列级约束。<strong>无需行为策略概率</strong>（<span class="arithmatex">\(\theta_{old}\)</span> 是内部参考策略而非日志行为策略），免负采样、免 reward model；推理仍为 beam=50 的约束解码，与 SFT 完全同构，无额外线上开销。</p>
+其中 <span class="arithmatex">\(\mathrm{KL}_{TR}\)</span>对<span class="arithmatex">\(\pi_{\theta_{old}}\)</span>整条路径做序列级约束。<strong>无需行为策略概率</strong>（<span class="arithmatex">\(\theta_{old}\)</span> 是内部参考策略而非日志行为策略），免负采样、免 reward model；推理仍为 beam=50 的约束解码，与 SFT 完全同构，无额外线上开销。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4285,7 +4296,7 @@ $<span class="arithmatex">\(\max_\theta \frac{1}{W}\sum_{w}\sum_{t}\min\big(\rho
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 按时间跨度 2022-04-09~05-08 的会话流构造训练/评估日志；评估在 <strong>KuaiSim 模拟器</strong>中做整会话 rollout（step-wise 反馈与状态转移），而非静态日志打分。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 非传统 Full-Ranking，而是<strong>会话级模拟器回报</strong>——EpisodeLen（会话长度）、Avg. reward（每请求平均点击）、Total reward（会话累计点击）、Coverage（曝光物品去重数）、Click/Long 率；另设 EpisodeLen=1 的<strong>单步评估</strong>隔离即时效用。</li>
-<li><strong>对比基线与超参设置</strong>: 三类基线——打分式（DT/GRU4Rec/SASRec/TIGER）、SID 后训练（SFT/DPO/S-DPO/SPRec/GRPO）、模拟器交互 RL（TD3/DDPG/A2C/HAC/interactive DT）。共享 3 层 Transformer（<span class="arithmatex">\(d=128\)</span>、4 头、历史长 50），SID 深度 <span class="arithmatex">\(L=4\)</span>、每层词表 32；HRPO 取 <span class="arithmatex">\(W=18\)</span>、<span class="arithmatex">\(\epsilon_{clip}=0.2\)</span>、<span class="arithmatex">\(\beta_{KL}=0.1\)</span>、<span class="arithmatex">\(\alpha=100\)</span>，每 20 步同步参考策略。</li>
+<li><strong>对比基线与超参设置</strong>: 三类基线——打分式（DT/GRU4Rec/SASRec/TIGER）、SID 后训练（SFT/DPO/S-DPO/SPRec/GRPO）、模拟器交互 RL（TD3/DDPG/A2C/HAC/interactive DT）。共享 3 层 Transformer（<span class="arithmatex">\(d=128\)</span>、4 头、历史长 50），SID 深度<span class="arithmatex">\(L=4\)</span>、每层词表 32；HRPO 取<span class="arithmatex">\(W=18\)</span>、<span class="arithmatex">\(\epsilon_{clip}=0.2\)</span>、<span class="arithmatex">\(\beta_{KL}=0.1\)</span>、<span class="arithmatex">\(\alpha=100\)</span>，每 20 步同步参考策略。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4440,14 +4451,20 @@ $<span class="arithmatex">\(\max_\theta \frac{1}{W}\sum_{w}\sum_{t}\min\big(\rho
 <ol>
 <li><strong>分群平滑是最大瓶颈项</strong>：去掉 cohorting 后 Total reward 掉 1.197（−11.4%）、单步奖励从 0.548 崩到 0.428（−21.9%），远超其他消融——说明在曝光受限日志下，前缀效用估计的稳定性比信用分解结构本身更关键。</li>
 <li><strong>残差与 credit-to-go 分工明确</strong>：去残差主要伤单步（0.548→0.488，−10.9%），去 credit-to-go 主要伤会话（10.528→9.872，−6.2%），印证前者负责"层内归因"、后者负责"跨层非短视"；二者叠加才使 EpisodeLen 从 15.13/15.14 抬到 15.33。</li>
-<li><strong>保守性带来线上"零副作用"增益</strong>：超参扫描显示 <span class="arithmatex">\(W\approx18\)</span>、<span class="arithmatex">\(\beta_{KL}\approx0.1\)</span>、中等 <span class="arithmatex">\(\epsilon_{clip}\)</span> 为最优区；线上 A/B 中 Short-Drama/Mini-Game 的 Exposure 分别 −0.117%/−0.132%、Cost 基本持平，而 Target Cost 分别 +0.168%/+0.186%，Fiction 段 Exposure +0.750%、Target Cost <strong>+3.490%</strong>——增益来自既有流量分布内的效用提升，而非放量或抬价。</li>
+<li><strong>保守性带来线上"零副作用"增益</strong>：超参扫描显示 <span class="arithmatex">\(W\approx18\)</span>、<span class="arithmatex">\(\beta_{KL}\approx0.1\)</span>、中等<span class="arithmatex">\(\epsilon_{clip}\)</span> 为最优区；线上 A/B 中 Short-Drama/Mini-Game 的 Exposure 分别 −0.117%/−0.132%、Cost 基本持平，而 Target Cost 分别 +0.168%/+0.186%，Fiction 段 Exposure +0.750%、Target Cost <strong>+3.490%</strong>——增益来自既有流量分布内的效用提升，而非放量或抬价。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 GRPO/SPRec 的本质区别在于<strong>信用粒度</strong>——它们把整条 SID 路径当单一动作、广播终端奖励；HRPO 在 trie 上做残差分解，使每个 token 拿到"超出父前缀基线的剩余效用"。与 TIGER 的区别在于训练目标：TIGER 是纯 next-token 模仿，HRPO 是 outcome-driven 的 token 级策略改进。与模拟器交互 RL（TD3/HAC）相比，HRPO 不依赖在线交互即可获得同量级甚至更优回报，且 Coverage 高一个数量级。</li>
 <li><strong>可迁移亮点</strong>: ① "前缀效用望远镜分解 + 组内位置归一化"可直接搬到任何层级化动作空间（类目树召回、多级广告出价、trie 约束解码）；② 用内部冻结参考策略替代行为策略概率，使离线 PPO 类方法摆脱对日志 propension score 的依赖。</li>
 <li><strong>审稿级局限批判</strong>: ① 前缀效用依赖<strong>固定人工特征分群</strong> <span class="arithmatex">\(g(u)\)</span>，跨业务迁移需重新设计分组，且分组粒度对长尾估计敏感（论文仅给敏感性附录）；② 离线主结论建立在 KuaiSim 模拟器上，模拟器与真实分布的偏差可能放大相对优势；线上仅报告 Target Cost 相对变化，缺少置信区间与更长周期的留存/生态指标，且离线实验限于 0.005B–0.2B 小模型区间，缩放律证据在附录。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

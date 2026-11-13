@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为用户-物品交互图与 BEIT3 视觉/文本特征。DFGE 对 ID、图像、文本三通道分别做对称归一化图传播（L=2）并叠加内容 KNN 物品图平滑，再按奇异值降序切分为 M=3 个频段，经任务感知频带门控加权融合得到 192 维表示与 base 分数；BEN 仅用训练集交互构建共用户物品图并归一化为带符号证据 <span class="arithmatex">\(b_{ui}\)</span>；CRI 在训练与推理<strong>同一</strong> top-<span class="arithmatex">\(K_c\)</span> 候选范围内将 <span class="arithmatex">\(\lambda_b b_{ui}\)</span> 作为残差叠加。训练采用候选掩码 BPR + base 辅助 BPR + IB 门控正则 + 频段结构正则。</p>
+<p>输入为用户-物品交互图与 BEIT3 视觉/文本特征。DFGE 对 ID、图像、文本三通道分别做对称归一化图传播（L=2）并叠加内容 KNN 物品图平滑，再按奇异值降序切分为 M=3 个频段，经任务感知频带门控加权融合得到 192 维表示与 base 分数；BEN 仅用训练集交互构建共用户物品图并归一化为带符号证据 <span class="arithmatex">\(b_{ui}\)</span>；CRI 在训练与推理<strong>同一</strong> top-<span class="arithmatex">\(K_c\)</span>候选范围内将<span class="arithmatex">\(\lambda_b b_{ui}\)</span> 作为残差叠加。训练采用候选掩码 BPR + base 辅助 BPR + IB 门控正则 + 频段结构正则。</p>
 <pre class="mermaid"><code>flowchart TD
     A["交互图 + 图像/文本特征"] --&gt; B["DFGE: 三通道图传播 + 内容KNN图"]
     B --&gt; C["SVD 频段切分 + 频带门控融合"]
@@ -4233,9 +4244,9 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>双频图证据编码 DFGE（保留共享/私有频谱）</strong>：痛点是把三模态压成无差别表示会丢失高频私有排序信号。对通道 <span class="arithmatex">\(c\)</span> 的传播矩阵做 SVD 并按奇异值降序切为 <span class="arithmatex">\(M\)</span> 段，<span class="arithmatex">\(H^{c,m}=U_m\Sigma_m V_m^\top\)</span>，再以任务感知门控融合：<span class="arithmatex">\(\alpha_n^m=1+\rho\phi_m(z_n),\ e_n=\sum_m \omega_m\alpha_n^m h_n^m\)</span>。直觉：归一化图传播本身是低通算子，前导奇异段即稳定共享证据，尾部段承载局部差异，分段路由让二者共存而非互相覆盖。</li>
+<li><strong>双频图证据编码 DFGE（保留共享/私有频谱）</strong>：痛点是把三模态压成无差别表示会丢失高频私有排序信号。对通道 <span class="arithmatex">\(c\)</span>的传播矩阵做 SVD 并按奇异值降序切为<span class="arithmatex">\(M\)</span>段，<span class="arithmatex">\(H^{c,m}=U_m\Sigma_m V_m^\top\)</span>，再以任务感知门控融合：<span class="arithmatex">\(\alpha_n^m=1+\rho\phi_m(z_n),\ e_n=\sum_m \omega_m\alpha_n^m h_n^m\)</span>。直觉：归一化图传播本身是低通算子，前导奇异段即稳定共享证据，尾部段承载局部差异，分段路由让二者共存而非互相覆盖。</li>
 <li><strong>行为证据归一化 BEN（把共现变成带符号证据）</strong>：原始共现是非负的、无法降权。先算余弦化共用户边 <span class="arithmatex">\(B_{ij}=|U_i^{tr}\cap U_j^{tr}|/(\sqrt{|U_i^{tr}|}\sqrt{|U_j^{tr}|})\)</span>（top-<span class="arithmatex">\(K_b\)</span>=1000 截断），按用户历史做 sqrt 归一化聚合后<strong>逐用户 z-score 中心化</strong>：<span class="arithmatex">\(b_{ui}=(\tilde e_{ui}-\mu_u)/(\sigma_u+\epsilon)\)</span>。直觉：正值=高于该用户常态的行为支持，负值可主动降权"视觉相似但行为不支持"的候选，这是 ItemKNN/EASE 类全局非负打分做不到的。</li>
-<li><strong>候选残差整合 CRI 与训练目标</strong>：训练时用停止梯度的 base 分数取 <span class="arithmatex">\(C_u^{tr}=\text{TopK}(sg(s_{base}),K_c)\)</span>，残差仅在集合内激活：<span class="arithmatex">\(s_{train}=s_{base}+\mathbb{I}[i\in C_u^{tr}]\lambda_b b_{ui}\)</span>，推理同构（<span class="arithmatex">\(K_c\)</span>=200）。总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{rank}+\lambda_{base}\mathcal{L}_{base}+\lambda_{IB}\mathcal{L}_{IB}+\lambda_{freq}\mathcal{L}_{freq}\)</span>，其中 <span class="arithmatex">\(\mathcal{L}_{freq}\)</span> 含频段去相关项与高频段批内对比判别项。负采样为标准 BPR 均匀采样，无额外难负样本挖掘；推理仅需对缓存候选列表做一次残差遍历，开销可忽略。</li>
+<li><strong>候选残差整合 CRI 与训练目标</strong>：训练时用停止梯度的 base 分数取 <span class="arithmatex">\(C_u^{tr}=\text{TopK}(sg(s_{base}),K_c)\)</span>，残差仅在集合内激活：<span class="arithmatex">\(s_{train}=s_{base}+\mathbb{I}[i\in C_u^{tr}]\lambda_b b_{ui}\)</span>，推理同构（<span class="arithmatex">\(K_c\)</span>=200）。总损失<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{rank}+\lambda_{base}\mathcal{L}_{base}+\lambda_{IB}\mathcal{L}_{IB}+\lambda_{freq}\mathcal{L}_{freq}\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{freq}\)</span> 含频段去相关项与高频段批内对比判别项。负采样为标准 BPR 均匀采样，无额外难负样本挖掘；推理仅需对缓存候选列表做一次残差遍历，开销可忽略。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4282,7 +4293,7 @@
 <ul>
 <li><strong>数据划分与防穿越</strong>: 固定训练/验证/测试三分区；行为图、用户历史、物品流行度、用户度<strong>仅由训练分区构建</strong>，验证/测试不参与；过滤后验证/测试无冷启动用户。</li>
 <li><strong>排名评测协议</strong>: 无偏 <strong>Full-Ranking 全库排序</strong>，指标 Recall@10/20、NDCG@10/20；所有基线共享同一划分、同一 BEIT3 特征与同一全排序评估器。</li>
-<li><strong>对比基线与超参设置</strong>: 覆盖 BPR、LightGCN、VBPR、MMGCN、GRCN、DualGNN、SLMRec、LATTICE、BM3、FREEDOM、DiffMM、MMIL、AlignRec、SMORE、FITMM 共 15 个基线；嵌入维度 64（融合 192），2 层图传播，3 频段，物品图 K=10，学习率 <span class="arithmatex">\(10^{-4}\)</span>，<span class="arithmatex">\(\lambda_b\)</span> 在验证集 R@20 上从 {0.1,0.2,0.4,0.6,0.8} 五点网格选取；强基线报告 5 种子均值±方差，<span class="arithmatex">\(p&lt;0.01\)</span> 双样本 t 检验。</li>
+<li><strong>对比基线与超参设置</strong>: 覆盖 BPR、LightGCN、VBPR、MMGCN、GRCN、DualGNN、SLMRec、LATTICE、BM3、FREEDOM、DiffMM、MMIL、AlignRec、SMORE、FITMM 共 15 个基线；嵌入维度 64（融合 192），2 层图传播，3 频段，物品图 K=10，学习率 <span class="arithmatex">\(10^{-4}\)</span>，<span class="arithmatex">\(\lambda_b\)</span>在验证集 R@20 上从 {0.1,0.2,0.4,0.6,0.8} 五点网格选取；强基线报告 5 种子均值±方差，<span class="arithmatex">\(p&lt;0.01\)</span> 双样本 t 检验。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4487,12 +4498,18 @@
 <li><strong>增益主要来自列表顶部排序而非召回扩容</strong>：NDCG 提升幅度（最高 14.9%）系统性大于 Recall（最高 7.3%），且 Electronics 上 N@20 相对 FITMM 提升 14.9% 而 R@20 仅 7.3%，与"候选池不变、仅重排"的设计定位一致。</li>
 <li><strong>残差并非头部偏置，反而降低曝光集中度</strong>：Sports 上 Head 曝光份额从 0.9073 降至 0.8429，同时 Mid/Tail/Cold 分层 Recall@20 从 0.0338/0.0217/0.0119 升至 0.0497/0.0438/0.0283，在无显式反流行度惩罚下实现长尾再分配；频谱侧去掉分解仅掉 0.0018（0.1128→0.1110），且 Gram/DCT/随机正交基结果接近，说明<strong>频段切分本身</strong>比具体基选择更关键。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 LATTICE/BM3 等"强化跨视图对齐"路线，本文反向论证对齐存在有效区间并将内容降级为条件证据；相较 FITMM/SMORE 等频域方法，频谱在此不是去噪正则而是<strong>授权步骤</strong>（决定哪些频段留给候选校准）；相较 EASE/ItemKNN，行为证据不做全局独立排序器，而是候选内带符号残差。</li>
 <li><strong>可迁移亮点</strong>: ① "训练与推理同构的候选掩码"（stop-gradient top-K scope）可直接移植到任何"全局训练、局部推理"的重排残差模块，消除训练-测试作用域错配；② 逐用户 z-score 中心化把非负共现转为可降权的带符号证据，适用于任何需要"负向证据"的校准场景。</li>
 <li><strong>审稿级局限批判</strong>: ① 仅评测三个 Amazon 域与单一 BEIT3 特征，未报告端到端延迟/吞吐，候选缓存与行为图预计算的实际工程成本未知；② 增益高度依赖骨干能产出合理 shortlist（候选质量即上限），且 BEN 在共现稀疏或交互突发高度局部化时精度下降，此时需退回保守系数变体，鲁棒性边界未量化。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

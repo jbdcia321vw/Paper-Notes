@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4222,7 +4233,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为用户 <span class="arithmatex">\(u\)</span> 的历史交互序列 <span class="arithmatex">\(\mathbf{x}_u=[v_1,\dots,v_l]\)</span>（one-hot，<span class="arithmatex">\(l=20\)</span>），用户/物品嵌入由预训练 3 层 LightGCN 初始化。前向过程按<strong>流行度感知调度</strong>逐步把物品替换为 <code>[MASK]</code> 吸收态，直至全掩码；反向过程由 Transformer 编码器实例化的<strong>一致性函数</strong> <span class="arithmatex">\(F_\theta\)</span> 直接从任意时刻 <span class="arithmatex">\(t\)</span> 的掩码序列预测原始交互 <span class="arithmatex">\(\hat{\mathbf{x}}_0\)</span>（序列前缀拼接协同用户嵌入 <span class="arithmatex">\(\mathbf{p}_u\)</span>，时间步嵌入加到 <span class="arithmatex">\(\mathbf{p}_u\)</span> 上，输出经与物品矩阵余弦相似度投影回离散空间）。训练联合一致性损失、扩散重建损失与多跳对比损失；推理时把生成物品嵌入聚合为用户表征，与全库物品内积取 top-<span class="arithmatex">\(k\)</span>。</p>
+<p>输入为用户 <span class="arithmatex">\(u\)</span>的历史交互序列<span class="arithmatex">\(\mathbf{x}_u=[v_1,\dots,v_l]\)</span>（one-hot，<span class="arithmatex">\(l=20\)</span>），用户/物品嵌入由预训练 3 层 LightGCN 初始化。前向过程按<strong>流行度感知调度</strong>逐步把物品替换为 <code>[MASK]</code> 吸收态，直至全掩码；反向过程由 Transformer 编码器实例化的<strong>一致性函数</strong><span class="arithmatex">\(F_\theta\)</span>直接从任意时刻<span class="arithmatex">\(t\)</span>的掩码序列预测原始交互<span class="arithmatex">\(\hat{\mathbf{x}}_0\)</span>（序列前缀拼接协同用户嵌入<span class="arithmatex">\(\mathbf{p}_u\)</span>，时间步嵌入加到<span class="arithmatex">\(\mathbf{p}_u\)</span>上，输出经与物品矩阵余弦相似度投影回离散空间）。训练联合一致性损失、扩散重建损失与多跳对比损失；推理时把生成物品嵌入聚合为用户表征，与全库物品内积取 top-<span class="arithmatex">\(k\)</span>。</p>
 <pre class="mermaid"><code>flowchart TD
     A["历史交互序列 x_u (one-hot)"] --&gt; B["流行度感知前向掩码&lt;br/&gt;β(t)_v 由 I(v) 调制"]
     B --&gt; C["一致性函数 F_θ (Transformer)&lt;br/&gt;输入: p_u ⊕ 掩码序列 ⊕ t"]
@@ -4237,17 +4248,17 @@
 <li>
 <p><strong>流行度感知噪声调度（Popularity-aware Noise Schedule）</strong>：线性/余弦调度假设所有物品对偏好建模贡献均等，导致掩码轨迹无语义。本文定义序列内流行度偏差 <span class="arithmatex">\(I(v)=\mathrm{pop}(v)-\frac{1}{l}\sum_{i}\mathrm{pop}(v_i)\)</span>，并把吸收概率写成
 $<span class="arithmatex">\(\beta(t)_{v_i}=\frac{t}{T}-\omega\exp\!\Big(-\frac{(t-T)^2}{2\sigma^2}\Big)I(v_i),\)</span>$
-即热门物品（<span class="arithmatex">\(I&gt;0\)</span>）吸收更慢、冷门物品更早被掩。直觉：真实交互总是"先看热门再看长尾"，反向生成因此形成 <strong>easy-to-hard</strong> 课程，热门物品的稳定模式先被学到，长尾在后段被建模。该调度仍满足标准转移率要求（收敛性 + 转移核可解析计算 <span class="arithmatex">\(q_{t|0}=\big(S\exp(\Lambda\bar\beta(t))S^{-1}\big)_{ij}\)</span>）。</p>
+即热门物品（<span class="arithmatex">\(I&gt;0\)</span>）吸收更慢、冷门物品更早被掩。直觉：真实交互总是"先看热门再看长尾"，反向生成因此形成 <strong>easy-to-hard</strong> 课程，热门物品的稳定模式先被学到，长尾在后段被建模。该调度仍满足标准转移率要求（收敛性 + 转移核可解析计算<span class="arithmatex">\(q_{t|0}=\big(S\exp(\Lambda\bar\beta(t))S^{-1}\big)_{ij}\)</span>）。</p>
 </li>
 <li>
-<p><strong>一致性驱动的反向参数化（Consistency Function）</strong>：直接估 <span class="arithmatex">\(p_{0|t}\)</span> 在离散分布下效果差，学 score 比 <span class="arithmatex">\(q_t(y)/q_t(x)\)</span> 又需正性约束与高算力。本文改用一致性函数 <span class="arithmatex">\(f:(\mathbf{x}_t,t)\mapsto\mathbf{x}_\varepsilon\)</span>，因离散态无法做 skip-connection 叠加，故分段定义为 <span class="arithmatex">\(f_\theta(\mathbf{x},t)=\mathbf{x}\ (t=\varepsilon)\)</span>、<span class="arithmatex">\(=F_\theta(\mathbf{x},t)\ (t\in(\varepsilon,T])\)</span>。训练目标
+<p><strong>一致性驱动的反向参数化（Consistency Function）</strong>：直接估 <span class="arithmatex">\(p_{0|t}\)</span>在离散分布下效果差，学 score 比<span class="arithmatex">\(q_t(y)/q_t(x)\)</span>又需正性约束与高算力。本文改用一致性函数<span class="arithmatex">\(f:(\mathbf{x}_t,t)\mapsto\mathbf{x}_\varepsilon\)</span>，因离散态无法做 skip-connection 叠加，故分段定义为<span class="arithmatex">\(f_\theta(\mathbf{x},t)=\mathbf{x}\ (t=\varepsilon)\)</span>、<span class="arithmatex">\(=F_\theta(\mathbf{x},t)\ (t\in(\varepsilon,T])\)</span>。训练目标
 $<span class="arithmatex">\(\mathcal{L}_{Con}=\mathbb{E}_{\mathbf{x}_0,t_n}\big[\gamma(t_n)\,d\big(f_\theta(\mathbf{x}_{t_n},t_n),\,f_{\theta^-}(\bar{\mathbf{x}}_{t_{n-1}},t_{n-1})\big)\big],\)</span>$
-其中 <span class="arithmatex">\(d\)</span> 取 KL 散度、<span class="arithmatex">\(\theta^-\)</span> 为 EMA。关键难点是构造相邻时刻对 <span class="arithmatex">\((\bar{\mathbf{x}}_{t_{n-1}},\mathbf{x}_{t_n})\)</span>：作者给出 one-step recovery（只恢复掩码概率最低的一个物品）与 <strong>pseudo-Euler</strong>（按 <span class="arithmatex">\(\nabla t\)</span> 自适应解掩，<span class="arithmatex">\(p=1-(B_{t_n-\nabla t}/B_{t_n})\)</span>）两种方案，后者更贴合前向过程。</p>
+其中 <span class="arithmatex">\(d\)</span>取 KL 散度、<span class="arithmatex">\(\theta^-\)</span>为 EMA。关键难点是构造相邻时刻对<span class="arithmatex">\((\bar{\mathbf{x}}_{t_{n-1}},\mathbf{x}_{t_n})\)</span>：作者给出 one-step recovery（只恢复掩码概率最低的一个物品）与 <strong>pseudo-Euler</strong>（按<span class="arithmatex">\(\nabla t\)</span>自适应解掩，<span class="arithmatex">\(p=1-(B_{t_n-\nabla t}/B_{t_n})\)</span>）两种方案，后者更贴合前向过程。</p>
 </li>
 <li>
-<p><strong>对比引导 + 联合训练</strong>：一致性损失会让热门物品被过度强调（它们在轨迹中存活更久），故加辅助扩散重建损失 <span class="arithmatex">\(\mathcal{L}_{Diff}=-\sum_i \mathbf{x}^i_u\log p^i_\theta(\mathbf{x}_0|\mathbf{x}_t)\)</span> 稳定训练；同时把生成序列的物品嵌入聚合为 <span class="arithmatex">\(\mathbf{e}_u\)</span>（模拟单层 GNN 传播），以预训练 <span class="arithmatex">\(\mathbf{p}_u\)</span> 为正样本、随机未交互物品为负样本做 InfoNCE：
+<p><strong>对比引导 + 联合训练</strong>：一致性损失会让热门物品被过度强调（它们在轨迹中存活更久），故加辅助扩散重建损失 <span class="arithmatex">\(\mathcal{L}_{Diff}=-\sum_i \mathbf{x}^i_u\log p^i_\theta(\mathbf{x}_0|\mathbf{x}_t)\)</span>稳定训练；同时把生成序列的物品嵌入聚合为<span class="arithmatex">\(\mathbf{e}_u\)</span>（模拟单层 GNN 传播），以预训练<span class="arithmatex">\(\mathbf{p}_u\)</span> 为正样本、随机未交互物品为负样本做 InfoNCE：
 $<span class="arithmatex">\(\mathcal{L}_{cl}=\sum_{u}-\log\frac{\varsigma(\mathbf{e}_u,\mathbf{p}_u)}{\varsigma(\mathbf{e}_u,\mathbf{p}_u)+\sum_{v\in\mathcal{V}^-_u}\varsigma(\mathbf{e}_u,\mathbf{q}_v)}.\)</span>$
-总损失 <span class="arithmatex">\(\mathcal{L}=\lambda_1\mathcal{L}_{Con}+(1-\lambda_1)\mathcal{L}_{Diff}+\lambda_2\mathcal{L}_{cl}\)</span>，<span class="arithmatex">\(\lambda_1=0.4\)</span> 最优。<strong>负采样</strong>：对比损失用随机未交互物品（非 in-batch、非 hard negative）；推理支持单步（<span class="arithmatex">\(N=1\)</span>）或多步（最优 <span class="arithmatex">\(N=30,T=60\)</span>），单步即可媲美扩散基线。</p>
+总损失 <span class="arithmatex">\(\mathcal{L}=\lambda_1\mathcal{L}_{Con}+(1-\lambda_1)\mathcal{L}_{Diff}+\lambda_2\mathcal{L}_{cl}\)</span>，<span class="arithmatex">\(\lambda_1=0.4\)</span>最优。<strong>负采样</strong>：对比损失用随机未交互物品（非 in-batch、非 hard negative）；推理支持单步（<span class="arithmatex">\(N=1\)</span>）或多步（最优<span class="arithmatex">\(N=30,T=60\)</span>），单步即可媲美扩散基线。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4453,12 +4464,18 @@ $<span class="arithmatex">\(\mathcal{L}_{cl}=\sum_{u}-\log\frac{\varsigma(\mathb
 <li><strong>一致性损失与扩散损失是双支柱</strong>：消融中 <code>w/o con</code> 与 <code>w/o diff</code> 降幅最大，说明单靠一致性（易过拟合热门）或单靠重建（无轨迹约束）都不足；<span class="arithmatex">\(\lambda_1=0.4\)</span> 的折中最优点也印证二者互补。</li>
 <li><strong>效率与精度可兼得</strong>：单步生成（<span class="arithmatex">\(N=1\)</span>）已可媲美扩散基线，<span class="arithmatex">\(N=30,T=60\)</span> 为最优点，继续加步反而因噪声累积掉点；在 Dianping 上同 batch=1024 设置下 CDRec 采样耗时明显低于 DiffRec（掩码操作 vs 全物品向量加噪）。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 DiffRec/GiffCF/BSPM 的本质区别是<strong>状态空间</strong>——它们把离散协同数据编码后加高斯噪声，CDRec 直接在物品 one-hot 序列上做掩码转移；与 DCDR 的区别是后者仅用离散扩散扰动重排位置，CDRec 用其直接建模偏好分布；与文本域 D3PM/SEDD 的区别是引入<strong>流行度先验调度</strong>与<strong>推荐定制的一致性训练对构造</strong>。</li>
 <li><strong>可迁移亮点</strong>: ① 用物品流行度偏差 <span class="arithmatex">\(I(v)\)</span> 调制噪声调度，可平移到任何"带曝光先验"的生成式任务（如语义 ID 生成式检索的 token 掩码课程）；② 用 pseudo-Euler 解掩构造一致性训练对，绕开离散空间无 score 无偏估计的难题，可复用到其他离散扩散推荐。</li>
 <li><strong>审稿级局限批判</strong>: ① 对比损失仅用随机负样本，未探索 hard negative，长尾物品的判别边界可能仍偏弱；② 8:1:1 随机划分而非时间切分，存在未来交互泄漏风险，且未报告冷启动/长尾分桶实验；③ 一致性函数依赖预训练 LightGCN 嵌入，预训练质量与扩散模块的耦合未被消融隔离。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

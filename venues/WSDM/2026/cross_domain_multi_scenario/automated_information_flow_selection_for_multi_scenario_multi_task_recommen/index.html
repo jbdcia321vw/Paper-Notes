@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,17 +4230,17 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/ChaohuaYang/AutoIFS">https://github.com/ChaohuaYang/AutoIFS</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>多场景多任务推荐（MSMTR）现有模型依赖 MoE/MLP 堆叠四类信息单元（场景共享/独有 × 任务共享/独有），既参数膨胀又把四类"场景→任务"信息流不加区分地全量融合，引入噪声甚至负迁移。本文提出 AutoIFS：用 LoRA 低秩适配器解耦四类信息单元（共享用全秩 <span class="arithmatex">\(W\)</span>、独有用低秩 <span class="arithmatex">\(BA\)</span>，加法即天然融合），再用超网络式信息流选择网络为每个实例、每个任务生成 4 维软掩码，经温度退火离散化后以<strong>减法剪枝</strong>剔除无效信息流。在 MovieLens-1M / KuaiRand-Pure 上按 8:1:1 比例划分、AUC 全场景全任务最优（整体 AUC 0.8253 / 0.7471），参数量仅略高于 MLoRA、远低于 HiNet，腾讯 FiT 线上两周 A/B 平均 CVR +2.46%、订阅金额 +8.32%。</p>
+<p>多场景多任务推荐（MSMTR）现有模型依赖 MoE/MLP 堆叠四类信息单元（场景共享/独有 × 任务共享/独有），既参数膨胀又把四类"场景→任务"信息流不加区分地全量融合，引入噪声甚至负迁移。本文提出 AutoIFS：用 LoRA 低秩适配器解耦四类信息单元（共享用全秩 <span class="arithmatex">\(W\)</span>、独有用低秩<span class="arithmatex">\(BA\)</span>，加法即天然融合），再用超网络式信息流选择网络为每个实例、每个任务生成 4 维软掩码，经温度退火离散化后以<strong>减法剪枝</strong>剔除无效信息流。在 MovieLens-1M / KuaiRand-Pure 上按 8:1:1 比例划分、AUC 全场景全任务最优（整体 AUC 0.8253 / 0.7471），参数量仅略高于 MLoRA、远低于 HiNet，腾讯 FiT 线上两周 A/B 平均 CVR +2.46%、订阅金额 +8.32%。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>主流范式</strong>: MSMTR 采用分层范式——嵌入层 → 场景建模层（场景共享 <span class="arithmatex">\(f_s^{sh}\)</span> + 场景独有 <span class="arithmatex">\(f_s^k\)</span>）→ 任务建模层（任务共享 <span class="arithmatex">\(f_t^{sh}\)</span> + 任务独有 <span class="arithmatex">\(f_t^m\)</span>），四单元交叉产生四类有向信息流 <span class="arithmatex">\(h^{sh,sh}, h^{sh,m}, h^{k,sh}, h^{k,m}\)</span>，最终融合为 <span class="arithmatex">\(Q_i^{k,m}\)</span>。代表作为 HiNet（层次蒸馏）、M3oE（三路 MoE）、M2M/3MN（元网络动态权重）。</li>
+<li><strong>主流范式</strong>: MSMTR 采用分层范式——嵌入层 → 场景建模层（场景共享 <span class="arithmatex">\(f_s^{sh}\)</span>+ 场景独有<span class="arithmatex">\(f_s^k\)</span>）→ 任务建模层（任务共享<span class="arithmatex">\(f_t^{sh}\)</span>+ 任务独有<span class="arithmatex">\(f_t^m\)</span>），四单元交叉产生四类有向信息流<span class="arithmatex">\(h^{sh,sh}, h^{sh,m}, h^{k,sh}, h^{k,m}\)</span>，最终融合为<span class="arithmatex">\(Q_i^{k,m}\)</span>。代表作为 HiNet（层次蒸馏）、M3oE（三路 MoE）、M2M/3MN（元网络动态权重）。</li>
 <li><strong>前人局限</strong>: ① 依赖 MoE/MLP 显式建模四类关系，参数量随场景数×任务数线性膨胀，融合逻辑复杂、训练困难（M2M 单 epoch 训练 30.3s，HiNet 18.5s）；② 按 Eq.(3) 将四类信息流<strong>无差别全量相加</strong>，无法区分其贡献差异——在主场景子任务中 <span class="arithmatex">\(h^{k,m}\)</span> 才是关键，其余信息流可能纯属噪声，造成负迁移。</li>
 <li><strong>核心洞察 (Key Insight)</strong>: 四类信息流是复杂场景-任务依赖的<strong>可分解局部成分</strong>，其重要性随实例（场景属性）与任务而变；因此"选哪些流"应是一个<strong>实例级、任务级可学习</strong>的决策，而非固定架构。</li>
 <li><strong>本文切入点</strong>: 用 LoRA 让四类单元天然解耦且加法即融合（保持轻量），再用一个可微掩码网络自动剪掉无用信息流。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入实例 <span class="arithmatex">\(x_i^k\)</span> 经共享嵌入层得 <span class="arithmatex">\(e_i^k\)</span>；四类信息单元由 LoRA 实现——场景/任务共享单元为全秩线性层 <span class="arithmatex">\(W^{sh}x+b^{sh}\)</span>，场景/任务独有单元为低秩 <span class="arithmatex">\(B^kA^kx+b^k\)</span>（<span class="arithmatex">\(A\)</span> 高斯初始化、<span class="arithmatex">\(B\)</span> 零初始化），四类信息流 <span class="arithmatex">\(h_i^{\cdot,\cdot}\)</span> 由单元组合直接算出并以"+"融合（此时恰为原 Eq.(2) 的分解形式）。并行地，选择网络以共享 FNN 提取实例表征、再经任务专属超网络头输出 4 维权重，温度退火 sigmoid 得软门控、训练末离散化为 0/1 掩码，最后用<strong>减法</strong>从融合表征中剔除被掩码的信息流，直接接输出层（不设预测塔）。训练分两阶段：联合训练（含 <span class="arithmatex">\(l_1\)</span> 稀疏正则）→ 固定掩码重训（reuse）。</p>
+<p>输入实例 <span class="arithmatex">\(x_i^k\)</span>经共享嵌入层得<span class="arithmatex">\(e_i^k\)</span>；四类信息单元由 LoRA 实现——场景/任务共享单元为全秩线性层<span class="arithmatex">\(W^{sh}x+b^{sh}\)</span>，场景/任务独有单元为低秩<span class="arithmatex">\(B^kA^kx+b^k\)</span>（<span class="arithmatex">\(A\)</span>高斯初始化、<span class="arithmatex">\(B\)</span>零初始化），四类信息流<span class="arithmatex">\(h_i^{\cdot,\cdot}\)</span>由单元组合直接算出并以"+"融合（此时恰为原 Eq.(2) 的分解形式）。并行地，选择网络以共享 FNN 提取实例表征、再经任务专属超网络头输出 4 维权重，温度退火 sigmoid 得软门控、训练末离散化为 0/1 掩码，最后用<strong>减法</strong>从融合表征中剔除被掩码的信息流，直接接输出层（不设预测塔）。训练分两阶段：联合训练（含<span class="arithmatex">\(l_1\)</span> 稀疏正则）→ 固定掩码重训（reuse）。</p>
 <pre class="mermaid"><code>flowchart TD
     A["输入特征 x_i^k"] --&gt; B["共享嵌入层 e_i^k"]
     B --&gt; C["LoRA 四信息单元&lt;br/&gt;W_sh / B^kA^k / W_sh_t / B^mA^m"]
@@ -4245,17 +4256,17 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>LoRA 解耦四信息单元（轻量化的关键）</strong>：痛点是用 MoE/MLP 建模四单元参数爆炸且融合算子复杂。本文令共享信息走全秩 <span class="arithmatex">\(W\)</span>、独有信息走低秩 <span class="arithmatex">\(BA\)</span>，则四类流可独立计算后<strong>直接相加</strong>即完成融合，且仅在独有单元上付出 <span class="arithmatex">\(r(d_{in}+d_{out})\)</span> 的极小参数代价：
+<p><strong>LoRA 解耦四信息单元（轻量化的关键）</strong>：痛点是用 MoE/MLP 建模四单元参数爆炸且融合算子复杂。本文令共享信息走全秩 <span class="arithmatex">\(W\)</span>、独有信息走低秩<span class="arithmatex">\(BA\)</span>，则四类流可独立计算后<strong>直接相加</strong>即完成融合，且仅在独有单元上付出<span class="arithmatex">\(r(d_{in}+d_{out})\)</span> 的极小参数代价：
 $<span class="arithmatex">\(h_i^{sh,sh}=f_t^{sh}(f_s^{sh}(e_i^k)),\quad h_i^{k,m}=f_t^{m}(f_s^{k}(e_i^k)),\quad Q_i^{k,m}=\sum h_i^{\cdot,\cdot}\)</span>$
 直觉：低秩瓶颈天然抑制独有信息的过拟合（MovieLens 上最优 <span class="arithmatex">\(r=2\)</span> 即印证），加法融合则保证可解释的流级分解。</p>
 </li>
 <li>
-<p><strong>任务感知信息流选择网络 + 减法剪枝</strong>：痛点是四类流重要性因实例/任务而异，简单 FNN 无法刻画场景差异。本文先共享 FNN 提表征 <span class="arithmatex">\(h_i^L\)</span>，再由任务专属头 <span class="arithmatex">\(w_i^m=W^mh_i^L+b^m\)</span> 生成权重，经温度退火 <span class="arithmatex">\(\tau=\gamma^{p/P}\)</span> 的 sigmoid 得连续门控 <span class="arithmatex">\(g_i^m=\phi(w_i^m\times\tau)\)</span>，训练 <span class="arithmatex">\(P\)</span> 轮后按 <span class="arithmatex">\(w_i^m\le 0\)</span> 硬离散化。剪枝采用<strong>减法</strong>而非乘法置零：
+<p><strong>任务感知信息流选择网络 + 减法剪枝</strong>：痛点是四类流重要性因实例/任务而异，简单 FNN 无法刻画场景差异。本文先共享 FNN 提表征 <span class="arithmatex">\(h_i^L\)</span>，再由任务专属头<span class="arithmatex">\(w_i^m=W^mh_i^L+b^m\)</span>生成权重，经温度退火<span class="arithmatex">\(\tau=\gamma^{p/P}\)</span>的 sigmoid 得连续门控<span class="arithmatex">\(g_i^m=\phi(w_i^m\times\tau)\)</span>，训练<span class="arithmatex">\(P\)</span>轮后按<span class="arithmatex">\(w_i^m\le 0\)</span> 硬离散化。剪枝采用<strong>减法</strong>而非乘法置零：
 $<span class="arithmatex">\(\delta(Q_i^{k,m},\hat I_i^{k,m})=Q_i^{k,m}-\sum_{j=1}^{4}g_{ij}^m\odot h_i^{j}\)</span>$
 直觉：减法保留未被选中流的原始幅值，避免乘法掩码对保留流的缩放失真；实验还发现额外预测塔反而削弱场景-任务关系刻画，故直接去掉。</p>
 </li>
 <li>
-<p><strong>训练目标、正则与两阶段优化</strong>：总损失 <span class="arithmatex">\(\mathcal{L}_{AutoIFS}=\mathcal{L}_{CE}+\lambda\|\mathbf{g}\|_1\)</span>，<span class="arithmatex">\(l_1\)</span> 近似 <span class="arithmatex">\(l_0\)</span> 促稀疏并防止过度剪枝；<strong>免负采样</strong>（CTR 式二分类交叉熵，非对比学习）。Reuse 阶段固定最优掩码 <span class="arithmatex">\(\{G_i\}\)</span> 仅以 <span class="arithmatex">\(\mathcal{L}_{CE}\)</span> 重训 <span class="arithmatex">\(\Theta\)</span> 共 <span class="arithmatex">\(P_c\)</span> 轮，消除"选择网络与主干联合优化"的相互干扰。推理时选择网络仅为一个轻量 MLP，额外开销可忽略（线上延迟 2.74ms → 2.98ms）。</p>
+<p><strong>训练目标、正则与两阶段优化</strong>：总损失 <span class="arithmatex">\(\mathcal{L}_{AutoIFS}=\mathcal{L}_{CE}+\lambda\|\mathbf{g}\|_1\)</span>，<span class="arithmatex">\(l_1\)</span>近似<span class="arithmatex">\(l_0\)</span>促稀疏并防止过度剪枝；<strong>免负采样</strong>（CTR 式二分类交叉熵，非对比学习）。Reuse 阶段固定最优掩码<span class="arithmatex">\(\{G_i\}\)</span>仅以<span class="arithmatex">\(\mathcal{L}_{CE}\)</span>重训<span class="arithmatex">\(\Theta\)</span>共<span class="arithmatex">\(P_c\)</span> 轮，消除"选择网络与主干联合优化"的相互干扰。推理时选择网络仅为一个轻量 MLP，额外开销可忽略（线上延迟 2.74ms → 2.98ms）。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4298,7 +4309,7 @@ $<span class="arithmatex">\(\delta(Q_i^{k,m},\hat I_i^{k,m})=Q_i^{k,m}-\sum_{j=1
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 每场景内<strong>比例划分</strong> 8:1:1（train/valid/test），非 Leave-One-Out、非全局时间戳切分。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 本质为 CTR 式二分类打分评估，报告 <strong>AUC↑ 与 LogLoss↓</strong>（非 Full-Ranking 排序指标）；AUC 提升 &gt;0.1% 视为显著，双样本 t 检验 <span class="arithmatex">\(p\le0.05\)</span>。</li>
-<li><strong>对比基线与超参设置</strong>: 基线含多任务（DNN-T/MMoE-T/MLoRA-T）、多场景（-S）、MSMTR（-ST 改造版、M3oE、M2M、HiNet）共 12 个；嵌入维度 <span class="arithmatex">\(d=16\)</span>、batch 4096、Adam + Xavier、MLP 三层 [1024,512,256]；AutoIFS 搜索 <span class="arithmatex">\(r\in\{2..64\}\)</span>、<span class="arithmatex">\(\gamma\in\{50..10000\}\)</span>、<span class="arithmatex">\(\lambda\in\{0..0.5\}\)</span>、<span class="arithmatex">\(P\in\{5,10,15,20\}\)</span>，最终 MovieLens 取 <span class="arithmatex">\(r=2\)</span>、KuaiRand 取 <span class="arithmatex">\(r=16\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: 基线含多任务（DNN-T/MMoE-T/MLoRA-T）、多场景（-S）、MSMTR（-ST 改造版、M3oE、M2M、HiNet）共 12 个；嵌入维度 <span class="arithmatex">\(d=16\)</span>、batch 4096、Adam + Xavier、MLP 三层 [1024,512,256]；AutoIFS 搜索<span class="arithmatex">\(r\in\{2..64\}\)</span>、<span class="arithmatex">\(\gamma\in\{50..10000\}\)</span>、<span class="arithmatex">\(\lambda\in\{0..0.5\}\)</span>、<span class="arithmatex">\(P\in\{5,10,15,20\}\)</span>，最终 MovieLens 取<span class="arithmatex">\(r=2\)</span>、KuaiRand 取<span class="arithmatex">\(r=16\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4453,15 +4464,21 @@ $<span class="arithmatex">\(\delta(Q_i^{k,m},\hat I_i^{k,m})=Q_i^{k,m}-\sum_{j=1
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>选择网络与 reuse 是两大主增益源</strong>：去掉选择网络（n.sn.）或改随机选择（w.rs.）在 KuaiRand S1T1 上分别掉至 0.7035 / 0.6963（全表最低），说明"学出来的流级掩码"而非"任意剪枝"才是收益来源；去掉 reuse 在 ML-1M S1T1 掉 0.0020，印证联合优化会污染主干。</li>
-<li><strong>LoRA 优于 MoE 且更省参</strong>：w.me. 在 KuaiRand S1T1 跌至 0.6929（较 AutoIFS 掉 0.0091），而 AutoIFS 参数量却远低于 M3oE/HiNet——低秩瓶颈既控参又起正则作用；<span class="arithmatex">\(r\)</span> 的最优值随数据规模分化（ML-1M <span class="arithmatex">\(r=2\)</span> 防过拟合，KuaiRand <span class="arithmatex">\(r=16\)</span> 需更大容量），<span class="arithmatex">\(\gamma,\lambda\)</span> 则表现稳健。</li>
-<li><strong>掩码具备可解释性且线上兑现</strong>：图 5 显示 ML-1M 上 Task1 倾向剪掉 <span class="arithmatex">\(h^{sh,sh}\)</span> 与 <span class="arithmatex">\(h^{k,m}\)</span>、Task2 倾向剪掉 <span class="arithmatex">\(h^{sh,m}\)</span> 与 <span class="arithmatex">\(h^{k,sh}\)</span>，KuaiRand Task1 则四流全保留——不同场景-任务对信息流偏好确实异质；腾讯 FiT 四周场景两周 A/B 中 CTR 均 +0.87%、CVR 均 +2.46%、订阅金额均 +8.32%，延迟仅 +0.24ms。</li>
+<li><strong>LoRA 优于 MoE 且更省参</strong>：w.me. 在 KuaiRand S1T1 跌至 0.6929（较 AutoIFS 掉 0.0091），而 AutoIFS 参数量却远低于 M3oE/HiNet——低秩瓶颈既控参又起正则作用；<span class="arithmatex">\(r\)</span>的最优值随数据规模分化（ML-1M<span class="arithmatex">\(r=2\)</span>防过拟合，KuaiRand<span class="arithmatex">\(r=16\)</span>需更大容量），<span class="arithmatex">\(\gamma,\lambda\)</span> 则表现稳健。</li>
+<li><strong>掩码具备可解释性且线上兑现</strong>：图 5 显示 ML-1M 上 Task1 倾向剪掉 <span class="arithmatex">\(h^{sh,sh}\)</span>与<span class="arithmatex">\(h^{k,m}\)</span>、Task2 倾向剪掉<span class="arithmatex">\(h^{sh,m}\)</span>与<span class="arithmatex">\(h^{k,sh}\)</span>，KuaiRand Task1 则四流全保留——不同场景-任务对信息流偏好确实异质；腾讯 FiT 四周场景两周 A/B 中 CTR 均 +0.87%、CVR 均 +2.46%、订阅金额均 +8.32%，延迟仅 +0.24ms。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 HiNet 的层次蒸馏与 M3oE 的三路 MoE——二者均"全量建模关系空间"，AutoIFS 首次把问题重述为<strong>流级掩码选择</strong>；相比 MLoRA 仅用 LoRA 做域解耦，本文进一步把 LoRA 与可微剪枝耦合，实现"解耦 + 筛选"一体化。</li>
 <li><strong>可迁移亮点</strong>: ① "共享走全秩、独有走低秩 + 加法融合"可作为任意多域/多任务骨干的轻量替换件；② 温度退火 sigmoid → 硬离散化的软掩码训练范式，可直接迁移到特征选择、专家路由等离散决策场景。</li>
-<li><strong>审稿级局限批判</strong>: ① 评估仅用 AUC/LogLoss，缺少 GAUC 与 Full-Ranking 排序指标，且两数据集场景数仅 3、任务数仅 2，场景/任务规模化后的掩码搜索空间（<span class="arithmatex">\(4^{KM}\)</span>）与稳定性未验证；② 掩码为实例级硬 0/1，离散化阈值固定为 0，对 <span class="arithmatex">\(\gamma\)</span> 退火日程与 <span class="arithmatex">\(P\)</span> 较敏感，且 reuse 阶段需额外重训，整体调参链路偏长。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 评估仅用 AUC/LogLoss，缺少 GAUC 与 Full-Ranking 排序指标，且两数据集场景数仅 3、任务数仅 2，场景/任务规模化后的掩码搜索空间（<span class="arithmatex">\(4^{KM}\)</span>）与稳定性未验证；② 掩码为实例级硬 0/1，离散化阈值固定为 0，对<span class="arithmatex">\(\gamma\)</span>退火日程与<span class="arithmatex">\(P\)</span> 较敏感，且 reuse 阶段需额外重训，整体调参链路偏长。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

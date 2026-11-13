@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 <li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>传统离线策略学习（OPL）默认物品可无限供给，逐用户贪心取 <span class="arithmatex">\(\arg\max_a \hat q(x,a)\)</span> 即最优。但在优惠券发放、电商库存等<strong>单品供给有限</strong>场景下，贪心会把高价值物品过早发给"次优用户"，导致后续高价值用户无货可发。本文首次形式化"库存受限 OPL"，证明贪心非最优且必存在更优策略，据此提出 OPLS：按<strong>相对奖励差</strong> <span class="arithmatex">\(\hat q(x,a)-\frac1n\sum_i\hat q(x_i,a)\)</span> 分配稀缺物品，并给出混合供给扩展。合成数据与 KuaiRec 上相对贪心的策略价值比稳定 <span class="arithmatex">\(&gt;1\)</span>，偏好越同质、供给越稀缺收益越大。</p>
+<p>传统离线策略学习（OPL）默认物品可无限供给，逐用户贪心取 <span class="arithmatex">\(\arg\max_a \hat q(x,a)\)</span>即最优。但在优惠券发放、电商库存等<strong>单品供给有限</strong>场景下，贪心会把高价值物品过早发给"次优用户"，导致后续高价值用户无货可发。本文首次形式化"库存受限 OPL"，证明贪心非最优且必存在更优策略，据此提出 OPLS：按<strong>相对奖励差</strong><span class="arithmatex">\(\hat q(x,a)-\frac1n\sum_i\hat q(x_i,a)\)</span>分配稀缺物品，并给出混合供给扩展。合成数据与 KuaiRec 上相对贪心的策略价值比稳定<span class="arithmatex">\(&gt;1\)</span>，偏好越同质、供给越稀缺收益越大。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 上下文赌博机 OPL 用日志数据学策略，模型基方法先估 <span class="arithmatex">\(\hat q(x,a)\)</span> 再逐上下文贪心取最大，理论上在无约束环境最优。</li>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>将推荐视作 <span class="arithmatex">\(T\)</span> 轮序贯决策：每轮观测上下文 <span class="arithmatex">\(x_t\)</span> 与库存状态 <span class="arithmatex">\(s_t\)</span>（各物品剩余量），策略 <span class="arithmatex">\(\pi(a|x,s)\)</span> 选品，消耗信号 <span class="arithmatex">\(c\in\{0,1\}\)</span> 触发确定性库存转移 <span class="arithmatex">\(s^a_t=s^a_1-\sum_{t'&lt;t}c_{t'}\mathbb{I}\{a_{t'}=a\}\)</span>。策略价值定义为全周期消耗奖励之和 <span class="arithmatex">\(V(\pi)=\sum_t \mathbb{E}[q(x_t,a_t)]\)</span>，其中 <span class="arithmatex">\(q=q_c\cdot q_r\)</span>。训练阶段用日志数据监督学习 <span class="arithmatex">\(\hat q\)</span>，推理阶段按 OPLS 决策规则在剩余库存集合上选品，无需额外计算开销。</p>
+<p>将推荐视作 <span class="arithmatex">\(T\)</span>轮序贯决策：每轮观测上下文<span class="arithmatex">\(x_t\)</span>与库存状态<span class="arithmatex">\(s_t\)</span>（各物品剩余量），策略<span class="arithmatex">\(\pi(a|x,s)\)</span>选品，消耗信号<span class="arithmatex">\(c\in\{0,1\}\)</span>触发确定性库存转移<span class="arithmatex">\(s^a_t=s^a_1-\sum_{t'&lt;t}c_{t'}\mathbb{I}\{a_{t'}=a\}\)</span>。策略价值定义为全周期消耗奖励之和<span class="arithmatex">\(V(\pi)=\sum_t \mathbb{E}[q(x_t,a_t)]\)</span>，其中<span class="arithmatex">\(q=q_c\cdot q_r\)</span>。训练阶段用日志数据监督学习<span class="arithmatex">\(\hat q\)</span>，推理阶段按 OPLS 决策规则在剩余库存集合上选品，无需额外计算开销。</p>
 <pre class="mermaid"><code>flowchart TD
     A["日志数据 (x,a,c,r,s)"] --&gt; B["监督学习估计 q̂(x,a)"]
     B --&gt; C["计算各物品跨用户均值 q̄(a)"]
@@ -4244,10 +4255,10 @@ $<span class="arithmatex">\(\pi_{\text{OPLS}}(a_t|x_t,s_t)=\arg\max_{a\in\mathca
 直觉：把物品留给"相对他人增益最大"的用户，等价于最大化定理 4.1 下界，从而在到达顺序任意时都逼近最优分配（优惠券例中 OPLS 恒得 540）。</p>
 </li>
 <li>
-<p><strong>混合供给扩展（Sold / Unsold 分组决策）</strong>：现实中热门品稀缺、长尾品充足。将物品分为将售罄集 <span class="arithmatex">\(\mathcal{A}_{\text{sold}}\)</span> 与剩余集 <span class="arithmatex">\(\mathcal{A}_{\text{unsold}}\)</span>：前者用相对奖励差、后者用绝对奖励 <span class="arithmatex">\(\hat q\)</span>，最后在两组候选中取 <span class="arithmatex">\(\hat q\)</span> 更大者。该设计<strong>内嵌贪心</strong>——供给充足时退化为贪心，保证不劣于基线。售罄集用均匀选品近似估计 <span class="arithmatex">\(s^a_T=s^a_0-T\cdot\frac1{|\mathcal{A}|}\sum_i q_c(x_i,a)\)</span>，规避策略依赖导致的不可解。</p>
+<p><strong>混合供给扩展（Sold / Unsold 分组决策）</strong>：现实中热门品稀缺、长尾品充足。将物品分为将售罄集 <span class="arithmatex">\(\mathcal{A}_{\text{sold}}\)</span>与剩余集<span class="arithmatex">\(\mathcal{A}_{\text{unsold}}\)</span>：前者用相对奖励差、后者用绝对奖励<span class="arithmatex">\(\hat q\)</span>，最后在两组候选中取<span class="arithmatex">\(\hat q\)</span>更大者。该设计<strong>内嵌贪心</strong>——供给充足时退化为贪心，保证不劣于基线。售罄集用均匀选品近似估计<span class="arithmatex">\(s^a_T=s^a_0-T\cdot\frac1{|\mathcal{A}|}\sum_i q_c(x_i,a)\)</span>，规避策略依赖导致的不可解。</p>
 </li>
 <li>
-<p><strong>训练目标与推理效率</strong>：损失即标准回归 <span class="arithmatex">\(\mathcal{L}=\sum_{(x,a,r)\in\mathcal{D}}(\hat q(x,a)-c\cdot r)^2\)</span>（无 IPS 重要性加权、无负采样），仅需一个监督模型；推理时多算一次跨用户均值 <span class="arithmatex">\(\bar q(a)\)</span>，复杂度与贪心同阶，可离线预计算。</p>
+<p><strong>训练目标与推理效率</strong>：损失即标准回归 <span class="arithmatex">\(\mathcal{L}=\sum_{(x,a,r)\in\mathcal{D}}(\hat q(x,a)-c\cdot r)^2\)</span>（无 IPS 重要性加权、无负采样），仅需一个监督模型；推理时多算一次跨用户均值<span class="arithmatex">\(\bar q(a)\)</span>，复杂度与贪心同阶，可离线预计算。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4270,7 +4281,7 @@ $<span class="arithmatex">\(\pi_{\text{OPLS}}(a_t|x_t,s_t)=\arg\max_{a\in\mathca
 <td style="text-align: left;">Synthetic</td>
 <td style="text-align: center;">200</td>
 <td style="text-align: center;">100</td>
-<td style="text-align: center;"><span class="arithmatex">\(T\)</span> 轮（售罄为止）</td>
+<td style="text-align: center;"><span class="arithmatex">\(T\)</span>轮（售罄为止）</td>
 <td style="text-align: center;">—</td>
 <td style="text-align: left;">10 维正态上下文，<span class="arithmatex">\(\lambda\)</span> 控制偏好同质度</td>
 </tr>
@@ -4285,9 +4296,9 @@ $<span class="arithmatex">\(\pi_{\text{OPLS}}(a_t|x_t,s_t)=\arg\max_{a\in\mathca
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分与防穿越</strong>: 合成数据按序贯模拟生成日志（logging policy 为 <span class="arithmatex">\(\beta\)</span>-softmax，<span class="arithmatex">\(\beta=-1.0\)</span>）；KuaiRec 用近全观测子集直接取真实 <span class="arithmatex">\(q_r\)</span>，<span class="arithmatex">\(\beta=1.0\)</span>，<span class="arithmatex">\(\hat q\)</span> 由 3 层 MLP 从日志学习。</li>
-<li><strong>排名评测协议</strong>: 非排序指标，采用<strong>策略价值比</strong> <span class="arithmatex">\(V(\pi_{\text{OPLS}})/V(\pi_{\text{greedy}})\)</span>，100 次随机种子模拟取均值；合成实验多数用真实 <span class="arithmatex">\(q\)</span> 隔离估计误差，另设加噪实验 <span class="arithmatex">\(\hat q=q+\mathcal{N}(0,\sigma)\)</span>。</li>
-<li><strong>对比基线与超参</strong>: 唯一基线为库存感知贪心 <span class="arithmatex">\(\pi_{\text{greedy}}\)</span>（Eq.4）；初始供给设 proportional / inverse-proportional / random 三种；默认 <span class="arithmatex">\(|\mathcal{A}|=100\)</span>、<span class="arithmatex">\(\lambda=0.5\)</span>、<span class="arithmatex">\(s_{\max}=20\)</span>。</li>
+<li><strong>数据划分与防穿越</strong>: 合成数据按序贯模拟生成日志（logging policy 为 <span class="arithmatex">\(\beta\)</span>-softmax，<span class="arithmatex">\(\beta=-1.0\)</span>）；KuaiRec 用近全观测子集直接取真实<span class="arithmatex">\(q_r\)</span>，<span class="arithmatex">\(\beta=1.0\)</span>，<span class="arithmatex">\(\hat q\)</span> 由 3 层 MLP 从日志学习。</li>
+<li><strong>排名评测协议</strong>: 非排序指标，采用<strong>策略价值比</strong> <span class="arithmatex">\(V(\pi_{\text{OPLS}})/V(\pi_{\text{greedy}})\)</span>，100 次随机种子模拟取均值；合成实验多数用真实<span class="arithmatex">\(q\)</span>隔离估计误差，另设加噪实验<span class="arithmatex">\(\hat q=q+\mathcal{N}(0,\sigma)\)</span>。</li>
+<li><strong>对比基线与超参</strong>: 唯一基线为库存感知贪心 <span class="arithmatex">\(\pi_{\text{greedy}}\)</span>（Eq.4）；初始供给设 proportional / inverse-proportional / random 三种；默认<span class="arithmatex">\(|\mathcal{A}|=100\)</span>、<span class="arithmatex">\(\lambda=0.5\)</span>、<span class="arithmatex">\(s_{\max}=20\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4316,9 +4327,9 @@ $<span class="arithmatex">\(\pi_{\text{OPLS}}(a_t|x_t,s_t)=\arg\max_{a\in\mathca
 </tr>
 <tr>
 <td style="text-align: left;">估计噪声 <span class="arithmatex">\(\sigma\)</span></td>
-<td style="text-align: left;"><span class="arithmatex">\(\sigma\)</span> 递增</td>
+<td style="text-align: left;"><span class="arithmatex">\(\sigma\)</span>递增</td>
 <td style="text-align: center;"><strong>&gt;1 但递减</strong></td>
-<td style="text-align: left;">需较准的 <span class="arithmatex">\(\hat q\)</span></td>
+<td style="text-align: left;">需较准的<span class="arithmatex">\(\hat q\)</span></td>
 </tr>
 <tr>
 <td style="text-align: left;">最大供给 <span class="arithmatex">\(s_{\max}\)</span></td>
@@ -4356,7 +4367,7 @@ $<span class="arithmatex">\(\pi_{\text{OPLS}}(a_t|x_t,s_t)=\arg\max_{a\in\mathca
 </tr>
 <tr>
 <td style="text-align: left;">OPLS @ <span class="arithmatex">\(t\)</span>=10/30/60</td>
-<td style="text-align: left;">约 <strong>80% 的 <span class="arithmatex">\(a_5\)</span> 定向发给 <span class="arithmatex">\(x_1\)</span></strong>（该用户对 <span class="arithmatex">\(a_5\)</span> 期望最高）</td>
+<td style="text-align: left;">约 <strong>80% 的<span class="arithmatex">\(a_5\)</span>定向发给<span class="arithmatex">\(x_1\)</span></strong>（该用户对<span class="arithmatex">\(a_5\)</span> 期望最高）</td>
 </tr>
 <tr>
 <td style="text-align: left;">OPLS 无混合扩展（纯相对差）</td>
@@ -4372,14 +4383,20 @@ $<span class="arithmatex">\(\pi_{\text{OPLS}}(a_t|x_t,s_t)=\arg\max_{a\in\mathca
 <ol>
 <li><strong>偏好同质度是收益放大器</strong>：<span class="arithmatex">\(\lambda\to 0\)</span>（所有用户偏好同序）时 OPLS 相对贪心提升最大——此时贪心把热门品均摊、OPLS 精准定向，二者差距被拉开；<span class="arithmatex">\(\lambda\)</span> 增大偏好分散后收益收窄。</li>
 <li><strong>稀缺性驱动收益</strong>：用户数增加、<span class="arithmatex">\(s_{\max}\)</span> 减小、inverse-proportional 供给（高价值品稀缺）三种"稀缺加剧"设定下相对价值均上升，验证方法针对的正是"高价值物品供不应求"的核心矛盾。</li>
-<li><strong>抗噪但非免疫</strong>：合成实验中噪声 <span class="arithmatex">\(\sigma\)</span> 增大时相对价值递减（依赖 <span class="arithmatex">\(\hat q\)</span> 精度），但 KuaiRec 上用 MLP 估计的 <span class="arithmatex">\(\hat q\)</span> 反而在小噪声区更稳健，说明真实数据下相对差对估计误差有一定平滑作用。</li>
+<li><strong>抗噪但非免疫</strong>：合成实验中噪声 <span class="arithmatex">\(\sigma\)</span>增大时相对价值递减（依赖<span class="arithmatex">\(\hat q\)</span>精度），但 KuaiRec 上用 MLP 估计的<span class="arithmatex">\(\hat q\)</span> 反而在小噪声区更稳健，说明真实数据下相对差对估计误差有一定平滑作用。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比标准模型基 OPL（Saito &amp; Joachims 等）——后者无库存状态、贪心即最优；相比 Bandits with Knapsack / Resourceful CB——后者只建模全局预算、无个性化上下文且多为在线；相比 Christakopoulou 矩阵分解库存法——无用户序贯到达。本文是<strong>首个单品级库存 + 上下文 + 离线</strong>的 OPL 形式化。</li>
 <li><strong>可迁移亮点</strong>: ① "相对奖励差"可作为稀缺资源分配（流量扶持、冷启曝光配额）的通用轻量重排规则，零额外训练成本；② Sold/Unsold 分组 + 内嵌贪心的混合决策，是"约束场景下保证不劣于基线"的优雅范式。</li>
 <li><strong>审稿级局限批判</strong>: ① 理论仅覆盖单库存、偏好同序的极简设定，多库存与异质偏好的最优性无保证；② 售罄集估计用均匀选品近似，物品数或 <span class="arithmatex">\(T\)</span> 大时误差累积；③ 实验仅对比贪心一个基线，缺 IPS/DR 等 OPL 变体与真实在线 A/B，说服力受限。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

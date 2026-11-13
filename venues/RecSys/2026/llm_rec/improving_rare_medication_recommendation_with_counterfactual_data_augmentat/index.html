@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4231,12 +4242,12 @@
     E --&gt; F["逐药自回归解码 → 药物集合"]</code></pre>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>反事实场景构造 + 相对风险引导的临床元素注入</strong>：直接让 LLM 凭空造病历会产出临床不一致样本。本文先构造"若患者 <span class="arithmatex">\(i\)</span> 被开具 <span class="arithmatex">\(m^*\)</span>"的反事实假设 <span class="arithmatex">\(\mathcal{M}_i^* \leftarrow \mathcal{M}_i \cup \{m^*\},\ m^* \notin \mathcal{M}_i\)</span>，再从训练集中按<strong>相对风险</strong>筛选与 <span class="arithmatex">\(m^*\)</span> 强关联的临床元素集合 <span class="arithmatex">\(\mathcal{C}_{m^*}\)</span> 注入提示：</li>
+<li><strong>反事实场景构造 + 相对风险引导的临床元素注入</strong>：直接让 LLM 凭空造病历会产出临床不一致样本。本文先构造"若患者 <span class="arithmatex">\(i\)</span>被开具<span class="arithmatex">\(m^*\)</span>"的反事实假设<span class="arithmatex">\(\mathcal{M}_i^* \leftarrow \mathcal{M}_i \cup \{m^*\},\ m^* \notin \mathcal{M}_i\)</span>，再从训练集中按<strong>相对风险</strong>筛选与<span class="arithmatex">\(m^*\)</span>强关联的临床元素集合<span class="arithmatex">\(\mathcal{C}_{m^*}\)</span> 注入提示：</li>
 </ol>
 <div class="arithmatex">\[\text{RelativeRisk}(c, m^*) = \frac{P(c \mid m^*)}{P(c \mid \neg m^*)} = \frac{\text{count}(c, m^*)/\text{count}(m^*)}{\text{count}(c, \neg m^*)/\text{count}(\neg m^*)}\]</div>
 <p>直觉：高相对风险元素是"该药的特征性上下文"，为 LLM 提供锚点，使其改写有据可依而非幻觉；同时让 LLM 在 <span class="arithmatex">\(k=3\)</span> 个候选患者中先选最可信者再改写，双重约束临床一致性。</p>
 <ol>
-<li><strong>病历摘要指令微调（对齐而非直接微调）</strong>：零样本 GPT 与直接微调的 LEADER 在罕见药上均表现平庸，说明"通用临床知识"与"用药推荐任务"之间存在语义鸿沟。本文插入中间任务：给定病历 <span class="arithmatex">\(\mathcal{R}_i\)</span>、目标药 <span class="arithmatex">\(m^*\)</span> 与 <span class="arithmatex">\(\mathcal{C}_{m^*}\)</span>，令 LLM 生成聚焦于该药相关临床要点的摘要 <span class="arithmatex">\(\hat{O}^{IT}_i\)</span>，损失为</li>
+<li><strong>病历摘要指令微调（对齐而非直接微调）</strong>：零样本 GPT 与直接微调的 LEADER 在罕见药上均表现平庸，说明"通用临床知识"与"用药推荐任务"之间存在语义鸿沟。本文插入中间任务：给定病历 <span class="arithmatex">\(\mathcal{R}_i\)</span>、目标药<span class="arithmatex">\(m^*\)</span>与<span class="arithmatex">\(\mathcal{C}_{m^*}\)</span>，令 LLM 生成聚焦于该药相关临床要点的摘要<span class="arithmatex">\(\hat{O}^{IT}_i\)</span>，损失为</li>
 </ol>
 <div class="arithmatex">\[\mathcal{L}_{IT} = -\sum_{j=1}^{|O^{IT}_i|} \log p(O^{IT}_{i,j} \mid I_{IT}, \mathcal{R}_i, m^*, \mathcal{C}_{m^*}, O^{IT}_{i,&lt;j}; \theta_{\text{LoRA}})\]</div>
 <p>监督信号来自 Stage-1 中 GPT-4o 生成的摘要（即强模型蒸馏到弱模型）。直觉：摘要任务强迫模型学会"从长病历中定位与某药相关的证据"，这正是罕见药判别所需的能力。</p>
@@ -4437,12 +4448,18 @@
 <li><strong>增益严格集中于长尾、高频几乎无损</strong>：Group-1 提升 30.17% 而 Group-4（最高频）仅 +0.94%，Micro Jaccard 甚至 −1.76%；这证明模型并非整体变强，而是把容量重新分配给了长尾，符合"Macro 指标才是罕见药真实信号"的评估哲学。</li>
 <li><strong>生成数据具备临床可辨性下限</strong>：100 样本盲测中持证医师判别准确率仅 <strong>0.45</strong>（低于随机 0.5），7 个 GPT 系列评估器为 0.50–0.61，说明反事实样本与真实病历在结构化元素层面难以区分；同时 DDI Ratio 8.29 贴近真实处方 8.26，未以安全性换性能。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 COGNet（迭代 Transformer 解码器建模共荐药，但无数据增强、无 LLM 知识），GenRxR 在 Group-1 上高出 30%；相比 FLAME（LLM + 出院小结两阶段精修，依赖额外文本模态），GenRxR 不引入额外临床文本却在 MIMIC-IV Group-1 上高出 22.8%；相比 LEADER（LLM 加分类头一次性预测全部药），GenRxR 的逐药生成 + 指令微调对齐带来 Macro F1 从 35.03 → 44.51 的跃升。</li>
 <li><strong>可迁移亮点</strong>: ① "相对风险筛选关联元素 → 注入提示约束 LLM 反事实生成"可作为通用长尾物品合成数据模板；② "强模型生成摘要 → 弱模型 LoRA 蒸馏做中间任务对齐"是低成本领域适配范式；③ 训练标签按频次升序排列以保护长尾生成的技巧几乎零成本。</li>
 <li><strong>审稿级局限批判</strong>: ① 反事实生成依赖 GPT-4o 离线批量调用（每药 30 条 × 全药集），成本与可复现性受闭源模型版本漂移影响，且生成质量仅由 100 样本盲测支撑，规模偏小；② 仅用 DDI Ratio 做安全评估，未筛查药物-疾病冲突，作者亦在 Future Work 中承认；③ 推理需自回归解码整段药名序列，在线延迟显著高于分类式基线，论文仅在附录给出 runtime，工业落地需蒸馏或缓存。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/g7199/EvoLearning">https://github.com/g7199/EvoLearning</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>学习路径推荐 (LPR) 的 RL 范式面临双重困境：策略必须"盲规划"整条 L 步路径（搜索空间达 <span class="arithmatex">\(1.2\times10^{45}\)</span>）且仅在终点获得稀疏奖励；而教育数据只记录学生"做了什么"而非"应该做什么"，天然缺失专家示范。EVOL 借用机器人 sim-to-real 配方：在知识追踪模拟器 (KES) 内用进化搜索为每个学习者合成专家路径，再蒸馏为仅以初始掌握度 <span class="arithmatex">\(h_0\)</span> 为条件的前馈 Actor，配合特权 Critic 的非对称 PPO 精炼。在 ASSIST15/Junyi/EdNet 三数据集、<span class="arithmatex">\(L\in\{5,10,20\}\)</span> 的 <span class="arithmatex">\(h_0\)</span>-only 部署协议下全面超越 8 个基线，ASSIST15 <span class="arithmatex">\(L{=}10\)</span> 上 EP 达 +0.614（vs. PPO-vanilla +0.543）。</p>
+<p>学习路径推荐 (LPR) 的 RL 范式面临双重困境：策略必须"盲规划"整条 L 步路径（搜索空间达 <span class="arithmatex">\(1.2\times10^{45}\)</span>）且仅在终点获得稀疏奖励；而教育数据只记录学生"做了什么"而非"应该做什么"，天然缺失专家示范。EVOL 借用机器人 sim-to-real 配方：在知识追踪模拟器 (KES) 内用进化搜索为每个学习者合成专家路径，再蒸馏为仅以初始掌握度<span class="arithmatex">\(h_0\)</span>为条件的前馈 Actor，配合特权 Critic 的非对称 PPO 精炼。在 ASSIST15/Junyi/EdNet 三数据集、<span class="arithmatex">\(L\in\{5,10,20\}\)</span>的<span class="arithmatex">\(h_0\)</span>-only 部署协议下全面超越 8 个基线，ASSIST15<span class="arithmatex">\(L{=}10\)</span> 上 EP 达 +0.614（vs. PPO-vanilla +0.543）。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: CSEAL/GEHRL/DLELP/KnowLP 将 LPR 建模为 KES（DKT 模拟器）内的 RL 问题，训练 Actor-Critic 逐步选择概念。</li>
@@ -4230,7 +4241,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>EVOL 分三阶段闭环：Stage 1 在 KES 内对每个训练学习者跑进化搜索，产出单条最优专家路径；Stage 2 以行为克隆把专家蒸馏进仅吃 <span class="arithmatex">\([h_0\|g\|t/L]\)</span> 的 Actor；Stage 2.5 用专家回报对特权 Critic 热启动；Stage 3 用非对称 PPO 在线精炼。部署时仅 Actor 存活，<span class="arithmatex">\(L\)</span> 次前向即输出完整路径，零 KES 查询。</p>
+<p>EVOL 分三阶段闭环：Stage 1 在 KES 内对每个训练学习者跑进化搜索，产出单条最优专家路径；Stage 2 以行为克隆把专家蒸馏进仅吃 <span class="arithmatex">\([h_0\|g\|t/L]\)</span>的 Actor；Stage 2.5 用专家回报对特权 Critic 热启动；Stage 3 用非对称 PPO 在线精炼。部署时仅 Actor 存活，<span class="arithmatex">\(L\)</span> 次前向即输出完整路径，零 KES 查询。</p>
 <pre class="mermaid"><code>flowchart TD
     A["学习者历史 H → DKT 得初始掌握度 h0 + 目标掩码 g"] --&gt; B["Stage1: KES 内进化搜索 (pop=60, gen=50) 合成单条专家路径"]
     B --&gt; C["Stage2: BC 蒸馏 Actor (仅 h0/g/t)"]
@@ -4245,20 +4256,20 @@
 <li>
 <p><strong>进化专家合成（Stage 1）</strong>：痛点是无梯度稀疏奖励下 RL 无法探索 <span class="arithmatex">\(10^{45}\)</span> 级空间。候选集限定为目标概念、其前置/相似邻居与 ZPD 概念（掌握度近 0.5）：
 $<span class="arithmatex">\(\mathcal{C}=\mathcal{G}\cup\bigcup_{g\in\mathcal{G}}\big(\text{prereq}(g)\cup\text{sim}_K(g)\big)\cup\text{ZPD}\)</span>$
-以 <span class="arithmatex">\(f(p)=\text{EP}(H,p,\mathcal{G})\)</span> 为适应度，经锦标赛选择、有序交叉、点变异迭代 50 代。关键取舍：<strong>每学习者仅保留 <span class="arithmatex">\(K{=}1\)</span> 条最优路径</strong>——<span class="arithmatex">\(K&gt;1\)</span> 会让同一状态对应冲突动作，BC 准确率被标签噪声封顶在 ~70%。直觉：进化端到端评估完整轨迹，绕过了稀疏奖励的信用分配难题。</p>
+以 <span class="arithmatex">\(f(p)=\text{EP}(H,p,\mathcal{G})\)</span>为适应度，经锦标赛选择、有序交叉、点变异迭代 50 代。关键取舍：<strong>每学习者仅保留<span class="arithmatex">\(K{=}1\)</span>条最优路径</strong>——<span class="arithmatex">\(K&gt;1\)</span> 会让同一状态对应冲突动作，BC 准确率被标签噪声封顶在 ~70%。直觉：进化端到端评估完整轨迹，绕过了稀疏奖励的信用分配难题。</p>
 </li>
 <li>
-<p><strong>非对称 Actor-Critic（Stage 2/3）</strong>：痛点是若 Actor 也看 <span class="arithmatex">\(h_t\)</span> 则推理需模拟器。Actor 状态固定为 <span class="arithmatex">\(s^{actor}_t=[h_0\|g\|t/L]\)</span>，靠步索引与已用概念掩码区分步骤；Critic 则吃特权 <span class="arithmatex">\(s^{critic}_t=[h_t\|g\|t/L]\)</span> 以给出低方差优势估计：
+<p><strong>非对称 Actor-Critic（Stage 2/3）</strong>：痛点是若 Actor 也看 <span class="arithmatex">\(h_t\)</span>则推理需模拟器。Actor 状态固定为<span class="arithmatex">\(s^{actor}_t=[h_0\|g\|t/L]\)</span>，靠步索引与已用概念掩码区分步骤；Critic 则吃特权<span class="arithmatex">\(s^{critic}_t=[h_t\|g\|t/L]\)</span> 以给出低方差优势估计：
 $<span class="arithmatex">\(\hat{A}_t=R_t+\gamma V(s^{critic}_{t+1})-V(s^{critic}_t),\quad R_t=\text{EP}\ \text{仅当}\ t=L{-}1\)</span>$
 直觉：训练期"偷看"模拟器状态提升价值估计质量，部署期 Actor 仍严格盲规划，二者解耦。</p>
 </li>
 <li>
-<p><strong>训练目标与开销</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{PPO}+c_v\mathcal{L}_{value}-c_e H[\pi_\theta]\)</span>，<span class="arithmatex">\(\epsilon{=}0.15\)</span>、熵系数 0.03；BC 阶段 2000 epoch，PPO 30000 episode。<strong>免负采样</strong>（动作空间由候选掩码约束）。进化搜索墙钟成本：Junyi 8.4 min / ASSIST15 31 min / EdNet 41 min（单卡 3090），仅一次性离线开销；推理为 <span class="arithmatex">\(L\)</span> 次 MLP 前向。</p>
+<p><strong>训练目标与开销</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{PPO}+c_v\mathcal{L}_{value}-c_e H[\pi_\theta]\)</span>，<span class="arithmatex">\(\epsilon{=}0.15\)</span>、熵系数 0.03；BC 阶段 2000 epoch，PPO 30000 episode。<strong>免负采样</strong>（动作空间由候选掩码约束）。进化搜索墙钟成本：Junyi 8.4 min / ASSIST15 31 min / EdNet 41 min（单卡 3090），仅一次性离线开销；推理为<span class="arithmatex">\(L\)</span> 次 MLP 前向。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集与预处理</strong>（按 CSEAL 协议，50/50 切为 <span class="arithmatex">\(D_{Sim}\)</span> 训 DKT 与 <span class="arithmatex">\(D_{Off}\)</span> 训评测 LPR，后者再 80/10/10）：</li>
+<li><strong>数据集与预处理</strong>（按 CSEAL 协议，50/50 切为 <span class="arithmatex">\(D_{Sim}\)</span>训 DKT 与<span class="arithmatex">\(D_{Off}\)</span> 训评测 LPR，后者再 80/10/10）：</li>
 </ul>
 <table>
 <thead>
@@ -4296,7 +4307,7 @@ $<span class="arithmatex">\(\hat{A}_t=R_t+\gamma V(s^{critic}_{t+1})-V(s^{critic
 </table>
 <ul>
 <li><strong>数据划分与防穿越</strong>: 比例划分（80/10/10），三随机种子 {42,123,7} 诱导不同学生群体；DKT 仅在 <span class="arithmatex">\(D_{Sim}\)</span> 上训练，避免信息泄漏。</li>
-<li><strong>排名评测协议</strong>: 非传统 Top-K 排序，而是<strong>路径级 EP 指标</strong>（目标概念掌握度归一化提升，按 <span class="arithmatex">\(1-E^{start}_g\)</span> 加权降权近天花板目标）；所有方法统一在 <strong><span class="arithmatex">\(h_0\)</span>-only 部署约束</strong>下评测（推理禁用 KES），响应模型为确定性阈值 <span class="arithmatex">\(r=\mathbb{1}[h_c&gt;0.5]\)</span>。</li>
+<li><strong>排名评测协议</strong>: 非传统 Top-K 排序，而是<strong>路径级 EP 指标</strong>（目标概念掌握度归一化提升，按 <span class="arithmatex">\(1-E^{start}_g\)</span>加权降权近天花板目标）；所有方法统一在 <strong><span class="arithmatex">\(h_0\)</span>-only 部署约束</strong>下评测（推理禁用 KES），响应模型为确定性阈值<span class="arithmatex">\(r=\mathbb{1}[h_c&gt;0.5]\)</span>。</li>
 <li><strong>对比基线与超参</strong>: 8 基线覆盖启发式 (Target)、序列 (GRU4Rec/SASRec，共享同一专家监督)、RL (PPO-vanilla，同架构无预训练)、图增强 RL (CSEAL/GEHRL/DLELP)、LLM 增强 (KnowLP)；Actor/Critic 为两层 MLP，隐宽 512（ASSIST15/EdNet）/256（Junyi）。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4434,12 +4445,18 @@ $<span class="arithmatex">\(\hat{A}_t=R_t+\gamma V(s^{critic}_{t+1})-V(s^{critic
 <li><strong>增益主要来自顺序而非选概念</strong>：ASSIST15 <span class="arithmatex">\(L{=}10\)</span> 上对路径均匀打乱后，EVOL-BC 与 PPO-vanilla 的 EP 几乎无差（+0.330 vs +0.333），但原序路径 EVOL 领先 +0.066；SeqDrop 指标 EVOL-BC 达 +0.297，说明蒸馏传递的是<strong>顺序敏感</strong>的规划策略。</li>
 <li><strong>鲁棒性来自进化合成而非特定 DKT 实例</strong>：在 4 个不同种子 DKT 实例上，EVOL-BC 跨实例均值 +0.341，比 PPO-vanilla 高 +0.091；在 Bernoulli/Slip-Guess 随机响应下 EVOL 仍领先 +0.043，而图条件基线 (CSEAL/GEHRL) 在随机响应下 EP 转负（约 −0.11），暴露固定概念图候选结构的脆弱性。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 CSEAL/GEHRL/DLELP/KnowLP 的本质区别在于<strong>推理期是否依赖模拟器</strong>——本文首次把 LPR 明确为"训练期可用模拟器、部署期不可用"的 sim-to-real 问题；与机器人 DAPG/AWR 的区别在于示范不是脚本控制器采集，而是<strong>模拟器内进化合成</strong>，且进化在实例级（每学习者一次搜索）而梯度学习在群体级（一个策略泛化所有学习者）。</li>
 <li><strong>可迁移亮点</strong>: (1) "训练期特权信息 + 部署期盲推理"的非对称 AC 可直接迁移到任何需要一次性提交多步序列、但训练有模拟器的场景（治疗方案排序、内容版面规划）；(2) 用无梯度进化搜索为稀疏终点奖励任务合成示范，再蒸馏，是绕过信用分配难题的通用配方。</li>
-<li><strong>审稿级局限批判</strong>: (1) 专家在 DKT 模拟器内优化 EP，示范继承 DKT 的表征缺陷（同历史不同资质的学习者被赋予相同动力学），缺乏真实学习者前瞻验证；(2) 基线被统一改造为 <span class="arithmatex">\(h_0\)</span>-only 推理，报告的差距刻画的是"免部署性能"而非原方法在其自身假设下的上限，公平性需读者自行折算；(3) 进化搜索每数据集需 8–41 分钟离线成本，且 <span class="arithmatex">\(K{=}1\)</span> 的取舍使示范多样性受限。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: (1) 专家在 DKT 模拟器内优化 EP，示范继承 DKT 的表征缺陷（同历史不同资质的学习者被赋予相同动力学），缺乏真实学习者前瞻验证；(2) 基线被统一改造为 <span class="arithmatex">\(h_0\)</span>-only 推理，报告的差距刻画的是"免部署性能"而非原方法在其自身假设下的上限，公平性需读者自行折算；(3) 进化搜索每数据集需 8–41 分钟离线成本，且<span class="arithmatex">\(K{=}1\)</span> 的取舍使示范多样性受限。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

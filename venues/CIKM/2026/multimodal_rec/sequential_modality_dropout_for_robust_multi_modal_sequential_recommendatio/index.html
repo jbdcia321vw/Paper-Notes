@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>宿主骨干沿用加性多模态融合：物品表示为 <span class="arithmatex">\(\mathbf{e}_i=\mathbf{e}^{ID}_i+a^v_i f_v(\mathbf{v}_i)+a^t_i f_t(\mathbf{t}_i)\)</span>，其中 <span class="arithmatex">\(a^v_i,a^t_i\in\{0,1\}\)</span> 为目录可用性指示（缺失模态贡献零向量），序列送入因果 Transformer 后线性头对全库打分，训练用 1 正 1 负采样的 BCE。SMD 在<strong>融合点之前</strong>对每个 mini-batch 样本、每一路模态独立采样伯努利掩码，整条历史共享同一掩码；测试时不加掩码（除鲁棒性评测的确定性掩码）。可选地在简单加性骨干上叠加跨模态重建损失。整个改动不触碰宿主优化器与超参。</p>
+<p>宿主骨干沿用加性多模态融合：物品表示为 <span class="arithmatex">\(\mathbf{e}_i=\mathbf{e}^{ID}_i+a^v_i f_v(\mathbf{v}_i)+a^t_i f_t(\mathbf{t}_i)\)</span>，其中<span class="arithmatex">\(a^v_i,a^t_i\in\{0,1\}\)</span> 为目录可用性指示（缺失模态贡献零向量），序列送入因果 Transformer 后线性头对全库打分，训练用 1 正 1 负采样的 BCE。SMD 在<strong>融合点之前</strong>对每个 mini-batch 样本、每一路模态独立采样伯努利掩码，整条历史共享同一掩码；测试时不加掩码（除鲁棒性评测的确定性掩码）。可选地在简单加性骨干上叠加跨模态重建损失。整个改动不触碰宿主优化器与超参。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户历史序列 (ID + CLIP图像 + BERT文本)"] --&gt; B["线性投影 f_v / f_t"]
     B --&gt; C["SMD: 逐样本伯努利掩码 m_b^(v), m_b^(t)"]
@@ -4231,9 +4242,9 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>逐样本整序列模态掩码（Per-Sample Modality Masking）</strong>：痛点在于逐物品掩码训练出的是"随机缺失"模式，与部署中成块缺失不符。核心算子为 <span class="arithmatex">\(m^{(m)}_b\sim\mathrm{Bernoulli}(1-p)\)</span>，<span class="arithmatex">\(\tilde f_m(\mathbf{x}^{(m)}_i)=m^{(m)}_b\cdot f_m(\mathbf{x}^{(m)}_i)\)</span>，同一 <span class="arithmatex">\(m^{(m)}_b\)</span> 作用于用户 <span class="arithmatex">\(b\)</span> 序列中所有物品。直觉：整段历史同时失去某模态，迫使模型从剩余模态与 ID 中重建偏好，等价于对"整模态缺失"这一真实分布做数据增广；同时保留序列内时间结构不被逐物品噪声打散。</li>
-<li><strong>与标准 Dropout 的去缩放差异</strong>：标准 dropout 测试时按 <span class="arithmatex">\(1/(1-p)\)</span> 重缩放以保持期望幅度（方差正则），SMD 则<strong>不重缩放</strong>，因为目标是"对真实缺失的不变性"而非方差缩减——全模态输入恰是训练中 <span class="arithmatex">\(p=0\)</span> 已见过的情形，无需补偿尺度。</li>
-<li><strong>可选跨模态重建损失</strong>：对无原生回退路径的加性融合骨干，加 <span class="arithmatex">\(\mathcal{L}_{rec}=\frac{1}{2}\big(\|g_{t\to v}(f_t(\mathbf{t}_i))-f_v(\mathbf{v}_i)\|^2+\|g_{v\to t}(f_v(\mathbf{v}_i))-f_t(\mathbf{t}_i)\|^2\big)\)</span>，总目标 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{BCE}+\lambda\mathcal{L}_{rec}\)</span>，<span class="arithmatex">\(\lambda=0.01\)</span>（0.1 会掉全模态精度）。直觉：测试时缺失模态可由存活模态经投影隐式恢复。训练负采样为每位置 1 正 1 负；推理零额外开销（掩码仅在训练期生效）。</li>
+<li><strong>逐样本整序列模态掩码（Per-Sample Modality Masking）</strong>：痛点在于逐物品掩码训练出的是"随机缺失"模式，与部署中成块缺失不符。核心算子为 <span class="arithmatex">\(m^{(m)}_b\sim\mathrm{Bernoulli}(1-p)\)</span>，<span class="arithmatex">\(\tilde f_m(\mathbf{x}^{(m)}_i)=m^{(m)}_b\cdot f_m(\mathbf{x}^{(m)}_i)\)</span>，同一<span class="arithmatex">\(m^{(m)}_b\)</span>作用于用户<span class="arithmatex">\(b\)</span> 序列中所有物品。直觉：整段历史同时失去某模态，迫使模型从剩余模态与 ID 中重建偏好，等价于对"整模态缺失"这一真实分布做数据增广；同时保留序列内时间结构不被逐物品噪声打散。</li>
+<li><strong>与标准 Dropout 的去缩放差异</strong>：标准 dropout 测试时按 <span class="arithmatex">\(1/(1-p)\)</span>重缩放以保持期望幅度（方差正则），SMD 则<strong>不重缩放</strong>，因为目标是"对真实缺失的不变性"而非方差缩减——全模态输入恰是训练中<span class="arithmatex">\(p=0\)</span> 已见过的情形，无需补偿尺度。</li>
+<li><strong>可选跨模态重建损失</strong>：对无原生回退路径的加性融合骨干，加 <span class="arithmatex">\(\mathcal{L}_{rec}=\frac{1}{2}\big(\|g_{t\to v}(f_t(\mathbf{t}_i))-f_v(\mathbf{v}_i)\|^2+\|g_{v\to t}(f_v(\mathbf{v}_i))-f_t(\mathbf{t}_i)\|^2\big)\)</span>，总目标<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{BCE}+\lambda\mathcal{L}_{rec}\)</span>，<span class="arithmatex">\(\lambda=0.01\)</span>（0.1 会掉全模态精度）。直觉：测试时缺失模态可由存活模态经投影隐式恢复。训练负采样为每位置 1 正 1 负；推理零额外开销（掩码仅在训练期生效）。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4296,7 +4307,7 @@
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 全局<strong>时间戳切分</strong>（chronological split），最大序列长度 10。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 无偏 <strong>Full-Ranking（全库未交互排序）</strong>，非采样排序；指标 HR@10(×100) 与 NDCG@10。</li>
-<li><strong>鲁棒性双协议</strong>: Protocol 1 全模态移除（full / no_text / no_image / no_modal，对应系统性故障）；Protocol 2 逐物品独立以 <span class="arithmatex">\(p_{miss}\in[0,0.95]\)</span> 丢弃，5 个随机种子平均。定义留存率 <span class="arithmatex">\(R(\theta)=\mathrm{HR@10}(\theta;\text{missing})/\mathrm{HR@10}(\theta;\text{full})\)</span>，鲁棒增益 <span class="arithmatex">\(G=R(\theta_{SMD})/R(\theta_{NoSMD})\)</span>。</li>
+<li><strong>鲁棒性双协议</strong>: Protocol 1 全模态移除（full / no_text / no_image / no_modal，对应系统性故障）；Protocol 2 逐物品独立以 <span class="arithmatex">\(p_{miss}\in[0,0.95]\)</span>丢弃，5 个随机种子平均。定义留存率<span class="arithmatex">\(R(\theta)=\mathrm{HR@10}(\theta;\text{missing})/\mathrm{HR@10}(\theta;\text{full})\)</span>，鲁棒增益<span class="arithmatex">\(G=R(\theta_{SMD})/R(\theta_{NoSMD})\)</span>。</li>
 <li><strong>对比基线与超参</strong>: 四种骨干各自训练 No-SMD 与 SMD（<span class="arithmatex">\(p=0.3\)</span>）两个 checkpoint，超参、优化器、种子完全一致，共享冻结的 MISSRec CLIP ViT-B/32（512 维）特征，SMD 是唯一变量；MM-SASRec 为 1 层 hidden-64。显著性检验：HR@10 用 McNemar 检验，NDCG@10 用 Wilcoxon 符号秩检验，<span class="arithmatex">\(\alpha=0.05\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4583,15 +4594,21 @@
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>鲁棒增益与全模态精度损失同源</strong>：16 个 (骨干, 数据集) 组合中 11 个提升，平均峰值 HR@10 变化 +0.8%（范围 −4.4% 至 +6.5%）；两处最大精度损失 IISAN/Scientific（−4.4%）与 IISAN/Instruments（−4.1%）恰是留存增益最大处（3.2× 与 1.4×），说明掩码把容量从"依赖双模态"重分配给了"单模态可解"。</li>
-<li><strong>缺失率扫描呈单调发散</strong>：<span class="arithmatex">\(p_{miss}\)</span> 从 0 扫到 0.95，SMD 曲线斜率约 −0.027 HR@10/单位，No-SMD 约 −0.051；<span class="arithmatex">\(p_{miss}=0.95\)</span> 时留存 61% vs. 22%（2.8×），Arts/Office 在 70% 逐物品丢弃下留存 71%–78% vs. 46%–53%。121k 用户上 24 项配对检验中 22 项显著（<span class="arithmatex">\(p\)</span> 从 <span class="arithmatex">\(4.3\times10^{-3}\)</span> 到 <span class="arithmatex">\(1.0\times10^{-233}\)</span>），仅 Scientific/Instruments 的全模态 McNemar 检验不显著（双向翻转用户数相当）。</li>
+<li><strong>缺失率扫描呈单调发散</strong>：<span class="arithmatex">\(p_{miss}\)</span>从 0 扫到 0.95，SMD 曲线斜率约 −0.027 HR@10/单位，No-SMD 约 −0.051；<span class="arithmatex">\(p_{miss}=0.95\)</span>时留存 61% vs. 22%（2.8×），Arts/Office 在 70% 逐物品丢弃下留存 71%–78% vs. 46%–53%。121k 用户上 24 项配对检验中 22 项显著（<span class="arithmatex">\(p\)</span>从<span class="arithmatex">\(4.3\times10^{-3}\)</span>到<span class="arithmatex">\(1.0\times10^{-233}\)</span>），仅 Scientific/Instruments 的全模态 McNemar 检验不显著（双向翻转用户数相当）。</li>
 <li><strong>重建损失是条件性收益</strong>：在动态融合的 MISSRec 上仅 +3 点留存却付 2.3% 全模态精度，净亏；在无回退路径的加性 MM-SASRec + 严重文本缺失（Beauty，48% 缺文本）上把留存从 90% 拉到 98%，验证"融合越简单、缺失越严重，重建越值钱"。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 FeatProp（物品共交互图传播补全）、MMGACL（双模态注意力扩散补全）、SiBraR（随机模态子集单分支）的本质区别在于——前三者均为 CF 设定、需额外图/扩散结构且不建模时序；SMD 是训练期正则、零推理开销、四行代码适配任意序列骨干。与 MMP 的掩码跨模态投影相比，SMD 把掩码从单样本扩展到整条用户序列，并明确论证了逐样本优于逐物品的分布匹配理由。</li>
-<li><strong>可迁移亮点</strong>: ① "整序列共享掩码"的思路可直接迁移到多行为/多场景序列推荐中的行为流丢弃；② 用留存率 <span class="arithmatex">\(R\)</span> 与鲁棒增益 <span class="arithmatex">\(G\)</span> 的双 checkpoint 对照协议，是评估任何鲁棒性插件（去噪、去偏）的干净实验范式。</li>
-<li><strong>审稿级局限批判</strong>: ① 仅在图像+文本两模态、Amazon 商品域验证，音频/视频/结构化属性及模态<strong>损坏</strong>（非缺失）未覆盖；② 重建损失需逐骨干调 <span class="arithmatex">\(\lambda\)</span> 且在大模型骨干上净亏，<span class="arithmatex">\(p\)</span> 的取值（0.3）缺乏按缺失率自适应的理论指导；③ 全库排序虽无偏，但序列长度上限仅 10，长序列下整序列掩码的方差可能放大。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>可迁移亮点</strong>: ① "整序列共享掩码"的思路可直接迁移到多行为/多场景序列推荐中的行为流丢弃；② 用留存率 <span class="arithmatex">\(R\)</span>与鲁棒增益<span class="arithmatex">\(G\)</span> 的双 checkpoint 对照协议，是评估任何鲁棒性插件（去噪、去偏）的干净实验范式。</li>
+<li><strong>审稿级局限批判</strong>: ① 仅在图像+文本两模态、Amazon 商品域验证，音频/视频/结构化属性及模态<strong>损坏</strong>（非缺失）未覆盖；② 重建损失需逐骨干调 <span class="arithmatex">\(\lambda\)</span>且在大模型骨干上净亏，<span class="arithmatex">\(p\)</span> 的取值（0.3）缺乏按缺失率自适应的理论指导；③ 全库排序虽无偏，但序列长度上限仅 10，长序列下整序列掩码的方差可能放大。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

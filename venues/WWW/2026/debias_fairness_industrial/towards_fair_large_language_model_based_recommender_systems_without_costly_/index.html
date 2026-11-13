@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4225,14 +4236,14 @@
 <li><strong>主流范式</strong>: LLM-RS（如 BIGRec、TALLRec）通过 LoRA 微调 LLM 做生成式推荐，将用户历史与目标物品转为自然语言 prompt 训练。</li>
 <li><strong>前人局限</strong>: ① 现有去偏方法（Reweighting、Reranking、CFP、Prompt Masking）各自绑定单一偏差类型，面对 LLM 在海量无对齐数据上涌现的<strong>新偏差或多偏差共存</strong>时失效；② 这些方法均需重训/重微调，对 8B 级 LLM 计算上不可行。</li>
 <li><strong>核心洞察 (Key Insight)</strong>: 偏差并非弥散于全部数据，而是由<strong>一小撮致偏样本</strong>驱动；只要精准定位并"遗忘"这批样本，即可在不动其余参数的前提下纠正模型。</li>
-<li><strong>本文切入点</strong>: 将去偏形式化为 <span class="arithmatex">\(\theta^*=\theta+\Delta\theta\)</span> 的遗忘式参数修正，用可微公平指标驱动掩码选择，用影响函数闭式估计 <span class="arithmatex">\(\Delta\theta\)</span>，彻底绕开重训。</li>
+<li><strong>本文切入点</strong>: 将去偏形式化为 <span class="arithmatex">\(\theta^*=\theta+\Delta\theta\)</span>的遗忘式参数修正，用可微公平指标驱动掩码选择，用影响函数闭式估计<span class="arithmatex">\(\Delta\theta\)</span>，彻底绕开重训。</li>
 </ul>
 <figure class="paper-figure">
   <img alt="图1：ML1M数据集中的观察结果。(a) 流行度偏差：骨干推荐模型（如BIGRec [3]）表现出明显的过度曝光热门物品而曝光不足长尾物品的倾向。我们的FUDLR框架显著缓解了这种偏差，并产生了与真实用户偏好更一致的更均衡的推荐分布。(b) 属性偏差：我们提出的FUDLR框架通过减少性别相关的HR差异显著提高了公平性，而骨干模型（如BIGRec [3]）在用户群体之间表现出显著的性能差距。" src="../../../../../assets/papers/2601.17492v2/figure_1.png" /><figcaption>图1：ML1M数据集中的观察结果。(a) 流行度偏差：骨干推荐模型（如BIGRec [3]）表现出明显的过度曝光热门物品而曝光不足长尾物品的倾向。我们的FUDLR框架显著缓解了这种偏差，并产生了与真实用户偏好更一致的更均衡的推荐分布。(b) 属性偏差：我们提出的FUDLR框架通过减少性别相关的HR差异显著提高了公平性，而骨干模型（如BIGRec [3]）在用户群体之间表现出显著的性能差距。</figcaption>
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>FUDLR 分两阶段。<strong>阶段一（偏差识别）</strong>：在训练集上均匀采样 10% 构成候选集 <span class="arithmatex">\(\mathcal{D}_{cand}\)</span>，为每个样本学习移除概率 <span class="arithmatex">\(m_k=\sigma(\omega_k)\)</span>，以"公平提升 + 精度保持 + 稀疏性"三目标联合优化掩码 logit，取 <span class="arithmatex">\(\omega_k&gt;0\)</span> 者为致偏样本集 <span class="arithmatex">\(\mathcal{D}_{unlearn}\)</span>。<strong>阶段二（遗忘去偏）</strong>：基于影响函数估计 <span class="arithmatex">\(\mathcal{D}_{unlearn}\)</span> 对参数的聚合影响，一次性算出 <span class="arithmatex">\(\Delta\theta\)</span> 并更新为 <span class="arithmatex">\(\theta^*\)</span>，无需任何重训。推理时仍按 BIGRec 的 embedding 距离对全库物品排序。</p>
+<p>FUDLR 分两阶段。<strong>阶段一（偏差识别）</strong>：在训练集上均匀采样 10% 构成候选集 <span class="arithmatex">\(\mathcal{D}_{cand}\)</span>，为每个样本学习移除概率<span class="arithmatex">\(m_k=\sigma(\omega_k)\)</span>，以"公平提升 + 精度保持 + 稀疏性"三目标联合优化掩码 logit，取<span class="arithmatex">\(\omega_k&gt;0\)</span>者为致偏样本集<span class="arithmatex">\(\mathcal{D}_{unlearn}\)</span>。<strong>阶段二（遗忘去偏）</strong>：基于影响函数估计<span class="arithmatex">\(\mathcal{D}_{unlearn}\)</span>对参数的聚合影响，一次性算出<span class="arithmatex">\(\Delta\theta\)</span>并更新为<span class="arithmatex">\(\theta^*\)</span>，无需任何重训。推理时仍按 BIGRec 的 embedding 距离对全库物品排序。</p>
 <pre class="mermaid"><code>flowchart TD
     A["微调后 LLM-RS (BIGRec+LoRA)"] --&gt; B["候选集采样 10%"]
     B --&gt; C["掩码学习: L_fair + L_acc + L_spa"]
@@ -4244,15 +4255,15 @@
 <li>
 <p><strong>Bias-Agnostic 掩码学习（通用性来源）</strong>：痛点是去偏方法被偏差类型锁死。FUDLR 用影响函数定义每个样本对公平指标的贡献 <span class="arithmatex">\(I(z_k,\mathcal{B}(\theta))=-\nabla_\theta\mathcal{B}(\theta)^\top H_\theta^{-1}\nabla_\theta\mathcal{L}_{LLM}(z_k;\theta)\)</span>，并优化
 $<span class="arithmatex">\(\mathcal{L}_{mask}=\lambda_{fair}\mathcal{L}_{fair}+\lambda_{acc}\mathcal{L}_{acc}+\lambda_{spa}\mathcal{L}_{spa}\)</span>$
-其中 <span class="arithmatex">\(\mathcal{L}_{fair}=-\frac{1}{|\mathcal{D}_{cand}|}\sum m_k I(z_k,\mathcal{B})\)</span>、<span class="arithmatex">\(\mathcal{L}_{acc}=\frac{1}{|\mathcal{D}_{cand}|}\sum m_k \mathcal{L}_{LLM}(z_k)\)</span>、<span class="arithmatex">\(\mathcal{L}_{spa}=\frac{1}{|\mathcal{D}_{cand}|}\sum m_k\)</span>。<strong>关键直觉</strong>：只需替换可微公平指标 <span class="arithmatex">\(\mathcal{B}(\theta)\)</span>——流行度偏差用 <span class="arithmatex">\(\mathcal{B}_{pop}=\sum_i P(i|z;\theta)v_{pop}(i)\)</span>，属性偏差用人口统计平价 <span class="arithmatex">\(\mathcal{B}_{attr}=|\bar{P}_{G_0}-\bar{P}_{G_1}|\)</span>，多偏差共存用 <span class="arithmatex">\(\mathcal{B}_{combined}=\alpha\mathcal{B}_{pop}+(1-\alpha)\mathcal{B}_{attr}\)</span>——算法其余部分零改动，这是"统一去偏"的物理本质。</p>
+其中 <span class="arithmatex">\(\mathcal{L}_{fair}=-\frac{1}{|\mathcal{D}_{cand}|}\sum m_k I(z_k,\mathcal{B})\)</span>、<span class="arithmatex">\(\mathcal{L}_{acc}=\frac{1}{|\mathcal{D}_{cand}|}\sum m_k \mathcal{L}_{LLM}(z_k)\)</span>、<span class="arithmatex">\(\mathcal{L}_{spa}=\frac{1}{|\mathcal{D}_{cand}|}\sum m_k\)</span>。<strong>关键直觉</strong>：只需替换可微公平指标<span class="arithmatex">\(\mathcal{B}(\theta)\)</span>——流行度偏差用<span class="arithmatex">\(\mathcal{B}_{pop}=\sum_i P(i|z;\theta)v_{pop}(i)\)</span>，属性偏差用人口统计平价<span class="arithmatex">\(\mathcal{B}_{attr}=|\bar{P}_{G_0}-\bar{P}_{G_1}|\)</span>，多偏差共存用<span class="arithmatex">\(\mathcal{B}_{combined}=\alpha\mathcal{B}_{pop}+(1-\alpha)\mathcal{B}_{attr}\)</span>——算法其余部分零改动，这是"统一去偏"的物理本质。</p>
 </li>
 <li>
-<p><strong>影响函数一步遗忘（效率来源）</strong>：重训 <span class="arithmatex">\(\hat\theta=\arg\min\sum_{\mathcal{D}_{remain}}\mathcal{L}\)</span> 不可行。Proposition 1 证明：移除 <span class="arithmatex">\(\mathcal{D}_{unlearn}\)</span> 后的参数偏移可由聚合影响闭式近似
+<p><strong>影响函数一步遗忘（效率来源）</strong>：重训 <span class="arithmatex">\(\hat\theta=\arg\min\sum_{\mathcal{D}_{remain}}\mathcal{L}\)</span>不可行。Proposition 1 证明：移除<span class="arithmatex">\(\mathcal{D}_{unlearn}\)</span> 后的参数偏移可由聚合影响闭式近似
 $<span class="arithmatex">\(\Delta\theta\approx\frac{1}{n}\sum_{z_k\in\mathcal{D}_{unlearn}}H_\theta^{-1}\nabla_\theta\mathcal{L}_{LLM}(z_k;\theta)\)</span>$
 其本质是牛顿法一步修正，用二阶曲率 <span class="arithmatex">\(H^{-1}\)</span> 把"删样本"翻译成"沿损失梯度反向走一步"。附录 E 验证其与真实重训结果差距可忽略。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：总目标即上述 <span class="arithmatex">\(\mathcal{L}_{mask}\)</span>；训练沿用 BIGRec 的生成式下一物品预测损失，无额外负采样设计（排序靠 embedding 距离全库比较）。效率上三重加速：① 仅对 <strong>LoRA 最后一层适配器</strong>做影响估计，参数量极小；② 用 <strong>HVP（Hessian-vector product）</strong>避免显式构造/求逆 Hessian；③ 影响分数预计算一次复用。总复杂度 <span class="arithmatex">\(O((n_c+T_{cg})\cdot F)\)</span> 与 <span class="arithmatex">\(O((n_u+T_{cg})\cdot F)\)</span>，因 <span class="arithmatex">\(n_u\ll n\)</span> 远低于重训的 <span class="arithmatex">\(O(n\cdot E\cdot F)\)</span>。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：总目标即上述 <span class="arithmatex">\(\mathcal{L}_{mask}\)</span>；训练沿用 BIGRec 的生成式下一物品预测损失，无额外负采样设计（排序靠 embedding 距离全库比较）。效率上三重加速：① 仅对 <strong>LoRA 最后一层适配器</strong>做影响估计，参数量极小；② 用 <strong>HVP（Hessian-vector product）</strong>避免显式构造/求逆 Hessian；③ 影响分数预计算一次复用。总复杂度<span class="arithmatex">\(O((n_c+T_{cg})\cdot F)\)</span>与<span class="arithmatex">\(O((n_u+T_{cg})\cdot F)\)</span>，因<span class="arithmatex">\(n_u\ll n\)</span>远低于重训的<span class="arithmatex">\(O(n\cdot E\cdot F)\)</span>。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4292,7 +4303,7 @@ $<span class="arithmatex">\(\Delta\theta\approx\frac{1}{n}\sum_{z_k\in\mathcal{D
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 全局时间戳切分（10 段）+ 8:1:1 比例划分，测试集为末段。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: <strong>Full-Ranking 全库排序</strong>（按生成 embedding 与候选物品距离排序），非采样排序。</li>
-<li><strong>对比基线与超参设置</strong>: 流行度去偏基线 Reweighting / Reranking / RWRR；属性去偏基线 CFP / Prompt Masking。骨干 BIGRec + LLaMA 3.1 8B，LoRA 微调；<span class="arithmatex">\(\lambda_{fair},\lambda_{acc},\lambda_{spa}\in\{10^i\}_{i=-3}^{2}\)</span> 网格搜索，Adam lr=<span class="arithmatex">\(10^{-3}\)</span>；<span class="arithmatex">\(p&lt;0.05\)</span> 显著性检验。</li>
+<li><strong>对比基线与超参设置</strong>: 流行度去偏基线 Reweighting / Reranking / RWRR；属性去偏基线 CFP / Prompt Masking。骨干 BIGRec + LLaMA 3.1 8B，LoRA 微调；<span class="arithmatex">\(\lambda_{fair},\lambda_{acc},\lambda_{spa}\in\{10^i\}_{i=-3}^{2}\)</span>网格搜索，Adam lr=<span class="arithmatex">\(10^{-3}\)</span>；<span class="arithmatex">\(p&lt;0.05\)</span> 显著性检验。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4418,7 +4429,7 @@ $<span class="arithmatex">\(\Delta\theta\approx\frac{1}{n}\sum_{z_k\in\mathcal{D
 </tr>
 </tbody>
 </table>
-<p><strong>多偏差共存（ML1M，K=5）</strong>：FUDLR 相对 BIGRec 的 HR +4.55%、NDCG +5.60%、<span class="arithmatex">\(F_{pop}\)</span> +3.42%、<span class="arithmatex">\(F_{attr}\)</span> +4.03%，耗时 34.79h→1.55h（-95.53%）。</p>
+<p><strong>多偏差共存（ML1M，K=5）</strong>：FUDLR 相对 BIGRec 的 HR +4.55%、NDCG +5.60%、<span class="arithmatex">\(F_{pop}\)</span>+3.42%、<span class="arithmatex">\(F_{attr}\)</span> +4.03%，耗时 34.79h→1.55h（-95.53%）。</p>
 <h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
 <table>
 <thead>
@@ -4484,14 +4495,20 @@ $<span class="arithmatex">\(\Delta\theta\approx\frac{1}{n}\sum_{z_k\in\mathcal{D
 <ol>
 <li><strong>公平与精度并非零和</strong>：仅 Fair 目标虽把 APT@5 推到 0.3698，却使 HR@5 从 0.0220 跌至 0.0184（-16.4%）；而三目标全模型同时取得最高 HR（0.0226）与最高 <span class="arithmatex">\(F_{pop}\)</span>（0.1681），说明稀疏化+精度约束让"遗忘"只删真正致偏的样本，而非误伤有效交互。</li>
 <li><strong>效率是压倒性优势</strong>：FUDLR 去偏耗时 1.29h，比骨干重训快 96.27%、比 RWRR 快约 32 倍；Reranking 虽快 0.17h，但作为后处理使 HR@5 暴跌 53.6%，无法兼顾精度。</li>
-<li><strong>通用性经多偏差验证</strong>：同一套掩码机制仅替换 <span class="arithmatex">\(\mathcal{B}\)</span> 即在流行度（HD@20 -37.36%）、属性、以及二者共存（<span class="arithmatex">\(F_{pop}\)</span>+3.42%、<span class="arithmatex">\(F_{attr}\)</span>+4.03%）三种场景全部正向，证明 bias-agnostic 设计确实可迁移。</li>
+<li><strong>通用性经多偏差验证</strong>：同一套掩码机制仅替换 <span class="arithmatex">\(\mathcal{B}\)</span>即在流行度（HD@20 -37.36%）、属性、以及二者共存（<span class="arithmatex">\(F_{pop}\)</span>+3.42%、<span class="arithmatex">\(F_{attr}\)</span>+4.03%）三种场景全部正向，证明 bias-agnostic 设计确实可迁移。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 Reweighting/RWRR（需重训且精度崩塌）、Reranking（后处理牺牲精度）、CFP（对抗训练需重微调且隐式场景失效），FUDLR 首次把 LLM-RS 去偏统一为<strong>免重训的遗忘问题</strong>，在精度、公平、效率三角上同时占优。</li>
 <li><strong>可迁移亮点</strong>: ① "可微公平指标 + 掩码选择 + 影响函数修正"的范式可迁移到任何需要定向删除训练数据影响的推荐场景（如投毒样本清除、隐私遗忘）；② 仅对 LoRA 末层做 HVP 影响估计，是 8B 级模型上做数据归因的实用工程技巧。</li>
-<li><strong>审稿级局限批判</strong>: ① 影响估计依赖 Hessian 近似与 LoRA 低秩假设，对全参数微调或更深层偏差的适用性未验证；② 公平指标需可微且需人工指定 <span class="arithmatex">\(\mathcal{B}\)</span>，对"未知新兴偏差"仍需先定义度量，且 <span class="arithmatex">\(\lambda\)</span> 三参数网格搜索对部署有调参成本；③ 实验仅两个数据集、单一骨干（BIGRec+LLaMA3.1-8B），泛化证据偏薄。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 影响估计依赖 Hessian 近似与 LoRA 低秩假设，对全参数微调或更深层偏差的适用性未验证；② 公平指标需可微且需人工指定 <span class="arithmatex">\(\mathcal{B}\)</span>，对"未知新兴偏差"仍需先定义度量，且<span class="arithmatex">\(\lambda\)</span> 三参数网格搜索对部署有调参成本；③ 实验仅两个数据集、单一骨干（BIGRec+LLaMA3.1-8B），泛化证据偏薄。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4223,7 +4234,7 @@
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: TIGER 系方法用 RQ-VAE / RQ-KMeans 把物品量化成固定长度原子词元序列，编码器-解码器 Transformer 自回归生成下一物品的 SID，配合 trie 约束 beam search 解码。</li>
-<li><strong>前人局限</strong>: ① 固定长度 SID 是优秀的<strong>目标端解码语法</strong>，但被复用于历史侧后，用户序列长度从 <span class="arithmatex">\(n_u\)</span> 膨胀到 <span class="arithmatex">\(n_u L\)</span>，短程物品内依赖被直接暴露给编码器；② 现有改进（文本 ID、码本利用率/对齐/碰撞优化、SARQ/VSID 等变长 SID）都在优化<strong>物品侧标识分配</strong>，历史侧的注意力负载问题基本未被触及。</li>
+<li><strong>前人局限</strong>: ① 固定长度 SID 是优秀的<strong>目标端解码语法</strong>，但被复用于历史侧后，用户序列长度从 <span class="arithmatex">\(n_u\)</span>膨胀到<span class="arithmatex">\(n_u L\)</span>，短程物品内依赖被直接暴露给编码器；② 现有改进（文本 ID、码本利用率/对齐/碰撞优化、SARQ/VSID 等变长 SID）都在优化<strong>物品侧标识分配</strong>，历史侧的注意力负载问题基本未被触及。</li>
 <li><strong>核心洞察 (Key Insight)</strong>: 作者用 token 级注意力负载分析证实，固定 SID 下“物品内注意力预算”与“原子重组负载”都相当可观；而用户偏好建模本质是<strong>物品间动态</strong>，粗粒度意图转移（如运动装备→可穿戴电子）被拆成多个原子级转移观测，信号被稀释。</li>
 <li><strong>本文切入点</strong>: 解耦 SID 的两种角色——历史侧做<strong>语义子词压缩</strong>（卸载低阶重组），目标侧保留固定长度解码语法，并用行为共现信号把释放出的建模容量导向高阶转移。</li>
 </ul>
@@ -4245,10 +4256,10 @@ $<span class="arithmatex">\(s_{CE}(t_a,t_b)=\text{freq}(t_a,t_b)\cdot\sqrt{P(t_b
 直觉：只有“高频 + 互为预测 + 邻居分布纯净”的对才被合并，避免把泛化高频原子粘成语义模糊的子词；合并后历史长度 <span class="arithmatex">\(\tilde L_i \le L\)</span>，自注意力的二次开销同步下降。</p>
 </li>
 <li>
-<p><strong>BCA 行为诱导共现增强（把释放的容量导向物品间转移）</strong>：IST 只做了“卸载”，没说该学什么。BCA 取每个物品 SID 前 <span class="arithmatex">\(P=2\)</span> 个词元作为粗粒度语义前缀，在用户前缀序列上用滑窗 <span class="arithmatex">\(W\)</span> 统计前缀对（count / PMI / lift 打分取 top-<span class="arithmatex">\(k\)</span>），再回溯该转移在原始序列中的历史子序列，作为额外训练样本（输入=回放子序列，目标=右侧物品）。与 IST 构成“去低阶—注高阶”的闭环。</p>
+<p><strong>BCA 行为诱导共现增强（把释放的容量导向物品间转移）</strong>：IST 只做了“卸载”，没说该学什么。BCA 取每个物品 SID 前 <span class="arithmatex">\(P=2\)</span>个词元作为粗粒度语义前缀，在用户前缀序列上用滑窗<span class="arithmatex">\(W\)</span>统计前缀对（count / PMI / lift 打分取 top-<span class="arithmatex">\(k\)</span>），再回溯该转移在原始序列中的历史子序列，作为额外训练样本（输入=回放子序列，目标=右侧物品）。与 IST 构成“去低阶—注高阶”的闭环。</p>
 </li>
 <li>
-<p><strong>非对称分词与训练目标</strong>：总损失仍是目标端逐槽交叉熵 <span class="arithmatex">\(\mathcal{L}_{GR}=-\sum_{j=1}^{L}\log P_\theta(t^j_{n_u+1}\mid \tilde T_u, t^{&lt;j}_{n_u+1})\)</span>，仅历史表示 <span class="arithmatex">\(\tilde T_u\)</span> 被替换；无额外负采样（生成式全库 trie 约束解码天然免负采样）。作者用对照实验证明目标端不能变长：变长目标下语义子词是位置级长尾符号，早期 beam 中被原子词元挤出，merged 桶 HR@10 从 0.0446 崩到 0.0002。</p>
+<p><strong>非对称分词与训练目标</strong>：总损失仍是目标端逐槽交叉熵 <span class="arithmatex">\(\mathcal{L}_{GR}=-\sum_{j=1}^{L}\log P_\theta(t^j_{n_u+1}\mid \tilde T_u, t^{&lt;j}_{n_u+1})\)</span>，仅历史表示<span class="arithmatex">\(\tilde T_u\)</span> 被替换；无额外负采样（生成式全库 trie 约束解码天然免负采样）。作者用对照实验证明目标端不能变长：变长目标下语义子词是位置级长尾符号，早期 beam 中被原子词元挤出，merged 桶 HR@10 从 0.0446 崩到 0.0002。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4296,7 +4307,7 @@ $<span class="arithmatex">\(s_{CE}(t_a,t_b)=\text{freq}(t_a,t_b)\cdot\sqrt{P(t_b
 <ul>
 <li><strong>数据划分与防穿越</strong>: <code>Leave-One-Out</code>（最后一条测试、倒数第二条验证、其余训练），配置与 checkpoint 均仅按验证损失选择，测试集在配置固定后才评估。</li>
 <li><strong>排名评测协议</strong>: 无偏 <code>Full-Ranking</code>（全物品集排序，不用采样负例），指标 HR@{5,10}、NDCG@{5,10}；所有生成式模型 beam size 统一为 20。</li>
-<li><strong>对比基线与超参</strong>: 骨干为 TIGER-VAE、TIGER-KM、LETTER；对照设置含 Fixed、SARQ、VSID（后两者被改造为<strong>仅改历史侧</strong>以隔离解码语法差异）、+BCA、+IST、+IST+BCA。分词器 4 层码本 × 256 码字，隐藏维 128、4+4 层、6 头，AdamW lr=5e-4，batch 256×2 累积，最多 200 epoch、早停 patience=20；IST 子词数 <span class="arithmatex">\(k\in\{64,...,512\}\)</span>、<span class="arithmatex">\(f\in\{20,30\}\)</span>、<span class="arithmatex">\(s\in\{10,15\}\)</span>，BCA 取 <span class="arithmatex">\(P=2\)</span>、回放长度 <span class="arithmatex">\(H=5\)</span>、<span class="arithmatex">\(W\in\{3,5\}\)</span>、<span class="arithmatex">\(c\in\{3,5\}\)</span>、top-<span class="arithmatex">\(k\in\{64,...,512\}\)</span>。</li>
+<li><strong>对比基线与超参</strong>: 骨干为 TIGER-VAE、TIGER-KM、LETTER；对照设置含 Fixed、SARQ、VSID（后两者被改造为<strong>仅改历史侧</strong>以隔离解码语法差异）、+BCA、+IST、+IST+BCA。分词器 4 层码本 × 256 码字，隐藏维 128、4+4 层、6 头，AdamW lr=5e-4，batch 256×2 累积，最多 200 epoch、早停 patience=20；IST 子词数 <span class="arithmatex">\(k\in\{64,...,512\}\)</span>、<span class="arithmatex">\(f\in\{20,30\}\)</span>、<span class="arithmatex">\(s\in\{10,15\}\)</span>，BCA 取<span class="arithmatex">\(P=2\)</span>、回放长度<span class="arithmatex">\(H=5\)</span>、<span class="arithmatex">\(W\in\{3,5\}\)</span>、<span class="arithmatex">\(c\in\{3,5\}\)</span>、top-<span class="arithmatex">\(k\in\{64,...,512\}\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4519,12 +4530,18 @@ $<span class="arithmatex">\(s_{CE}(t_a,t_b)=\text{freq}(t_a,t_b)\cdot\sqrt{P(t_b
 <li><strong>注意力确实被“卸载”而非“丢弃”</strong>：token 级分析显示 SST 后物品内注意力预算与原子重组负载一致下降，但 atom→subword 与 subword→atom 两个子通道仍非零，证明物品内语义被子词承载吸收；覆盖桶分析中 Instruments 的相对增益随子词覆盖率从 0% 单调上升至中高覆盖后饱和，机制与效果对齐。</li>
 <li><strong>非对称设计是硬约束，且不加剧流行度偏置</strong>：目标端改变长后 merged 桶 HR@10 从 0.0446 崩至 0.0002（长尾解码符号被原子词元挤出 beam）；同时 Yelp 上 +IST+BCA 把头部曝光从 95.08% 降到 92.24%、尾部 top-1 从 0.85% 提到 1.67%，Mid/Tail NDCG@10 分别升至 0.0104/0.0074，长尾反而受益。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 TIGER/LETTER 的本质区别在于不改码本与对齐损失，而是<strong>只改历史侧表示</strong>，可与任意 SID 分词器正交叠加；与 SARQ/VSID 的区别在于后者解决“物品侧标识该多长”（按判别性/流行度分配码长），本文解决“历史侧上下文该怎么分词”（注意力负载），且实验证明前者改造到历史侧后收益不稳定。</li>
 <li><strong>可迁移亮点</strong>: ① “编码器侧压缩、解码器侧保语法”的非对称分词思想可直接迁移到任何自回归生成式检索/推荐的目标词表设计；② CondEntropy 这种“频次×双向可预测性×局部纯度”的合并准则，可复用于多模态 tokenizer 或 RQ 码本的码字合并。</li>
 <li><strong>审稿级局限批判</strong>: ① 分词准则需按骨干-数据集组合用验证损失逐一选择（Beauty 偏好 WordPiece、Yelp 偏好 CondEntropy），选择成本与超参敏感度偏高；② 实验限于三个 Amazon/Yelp 公开集与 4 层小模型，未给出工业亿级物品、长序列（&gt;20）与在线 A/B 的证据，BCA 的回放样本在超大规模下的存储与采样开销也未被量化。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

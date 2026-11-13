@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4224,12 +4235,12 @@
 <ul>
 <li><strong>主流范式</strong>: LLM 增强器（LLM Enhancer）范式——离线用 LLM 将用户/物品文本元数据推理为 persona/intent 画像并编码为语义表征 <span class="arithmatex">\(\mathbf{X}\)</span>，训练与推理时只做轻量融合，避免在线调用 LLM。</li>
 <li><strong>前人局限</strong>: ① 现有增强器仅在静态场景验证，迁移到流式 CR 后，语义先验与协同信号冲突，破坏稳定性-可塑性平衡；② 三种增强器各自只强化单一目标引理，朴素组合（如 LLM-ESR）反而放大语义支配，导致 BWT/TRG 双双为负。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 作者用 <span class="arithmatex">\(\gamma\in[0,1]\)</span> 控制 LLM 干预强度做验证（图 1），发现性能偏差点几乎全部落在象限 II（稳定↓可塑↑）与 IV（稳定↑可塑↓），且 <span class="arithmatex">\(\gamma\)</span> 越大偏离原点越远——<strong>认知性越强，SPC 失衡越严重</strong>，这是结构性矛盾而非调参问题。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 作者用 <span class="arithmatex">\(\gamma\in[0,1]\)</span>控制 LLM 干预强度做验证（图 1），发现性能偏差点几乎全部落在象限 II（稳定↓可塑↑）与 IV（稳定↑可塑↓），且<span class="arithmatex">\(\gamma\)</span> 越大偏离原点越远——<strong>认知性越强，SPC 失衡越严重</strong>，这是结构性矛盾而非调参问题。</li>
 <li><strong>本文切入点</strong>: 不追求"更强语义注入"，而是对三类增强器做<strong>偏差感知的重新设计</strong>，让每个模块保留其目标引理优势的同时抑制固有 SPC 偏差。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>TRACER 沿学习工作流串联三模块：<strong>初始化阶段</strong>用 Procrustes 投影（PP）将语义子空间正交旋转对齐到协同子空间，为新实体提供"已对齐"的初始位置；<strong>推理阶段</strong>用置信门控凝聚（CC）以门控系数 <span class="arithmatex">\(c_v\)</span> 调节语义注入强度、以 LoRA 约束语义参数适应；<strong>优化阶段</strong>用语义同步（SS）按梯度余弦相似度选择性启用语义引导，冲突时改用回溯正则。三者形成良性循环：PP 降低拓扑错配 <span class="arithmatex">\(\to\)</span> CC 可基于置信度而非对齐误差做门控 <span class="arithmatex">\(\to\)</span> SS 梯度冲突减少 <span class="arithmatex">\(\to\)</span> 得到更优历史最优点 <span class="arithmatex">\(\hat{E}^{(t)}\)</span>，反哺下一阶段投影 <span class="arithmatex">\(P^{(t+1)}\)</span>。</p>
+<p>TRACER 沿学习工作流串联三模块：<strong>初始化阶段</strong>用 Procrustes 投影（PP）将语义子空间正交旋转对齐到协同子空间，为新实体提供"已对齐"的初始位置；<strong>推理阶段</strong>用置信门控凝聚（CC）以门控系数 <span class="arithmatex">\(c_v\)</span>调节语义注入强度、以 LoRA 约束语义参数适应；<strong>优化阶段</strong>用语义同步（SS）按梯度余弦相似度选择性启用语义引导，冲突时改用回溯正则。三者形成良性循环：PP 降低拓扑错配<span class="arithmatex">\(\to\)</span>CC 可基于置信度而非对齐误差做门控<span class="arithmatex">\(\to\)</span>SS 梯度冲突减少<span class="arithmatex">\(\to\)</span>得到更优历史最优点<span class="arithmatex">\(\hat{E}^{(t)}\)</span>，反哺下一阶段投影<span class="arithmatex">\(P^{(t+1)}\)</span>。</p>
 <pre class="mermaid"><code>flowchart TD
     A["流式数据块 D(t) + 预编码语义表 X"] --&gt; B["PP: Procrustes 正交投影对齐语义/协同子空间"]
     B --&gt; C["局部校准: 语义投影 + 邻居协同参考加权"]
@@ -4242,13 +4253,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>Procrustes 投影 PP（初始化驱动可塑性）</strong>：痛点——语义初始化注入的是"连贯但与协同子空间错位"的拓扑，拟合它需全局重对齐，反而破坏已学结构。PP 求解正交 Procrustes 问题 <span class="arithmatex">\(\min_{P}\|\mathbf{X}_{V^{(t-1)}}P-\hat{\mathbf{E}}^{(t-1)}\|_F\ \text{s.t.}\ P^\top P=I\)</span>，闭式解 <span class="arithmatex">\(P^{(t)}=VU^\top\)</span>（对 <span class="arithmatex">\((\hat{\mathbf{E}}^{(t-1)})^\top\mathbf{X}_{V^{(t-1)}}=U\Sigma V^\top\)</span> 做 SVD）。<strong>丢弃缩放矩阵 <span class="arithmatex">\(\Sigma\)</span></strong> 是关键：只做旋转不引入协同侧的流行度缩放，保留语义几何的独立性。再做实体级局部校准 <span class="arithmatex">\(\tilde{e}_u^{(t)}\leftarrow\beta_u e_{se,u}^{(t)}+(1-\beta_u)e_{co,u}^{(t)}\)</span>，<span class="arithmatex">\(\beta_u\)</span> 由语义投影与邻居协同参考的余弦相似度决定，稀疏实体自动更依赖语义。</p>
+<p><strong>Procrustes 投影 PP（初始化驱动可塑性）</strong>：痛点——语义初始化注入的是"连贯但与协同子空间错位"的拓扑，拟合它需全局重对齐，反而破坏已学结构。PP 求解正交 Procrustes 问题 <span class="arithmatex">\(\min_{P}\|\mathbf{X}_{V^{(t-1)}}P-\hat{\mathbf{E}}^{(t-1)}\|_F\ \text{s.t.}\ P^\top P=I\)</span>，闭式解<span class="arithmatex">\(P^{(t)}=VU^\top\)</span>（对<span class="arithmatex">\((\hat{\mathbf{E}}^{(t-1)})^\top\mathbf{X}_{V^{(t-1)}}=U\Sigma V^\top\)</span>做 SVD）。<strong>丢弃缩放矩阵<span class="arithmatex">\(\Sigma\)</span></strong> 是关键：只做旋转不引入协同侧的流行度缩放，保留语义几何的独立性。再做实体级局部校准<span class="arithmatex">\(\tilde{e}_u^{(t)}\leftarrow\beta_u e_{se,u}^{(t)}+(1-\beta_u)e_{co,u}^{(t)}\)</span>，<span class="arithmatex">\(\beta_u\)</span> 由语义投影与邻居协同参考的余弦相似度决定，稀疏实体自动更依赖语义。</p>
 </li>
 <li>
-<p><strong>置信门控凝聚 CC（利用驱动认知性）</strong>：痛点——语义表征直接进预测会诱发 shortcut learning，梯度集中于共享 adapter，ID 通路被架空。CC 令 <span class="arithmatex">\(c_v^{(t)}=\text{Sigmoid}(W_{gate}^{(t)}x_v+b_{gate}^{(t)})\)</span>，<span class="arithmatex">\(\hat{y}_{ui}=e_u\cdot e_i+c_uc_i\,\phi(x_u)\cdot\phi(x_i)\)</span>——<strong>乘积门控</strong>要求用户与物品两侧语义同时可靠才放大注入。adapter 侧用 LoRA <span class="arithmatex">\(W^{(t)}=W_{base}^{(t)}+\frac{\alpha}{r}B^{(t)}A^{(t)}\)</span> 冻结基座、跨阶段合并残差并重置 <span class="arithmatex">\(A,B\)</span>，且 bias 固定为预训练最优值以防特征漂移。</p>
+<p><strong>置信门控凝聚 CC（利用驱动认知性）</strong>：痛点——语义表征直接进预测会诱发 shortcut learning，梯度集中于共享 adapter，ID 通路被架空。CC 令 <span class="arithmatex">\(c_v^{(t)}=\text{Sigmoid}(W_{gate}^{(t)}x_v+b_{gate}^{(t)})\)</span>，<span class="arithmatex">\(\hat{y}_{ui}=e_u\cdot e_i+c_uc_i\,\phi(x_u)\cdot\phi(x_i)\)</span>——<strong>乘积门控</strong>要求用户与物品两侧语义同时可靠才放大注入。adapter 侧用 LoRA<span class="arithmatex">\(W^{(t)}=W_{base}^{(t)}+\frac{\alpha}{r}B^{(t)}A^{(t)}\)</span>冻结基座、跨阶段合并残差并重置<span class="arithmatex">\(A,B\)</span>，且 bias 固定为预训练最优值以防特征漂移。</p>
 </li>
 <li>
-<p><strong>语义同步 SS（引导驱动稳定性）与训练目标</strong>：痛点——语义锚定效应使 <span class="arithmatex">\(\nabla_{guide}\)</span> 与 <span class="arithmatex">\(\nabla_{rec}\)</span> 余弦为负，且在新实体上 <span class="arithmatex">\(\|\nabla_{guide}\|\)</span> 更大，压制真实兴趣漂移。SS 按实体级 <span class="arithmatex">\(\cos(\psi_v)=\cos\_sim(\nabla_{rec,v},\nabla_{guide,v})\)</span> 分流：<span class="arithmatex">\(\cos&gt;0\)</span> 时启用 <span class="arithmatex">\(\mathcal{L}_{guide}\)</span> 作"语义加速器"，<span class="arithmatex">\(\cos\le 0\)</span> 且为老实体时改用回溯正则 <span class="arithmatex">\(\mathcal{L}_{reg}\)</span> 锚定 <span class="arithmatex">\(\hat{e}_v^{(t-1)}\)</span>，冲突新实体仅用 <span class="arithmatex">\(\mathcal{L}_{rec}\)</span>。总损失 <span class="arithmatex">\(\mathcal{L}^{(t)}=\mathcal{L}_{rec}(\mathcal{D}^{(t)})+\lambda_{sync}\sum_v\mathcal{L}_{sync}(v)\)</span>，两项均为 <strong>in-batch 负采样 InfoNCE</strong>，无需额外负采样器；推理时仅需一次 MLP 前向 + 内积，开销与 No-Enhancer 同级。</p>
+<p><strong>语义同步 SS（引导驱动稳定性）与训练目标</strong>：痛点——语义锚定效应使 <span class="arithmatex">\(\nabla_{guide}\)</span>与<span class="arithmatex">\(\nabla_{rec}\)</span>余弦为负，且在新实体上<span class="arithmatex">\(\|\nabla_{guide}\|\)</span>更大，压制真实兴趣漂移。SS 按实体级<span class="arithmatex">\(\cos(\psi_v)=\cos\_sim(\nabla_{rec,v},\nabla_{guide,v})\)</span>分流：<span class="arithmatex">\(\cos&gt;0\)</span>时启用<span class="arithmatex">\(\mathcal{L}_{guide}\)</span>作"语义加速器"，<span class="arithmatex">\(\cos\le 0\)</span>且为老实体时改用回溯正则<span class="arithmatex">\(\mathcal{L}_{reg}\)</span>锚定<span class="arithmatex">\(\hat{e}_v^{(t-1)}\)</span>，冲突新实体仅用<span class="arithmatex">\(\mathcal{L}_{rec}\)</span>。总损失<span class="arithmatex">\(\mathcal{L}^{(t)}=\mathcal{L}_{rec}(\mathcal{D}^{(t)})+\lambda_{sync}\sum_v\mathcal{L}_{sync}(v)\)</span>，两项均为 <strong>in-batch 负采样 InfoNCE</strong>，无需额外负采样器；推理时仅需一次 MLP 前向 + 内积，开销与 No-Enhancer 同级。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4310,9 +4321,9 @@
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分与防穿越</strong>: 按时间戳排序，前 60% 为基座块 <span class="arithmatex">\(\mathcal{D}^{(0)}\)</span>，后 40% 均分为 <span class="arithmatex">\(T=3\)</span> 个持续块；块内每用户按 8:1:1 划分 train/val/test。</li>
+<li><strong>数据划分与防穿越</strong>: 按时间戳排序，前 60% 为基座块 <span class="arithmatex">\(\mathcal{D}^{(0)}\)</span>，后 40% 均分为<span class="arithmatex">\(T=3\)</span> 个持续块；块内每用户按 8:1:1 划分 train/val/test。</li>
 <li><strong>排名评测协议</strong>: <strong>无偏 Full-Ranking（全库未交互排序，无负采样）</strong>，指标 NDCG@20；同时报告 ACC（当前块精度）、BWT（稳定性）、TRG（可塑性）、SRT（认知性，<span class="arithmatex">\(k=5\)</span> 少样本适配 + 尾部物品 + 新用户）。</li>
-<li><strong>对比基线与超参</strong>: 2 个骨干（MF / LightGCN）× 4 种持续学习策略（FB/FT/RL2/PS）× 5 种增强器（No-Enhancer/RLMRec/LLM2X/KAR/LLM-ESR）共 20 个基线；<span class="arithmatex">\(d=64\)</span>（利用类模型 <span class="arithmatex">\(d=32\)</span> 以对齐拼接维度），LightGCN 3 层，Adam <span class="arithmatex">\(10^{-3}\)</span>，batch 4096，5 次独立运行 + 配对 t 检验 <span class="arithmatex">\(p&lt;0.05\)</span>。</li>
+<li><strong>对比基线与超参</strong>: 2 个骨干（MF / LightGCN）× 4 种持续学习策略（FB/FT/RL2/PS）× 5 种增强器（No-Enhancer/RLMRec/LLM2X/KAR/LLM-ESR）共 20 个基线；<span class="arithmatex">\(d=64\)</span>（利用类模型<span class="arithmatex">\(d=32\)</span>以对齐拼接维度），LightGCN 3 层，Adam<span class="arithmatex">\(10^{-3}\)</span>，batch 4096，5 次独立运行 + 配对 t 检验<span class="arithmatex">\(p&lt;0.05\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4492,12 +4503,18 @@
 <li><strong>稳定性与可塑性可同时提升，而非零和</strong>：去掉 SS 使 BWT 从 0.0275 腰斩至 0.0147，去掉 PP 使 TRG 从 0.0157 降至 0.0107；而完整 TRACER 同时取得最高 BWT 与最高 TRG（Yelp 上 TRG 2.02 vs. LLM2X 1.54），说明"对齐 + 选择性引导"把原本的权衡关系转成了互补关系。</li>
 <li><strong>门控自适应地偏向稀疏实体</strong>：CC 的置信分 <span class="arithmatex">\(c_v\)</span> 与实体频次呈负相关（图 9a），低频实体获得更强语义注入；把 CC 外挂到 DynLLM/LLM-CF/KAR 上均能提升其性能，证明该模块具备即插即用的通用性，且 TRACER 显存占用接近 No-Enhancer、收敛更快。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: RLMRec 用对比对齐做刚性语义锚，稳定但压制漂移；LLM2X 用 PCA 投影做初始化，可塑但拓扑错位；KAR 用 MoE 直接注入语义，认知强但架空 ID 通路；LLM-ESR 三者叠加反而放大语义支配。TRACER 的本质差异是<strong>把"注入多少语义"从超参变成由梯度一致性与双侧置信度动态决定的变量</strong>。</li>
 <li><strong>可迁移亮点</strong>: ① 用梯度余弦符号做"引导开关"可迁移到任何多任务/多目标精排的辅助损失调度；② 正交 Procrustes（丢弃 <span class="arithmatex">\(\Sigma\)</span>）是跨表征空间对齐的干净手段，适用于多模态特征与 ID 空间的对齐。</li>
-<li><strong>审稿级局限批判</strong>: ① 语义表征依赖 gpt-4o-mini 离线画像，画像质量与更新频率对冷启新实体的影响未被量化，且 <span class="arithmatex">\(T=3\)</span> 的块数偏少，长序列（<span class="arithmatex">\(T\ge10\)</span>）下的误差累积未验证；② SS 需逐实体计算双梯度并做余弦判定，实现上需两次反传，论文只报了显存与总时长，未拆分单步开销；③ SRT 指标以 <span class="arithmatex">\(k=5\)</span> 少样本 + 尾部物品构造，虽巧妙但仍是代理指标，与真实冷启场景的差距缺乏线上验证。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 语义表征依赖 gpt-4o-mini 离线画像，画像质量与更新频率对冷启新实体的影响未被量化，且 <span class="arithmatex">\(T=3\)</span>的块数偏少，长序列（<span class="arithmatex">\(T\ge10\)</span>）下的误差累积未验证；② SS 需逐实体计算双梯度并做余弦判定，实现上需两次反传，论文只报了显存与总时长，未拆分单步开销；③ SRT 指标以<span class="arithmatex">\(k=5\)</span> 少样本 + 尾部物品构造，虽巧妙但仍是代理指标，与真实冷启场景的差距缺乏线上验证。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

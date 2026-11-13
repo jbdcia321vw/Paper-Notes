@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>对每个新POI <span class="arithmatex">\(p\)</span>，先按 Haversine 距离 <span class="arithmatex">\(\le 1000\)</span>m 取空间邻居集 <span class="arithmatex">\(\mathcal{N}\)</span>，为引入后前 <span class="arithmatex">\(W\)</span> 周各建一张周级 1-hop 子图（节点集随当周活跃POI动态变化）。节点初值由 BERT 编码 POI 文本标签得到；边权 = 空间高斯衰减 × 对比预训练学到的功能交互强度 <span class="arithmatex">\(\alpha(p,n)\)</span>。随后并行构造<strong>干预图</strong> <span class="arithmatex">\(\mathcal{G}^{(1)}\)</span> 与<strong>对照图</strong> <span class="arithmatex">\(\mathcal{G}^{(0)}\)</span>（同拓扑、目标节点置零、边权去掉 <span class="arithmatex">\(\alpha\)</span>），二者共享 GATv2 编码器与正弦位置编码，逐周拼接后送入 GRU 聚合时序，最后由共享时序解码器 + 分支输出头分别给出 <span class="arithmatex">\(\hat{y}_1,\hat{y}_0\)</span>，按观测干预取实际预测并联合倾向得分损失训练。</p>
+<p>对每个新POI <span class="arithmatex">\(p\)</span>，先按 Haversine 距离<span class="arithmatex">\(\le 1000\)</span>m 取空间邻居集<span class="arithmatex">\(\mathcal{N}\)</span>，为引入后前<span class="arithmatex">\(W\)</span>周各建一张周级 1-hop 子图（节点集随当周活跃POI动态变化）。节点初值由 BERT 编码 POI 文本标签得到；边权 = 空间高斯衰减 × 对比预训练学到的功能交互强度<span class="arithmatex">\(\alpha(p,n)\)</span>。随后并行构造<strong>干预图</strong><span class="arithmatex">\(\mathcal{G}^{(1)}\)</span>与<strong>对照图</strong><span class="arithmatex">\(\mathcal{G}^{(0)}\)</span>（同拓扑、目标节点置零、边权去掉<span class="arithmatex">\(\alpha\)</span>），二者共享 GATv2 编码器与正弦位置编码，逐周拼接后送入 GRU 聚合时序，最后由共享时序解码器 + 分支输出头分别给出<span class="arithmatex">\(\hat{y}_1,\hat{y}_0\)</span>，按观测干预取实际预测并联合倾向得分损失训练。</p>
 <pre class="mermaid"><code>flowchart TD
     A["新POI文本标签 + 邻居POI周签到序列"] --&gt; B["ST-FIG: 距离衰减×功能权重建图"]
     B --&gt; C["干预图 G(1) / 对照图 G(0) 结构对齐"]
@@ -4242,17 +4253,17 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>ST-FIG 功能交互边权（把"竞争/互补"写进图结构）</strong>：痛点是用距离建边无法区分同质与异质邻居。做法：以 POI 类目描述经 BERT 编码，把<strong>同类目视为正对</strong>（竞争）、异类目为负对，用 InfoNCE 预训练类目编码器；再取负余弦相似度 <span class="arithmatex">\(s(p,n)=-\frac{E_p\cdot E_n}{|E_p||E_n|}\)</span> 归一化为 <span class="arithmatex">\(\alpha(p,n)=\frac{1+s(p,n)}{2}\)</span>，最终边权
+<p><strong>ST-FIG 功能交互边权（把"竞争/互补"写进图结构）</strong>：痛点是用距离建边无法区分同质与异质邻居。做法：以 POI 类目描述经 BERT 编码，把<strong>同类目视为正对</strong>（竞争）、异类目为负对，用 InfoNCE 预训练类目编码器；再取负余弦相似度 <span class="arithmatex">\(s(p,n)=-\frac{E_p\cdot E_n}{|E_p||E_n|}\)</span>归一化为<span class="arithmatex">\(\alpha(p,n)=\frac{1+s(p,n)}{2}\)</span>，最终边权
 $<span class="arithmatex">\(w(p,n)=\alpha(p,n)\cdot\exp\!\left(-\frac{dist^2(p,n)}{2\sigma^2}\right)\)</span>$
 直觉：语义越"互补"权重越大，使 GATv2 的注意力偏置能放大互补邻居的消息、抑制竞争邻居的消息。</p>
 </li>
 <li>
-<p><strong>结构对齐的干预/对照图（反事实的近似）</strong>：痛点是直接删掉目标节点会改变 1-hop 拓扑与关联边，导致差值混入结构噪声。做法：对照图保留全部节点与连边，仅将目标POI嵌入置零，并把边权退化为纯空间项 <span class="arithmatex">\(w^{(0)}(p,n)=\exp(-dist^2/2\sigma^2)\)</span>，即"该POI存在但不产生任何功能影响"。共享编码器下 <span class="arithmatex">\(\hat{y}_t=f_t(E^{(t)})\)</span>，<span class="arithmatex">\(t\in\{0,1\}\)</span>，ITE 由 <span class="arithmatex">\(\hat{y}_1-\hat{y}_0\)</span> 读出。直觉：拓扑一致使差值可归因于语义干预本身。</p>
+<p><strong>结构对齐的干预/对照图（反事实的近似）</strong>：痛点是直接删掉目标节点会改变 1-hop 拓扑与关联边，导致差值混入结构噪声。做法：对照图保留全部节点与连边，仅将目标POI嵌入置零，并把边权退化为纯空间项 <span class="arithmatex">\(w^{(0)}(p,n)=\exp(-dist^2/2\sigma^2)\)</span>，即"该POI存在但不产生任何功能影响"。共享编码器下<span class="arithmatex">\(\hat{y}_t=f_t(E^{(t)})\)</span>，<span class="arithmatex">\(t\in\{0,1\}\)</span>，ITE 由<span class="arithmatex">\(\hat{y}_1-\hat{y}_0\)</span> 读出。直觉：拓扑一致使差值可归因于语义干预本身。</p>
 </li>
 <li>
 <p><strong>训练目标、负采样与推理效率</strong>：总损失为时序回归 + 倾向得分分类的加权和
 $<span class="arithmatex">\(\mathcal{L}_{TC}=\frac{1}{n}\sum_i\left[\frac{1}{W}\sum_w(\hat{y}^{(i)}_{t,w}-y^{(i)}_w)^2+\gamma\cdot \mathrm{CE}(\hat{p}^{(i)},t^{(i)})\right],\ \gamma=0.2\)</span>$
-其中 <span class="arithmatex">\(\hat{p}=\delta(W_p E_0)\)</span> 仅由<strong>干预前协变量</strong> <span class="arithmatex">\(E_0=\mathrm{LN}(\mathrm{concat}[h_p,h_\mathcal{N},h^{pos}_p])\)</span> 计算，避免后处理偏差；<span class="arithmatex">\(\gamma\)</span> 项充当平衡双分支表征的辅助正则。无负采样环节（回归任务）；推理时每POI仅需两张 1-hop 小图 + 4 周 GRU，开销与邻居数线性相关。</p>
+其中 <span class="arithmatex">\(\hat{p}=\delta(W_p E_0)\)</span>仅由<strong>干预前协变量</strong><span class="arithmatex">\(E_0=\mathrm{LN}(\mathrm{concat}[h_p,h_\mathcal{N},h^{pos}_p])\)</span>计算，避免后处理偏差；<span class="arithmatex">\(\gamma\)</span> 项充当平衡双分支表征的辅助正则。无负采样环节（回归任务）；推理时每POI仅需两张 1-hop 小图 + 4 周 GRU，开销与邻居数线性相关。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4301,7 +4312,7 @@ $<span class="arithmatex">\(\mathcal{L}_{TC}=\frac{1}{n}\sum_i\left[\frac{1}{W}\
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 按 POI 引入时间切分训练/验证/测试（冷启动划分），测试POI在预测时刻<strong>零历史签到</strong>；GNN 类基线所需的代理时序输入由邻居历史均值 × 冷启动衰减因子 <span class="arithmatex">\(\omega\)</span> 构造，<span class="arithmatex">\(\omega\)</span> 仅在训练集上标定以防泄漏。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 按 POI 引入时间切分训练/验证/测试（冷启动划分），测试POI在预测时刻<strong>零历史签到</strong>；GNN 类基线所需的代理时序输入由邻居历史均值 × 冷启动衰减因子 <span class="arithmatex">\(\omega\)</span>构造，<span class="arithmatex">\(\omega\)</span> 仅在训练集上标定以防泄漏。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 非排序任务，采用 <strong>RMSE / MAE</strong> 回归误差，10 次独立运行取均值±标准差。</li>
 <li><strong>对比基线与超参设置</strong>: 11 个基线，覆盖时序GNN (DCRNN/GraphWaveNet/AGCRN/LightST)、节点更新 (KGDiff)、统计 (SVGP/LCFM)、LLM (TIME-LLM/TimeCMA)、因果 (GCIM)、生成式 (TrafficStream)；BERT-base (768)、嵌入维 <span class="arithmatex">\(d=128\)</span>、学习率 3e-4、batch 32、<span class="arithmatex">\(\sigma=0.5\)</span>、<span class="arithmatex">\(\lambda=100\)</span>、<span class="arithmatex">\(max\_dist=1000\)</span>m。</li>
 </ul>
@@ -4460,14 +4471,20 @@ $<span class="arithmatex">\(\mathcal{L}_{TC}=\frac{1}{n}\sum_i\left[\frac{1}{W}\
 <ol>
 <li><strong>功能语义边权是最大增益源</strong>：去掉 ST-FIG 后 Northeast RMSE 从 5.36 升至 5.89（+9.9%），与去掉整个因果模块（5.90）几乎持平——说明在冷启动下"邻居是谁"比"如何做反事实"更决定预测精度，纯空间邻近图无法区分同质/异质邻居。</li>
 <li><strong>因果模块的价值在"解释"而非"拟合"</strong>：去掉因果模块仅带来约 0.3–0.4 的 RMSE 退化，但安慰剂检验显示真实干预提升 0.228–0.257、伪干预仅 0.013–0.018、时间平移干预降至 0.171–0.179，证明提升值确实绑定于真实引入事件与时点，这是纯预测模型无法提供的。</li>
-<li><strong>倾向得分项是稳定器</strong>：<span class="arithmatex">\(\gamma=0\)</span> 时四区域 RMSE 一致小幅上升（如 West 6.17→6.21），幅度小于前两者，说明其作用主要是平衡干预/对照双分支表征而非直接提升精度；参数敏感性显示 <span class="arithmatex">\(\gamma\)</span>、<span class="arithmatex">\(\sigma\)</span>、<span class="arithmatex">\(max\_dist\)</span> 均存在明显最优区间，过大 <span class="arithmatex">\(\sigma\)</span> 会过度平滑、稀释局部信号。</li>
+<li><strong>倾向得分项是稳定器</strong>：<span class="arithmatex">\(\gamma=0\)</span>时四区域 RMSE 一致小幅上升（如 West 6.17→6.21），幅度小于前两者，说明其作用主要是平衡干预/对照双分支表征而非直接提升精度；参数敏感性显示<span class="arithmatex">\(\gamma\)</span>、<span class="arithmatex">\(\sigma\)</span>、<span class="arithmatex">\(max\_dist\)</span>均存在明显最优区间，过大<span class="arithmatex">\(\sigma\)</span> 会过度平滑、稀释局部信号。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 GCIM（时空因果表征但无POI级干预建模）与 KGDiff（为未见节点生成序列但无因果语义），本文首次把"新增POI"形式化为局部干扰下的 ITE 估计，并用<strong>结构对齐而非节点删除</strong>构造对照，这是与 CausalGNN/HyperSCI 静态图假设的本质分野；相比 TimeCMA 等 LLM 时序模型，本文显式注入空间拓扑与功能语义，RMSE 领先约 40%。</li>
 <li><strong>可迁移亮点</strong>: ① "拓扑保持 + 语义屏蔽"的对照图构造可直接迁移到冷启动商品/新视频的因果提升评估；② 用对比学习把类目文本相似度转成图边权，是低成本注入功能语义的通用技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① 对照图用零特征近似"节点不存在"，与真实反事实仍有偏差，且 1-hop/1000m 局部干扰假设在密集商圈可能失效；② 选址内生性（未观测的开店意图同时影响引入与需求）仅靠协变量条件化部分缓解，估计值应视为局部反事实而非随机干预效应；③ 每POI需构建 4 周双图并跑 BERT+GATv2+GRU，大规模批量预测的工程开销未报告。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

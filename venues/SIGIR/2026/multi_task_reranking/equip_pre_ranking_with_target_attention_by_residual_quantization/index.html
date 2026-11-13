@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4222,14 +4233,14 @@
 <p>工业粗排必须在 <span class="arithmatex">\(N_1\)</span> 级候选上做向量内积，因而只能采用"表示导向"的双塔，无法使用精排中强力的 Target Attention (TA)。TARQ 的核心洞察是：TA 的昂贵之处在于"逐候选物品"计算用户序列注意力，而若把目标物品先量化为残差量化 (RQ) 语义 ID，则用户侧注意力只需对<strong>固定大小的码本</strong>计算一次，线上通过索引查表即可近似 TA 输出。配合离线 TA 教师蒸馏与码本对齐损失，TARQ 在淘宝 142 亿交互数据上 AUC 从 0.785 提升至 0.799，线上 8 天 A/B 取得 CTR +0.57%、CVR +4.59%、GMV +7.57%。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>主流范式</strong>: 工业级级联架构中，粗排采用表示导向模型（双塔），离线预计算物品向量 <span class="arithmatex">\(\psi\)</span>，线上只算一次用户向量 <span class="arithmatex">\(\phi\)</span> 再做 <span class="arithmatex">\(N_1\)</span> 次内积 <span class="arithmatex">\(g\)</span>，总开销 <span class="arithmatex">\(\phi + N_1 \times g\)</span>；精排采用交互导向模型，对 <span class="arithmatex">\(N_2\)</span> 个候选逐一做复杂特征交叉 <span class="arithmatex">\(\eta\)</span>，开销 <span class="arithmatex">\(N_2 \times \eta\)</span>，且 <span class="arithmatex">\(N_1 \gg N_2\)</span>。</li>
-<li><strong>前人局限</strong>: 其一，TA 的注意力权重依赖具体目标物品 <span class="arithmatex">\(t_i\)</span>，无法离线预计算，直接搬入粗排会使线上开销退化为 <span class="arithmatex">\(N_1 \times \eta\)</span>，延迟不可接受；其二，IntTower、MVKE 等跨塔交互模型虽增强了双塔，但仍属"塔间粗粒度交叉"，无法复现 TA 对用户历史行为的<strong>逐行为动态重加权</strong>。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 生成式检索中 RQ 用多级码本逼近高维向量，其"用有限码字组合表达任意向量"的性质，恰好可以把"对任意目标物品的注意力"压缩为"对固定码本的注意力 + 查表"。即 TA 的输出 <span class="arithmatex">\(h_{tar}\)</span> 可由目标物品的语义 ID 序列 <span class="arithmatex">\([c_0,\dots,c_{m-1}]\)</span> 索引到的码字向量近似拼装。</li>
+<li><strong>主流范式</strong>: 工业级级联架构中，粗排采用表示导向模型（双塔），离线预计算物品向量 <span class="arithmatex">\(\psi\)</span>，线上只算一次用户向量<span class="arithmatex">\(\phi\)</span>再做<span class="arithmatex">\(N_1\)</span>次内积<span class="arithmatex">\(g\)</span>，总开销<span class="arithmatex">\(\phi + N_1 \times g\)</span>；精排采用交互导向模型，对<span class="arithmatex">\(N_2\)</span>个候选逐一做复杂特征交叉<span class="arithmatex">\(\eta\)</span>，开销<span class="arithmatex">\(N_2 \times \eta\)</span>，且<span class="arithmatex">\(N_1 \gg N_2\)</span>。</li>
+<li><strong>前人局限</strong>: 其一，TA 的注意力权重依赖具体目标物品 <span class="arithmatex">\(t_i\)</span>，无法离线预计算，直接搬入粗排会使线上开销退化为<span class="arithmatex">\(N_1 \times \eta\)</span>，延迟不可接受；其二，IntTower、MVKE 等跨塔交互模型虽增强了双塔，但仍属"塔间粗粒度交叉"，无法复现 TA 对用户历史行为的<strong>逐行为动态重加权</strong>。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 生成式检索中 RQ 用多级码本逼近高维向量，其"用有限码字组合表达任意向量"的性质，恰好可以把"对任意目标物品的注意力"压缩为"对固定码本的注意力 + 查表"。即 TA 的输出 <span class="arithmatex">\(h_{tar}\)</span>可由目标物品的语义 ID 序列<span class="arithmatex">\([c_0,\dots,c_{m-1}]\)</span> 索引到的码字向量近似拼装。</li>
 <li><strong>本文切入点</strong>: 将 RQ 从"序列生成"任务挪用至"判别式粗排"框架，用学生网络 (RQ-Attention Net) 在线近似教师网络 (Target-Attention Net) 的交互表示，并以码本对齐损失解决量化固有的码本坍缩。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>TARQ 采用教师-学生结构，包含三部分：标准双塔骨干（输出 <span class="arithmatex">\(\hat{y}_{tt}\)</span>）、线上学生 RQ-Attention Net（输出 <span class="arithmatex">\(\hat{y}_{rq}\)</span>）、离线教师 Target-Attention Net（输出 <span class="arithmatex">\(\hat{y}_{tar}\)</span>，仅训练期存在）。训练时教师对"用户序列 × 目标物品"做完整 TA 得到 <span class="arithmatex">\(h_{tar}\)</span>，通过蒸馏损失监督学生输出 <span class="arithmatex">\(h_{rq}\)</span>；学生则先把目标物品经 AutoEncoder 编码为隐向量 <span class="arithmatex">\(z\)</span>，再用 <span class="arithmatex">\(m\)</span> 级残差量化得到语义 ID，随后在<strong>经用户历史个性化后的码本</strong>上查表拼装 <span class="arithmatex">\(h_{rq}\)</span>。线上仅保留双塔与学生的码本注意力（固定 <span class="arithmatex">\(m \times K\)</span> 个向量），教师路径与物品量化全部离线完成。</p>
+<p>TARQ 采用教师-学生结构，包含三部分：标准双塔骨干（输出 <span class="arithmatex">\(\hat{y}_{tt}\)</span>）、线上学生 RQ-Attention Net（输出<span class="arithmatex">\(\hat{y}_{rq}\)</span>）、离线教师 Target-Attention Net（输出<span class="arithmatex">\(\hat{y}_{tar}\)</span>，仅训练期存在）。训练时教师对"用户序列 × 目标物品"做完整 TA 得到<span class="arithmatex">\(h_{tar}\)</span>，通过蒸馏损失监督学生输出<span class="arithmatex">\(h_{rq}\)</span>；学生则先把目标物品经 AutoEncoder 编码为隐向量<span class="arithmatex">\(z\)</span>，再用<span class="arithmatex">\(m\)</span>级残差量化得到语义 ID，随后在<strong>经用户历史个性化后的码本</strong>上查表拼装<span class="arithmatex">\(h_{rq}\)</span>。线上仅保留双塔与学生的码本注意力（固定<span class="arithmatex">\(m \times K\)</span> 个向量），教师路径与物品量化全部离线完成。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户画像 + 历史行为序列"] --&gt; B["用户塔 MHA 编码"]
     A --&gt; C["码本个性化: 码本作 Query 对用户序列做 MHA"]
@@ -4245,9 +4256,9 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>RQ-Attention：把"逐物品注意力"降维为"逐码本注意力"</strong>：痛点是 TA 的 <span class="arithmatex">\(h_{tar}=\text{MHA}(x_{item}, H_{seq}, H_{seq})\)</span> 依赖具体物品，无法预计算。TARQ 改为先用静态码本 <span class="arithmatex">\(\{C_l\}\)</span> 对目标物品做残差量化得语义 ID <span class="arithmatex">\(c_l=\arg\min_i \|r_l - e^l_i\|\)</span>、<span class="arithmatex">\(r_{l+1}=r_l-e^l_{c_l}\)</span>，再把每个码本当作 Query 集对用户上下文历史做注意力，得到个性化码本 <span class="arithmatex">\(\hat{C}_l=\text{MHA}(C_l, H^{rq}_{seq}, H^{rq}_{seq})\)</span>，最后按语义 ID 查表并 Fusion 得 <span class="arithmatex">\(h_{rq}=\text{Fusion}(\hat{e}^0_{c_0},\dots,\hat{e}^{m-1}_{c_{m-1}})\)</span>。直觉上，码本充当了"目标物品的离散代理"，注意力只需在 <span class="arithmatex">\(m\times K\)</span> 个码字上算一次，与候选规模 <span class="arithmatex">\(N_1\)</span> 彻底解耦（配置 <span class="arithmatex">\(8\times16=128\)</span> 个向量）。</li>
-<li><strong>Codebook Alignment：用分布对齐同时解决"学生-教师不一致"与"码本坍缩"</strong>：痛点是学生用原始码本量化 <span class="arithmatex">\(z\)</span>、教师用个性化码本量化 <span class="arithmatex">\(h_{tar}\)</span>，二者语义 ID 序列 <span class="arithmatex">\(\mathbf{s}\)</span> 与 <span class="arithmatex">\(\hat{\mathbf{s}}\)</span> 可能错位，导致蒸馏信号失真；同时 RQ 易坍缩（基线利用率仅 59%）。作者把每级码字选择建模为 softmax 概率 <span class="arithmatex">\(P(i|r_l)=\frac{\exp(-\|r_l-e^l_i\|^2)}{\sum_k \exp(-\|r_l-e^l_k\|^2)}\)</span>，并对两级分布做对称 KL：<span class="arithmatex">\(\mathcal{L}_{align}=-\sum_{l}\big(D_{KL}(P^l_z\|\hat{P}^l_{h_{tar}})+D_{KL}(\hat{P}^l_{h_{tar}}\|P^l_z)\big)\)</span>。softmax 使每个码字与全体物品交互，方向由两分布差异决定，等价于把码本拉向全局物品分布——这与 k-means 初始化码本的机制同源，从而将利用率从 59% 提升至 98%。</li>
-<li><strong>训练目标、负采样与推理效率</strong>：最终打分 <span class="arithmatex">\(\hat{y}=\sigma(\hat{y}_{tt}+\hat{y}_{rq})\)</span>，教师侧另有 <span class="arithmatex">\(\hat{y}'=\sigma(\hat{y}_{tt}+\hat{y}_{tar})\)</span>，总损失为六项加权和 <span class="arithmatex">\(\mathcal{L}=\lambda_1\mathcal{L}_{ctr}+\lambda_2\mathcal{L}_{tar}+\lambda_3\mathcal{L}_{recon}+\lambda_4\mathcal{L}_{rq}+\lambda_5\mathcal{L}_{distill}+\lambda_6\mathcal{L}_{align}\)</span>，其中 <span class="arithmatex">\(\mathcal{L}_{rq}\)</span> 用 stop-gradient 的码本损失、<span class="arithmatex">\(\mathcal{L}_{distill}=\|\text{sg}[h_{tar}]-h_{rq}\|^2_2\)</span>。负样本直接取自工业日志（未点击曝光 + 排序未曝光），无需额外负采样器；超参取 <span class="arithmatex">\(\{1.0,1.0,1.0,0.1,1.0,0.8\}\)</span>。线上开销为"用户塔一次 + 128 个码字注意力 + <span class="arithmatex">\(N_1\)</span> 次查表内积"，相对全量 TA 的万级候选逐条注意力低数个量级。</li>
+<li><strong>RQ-Attention：把"逐物品注意力"降维为"逐码本注意力"</strong>：痛点是 TA 的 <span class="arithmatex">\(h_{tar}=\text{MHA}(x_{item}, H_{seq}, H_{seq})\)</span>依赖具体物品，无法预计算。TARQ 改为先用静态码本<span class="arithmatex">\(\{C_l\}\)</span>对目标物品做残差量化得语义 ID<span class="arithmatex">\(c_l=\arg\min_i \|r_l - e^l_i\|\)</span>、<span class="arithmatex">\(r_{l+1}=r_l-e^l_{c_l}\)</span>，再把每个码本当作 Query 集对用户上下文历史做注意力，得到个性化码本<span class="arithmatex">\(\hat{C}_l=\text{MHA}(C_l, H^{rq}_{seq}, H^{rq}_{seq})\)</span>，最后按语义 ID 查表并 Fusion 得<span class="arithmatex">\(h_{rq}=\text{Fusion}(\hat{e}^0_{c_0},\dots,\hat{e}^{m-1}_{c_{m-1}})\)</span>。直觉上，码本充当了"目标物品的离散代理"，注意力只需在<span class="arithmatex">\(m\times K\)</span>个码字上算一次，与候选规模<span class="arithmatex">\(N_1\)</span>彻底解耦（配置<span class="arithmatex">\(8\times16=128\)</span> 个向量）。</li>
+<li><strong>Codebook Alignment：用分布对齐同时解决"学生-教师不一致"与"码本坍缩"</strong>：痛点是学生用原始码本量化 <span class="arithmatex">\(z\)</span>、教师用个性化码本量化<span class="arithmatex">\(h_{tar}\)</span>，二者语义 ID 序列<span class="arithmatex">\(\mathbf{s}\)</span>与<span class="arithmatex">\(\hat{\mathbf{s}}\)</span>可能错位，导致蒸馏信号失真；同时 RQ 易坍缩（基线利用率仅 59%）。作者把每级码字选择建模为 softmax 概率<span class="arithmatex">\(P(i|r_l)=\frac{\exp(-\|r_l-e^l_i\|^2)}{\sum_k \exp(-\|r_l-e^l_k\|^2)}\)</span>，并对两级分布做对称 KL：<span class="arithmatex">\(\mathcal{L}_{align}=-\sum_{l}\big(D_{KL}(P^l_z\|\hat{P}^l_{h_{tar}})+D_{KL}(\hat{P}^l_{h_{tar}}\|P^l_z)\big)\)</span>。softmax 使每个码字与全体物品交互，方向由两分布差异决定，等价于把码本拉向全局物品分布——这与 k-means 初始化码本的机制同源，从而将利用率从 59% 提升至 98%。</li>
+<li><strong>训练目标、负采样与推理效率</strong>：最终打分 <span class="arithmatex">\(\hat{y}=\sigma(\hat{y}_{tt}+\hat{y}_{rq})\)</span>，教师侧另有<span class="arithmatex">\(\hat{y}'=\sigma(\hat{y}_{tt}+\hat{y}_{tar})\)</span>，总损失为六项加权和<span class="arithmatex">\(\mathcal{L}=\lambda_1\mathcal{L}_{ctr}+\lambda_2\mathcal{L}_{tar}+\lambda_3\mathcal{L}_{recon}+\lambda_4\mathcal{L}_{rq}+\lambda_5\mathcal{L}_{distill}+\lambda_6\mathcal{L}_{align}\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{rq}\)</span>用 stop-gradient 的码本损失、<span class="arithmatex">\(\mathcal{L}_{distill}=\|\text{sg}[h_{tar}]-h_{rq}\|^2_2\)</span>。负样本直接取自工业日志（未点击曝光 + 排序未曝光），无需额外负采样器；超参取<span class="arithmatex">\(\{1.0,1.0,1.0,0.1,1.0,0.8\}\)</span>。线上开销为"用户塔一次 + 128 个码字注意力 +<span class="arithmatex">\(N_1\)</span> 次查表内积"，相对全量 TA 的万级候选逐条注意力低数个量级。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4278,7 +4289,7 @@
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 严格 <code>全局时间戳切分</code>——前 19 天训练、紧随其后 1 天测试。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 离线采用 AUC（CTR 判别指标），未报告 Full-Ranking 或 Sampled Ranking 的 Top-K 指标；线上采用 8 天 A/B（2025-06-13 至 06-20），每组约 50 万日活用户，报告 CTR/CVR/GMV 相对提升与 <span class="arithmatex">\(p\)</span> 值。</li>
-<li><strong>对比基线与超参设置</strong>: 基线为生产双塔 TT、IntTower、MVKE，均在统一框架下共享特征与优化配置；量化配置为 <span class="arithmatex">\(m=8\)</span> 级码本、每级 <span class="arithmatex">\(K=16\)</span> 个码字；消融变体 TAVQ 用单层 128 向量标准 VQ 替代 RQ 以对齐计算量。</li>
+<li><strong>对比基线与超参设置</strong>: 基线为生产双塔 TT、IntTower、MVKE，均在统一框架下共享特征与优化配置；量化配置为 <span class="arithmatex">\(m=8\)</span>级码本、每级<span class="arithmatex">\(K=16\)</span> 个码字；消融变体 TAVQ 用单层 128 向量标准 VQ 替代 RQ 以对齐计算量。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4362,12 +4373,18 @@
 <li><strong>多级残差量化本身贡献显著</strong>：在完全等算力（128 个码字向量）条件下，RQ 比单层 VQ 高 0.007 AUC，说明多级残差能以组合方式更精细地逼近 <span class="arithmatex">\(h_{tar}\)</span>，而非仅靠增加码字数量。</li>
 <li><strong>仅用 CTR 目标训练却换来 CVR/GMV 大幅提升</strong>：CVR +4.59%、GMV +7.57% 远超 CTR +0.57%，作者归因于训练负样本包含"排序未曝光"物品，这些物品本身带有生产系统按交易价值筛选的偏置，模型在学习区分它们时隐式捕获了交易价值信号——这也提示该增益部分来自数据选择偏置而非纯建模能力。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 IntTower/MVKE 的本质区别在于后两者仍在双塔内做塔间交叉、无法对用户历史逐行为重加权，而 TARQ 通过码本代理真正复现了 TA 的 target-aware 注意力；与 TIGER 等生成式检索工作相比，RQ 在此不是用于自回归生成语义 ID，而是被改造为判别式粗排中的"注意力加速器"，并额外提出对齐损失解决码本坍缩。</li>
 <li><strong>可迁移亮点</strong>: ①"固定码本作 Query、用户序列作 Key/Value"的注意力摊销技巧，可直接迁移到召回阶段的任意 target-aware 交互模型加速；②对称 KL 的码本对齐可作为通用抗坍缩正则，用于任何 RQ/VQ 架构。</li>
 <li><strong>审稿级局限批判</strong>: ①离线仅报告 AUC，缺少 Top-K 排序指标与延迟/吞吐的定量对比表，"效率优势"主要靠复杂度论证而非实测；②线上 CVR/GMV 增益被作者自认为部分源于负样本选择偏置，缺乏去除该偏置的对照实验，因果归因不够干净；③码本级数 <span class="arithmatex">\(m\)</span> 与码字数的敏感性分析缺失。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

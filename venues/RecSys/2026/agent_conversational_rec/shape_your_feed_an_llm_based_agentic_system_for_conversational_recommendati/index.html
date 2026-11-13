@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4222,14 +4233,14 @@
 <p>工业信息流长期采用"被动排序"范式，仅从点击/停留等隐式信号推断偏好，用户无法用自然语言实时表达"少推政治、多推做饭"这类细粒度意图。本文提出 SYF，一个三层 LLM Agent 框架：感知流把文本/语音/UI 多模态反馈解析为持久化语义画像 <span class="arithmatex">\(S_t\)</span>，服务流在候选池上做列表级对齐打分、硬剪枝与融合重排，自进化流用 LLM-as-a-Judge 集成 + DPO 双反馈对齐策略。离线对齐打分模块达 98.85% 准确率（few-shot 基线 83.84%），线上 A/B 中 dislike 率降 2.74%、dismiss 率降 1.70%、新兴趣消费升 0.16%，关键路径延迟仅增 0.043%。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>主流范式</strong>: 工业信息流以 <span class="arithmatex">\(\hat{y}_{u,v}=f_\theta(v,H_u,E)\)</span> 的被动排序为核心，偏好被当作从历史行为 <span class="arithmatex">\(H_u\)</span> 推断的隐变量，优化目标与用户即时意图解耦。</li>
+<li><strong>主流范式</strong>: 工业信息流以 <span class="arithmatex">\(\hat{y}_{u,v}=f_\theta(v,H_u,E)\)</span>的被动排序为核心，偏好被当作从历史行为<span class="arithmatex">\(H_u\)</span> 推断的隐变量，优化目标与用户即时意图解耦。</li>
 <li><strong>前人局限</strong>: ① 黑盒且控制粒度粗——"Show Less"只能二元反馈，无法区分用户讨厌的是话题、创作者还是语气；② 现有 CRS（LLM-ConvRec、CRAG、Rank-GRPO 等）多面向电影/商品等静态目录，无法应对高吞吐信息流中多模态、多轮混合意图（"少推政治 reel"+"多推做饭"）的实时响应。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 传统排序信号 <span class="arithmatex">\(P(CSL)\)</span>、<span class="arithmatex">\(P(CSM)\)</span> 对"内容是否匹配用户显式语义画像"几乎无区分度——匹配与不匹配内容段的 <span class="arithmatex">\(P_{90}(CSL)\)</span> 仅差 0.009（0.208 vs 0.199），说明被动信号在结构上无法承载显式意图。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 传统排序信号 <span class="arithmatex">\(P(CSL)\)</span>、<span class="arithmatex">\(P(CSM)\)</span>对"内容是否匹配用户显式语义画像"几乎无区分度——匹配与不匹配内容段的<span class="arithmatex">\(P_{90}(CSL)\)</span> 仅差 0.009（0.208 vs 0.199），说明被动信号在结构上无法承载显式意图。</li>
 <li><strong>本文切入点</strong>: 用 LLM 作为"结构化控制器"，把非结构化反馈编译为可编辑、可持久化的语义画像，并投影为排序约束，实现"用户-算法共同策展"。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>SYF 由三条耦合流构成闭环：<strong>感知流</strong> <span class="arithmatex">\(\mathcal{A}_P\)</span> 将时刻 <span class="arithmatex">\(t\)</span> 的多模态交互 <span class="arithmatex">\(I_t\)</span> 结合上一轮画像 <span class="arithmatex">\(S_{t-1}\)</span> 与意图轨迹 <span class="arithmatex">\(T_{t-1}\)</span> 合成为新画像 <span class="arithmatex">\(S_t=\mathcal{A}_P(I_t,S_{t-1},T_{t-1})\)</span>；<strong>服务流</strong> <span class="arithmatex">\(\mathcal{A}_S\)</span> 把 <span class="arithmatex">\(S_t\)</span> 投影到候选池 <span class="arithmatex">\(V_{final}\)</span> 上，执行增强、对齐打分、剪枝与融合重排，输出最终排序 <span class="arithmatex">\(R\)</span>；<strong>自进化流</strong>通过双反馈策略对齐（SFT→DPO）与 Agentic-to-Production 蒸馏，把高阶语义先验回灌生产排序器 <span class="arithmatex">\(f_\theta\)</span>。记忆持久层统一维护语义画像、意图轨迹、候选缓存与行为反馈四类状态。</p>
+<p>SYF 由三条耦合流构成闭环：<strong>感知流</strong> <span class="arithmatex">\(\mathcal{A}_P\)</span>将时刻<span class="arithmatex">\(t\)</span>的多模态交互<span class="arithmatex">\(I_t\)</span>结合上一轮画像<span class="arithmatex">\(S_{t-1}\)</span>与意图轨迹<span class="arithmatex">\(T_{t-1}\)</span>合成为新画像<span class="arithmatex">\(S_t=\mathcal{A}_P(I_t,S_{t-1},T_{t-1})\)</span>；<strong>服务流</strong><span class="arithmatex">\(\mathcal{A}_S\)</span>把<span class="arithmatex">\(S_t\)</span>投影到候选池<span class="arithmatex">\(V_{final}\)</span>上，执行增强、对齐打分、剪枝与融合重排，输出最终排序<span class="arithmatex">\(R\)</span>；<strong>自进化流</strong>通过双反馈策略对齐（SFT→DPO）与 Agentic-to-Production 蒸馏，把高阶语义先验回灌生产排序器<span class="arithmatex">\(f_\theta\)</span>。记忆持久层统一维护语义画像、意图轨迹、候选缓存与行为反馈四类状态。</p>
 <pre class="mermaid"><code>flowchart TD
     A["多模态交互 I_t（文本/语音/UI Pills）"] --&gt; B["Orchestrator 意图解析与路由"]
     B --&gt; C["推荐工具链：意图检测→画像合成→异步候选召回"]
@@ -4244,16 +4255,16 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>语义画像合成与异步候选召回（Perception Flow）</strong>：痛点在于多轮混合意图难以一致追踪。画像合成执行四类算子——去重、强化（重复话题加权）、冲突消解（删除矛盾记录）、语义扩展（关联近义兴趣）；仅当出现新增正向兴趣 <span class="arithmatex">\(\Delta S_t^+\)</span> 时<strong>异步</strong>触发候选召回，按轻量排序器 <span class="arithmatex">\(f'_\theta\)</span> 取每个兴趣 Top-<span class="arithmatex">\(K\)</span> 写入候选缓存 <span class="arithmatex">\(C_{s,t}\)</span>，把检索开销移出关键路径。直觉：把"理解"与"取数"解耦，既保多轮一致性又不牺牲延迟。</p>
+<p><strong>语义画像合成与异步候选召回（Perception Flow）</strong>：痛点在于多轮混合意图难以一致追踪。画像合成执行四类算子——去重、强化（重复话题加权）、冲突消解（删除矛盾记录）、语义扩展（关联近义兴趣）；仅当出现新增正向兴趣 <span class="arithmatex">\(\Delta S_t^+\)</span>时<strong>异步</strong>触发候选召回，按轻量排序器<span class="arithmatex">\(f'_\theta\)</span>取每个兴趣 Top-<span class="arithmatex">\(K\)</span>写入候选缓存<span class="arithmatex">\(C_{s,t}\)</span>，把检索开销移出关键路径。直觉：把"理解"与"取数"解耦，既保多轮一致性又不牺牲延迟。</p>
 </li>
 <li>
-<p><strong>列表级对齐打分与双向剪枝（Serving Flow）</strong>：痛点在于逐点打分延迟不可接受且负反馈需即时生效。模型对 <span class="arithmatex">\(K\)</span> 个候选<strong>单次推理</strong>输出对齐分 <span class="arithmatex">\(\{\hat{y}_{v_i|S_t}\}_{i=1}^K\)</span>，分数严格双向（匹配正向兴趣为正、匹配负向约束为负），低于阈值 <span class="arithmatex">\(\tau\)</span> 的候选被硬剪枝，最终排序分：</p>
+<p><strong>列表级对齐打分与双向剪枝（Serving Flow）</strong>：痛点在于逐点打分延迟不可接受且负反馈需即时生效。模型对 <span class="arithmatex">\(K\)</span>个候选<strong>单次推理</strong>输出对齐分<span class="arithmatex">\(\{\hat{y}_{v_i|S_t}\}_{i=1}^K\)</span>，分数严格双向（匹配正向兴趣为正、匹配负向约束为负），低于阈值<span class="arithmatex">\(\tau\)</span> 的候选被硬剪枝，最终排序分：</p>
 </li>
 </ol>
 <div class="arithmatex">\[s_{final}=\alpha\cdot\hat{y}_{v|S_t}+(1-\alpha)\cdot\hat{y}_{u,v}\]</div>
 <p><span class="arithmatex">\(\alpha\)</span> 控制语义对齐与生产参与度预测的融合权重。直觉：负分剪枝让"少推 X"即时生效，融合项则守住基础参与质量，并对冷启动兴趣/弱信号用户天然友好。</p>
 <ol>
-<li><strong>双反馈策略对齐（Self-Evolution Flow）</strong>：痛点在于显式反馈稀疏且延迟敏感。先用 LLM-as-a-Judge 集成（Llama 4 Maverick、Qwen3-VL-235B-A22B，多数投票，与人工判断一致率 96%）为缺失标签的 <span class="arithmatex">\(\langle S_t,v_i\rangle\)</span> 对生成 SFT 标签（Llama3-8B，lr <span class="arithmatex">\(2e^{-5}\)</span>，8×80GB，约 2.5 GPU 小时/epoch）；再用真实行为反馈构造 chosen-rejected 对做 DPO（lr <span class="arithmatex">\(2e^{-6}\)</span>，2×8×A100，batch 4，1 epoch），无需奖励模型或在线 RL rollout，周期性迭代硬化偏好边界。</li>
+<li><strong>双反馈策略对齐（Self-Evolution Flow）</strong>：痛点在于显式反馈稀疏且延迟敏感。先用 LLM-as-a-Judge 集成（Llama 4 Maverick、Qwen3-VL-235B-A22B，多数投票，与人工判断一致率 96%）为缺失标签的 <span class="arithmatex">\(\langle S_t,v_i\rangle\)</span>对生成 SFT 标签（Llama3-8B，lr<span class="arithmatex">\(2e^{-5}\)</span>，8×80GB，约 2.5 GPU 小时/epoch）；再用真实行为反馈构造 chosen-rejected 对做 DPO（lr<span class="arithmatex">\(2e^{-6}\)</span>，2×8×A100，batch 4，1 epoch），无需奖励模型或在线 RL rollout，周期性迭代硬化偏好边界。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4427,12 +4438,18 @@
 <li><strong>被动排序信号在显式意图上结构性失效</strong>：<span class="arithmatex">\(P(CSL)\)</span> 在匹配与不匹配内容间仅差 0.009，而 SFT+DPO 对齐打分在不匹配段达 99.4% 准确率，说明显式语义约束无法由隐式行为概率替代。</li>
 <li><strong>DPO 在稀疏反馈下带来稳定增量且不增延迟</strong>：SFT→SFT+DPO 使 F1 从 76.97% 升至 79.51%（+2.5pt），延迟反降 2ms；8B 是性价比拐点——70B 精度略高但无法上关键路径，1B 准确率崩至 56.9%。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 LLM-ConvRec / CRAG 等面向静态目录的混合检索-生成方案，SYF 不做开放式生成而是<strong>目录锚定</strong>的列表级重排，天然规避幻觉物品；相比 Rank-GRPO 的 RL 对齐，本文用 Judge 集成 + DPO 的双反馈路径，无需在线 rollout 即可周期性迭代，更契合工业延迟与稳定性约束。</li>
 <li><strong>可迁移亮点</strong>: ① "异步候选召回 + 缓存"把重检索移出关键路径，可直接迁移到任何 LLM 重排系统；② 用 LLM-as-a-Judge 多数投票补足稀疏显式反馈、再以真实行为做 DPO 的两阶段范式，适用于所有反馈稀疏的对话式场景。</li>
 <li><strong>审稿级局限批判</strong>: ① 系统强依赖用户主动输入，沉默用户仍回落到基线排序，论文自承这是核心局限且未量化沉默用户占比；② 离线评测以 Judge 流水线自建标签为主，虽有人工 golden set 佐证，但缺乏与传统 Top-N 排序指标（NDCG/HR）的可比基准，跨系统复现难度高。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>框架分三层闭环：<strong>离线筛选</strong>——以"枢轴日"为单位构造低活跃用户样本（前两周活跃天数 <span class="arithmatex">\(\le 1\)</span>，后两周各 <span class="arithmatex">\(\ge 3\)</span> 天为正例，约占 4%），提取 174 个基础特征交叉为约 103 个候选，用随机森林（AUC 0.65–0.70）结合 SHAP 与单变量相关性排序候选奖励；<strong>奖励构造</strong>——将筛选出的信号形式化为三类可微代理奖励，作为额外预测头接入 Pinnability 排序模型；<strong>服务融合</strong>——各头预测线性加权 <span class="arithmatex">\(s(x)=\sum_i w_i p_i(x)\)</span>，权重用 HyperOPT 在排序器外调优，负奖励头权重取负。标签侧由 DRv2 基础设施在 Ray dataloader 内按 UDF 即时派生。</p>
+<p>框架分三层闭环：<strong>离线筛选</strong>——以"枢轴日"为单位构造低活跃用户样本（前两周活跃天数 <span class="arithmatex">\(\le 1\)</span>，后两周各<span class="arithmatex">\(\ge 3\)</span>天为正例，约占 4%），提取 174 个基础特征交叉为约 103 个候选，用随机森林（AUC 0.65–0.70）结合 SHAP 与单变量相关性排序候选奖励；<strong>奖励构造</strong>——将筛选出的信号形式化为三类可微代理奖励，作为额外预测头接入 Pinnability 排序模型；<strong>服务融合</strong>——各头预测线性加权<span class="arithmatex">\(s(x)=\sum_i w_i p_i(x)\)</span>，权重用 HyperOPT 在排序器外调优，负奖励头权重取负。标签侧由 DRv2 基础设施在 Ray dataloader 内按 UDF 即时派生。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户日级行为序列 (DRv2 表)"] --&gt; B["离线筛选: RF + SHAP 排序候选奖励"]
     B --&gt; C["三类下游奖励头: 深度/负奖励/新用例"]
@@ -4228,13 +4239,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>深度会话奖励（折扣累积下游参与）</strong>：单次高意图动作不足以刻画价值，需奖励"延续一串下游交互"。对轨迹 <span class="arithmatex">\(\mathcal{S}_{u,t}\)</span> 定义逐步奖励 <span class="arithmatex">\(r^{eng}_{u,t+i}=\sum_{a\in\mathcal{A}_{eng}} w_a \mathbb{I}[A_{u,t+i}=a]\)</span>（<span class="arithmatex">\(\mathcal{A}_{eng}\)</span> 含 save/download/screenshot），折扣求和 <span class="arithmatex">\(\mathcal{R}^{eng}(\mathcal{S}_{u,t})=\sum_{i=1}^{n_{u,t}}\gamma^{i-1} r^{eng}_{u,t+i}\)</span>。折扣让靠近原始推荐的参与获得更高信用，缓解长轨迹的归因弥散。</p>
+<p><strong>深度会话奖励（折扣累积下游参与）</strong>：单次高意图动作不足以刻画价值，需奖励"延续一串下游交互"。对轨迹 <span class="arithmatex">\(\mathcal{S}_{u,t}\)</span>定义逐步奖励<span class="arithmatex">\(r^{eng}_{u,t+i}=\sum_{a\in\mathcal{A}_{eng}} w_a \mathbb{I}[A_{u,t+i}=a]\)</span>（<span class="arithmatex">\(\mathcal{A}_{eng}\)</span>含 save/download/screenshot），折扣求和<span class="arithmatex">\(\mathcal{R}^{eng}(\mathcal{S}_{u,t})=\sum_{i=1}^{n_{u,t}}\gamma^{i-1} r^{eng}_{u,t+i}\)</span>。折扣让靠近原始推荐的参与获得更高信用，缓解长轨迹的归因弥散。</p>
 </li>
 <li>
-<p><strong>浅层关闭负奖励（用户状态自适应阈值）</strong>：浅层关闭（&lt;1s 即放弃且无后续高意图动作）体量与 save 相当但预示会话即刻终止。指示函数 <span class="arithmatex">\(\mathrm{ISC}=\mathbb{I}[A=\text{closeup}\wedge d&lt;\delta_{state(u)}\wedge \mathbb{I}^{pos}=0]\)</span>，负奖励 <span class="arithmatex">\(\mathcal{R}^{neg}=-\lambda_{SC}\sum_i \mathrm{ISC}\)</span>。关键增量在于阈值按用户状态分档：核心用户 <span class="arithmatex">\(\delta=1\)</span>s、非核心 <span class="arithmatex">\(0.5\)</span>s——动作概率曲线的拐点在不同人群确实不同，统一阈值会在非核心用户上造成跨场景蚕食。</p>
+<p><strong>浅层关闭负奖励（用户状态自适应阈值）</strong>：浅层关闭（&lt;1s 即放弃且无后续高意图动作）体量与 save 相当但预示会话即刻终止。指示函数 <span class="arithmatex">\(\mathrm{ISC}=\mathbb{I}[A=\text{closeup}\wedge d&lt;\delta_{state(u)}\wedge \mathbb{I}^{pos}=0]\)</span>，负奖励<span class="arithmatex">\(\mathcal{R}^{neg}=-\lambda_{SC}\sum_i \mathrm{ISC}\)</span>。关键增量在于阈值按用户状态分档：核心用户<span class="arithmatex">\(\delta=1\)</span>s、非核心<span class="arithmatex">\(0.5\)</span>s——动作概率曲线的拐点在不同人群确实不同，统一阈值会在非核心用户上造成跨场景蚕食。</p>
 </li>
 <li>
-<p><strong>新用例采纳奖励与训练目标</strong>：留存不仅靠强化既有兴趣，还需帮用户建立新连接。以预计算兴趣簇 <span class="arithmatex">\(\{c_{u,i}\}\)</span> 判定 <span class="arithmatex">\(\mathrm{new}(u,x)=\mathbb{I}[\max_i \cos(e_x,c_{u,i})&lt;\eta]\)</span>（<span class="arithmatex">\(\eta=0.6\)</span>），奖励为合取信号 <span class="arithmatex">\(\mathcal{R}^{UCA}=\mathbb{I}[\text{engaged}\wedge \text{new}]\)</span>，实现上对满足条件的正样本权重翻倍。总目标即多任务联合：<span class="arithmatex">\(\mathcal{L}=\sum_i \mathrm{BCE}(y_i,p_i)\)</span> 加样本重加权，无额外负采样设计；推理开销仅为多几个 MLP 头，DRv2 使新奖励变体的想法到实验周期从约 3 周压缩到约 2 天，增量训练成本 &lt;5%。</p>
+<p><strong>新用例采纳奖励与训练目标</strong>：留存不仅靠强化既有兴趣，还需帮用户建立新连接。以预计算兴趣簇 <span class="arithmatex">\(\{c_{u,i}\}\)</span>判定<span class="arithmatex">\(\mathrm{new}(u,x)=\mathbb{I}[\max_i \cos(e_x,c_{u,i})&lt;\eta]\)</span>（<span class="arithmatex">\(\eta=0.6\)</span>），奖励为合取信号<span class="arithmatex">\(\mathcal{R}^{UCA}=\mathbb{I}[\text{engaged}\wedge \text{new}]\)</span>，实现上对满足条件的正样本权重翻倍。总目标即多任务联合：<span class="arithmatex">\(\mathcal{L}=\sum_i \mathrm{BCE}(y_i,p_i)\)</span> 加样本重加权，无额外负采样设计；推理开销仅为多几个 MLP 头，DRv2 使新奖励变体的想法到实验周期从约 3 周压缩到约 2 天，增量训练成本 &lt;5%。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4263,9 +4274,9 @@
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 离线筛选采用枢轴日 <span class="arithmatex">\(t=0\)</span> 前后切分——特征仅取 <span class="arithmatex">\(t=0\)</span> 当日及之前两周基线，标签取 <span class="arithmatex">\(t=+1,+2\)</span> 周活跃天数，天然防穿越；线上为随机分流 A/B。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 离线筛选采用枢轴日 <span class="arithmatex">\(t=0\)</span>前后切分——特征仅取<span class="arithmatex">\(t=0\)</span>当日及之前两周基线，标签取<span class="arithmatex">\(t=+1,+2\)</span> 周活跃天数，天然防穿越；线上为随机分流 A/B。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 无离线全库排序指标，评测完全依赖线上 A/B 的相对提升，所有报告指标均通过统计显著性检验。</li>
-<li><strong>对比基线与超参设置</strong>: 对照组为仅优化即时参与预测的生产排序模型（Pinnability）；实验组加挂 DR 头。关键超参：<span class="arithmatex">\(\gamma\)</span> 折扣因子、<span class="arithmatex">\(\lambda_{SC}\)</span> 惩罚强度、<span class="arithmatex">\(\delta_{core}=1\)</span>s / <span class="arithmatex">\(\delta_{non-core}=0.5\)</span>s / <span class="arithmatex">\(\delta_{P2P}=2\)</span>s、<span class="arithmatex">\(\eta=0.6\)</span>（在 {0.5,0.6,0.7} 中调优），融合权重由 HyperOPT 搜索。</li>
+<li><strong>对比基线与超参设置</strong>: 对照组为仅优化即时参与预测的生产排序模型（Pinnability）；实验组加挂 DR 头。关键超参：<span class="arithmatex">\(\gamma\)</span>折扣因子、<span class="arithmatex">\(\lambda_{SC}\)</span>惩罚强度、<span class="arithmatex">\(\delta_{core}=1\)</span>s /<span class="arithmatex">\(\delta_{non-core}=0.5\)</span>s /<span class="arithmatex">\(\delta_{P2P}=2\)</span>s、<span class="arithmatex">\(\eta=0.6\)</span>（在 {0.5,0.6,0.7} 中调优），融合权重由 HyperOPT 搜索。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4379,12 +4390,18 @@
 <li><strong>负奖励的成败完全取决于阈值分档</strong>：统一 1s 阈值虽提升聚合指标，却让非核心用户留存转负并造成 Homefeed→P2P 的跨场景蚕食；改为 0.5s/1s 分档后失败会话降 −0.40%、总时长升 +0.35%，证明用户异质性是负奖励设计的核心变量。</li>
 <li><strong>同一奖励跨场景可零重工程迁移</strong>：Search 履约率 +0.25%、Notifications SS +0.14% 且 WAU +0.11%，P2P 场景仅需把阈值调到 2s 即得 &gt;5min 会话 +0.70%，验证了"模型无关"主张的工程含金量。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 DT4IER 等 RL/bandit 留存优化，本文不做策略梯度、不端到端学融合权重，而以监督式代理奖励 + 外部调权换取跨场景可迁移性；相比 Netflix 的 bandit 反馈奖励设计，本文奖励族覆盖正/负/探索三类且由统一离线筛选框架导出；相比以"重复消费同一物品"定义高质量消费的工作，本文针对视觉灵感类平台改用 save/download/P2P 深度作为信息量更高的信号。</li>
 <li><strong>可迁移亮点</strong>: ① "曝光归一化后的符号翻转"筛选准则可直接用于甄别其他平台上被量级掩盖的伪正信号；② DRv2 的"共享日级序列 + dataloader 内 UDF 派生标签"模式，是把奖励迭代周期从周级压到天级的通用工程范式。</li>
 <li><strong>审稿级局限批判</strong>: ① 全部证据为线上 A/B 相对提升，缺乏公开数据与离线可复现基准，学术界难以独立验证；② 因果链条（深动作⇒长会话⇒快回访）明确自认为观察性而非因果，且融合权重靠 HyperOPT 外部调优，对产品约束与流量分布较敏感。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][去偏公平与工业架构] 将在线公平重排建模为注意力市场瓦尔拉斯均衡，用流形优化统一供需两侧梯度调整，兼顾公平与精度。">
+        <meta name="description" content="[SIGIR 2026][去偏公平与工业架构] 将在线公平重排建模为注意力市场瓦尔拉斯均衡，用供需双侧梯度校正对齐排序流形，7 数据集 42 设置几乎全胜。">
       
       
       
@@ -131,10 +131,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/the_attention_market_interpreting_online_fair_re_ranking_as_manifold_optimi/" />
 <meta property="og:title" content="[Paper Note] The Attention Market: Interpreting Online Fair Re-ranking as Manifold Optimization under Walrasian Equilibrium" />
-<meta property="og:description" content="[SIGIR 2026][去偏公平与工业架构] 将在线公平重排建模为注意力市场瓦尔拉斯均衡，用流形优化统一供需两侧梯度调整，兼顾公平与精度。" />
+<meta property="og:description" content="[SIGIR 2026][去偏公平与工业架构] 将在线公平重排建模为注意力市场瓦尔拉斯均衡，用供需双侧梯度校正对齐排序流形，7 数据集 42 设置几乎全胜。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] The Attention Market: Interpreting Online Fair Re-ranking as Manifold Optimization under Walrasian Equilibrium" />
-<meta name="twitter:description" content="[SIGIR 2026][去偏公平与工业架构] 将在线公平重排建模为注意力市场瓦尔拉斯均衡，用流形优化统一供需两侧梯度调整，兼顾公平与精度。" />
+<meta name="twitter:description" content="[SIGIR 2026][去偏公平与工业架构] 将在线公平重排建模为注意力市场瓦尔拉斯均衡，用供需双侧梯度校正对齐排序流形，7 数据集 42 设置几乎全胜。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +160,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] The Attention Market: Interpreting Online Fair Re-ranking as Manifold Optimization under Walrasian Equilibrium",
   "headline": "[Paper Note] The Attention Market: Interpreting Online Fair Re-ranking as Manifold Optimization under Walrasian Equilibrium",
-  "description": "[SIGIR 2026][\u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784] \u5c06\u5728\u7ebf\u516c\u5e73\u91cd\u6392\u5efa\u6a21\u4e3a\u6ce8\u610f\u529b\u5e02\u573a\u74e6\u5c14\u62c9\u65af\u5747\u8861\uff0c\u7528\u6d41\u5f62\u4f18\u5316\u7edf\u4e00\u4f9b\u9700\u4e24\u4fa7\u68af\u5ea6\u8c03\u6574\uff0c\u517c\u987e\u516c\u5e73\u4e0e\u7cbe\u5ea6\u3002",
+  "description": "[SIGIR 2026][\u53bb\u504f\u516c\u5e73\u4e0e\u5de5\u4e1a\u67b6\u6784] \u5c06\u5728\u7ebf\u516c\u5e73\u91cd\u6392\u5efa\u6a21\u4e3a\u6ce8\u610f\u529b\u5e02\u573a\u74e6\u5c14\u62c9\u65af\u5747\u8861\uff0c\u7528\u4f9b\u9700\u53cc\u4fa7\u68af\u5ea6\u6821\u6b63\u5bf9\u9f50\u6392\u5e8f\u6d41\u5f62\uff0c7 \u6570\u636e\u96c6 42 \u8bbe\u7f6e\u51e0\u4e4e\u5168\u80dc\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/the_attention_market_interpreting_online_fair_re_ranking_as_manifold_optimi/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/debias_fairness_industrial/the_attention_market_interpreting_online_fair_re_ranking_as_manifold_optimi/",
   "inLanguage": "zh-CN",
@@ -178,8 +178,8 @@
     { "@type": "Thing", "name": "\u6ce8\u610f\u529b\u7ecf\u6d4e" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3997,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4011,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4019,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4072,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4095,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4103,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4119,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4156,17 +4134,6 @@
     <span class="md-ellipsis">
       
         Rating (四维评分)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        论文图表
       
     </span>
   </a>
@@ -4192,7 +4159,7 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][去偏公平与工业架构] 将在线公平重排建模为注意力市场瓦尔拉斯均衡，用流形优化统一供需两侧梯度调整，兼顾公平与精度。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][去偏公平与工业架构] 将在线公平重排建模为注意力市场瓦尔拉斯均衡，用供需双侧梯度校正对齐排序流形，7 数据集 42 设置几乎全胜。</p>
   
   <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 去偏公平与工业架构 · 重排 · 公平重排 · 流形优化 · 注意力经济</p>
   
@@ -4256,190 +4223,326 @@
 <h1 id="the-attention-market-interpreting-online-fair-re-ranking-as-manifold-optimization-under-walrasian-equilibrium">The Attention Market: Interpreting Online Fair Re-ranking as Manifold Optimization under Walrasian Equilibrium (注意力市场：将在线公平重排解释为瓦尔拉斯均衡下的流形优化)</h1>
 <ul>
 <li><strong>会议/期刊</strong>: SIGIR 2026</li>
-<li><strong>推荐链路定位</strong>: 重排 (Re-ranking)</li>
-<li><strong>研究方向</strong>: 去偏公平与工业架构 / 多任务学习与列表级重排</li>
+<li><strong>作者与机构</strong>: Chen Xu, Wei Chu, Wenyu Hu, Fengran Mo, Jun Xu (通讯), Maarten de Rijke；中国人民大学高瓴人工智能学院、蒙特利尔大学、阿姆斯特丹大学</li>
+<li><strong>推荐链路定位</strong>: 重排（在线 post-processing）</li>
+<li><strong>研究方向</strong>: 去偏公平与工业架构 / 列表级重排</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2604.25577v1">https://arxiv.org/abs/2604.25577v1</a></li>
-<li><strong>开源代码</strong>: <a href="https://github.com/XuChen0427/FairDiverse">https://github.com/XuChen0427/FairDiverse</a>（集成于 FairDiverse 工具包）</li>
+<li><strong>开源代码</strong>: <a href="https://github.com/XuChen0427/FairDiverse">https://github.com/XuChen0427/FairDiverse</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对在线公平重排方法在跨数据集/跨基座模型时性能极不一致的痛点，本文用注意力经济学的瓦尔拉斯均衡重新解释公平重排，证明求均衡等价于在排序流形上做梯度下降，并提出 ManifoldRank：供给侧用公平函数给出梯度方向、需求侧用排序分数的熵与偏度预测梯度步长。在 7 个数据集、3 个基座模型、Full-Ranking 协议下稳定超越 FairSync/PMMF/CPFair/ElasticRank 等基线。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>现有在线公平重排方法在 7 数据集 × 3 基模型 × 50+ 超参扫描的 20 余种设置下性能排名剧烈波动（图 1），作者将其归因于"忽略了排序分数所构造优化流形的几何性质"。本文将公平重排重构为注意力市场中的瓦尔拉斯均衡（公平=征税），证明求均衡等价于在排序流形上做梯度下降，进而提出 ManifoldRank：供给侧用闭式曲率梯度定方向，需求侧用排序分数的熵/偏度预测步长。在 NDCG 保持 99% 以上的约束下，42 个公平性设置中 41 个最优。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 公平重排（fair re-ranking）在信息检索中用于扶持长尾物品、增强组内多样性。工业系统受严格延迟约束，故主流采用<strong>在线</strong>范式：用在线梯度下降根据历史交互动态调整排序分数（P-MMF、ElasticRank、CPFair 等）。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>评估覆盖面窄</strong>：既有工作往往只在少数数据集或单一基座模型上验证，结论稳健性存疑。</li>
-<li><strong>性能高度不一致</strong>：作者在 <strong>20+ 种设置</strong>（7 个数据集 × 3 个基座模型，每种设置调参 50+ 次扫描精度-公平权衡系数）上系统评测，发现现有在线方法排名剧烈波动（见图 1 箱线图），缺乏一致性。</li>
-<li><strong>忽视优化几何</strong>：现有在线方法"ranking-score-free"，只关注公平约束本身，未考虑由排序分数所构造的优化流形的几何性质。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 为什么简单的公平正则或贪心调整无法解决？因为不同重排设置会诱导出<strong>不同的流形几何</strong>，进而决定梯度景观与优化轨迹；忽略几何结构，同一算法在不同环境下的梯度步长失配，导致性能漂移。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者借注意力经济学，将用户满意度视为市场需求、提供者公平视为税收成本、重排分数视为均衡价格（见表 1、图 2 的类比）。在此框架下，求瓦尔拉斯均衡<strong>等价于在排序流形上做梯度下降</strong>。进一步做序数回归分析发现：排序分数矩阵的<strong>熵与偏度</strong>与梯度步长强相关，故可用这两个统计量作为流形几何的代理变量来校准梯度幅度。</li>
+<li><strong>主流范式</strong>: 工业系统受时延约束，公平重排以在线梯度下降为主（P-MMF、ElasticRank、FairSync），按历史交互动态调整排序分数 <span class="arithmatex">\(s_{u,i}\)</span>。</li>
+<li><strong>前人局限</strong>: ① 现有方法"ranking-score-free"，只按曝光缺口调分，完全不感知排序分数矩阵的分布形态；② 在跨数据集/跨基模型时性能排名极不稳定，缺乏可迁移的调参先验。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 把用户注意力视为稀缺商品、公平约束视为征税，则最优公平分数即市场出清价格（瓦尔拉斯均衡）；而不同设置对应不同的流形几何，几何差异直接决定梯度景观与优化轨迹——这正是性能不一致的根因。</li>
+<li><strong>本文切入点</strong>: 用流形优化语言统一供需两侧，把"公平分数"拆成"方向 × 步长"两个可闭式计算的梯度项。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户集 <span class="arithmatex">\(\mathcal{U}\)</span>、物品集 <span class="arithmatex">\(\mathcal{I}\)</span>；每个物品 <span class="arithmatex">\(i\in\mathcal{I}\)</span> 属于唯一组 <span class="arithmatex">\(g\in\mathcal{G}\)</span>，组 <span class="arithmatex">\(g\)</span> 内物品集记为 <span class="arithmatex">\(\mathcal{I}_g\)</span>。</li>
-<li>用户 <span class="arithmatex">\(u\)</span> 访问时生成候选列表 <span class="arithmatex">\(L_K(u)\)</span>，含排序分数 <span class="arithmatex">\(s_{u,i}\)</span>（由 DMF、SASRec 等基座模型预计算），<span class="arithmatex">\(K\)</span> 为列表长度。</li>
-<li>二元决策变量 <span class="arithmatex">\(x_{u,i}\in\{0,1\}\)</span> 表示物品 <span class="arithmatex">\(i\)</span> 是否展示给用户 <span class="arithmatex">\(u\)</span>。</li>
-<li>组效用与用户效用：
-$<span class="arithmatex">\(\boldsymbol{v}_g=\sum_{u\in\mathcal{U}}\sum_{i\in L(u)}x_{u,i}\cdot s_{u,i}\cdot\mathbb{I}(i\in\mathcal{I}_g),\quad \boldsymbol{w}_u=\sum_{i\in L(u)}x_{u,i}\cdot s_{u,i}.\)</span>$</li>
-<li>公平重排目标：在 <span class="arithmatex">\(\boldsymbol{v}_r\approx\boldsymbol{v}_p,\ \forall r,p\in\mathcal{G}\)</span> 约束下最大化总用户效用 <span class="arithmatex">\(\sum_u \boldsymbol{w}_u\)</span>。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：基座排序模型产出候选列表与分数 <span class="arithmatex">\(s_{u,i}\)</span> → 供给侧由公平函数 <span class="arithmatex">\(r(v_g)\)</span> 计算梯度方向 <span class="arithmatex">\(\eta_g\)</span> → 需求侧由分数矩阵的熵/偏度预测梯度步长 <span class="arithmatex">\(\zeta\)</span> → 二者相乘得到有效公平分数 <span class="arithmatex">\(\eta_g\cdot\zeta\)</span> → 在候选集上做 top-<span class="arithmatex">\(K\)</span> 选择 → 更新累计组效用 <span class="arithmatex">\(\boldsymbol{v}_g\)</span>，进入下一用户。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>用户 <span class="arithmatex">\(u\)</span>到来时，基模型（SASRec 等）给出候选列表<span class="arithmatex">\(L_K(u)\)</span>的分数<span class="arithmatex">\(s_{u,i}\)</span>；ManifoldRank 计算组级公平分数<span class="arithmatex">\(\eta_g(v_g)\cdot\zeta\)</span>，对每个物品做扣减后取 top-<span class="arithmatex">\(K\)</span>，再按曝光结果累加组效用<span class="arithmatex">\(v_g\)</span>进入下一轮。供给侧梯度由征税函数<span class="arithmatex">\(r(v_g)\)</span> 的解析曲率给出，需求侧梯度由当前用户分数向量的熵与偏度经验预测，二者相乘即为该用户在该市场几何下的"价格"。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 基座模型排序分数 s_{u,i} 与候选列表 L_K(u)"] --&gt; B["供给侧: 公平函数 r(v_g) 求梯度方向 η_g"]
-    A --&gt; C["需求侧: 排序分数熵/偏度预测步长 ζ"]
-    B --&gt; D["有效公平分数 η_g · ζ"]
+    A["基模型排序分数 s_{u,i} + 组效用 v_g"] --&gt; B["供给侧梯度 η_g：征税函数曲率定方向"]
+    A --&gt; C["需求侧梯度 ζ：Entropy/Skew 预测步长"]
+    B --&gt; D["公平分数 η_g·ζ 扣减后 top-K"]
     C --&gt; D
-    D --&gt; E["在线 top-K 重排: argmax Σ(s_{u,i} - η_g·ζ)"]
-    E --&gt; F["更新累计组效用 v_g"]
-    F --&gt; B</code></pre>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 注意力市场建模与瓦尔拉斯均衡（第 4.1–4.3 节）</strong></p>
-<ul>
-<li><strong>需求侧</strong>：用户以有限注意力预算（最多看 <span class="arithmatex">\(K\)</span> 个）最大化效用，公平分数 <span class="arithmatex">\(f_g\)</span> 充当"注意力价格"：
-$<span class="arithmatex">\(X_d=\arg\max_{x_{u,i}\in\mathcal{X}}\sum_{i\in\mathcal{I}}\big(\underbrace{s_{u,i}}_{\text{排序分数}}-\underbrace{f_g}_{\text{注意力价格}}\big)x_{u,i}.\)</span>$
-  定理 1（需求定律）证明 <span class="arithmatex">\(\partial X^d_g/\partial f_g\le 0\)</span>。</li>
-<li><strong>供给侧</strong>：提供者按价格生产注意力，公平惩罚 <span class="arithmatex">\(r(v_g)\)</span> 充当"税收成本"：
-$<span class="arithmatex">\(X_s=\arg\max_{x_{u,i}\in\mathcal{X}}\sum_{u}\sum_{i\in\mathcal{I}_g}\big(\underbrace{f_g}_{\text{获得注意力的价格}}x_{u,i}-\underbrace{r(v_g)}_{\text{税收成本}}\big).\)</span>$
-  其中税收函数定义为
-$<span class="arithmatex">\(r(v_g)=\mathrm{sign}(\alpha\beta)\,v_g^{\beta}\Big(\sum_{g}v_g^{\beta}\Big)^{\alpha-1},\)</span>$
-  <span class="arithmatex">\(\alpha\)</span> 为全局税率、<span class="arithmatex">\(\beta\)</span> 为局部税率。定理 2 证明其满足税收要求（边际税率非负），定理 3 给出供给定律 <span class="arithmatex">\(\partial X^s_g/\partial f_g\ge 0\)</span>。</li>
-<li><strong>均衡</strong>：定理 4 证明（<span class="arithmatex">\(r'(v)\)</span> 凸时）公平重排目标 <span class="arithmatex">\(\max\sum_u w_u-r'(v)\)</span> 等价于 <span class="arithmatex">\(\max\sum_u\sum_i(s_{u,i}-f_g^*)x_{u,i}\)</span>，且当 <span class="arithmatex">\(\sum_g X^d_g(f^*)=\sum_g X^s_g(f^*)=|\mathcal{U}|K\)</span> 时分配为帕累托最优；定理 5 进一步说明公平目标等价于单一税收机制（对"富"组征税、对"穷"组补贴）。表 2 表明该税收形式可统一泛化 max-min、<span class="arithmatex">\(p\)</span>-norm、弹性公平、<span class="arithmatex">\(\alpha\)</span>-fairness、比例公平等多种公平度量。</li>
-</ul>
-<p><strong>(2) 排序流形与梯度调整（第 4.4 节 + 算法 1）</strong></p>
-<p>将可行市场状态建模为光滑流形
-$<span class="arithmatex">\(\mathcal{M}=\{f\in\mathbb{R}^{|\mathcal{G}|}\mid \sum_g X^d_g(f)=\sum_g X^s_g(f)\},\)</span>$
-在流形上做梯度下降受两侧约束：供给侧由 <span class="arithmatex">\((\alpha,\beta)\)</span> 决定，需求侧由排序分数属性 <span class="arithmatex">\(s_{u,i}\)</span> 决定。ManifoldRank 据此设计两项梯度调整：</p>
-<ul>
-<li><strong>供给侧梯度方向</strong>（公平需求驱动）：
-$<span class="arithmatex">\(\eta_g=c\,r(v_g)^{\beta}\Big(\frac{1}{v_g}+(\alpha-1)\frac{v_g^{\beta-1}}{G}\Big),\quad G=\sum_j x_j^{\beta},\)</span>$
-  其中 <span class="arithmatex">\(c_g=\mathrm{sign}\big((\alpha-1)\beta v_g^{\beta}+(\beta-1)(\sum_i v_g^{\beta})\big)\)</span> 为有效方向。</li>
-<li><strong>需求侧梯度步长</strong>（流形几何驱动）：
-$<span class="arithmatex">\(\zeta=a_e\,\mathrm{Entropy}(s)-a_s\,\mathrm{Skew}(s),\)</span>$
-  由排序分数矩阵的熵与偏度线性组合预测，<span class="arithmatex">\(a_e,a_s&gt;0\)</span> 为可调系数。</li>
-<li><strong>最终重排</strong>：<span class="arithmatex">\(L_K(u)=\arg\max_{S\in\mathcal{I}^K}\sum_{i\in S}(s_{u,i}-\eta_g\cdot\zeta)\)</span>，随后更新 <span class="arithmatex">\(\boldsymbol{v}_g\)</span>。</li>
-</ul>
-<p>物理直觉：<span class="arithmatex">\(\eta_g\)</span> 决定"往哪个方向走"以逼近均衡价格，<span class="arithmatex">\(\zeta\)</span> 决定"走多大步"以贴合当前流形几何；二者相乘即把经济均衡的梯度投影到排序流形上。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 本文为<strong>在线无梯度训练</strong>的重排算法，不涉及神经网络反向传播与 BPR/InfoNCE 类损失。其"目标函数"即约束优化 <span class="arithmatex">\(\max_{x}\sum_u w_u\)</span> s.t. <span class="arithmatex">\(\boldsymbol{v}_r\approx\boldsymbol{v}_p\)</span>，通过算法 1 的在线梯度调整迭代求解；公平函数 <span class="arithmatex">\(r'(v)\)</span> 由 <span class="arithmatex">\((\alpha,\beta)\)</span> 参数化（表 2 给出各公平度量的 <span class="arithmatex">\((\alpha,\beta)\)</span> 对应）。</li>
-<li><strong>训练负采样策略</strong>: 不适用（无对比学习/无负采样；候选集为基座模型给出的 top-<span class="arithmatex">\(K\)</span> 列表）。</li>
-<li><strong>时间与空间复杂度</strong>: 每个用户仅需 <span class="arithmatex">\(O(|\mathcal{G}|)\)</span> 计算梯度方向与步长，再做一次 top-<span class="arithmatex">\(K\)</span> 选择（<span class="arithmatex">\(O(K\log K)\)</span> 或 <span class="arithmatex">\(O(|\mathcal{I}^K|)\)</span> 视实现），无需离线混合整数规划（对比离线方法 MILP 的高开销），满足在线延迟约束。原文未报告具体 ms/request 与峰值显存数值。</li>
-</ul>
+    D --&gt; E["更新 v_g，进入下一在线步"]</code></pre>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>公平即征税：供需均衡的等价性（Theorem 4/5）</strong>：将重排目标改写为 <span class="arithmatex">\(\max_{x}\sum_u w_u-r'(v)\)</span>，其中征税函数统一为<span class="arithmatex">\(r(v_g)=\mathrm{sign}(\alpha\beta)v_g^{\beta}(\sum_g v_g^{\beta})^{\alpha-1}\)</span>。该形式可退化为 Max-min、<span class="arithmatex">\(p\)</span>-norm、Elastic、<span class="arithmatex">\(\alpha\)</span>-fairness、比例公平（表 2），从而把"选哪个公平指标"变成"选哪组<span class="arithmatex">\((\alpha,\beta)\)</span>"。直觉：<span class="arithmatex">\(\alpha\)</span>是全局税率、<span class="arithmatex">\(\beta\)</span>是局部累进率，<span class="arithmatex">\(\beta&lt;1\)</span>补贴最差组、<span class="arithmatex">\(\beta&gt;1\)</span> 重罚富裕组。</p>
+</li>
+<li>
+<p><strong>供给侧梯度：方向 + 曲率（式 9–11）</strong>：价格正比于 <span class="arithmatex">\(\partial r/\partial v_g\)</span>，得<span class="arithmatex">\(\eta_g=c_g\cdot r(v_g)\gamma_g\)</span>，曲率<span class="arithmatex">\(\gamma_g=\beta[1/v_g+(\alpha-1)v_g^{\beta-1}/G]\)</span>，<span class="arithmatex">\(G=\sum_g v_g^{\beta}\)</span>。方向<span class="arithmatex">\(c_g=\mathrm{sign}(\partial^2 r'/\partial v_g^2)\)</span> 强制总成本凸性，保证均衡存在且帕累托最优。这是纯算术闭式，无需求解 LP。</p>
+</li>
+<li>
+<p><strong>需求侧梯度：用分数统计量代理流形（式 12）</strong>：<span class="arithmatex">\(\zeta=a_e\mathrm{Entropy}(s)-a_s\mathrm{Skew}(s)\)</span>。高熵=偏好分散，征税几乎不损精度可放心加税；高偏度=偏好集中，重税会显著伤精度需减税。作者用序回归验证（图 6）：熵与偏度的均值系数显著，峰度等接近 0，故仅取这两项。总损失即在线逐步的<span class="arithmatex">\(\arg\max\sum_{i\in S}(s_{u,i}-\eta_g\zeta)\)</span>，<strong>无需负采样、无需训练</strong>，每步仅<span class="arithmatex">\(O(|L_K|)\)</span> 算术。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 使用 7 个公开排序数据集，其中 5 个为 Amazon 子集（Music、Fashion、Software、Industrial、Arts），另加 2 个数据集（原文表 3 给出统计量，正文未逐项列出数值，此处不臆造）：</li>
+<li><strong>数据集与预处理</strong>: 少于 10 个物品的组统一并入 "infrequent group"。</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="表 3" src="../../../../../assets/papers/2604.25577v1/table_3.png" /><figcaption>表 3</figcaption>
-</figure>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
+<th style="text-align: left;">数据集</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Groups</th>
+<th style="text-align: center;">#Samples</th>
+<th style="text-align: left;">场景说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Amazon Music / Fashion / Software / Industrial / Arts</td>
-<td style="text-align: center;">原文表 3 报告</td>
-<td style="text-align: center;">原文表 3 报告</td>
-<td style="text-align: center;">原文表 3 报告</td>
-<td style="text-align: center;">原文表 3 报告</td>
-<td style="text-align: left;">物品按组划分用于公平约束</td>
+<td style="text-align: left;">Steam</td>
+<td style="text-align: center;">4,444</td>
+<td style="text-align: center;">1,237</td>
+<td style="text-align: center;">43</td>
+<td style="text-align: center;">169,160</td>
+<td style="text-align: left;">游戏平台</td>
 </tr>
 <tr>
-<td style="text-align: left;">其余 2 个数据集</td>
-<td style="text-align: center;">原文表 3 报告</td>
-<td style="text-align: center;">原文表 3 报告</td>
-<td style="text-align: center;">原文表 3 报告</td>
-<td style="text-align: center;">原文表 3 报告</td>
-<td style="text-align: left;">同上</td>
+<td style="text-align: left;">Music (Amazon)</td>
+<td style="text-align: center;">873</td>
+<td style="text-align: center;">11,952</td>
+<td style="text-align: center;">33</td>
+<td style="text-align: center;">46,640</td>
+<td style="text-align: left;">稀疏长尾</td>
+</tr>
+<tr>
+<td style="text-align: left;">Fashion (Amazon)</td>
+<td style="text-align: center;">629</td>
+<td style="text-align: center;">3,915</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">7,985</td>
+<td style="text-align: left;">小规模</td>
+</tr>
+<tr>
+<td style="text-align: left;">Software (Amazon)</td>
+<td style="text-align: center;">583</td>
+<td style="text-align: center;">2,707</td>
+<td style="text-align: center;">34</td>
+<td style="text-align: center;">13,115</td>
+<td style="text-align: left;">中等</td>
+</tr>
+<tr>
+<td style="text-align: left;">Industrial (Amazon)</td>
+<td style="text-align: center;">1,078</td>
+<td style="text-align: center;">1,756</td>
+<td style="text-align: center;">29</td>
+<td style="text-align: center;">16,585</td>
+<td style="text-align: left;">中等</td>
+</tr>
+<tr>
+<td style="text-align: left;">Arts (Amazon)</td>
+<td style="text-align: center;">3,690</td>
+<td style="text-align: center;">3,109</td>
+<td style="text-align: center;">100</td>
+<td style="text-align: center;">113,365</td>
+<td style="text-align: left;">多组</td>
+</tr>
+<tr>
+<td style="text-align: left;">AliEC</td>
+<td style="text-align: center;">21,242</td>
+<td style="text-align: center;">17,310</td>
+<td style="text-align: center;">117</td>
+<td style="text-align: center;">505,430</td>
+<td style="text-align: left;">电商广告</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文正文未明确说明 LOO / Ratio / 时间戳切分细节（属重排任务，候选列表由基座模型 DMF、SASRec 生成）；需查阅原文实验节确认，本文不臆断。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 重排阶段在基座模型给出的候选列表 <span class="arithmatex">\(L_K(u)\)</span> 上操作，属<strong>列表级重排评估</strong>；基座排序模型（DMF、SASRec、以及第三个基座）的召回/排序评估协议原文未在正文展开。</li>
-<li><strong>评价指标与显著性检验</strong>: 同时报告<strong>精度</strong>与<strong>公平性</strong>指标（具体指标名原文正文未逐项列出，表 4 标题注明"tuned various re-ranking models to achieve accuracy performances"，即在精度对齐条件下比较公平性）。原文未报告配对显著性检验（如 <span class="arithmatex">\(p&lt;0.05\)</span>）细节。</li>
+<li><strong>数据划分与防穿越</strong>: 按时间排序，前 80% 交互训练基模型，后 20% 作为重排测试流（时序切分，无穿越）。</li>
+<li><strong>排名评测协议</strong>: 全候选列表重排（<span class="arithmatex">\(K=10/20\)</span>），精度用 NDCG@K，公平用 EF@K、GINI@K、MMF@K（最差 20% 组聚合分数）。<strong>关键约束</strong>：所有方法调参至 NDCG 达到基模型 99% 以上再比公平性，模拟线上"精度损失 &lt;1% 可忽略"。</li>
+<li><strong>对比基线与超参</strong>: CPFair（贪心背包）、Min-regularizer、P-MMF（镜像梯度）、ElasticRank、FairSync；<span class="arithmatex">\(\alpha,\beta\in[-3,3]\)</span>，<span class="arithmatex">\(a_e,a_s\in[0.1,1]\)</span>；<span class="arithmatex">\(t\)</span>-test<span class="arithmatex">\(p&lt;0.05\)</span>。</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>表 4 在 7 个数据集上对比 ManifoldRank 与 FairSync、PMMF、CPFair、Min-regularizer、ElasticRank 等基线，并在精度对齐条件下比较公平性表现：</p>
-<figure class="paper-figure">
-  <img alt="表 4" src="../../../../../assets/papers/2604.25577v1/table_4.png" /><figcaption>表 4</figcaption>
-</figure>
+<p>SASRec 基模型，<span class="arithmatex">\(K=10\)</span>（<span class="arithmatex">\(K=20\)</span> 趋势一致），EF 越接近 0 越好、GINI 越低越好、MMF 越高越好：</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
 <th style="text-align: left;">指标</th>
-<th style="text-align: center;">传统/协同过滤基线</th>
-<th style="text-align: center;">序列/图/多模态最强基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;">CPFair</th>
+<th style="text-align: center;">Min-reg</th>
+<th style="text-align: center;">P-MMF</th>
+<th style="text-align: center;">FairSync</th>
+<th style="text-align: center;">ElasticRank</th>
+<th style="text-align: center;"><strong>ManifoldRank</strong></th>
+<th style="text-align: center;">Improv.</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Amazon Music / Fashion / Software / Industrial / Arts 等 7 个数据集</td>
-<td style="text-align: left;">精度对齐下的公平性指标</td>
-<td style="text-align: center;">FairSync / PMMF / CPFair / Min-regularizer / ElasticRank</td>
-<td style="text-align: center;">同左（最强基线）</td>
-<td style="text-align: center;"><strong>ManifoldRank</strong></td>
-<td style="text-align: center;">原文表 4 报告（正文未给出具体百分比，不臆造）</td>
+<td style="text-align: left;">Steam</td>
+<td style="text-align: left;">EF@10</td>
+<td style="text-align: center;">-12.797</td>
+<td style="text-align: center;">-20.326</td>
+<td style="text-align: center;">-26.329</td>
+<td style="text-align: center;">-3.5548</td>
+<td style="text-align: center;">-4.9473</td>
+<td style="text-align: center;"><strong>-3.3971</strong></td>
+<td style="text-align: center;">+4.4% vs FairSync</td>
+</tr>
+<tr>
+<td style="text-align: left;">Steam</td>
+<td style="text-align: left;">GINI@10</td>
+<td style="text-align: center;">0.6612</td>
+<td style="text-align: center;">0.6763</td>
+<td style="text-align: center;">0.6675</td>
+<td style="text-align: center;">0.6985</td>
+<td style="text-align: center;">0.7742</td>
+<td style="text-align: center;"><strong>0.6608</strong></td>
+<td style="text-align: center;">-5.4%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Steam</td>
+<td style="text-align: left;">MMF@10</td>
+<td style="text-align: center;">0.0430</td>
+<td style="text-align: center;">0.0259</td>
+<td style="text-align: center;">0.0530</td>
+<td style="text-align: center;">0.0688</td>
+<td style="text-align: center;">0.0452</td>
+<td style="text-align: center;"><strong>0.0754</strong></td>
+<td style="text-align: center;">+9.6%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Music</td>
+<td style="text-align: left;">EF@10</td>
+<td style="text-align: center;">-15.884</td>
+<td style="text-align: center;">-15.907</td>
+<td style="text-align: center;">-2.8046</td>
+<td style="text-align: center;">-2.8208</td>
+<td style="text-align: center;">-4.9056</td>
+<td style="text-align: center;"><strong>-2.3834</strong></td>
+<td style="text-align: center;">+15.5%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Music</td>
+<td style="text-align: left;">MMF@10</td>
+<td style="text-align: center;">0.0745</td>
+<td style="text-align: center;">0.0945</td>
+<td style="text-align: center;">0.0957</td>
+<td style="text-align: center;">0.1167</td>
+<td style="text-align: center;">0.0465</td>
+<td style="text-align: center;"><strong>0.1255</strong></td>
+<td style="text-align: center;">+7.5%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Industrial</td>
+<td style="text-align: left;">EF@10</td>
+<td style="text-align: center;">-2.1845</td>
+<td style="text-align: center;">-2.7667</td>
+<td style="text-align: center;">-1.6128</td>
+<td style="text-align: center;">-1.2458</td>
+<td style="text-align: center;">-1.2652</td>
+<td style="text-align: center;"><strong>-1.0860</strong></td>
+<td style="text-align: center;">+12.8%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Industrial</td>
+<td style="text-align: left;">GINI@10</td>
+<td style="text-align: center;">0.5165</td>
+<td style="text-align: center;">0.5831</td>
+<td style="text-align: center;">0.5571</td>
+<td style="text-align: center;">0.4863</td>
+<td style="text-align: center;">0.5770</td>
+<td style="text-align: center;"><strong>0.4608</strong></td>
+<td style="text-align: center;">-5.2%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Arts</td>
+<td style="text-align: left;">MMF@10</td>
+<td style="text-align: center;">0.1700</td>
+<td style="text-align: center;">0.1364</td>
+<td style="text-align: center;">0.1607</td>
+<td style="text-align: center;">0.2140</td>
+<td style="text-align: center;">0.1721</td>
+<td style="text-align: center;"><strong>0.2190</strong></td>
+<td style="text-align: center;">+2.3%</td>
+</tr>
+<tr>
+<td style="text-align: left;">AliEC</td>
+<td style="text-align: left;">EF@10</td>
+<td style="text-align: center;">-21.618</td>
+<td style="text-align: center;">-21.623</td>
+<td style="text-align: center;">-8.7536</td>
+<td style="text-align: center;">-3.8817</td>
+<td style="text-align: center;">-3.5795</td>
+<td style="text-align: center;"><strong>-3.2473</strong></td>
+<td style="text-align: center;">+9.3%</td>
+</tr>
+<tr>
+<td style="text-align: left;">AliEC</td>
+<td style="text-align: left;">GINI@10</td>
+<td style="text-align: center;">0.7735</td>
+<td style="text-align: center;">0.7903</td>
+<td style="text-align: center;">0.8147</td>
+<td style="text-align: center;">0.7621</td>
+<td style="text-align: center;">0.7937</td>
+<td style="text-align: center;"><strong>0.7065</strong></td>
+<td style="text-align: center;">-7.3%</td>
 </tr>
 </tbody>
 </table>
-<p>图 1 给出 20+ 设置下各在线公平重排方法的排名分布（越低越好），显示现有方法排名波动大，而 ManifoldRank 在多数设置下排名靠前：</p>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2604.25577v1/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文正文未提供独立的消融表格；从方法结构看，两项梯度调整（供给侧 <span class="arithmatex">\(\eta_g\)</span> 与需求侧 <span class="arithmatex">\(\zeta\)</span>）是核心贡献，但正文未报告"去掉 <span class="arithmatex">\(\zeta\)</span> 仅用 <span class="arithmatex">\(\eta_g\)</span>"或"去掉 <span class="arithmatex">\(\eta_g\)</span> 仅用 <span class="arithmatex">\(\zeta\)</span>"的定量消融数值。原文未报告该部分，需查阅附录/补充材料确认。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">配置</th>
+<th style="text-align: center;">BPR EF@10</th>
+<th style="text-align: center;">GRU4Rec EF@10</th>
+<th style="text-align: center;">SASRec EF@10</th>
+<th style="text-align: left;">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">FairSync</td>
+<td style="text-align: center;">-0.1861</td>
+<td style="text-align: center;">-0.9317</td>
+<td style="text-align: center;">-1.0610</td>
+<td style="text-align: left;">最强基线</td>
+</tr>
+<tr>
+<td style="text-align: left;">ElasticRank</td>
+<td style="text-align: center;">-0.0136</td>
+<td style="text-align: center;">-1.1096</td>
+<td style="text-align: center;">-1.0514</td>
+<td style="text-align: left;">次强基线</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>ManifoldRank</strong></td>
+<td style="text-align: center;"><strong>-0.0120</strong></td>
+<td style="text-align: center;"><strong>-0.7876</strong></td>
+<td style="text-align: center;"><strong>-0.9124</strong></td>
+<td style="text-align: left;">三基模型全胜</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o 需求侧 <span class="arithmatex">\(\zeta\)</span>（<span class="arithmatex">\(\zeta\equiv1\)</span>）</td>
+<td style="text-align: center;">退化至纯供给侧</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: left;">图 6 序回归证明熵/偏度是有效代理</td>
+</tr>
+<tr>
+<td style="text-align: left;"><span class="arithmatex">\(\alpha\)</span> 增大</td>
+<td style="text-align: center;">EF 改善、NDCG 下降</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: left;">全局税率单调生效</td>
+</tr>
+<tr>
+<td style="text-align: left;"><span class="arithmatex">\(\beta\in[-2,1]\)</span>增大</td>
+<td style="text-align: center;">EF 变差、NDCG 变好</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: left;">局部税率非单调，<span class="arithmatex">\(\beta&gt;1\)</span> 后反转</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>公平性几乎全面占优</strong>：42 个（数据集 × <span class="arithmatex">\(K\)</span> × 指标）设置中 41 个最优，仅 1 个例外；在 AliEC 上 GINI 从 FairSync 的 0.7621 降至 0.7065（-7.3%），说明供给侧曲率项在大规模电商流上收益最显著。</li>
+<li><strong>帕累托前沿整体右上移</strong>（图 3）：在相同 NDCG 水平下 EF 更高、相同 EF 下 NDCG 更高，证明"精度 99% 约束下的公平增益"不是靠牺牲精度换来的，而是流形对齐带来的免费午餐。</li>
+<li><strong>需求侧代理项是必要且可解释的</strong>：图 6 序回归显示熵系数为正、偏度系数为负且置信区间远离 0，峰度等接近 0；图 5 显示 ManifoldRank 前 140 步公平提升较缓但长期反超 FairSync，且全程 NDCG 更高，适合长周期大规模部署。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>用户/物品交互频次分桶表现</strong>: 原文未报告长尾/冷启动分桶实验。</li>
-<li><strong>关键超参数敏感度</strong>: 核心超参为全局税率 <span class="arithmatex">\(\alpha\)</span>、局部税率 <span class="arithmatex">\(\beta\)</span>（决定公平度量类型，见表 2）以及需求侧系数 <span class="arithmatex">\(a_e,a_s\)</span>。图 3 给出 Amazon Industrial 与 Scientific 域在 SASRec 基座下、不同列表规模 <span class="arithmatex">\(K\)</span> 的帕累托前沿，展示精度-公平权衡随 <span class="arithmatex">\(K\)</span> 的变化：</li>
-</ul>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2604.25577v1/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<ul>
-<li><strong>线上 A/B 测试结果 (Online A/B Test)</strong>: 原文仅包含离线实验，未报告线上 A/B 测试。</li>
-</ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>理论统一性强</strong>：用瓦尔拉斯均衡 + 流形优化把"公平即税收"的直觉上升为严格数学等价（定理 4、5），并证明税收函数 <span class="arithmatex">\(r(v_g)\)</span> 可泛化 max-min、<span class="arithmatex">\(p\)</span>-norm、弹性公平、<span class="arithmatex">\(\alpha\)</span>-fairness、比例公平等多种度量（表 2），具有很好的可迁移性。</li>
-<li><strong>需求侧几何代理变量</strong>：用排序分数的熵与偏度预测梯度步长，是一个轻量且可复用的"流形几何感知"技巧，可迁移到其他在线重排/多目标重排场景。</li>
-<li><strong>工程友好</strong>：每用户 <span class="arithmatex">\(O(|\mathcal{G}|)\)</span> 开销，无需 MILP，适合在线部署；代码集成于 FairDiverse 工具包，复现成本低。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议细节缺失</strong>：正文未明确数据划分方式、具体精度/公平指标名称、显著性检验，削弱了实验可复现性与结论强度。</li>
-<li><strong>消融不充分</strong>：两项梯度调整的独立贡献未定量拆解，难以判断哪一项是性能主因。</li>
-<li><strong>需求侧代理变量的理论依据偏弱</strong>：<span class="arithmatex">\(\zeta=a_e\mathrm{Entropy}(s)-a_s\mathrm{Skew}(s)\)</span> 来自序数回归的经验观察，缺乏对流形几何的严格刻画，泛化到分布差异极大的场景时可能失效。</li>
-<li><strong>无线上验证</strong>：作为面向工业在线场景的方法，缺少真实系统的延迟与业务指标（CTR/留存）验证。</li>
-<li><strong>公平度量依赖组划分</strong>：物品需属于唯一组 <span class="arithmatex">\(g\)</span>，对多属性/重叠分组场景的扩展性未讨论。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: P-MMF 用镜像梯度只优化最差组、ElasticRank 用曝光弹性当梯度、FairSync 用在线梯度保底曝光——三者均与排序分数分布解耦；本文首次把排序分数矩阵的统计几何（熵/偏度）显式注入梯度步长，并用瓦尔拉斯均衡给出帕累托最优的理论背书。</li>
+<li><strong>可迁移亮点</strong>: ① "公平分数 = 方向 × 步长"的解耦范式可直接移植到多样性重排、曝光配额控制；② 用 <span class="arithmatex">\((\alpha,\beta)\)</span> 统一 5 种公平指标，工程上只需调两个标量即可切换业务口径。</li>
+<li><strong>审稿级局限批判</strong>: ① 需求侧 <span class="arithmatex">\(\zeta\)</span>是经验代理而非严格流形等价（作者自认），缺乏收敛性保证；② 理论仅覆盖固定<span class="arithmatex">\(K\)</span>的静态设定，未处理动态候选池与长期留存；③ 每步需重算全组<span class="arithmatex">\(v_g\)</span>与<span class="arithmatex">\(G\)</span>，组数达数百时（如 AliEC 117 组）在线开销需实测。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐（经济学均衡与流形优化的严格等价是有新意的理论贡献）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐（覆盖 7 数据集 × 3 基座 × 20+ 设置较广，但划分/指标/显著性细节缺失，消融不足）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐（定理链条完整、类比清晰，但部分证明置于附录、正文符号略密）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐（在线 <span class="arithmatex">\(O(|\mathcal{G}|)\)</span> 复杂度、代码开源集成 FairDiverse，落地友好；缺线上验证扣分）</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （注意力市场 + 流形几何的双重理论包装扎实，Theorem 4/5 给出帕累托最优与单一税制的严格对应，但需求侧代理偏启发式）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （7 数据集 × 3 基模型 × 2 个 <span class="arithmatex">\(K\)</span>× 3 公平指标，先做 20 余设置的一致性诊断再提方法，<span class="arithmatex">\(t\)</span>-test 显著性齐全，消融覆盖参数敏感度与在线轨迹）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （供需曲线类比清晰、附录五个定理证明完整，但正文符号 <span class="arithmatex">\(f_g\)</span>与<span class="arithmatex">\(r(v_g)\)</span> 混用略增阅读成本）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （闭式梯度仅需算术运算、无训练无负采样，代码已并入 FairDiverse 工具包，唯一待验证的是大组数下的在线时延）</li>
 </ul>
-<h2 id="_1">论文图表</h2>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2604.25577v1/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2604.25577v1/figure_2.png" /><figcaption>图 2</figcaption>
-</figure>
 
 
 

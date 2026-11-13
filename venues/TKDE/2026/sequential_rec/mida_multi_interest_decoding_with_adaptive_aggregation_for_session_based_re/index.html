@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,7 +4220,7 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/downw/MIDA">https://github.com/downw/MIDA</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>本文指出 SBR 的性能瓶颈不在编码器而在<strong>解码器</strong>：池化解码器抹平序列结构，逐点解码器（以末位物品为锚）存在强近因偏差，导致会话越长反而越差。MIDA 提出编码器无关的解码重构——在<strong>原始嵌入空间</strong>做可微多兴趣聚类（学习阈值 <span class="arithmatex">\(\tau\)</span>），在<strong>编码器输出空间</strong>用稳定性/可塑性双查询做注意力聚合，并以平均簇大小 <span class="arithmatex">\(\bar{c}\)</span> 门控融合。在 4 个数据集、4 类骨干上以 Full-Ranking 协议评测，GCE-GNN+MIDA 在 Diginetica 上 R@5 提升 3.21%、M@5 提升 5.04%，长会话（16+）与高语义分散会话增益更大（最高 +19.7% MRR@5）。</p>
+<p>本文指出 SBR 的性能瓶颈不在编码器而在<strong>解码器</strong>：池化解码器抹平序列结构，逐点解码器（以末位物品为锚）存在强近因偏差，导致会话越长反而越差。MIDA 提出编码器无关的解码重构——在<strong>原始嵌入空间</strong>做可微多兴趣聚类（学习阈值 <span class="arithmatex">\(\tau\)</span>），在<strong>编码器输出空间</strong>用稳定性/可塑性双查询做注意力聚合，并以平均簇大小<span class="arithmatex">\(\bar{c}\)</span> 门控融合。在 4 个数据集、4 类骨干上以 Full-Ranking 协议评测，GCE-GNN+MIDA 在 Diginetica 上 R@5 提升 3.21%、M@5 提升 5.04%，长会话（16+）与高语义分散会话增益更大（最高 +19.7% MRR@5）。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: SBR 普遍采用 encoder-decoder 框架，图网络（SR-GNN/GCE-GNN）、RNN（GRU4Rec）、Transformer（MiaSRec）等研究几乎全部聚焦编码器，解码器长期沿用"末位物品注意力"或"均值/最大池化"两种固定范式。</li>
@@ -4222,7 +4233,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入会话 <span class="arithmatex">\(S=[v_1,\dots,v_L]\)</span>，嵌入层给出原始嵌入 <span class="arithmatex">\(h_i\)</span> 与编码器输出 <span class="arithmatex">\(h_i^{enc}\)</span>。<strong>双空间解耦</strong>是全文设计原则：聚类只在原始嵌入上做（避免编码器学到的关系偏置污染语义分组），聚合只在编码器输出上做（保留序列依赖）。动态多兴趣聚类在可学习阈值 <span class="arithmatex">\(\tau\)</span> 下生成软簇权重与簇增强嵌入 <span class="arithmatex">\(\hat{h}_i\)</span>；自适应聚合由此构造稳定性查询 <span class="arithmatex">\(q_{st}\)</span>（跨时间距离的持久兴趣）与可塑性查询 <span class="arithmatex">\(q_{pl}\)</span>（末位锚定的演化兴趣），分别对编码器输出做注意力，最后由以平均簇大小 <span class="arithmatex">\(\bar{c}\)</span> 为条件的门控融合成会话表示 <span class="arithmatex">\(h_S\)</span>，与全库物品内积打分。训练端到端单次前向，推理仅一次前向。</p>
+<p>输入会话 <span class="arithmatex">\(S=[v_1,\dots,v_L]\)</span>，嵌入层给出原始嵌入<span class="arithmatex">\(h_i\)</span>与编码器输出<span class="arithmatex">\(h_i^{enc}\)</span>。<strong>双空间解耦</strong>是全文设计原则：聚类只在原始嵌入上做（避免编码器学到的关系偏置污染语义分组），聚合只在编码器输出上做（保留序列依赖）。动态多兴趣聚类在可学习阈值<span class="arithmatex">\(\tau\)</span>下生成软簇权重与簇增强嵌入<span class="arithmatex">\(\hat{h}_i\)</span>；自适应聚合由此构造稳定性查询<span class="arithmatex">\(q_{st}\)</span>（跨时间距离的持久兴趣）与可塑性查询<span class="arithmatex">\(q_{pl}\)</span>（末位锚定的演化兴趣），分别对编码器输出做注意力，最后由以平均簇大小<span class="arithmatex">\(\bar{c}\)</span>为条件的门控融合成会话表示<span class="arithmatex">\(h_S\)</span>，与全库物品内积打分。训练端到端单次前向，推理仅一次前向。</p>
 <pre class="mermaid"><code>flowchart TD
     A["会话 S: 原始嵌入 h_i + 编码器输出 h_i^enc"] --&gt; B["动态多兴趣聚类（原始嵌入空间）: 相似度 M_ij → 软簇权重 w̃_ij → 簇增强嵌入 ĥ_i"]
     B --&gt; C["自适应聚合: 稳定性查询 q_st（对数簇大小加权）/ 可塑性查询 q_pl（末位锚定）"]
@@ -4235,21 +4246,21 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>可微多兴趣聚类（Dynamic Multi-Interest Clustering）</strong>：痛点是用编码器输出算相似度会把"物品身份"与"会话上下文关系"混为一谈，且硬阈值不可导、top-k 需预设兴趣数。做法：对 <span class="arithmatex">\(\ell_2\)</span> 归一化原始嵌入按步长 <span class="arithmatex">\(k=4\)</span> 维度下采样得 <span class="arithmatex">\(\tilde{h}'_i\)</span>，算 <span class="arithmatex">\(M_{ij}=\tilde{h}'_i{}^\top\tilde{h}'_j\)</span>；簇定义为 <span class="arithmatex">\(C_i=\{j \mid M_{ij}\ge\tau\}\)</span>（无 top-k 截断），并用 sigmoid 软化：
+<p><strong>可微多兴趣聚类（Dynamic Multi-Interest Clustering）</strong>：痛点是用编码器输出算相似度会把"物品身份"与"会话上下文关系"混为一谈，且硬阈值不可导、top-k 需预设兴趣数。做法：对 <span class="arithmatex">\(\ell_2\)</span>归一化原始嵌入按步长<span class="arithmatex">\(k=4\)</span>维度下采样得<span class="arithmatex">\(\tilde{h}'_i\)</span>，算<span class="arithmatex">\(M_{ij}=\tilde{h}'_i{}^\top\tilde{h}'_j\)</span>；簇定义为<span class="arithmatex">\(C_i=\{j \mid M_{ij}\ge\tau\}\)</span>（无 top-k 截断），并用 sigmoid 软化：
 $<span class="arithmatex">\(\tilde{w}_{ij}=\max\left\{\sigma_s\!\left(\frac{M_{ij}-\tau}{\gamma}\right),\ \epsilon\right\}\)</span>$
-<span class="arithmatex">\(\tau\)</span> 为<strong>全数据集共享的可学习标量</strong>（初值 0.4，随预测损失反传更新），<span class="arithmatex">\(\gamma=0.1\)</span>、<span class="arithmatex">\(\epsilon=10^{-6}\)</span>。簇内再用带位置嵌入的共享注意力加权聚合得 <span class="arithmatex">\(\hat{h}_i=\mathrm{ReLU}\big(\sum_{j\in C_i}\tilde{w}_{ij}\tilde{h}_j/\sum_{j'}\tilde{w}_{ij'}\big)\)</span>。直觉：语义相近但时间相隔远的物品被拉进同一簇，长程依赖得以保留。</p>
+<span class="arithmatex">\(\tau\)</span>为<strong>全数据集共享的可学习标量</strong>（初值 0.4，随预测损失反传更新），<span class="arithmatex">\(\gamma=0.1\)</span>、<span class="arithmatex">\(\epsilon=10^{-6}\)</span>。簇内再用带位置嵌入的共享注意力加权聚合得<span class="arithmatex">\(\hat{h}_i=\mathrm{ReLU}\big(\sum_{j\in C_i}\tilde{w}_{ij}\tilde{h}_j/\sum_{j'}\tilde{w}_{ij'}\big)\)</span>。直觉：语义相近但时间相隔远的物品被拉进同一簇，长程依赖得以保留。</p>
 </li>
 <li>
 <p><strong>稳定性-可塑性双查询与结构耦合门控（Adaptive Aggregation）</strong>：痛点单一聚合规则无法同时兼顾持久偏好与突变偏好。稳定性查询取对数簇大小加权和（排除末位物品避免与可塑性分支混淆）：
 $<span class="arithmatex">\(q_{st}=\sum_{i=1}^{L-1}\alpha_i\hat{h}_i,\quad \alpha_i=\ln\!\left(1+\frac{|C_i|}{2}\right)\)</span>$
-可塑性查询直接锚定末位簇增强嵌入 <span class="arithmatex">\(q_{pl}=\hat{h}_L\)</span>。两分支各自独立注意力头（<strong>参数不共享</strong>，避免梯度干扰）对 <span class="arithmatex">\(\{h_i^{enc}\|p_i\}\)</span> 聚合得 <span class="arithmatex">\(z_{st},z_{pl}\)</span>，门控为
+可塑性查询直接锚定末位簇增强嵌入 <span class="arithmatex">\(q_{pl}=\hat{h}_L\)</span>。两分支各自独立注意力头（<strong>参数不共享</strong>，避免梯度干扰）对<span class="arithmatex">\(\{h_i^{enc}\|p_i\}\)</span>聚合得<span class="arithmatex">\(z_{st},z_{pl}\)</span>，门控为
 $<span class="arithmatex">\(g=\sigma_s\big(W_g[z_{pl}\,\|\,z_{st}\,\|\,\bar{c}]\big),\quad h_S=g\odot z_{pl}+(1-g)\odot z_{st}\)</span>$
-关键在 <span class="arithmatex">\(\bar{c}\)</span> 这一<strong>结构耦合信号</strong>：平均簇大意味着会话语义内聚、应偏向稳定性；簇稀疏则偏向可塑性。作者报告收敛后 <span class="arithmatex">\(W_g\)</span> 中 <span class="arithmatex">\(\bar{c}\)</span> 的系数为 <span class="arithmatex">\(-0.47\)</span>（四个骨干一致），与设计预期符号吻合。</p>
+关键在 <span class="arithmatex">\(\bar{c}\)</span>这一<strong>结构耦合信号</strong>：平均簇大意味着会话语义内聚、应偏向稳定性；簇稀疏则偏向可塑性。作者报告收敛后<span class="arithmatex">\(W_g\)</span>中<span class="arithmatex">\(\bar{c}\)</span>的系数为<span class="arithmatex">\(-0.47\)</span>（四个骨干一致），与设计预期符号吻合。</p>
 </li>
 <li>
 <p><strong>训练目标、正则与推理效率</strong>：损失为 NLL 加簇密度正则：
 $<span class="arithmatex">\(\mathcal{L}(S)=-\log p(v_{L+1}\mid h_S)+\eta\sum_{i}\sum_{j}\tilde{w}_{ij}\)</span>$
-正则项对 <span class="arithmatex">\(\tau\)</span> 单调非增（命题 1：<span class="arithmatex">\(\tau\to-\infty\)</span> 时趋于 <span class="arithmatex">\(L^2\)</span>，<span class="arithmatex">\(\tau\to+\infty\)</span> 时趋于 <span class="arithmatex">\(L^2\epsilon\)</span>），防止 <span class="arithmatex">\(\tau\)</span> 塌缩导致全稠密簇。<strong>无负采样</strong>，全库 softmax。复杂度 <span class="arithmatex">\(O(L^2d/k+Ld^2+d|\mathcal{V}|)\)</span>，解码器仅约 30K 参数（<span class="arithmatex">\(d=100\)</span>），推理较 Naive 仅增 0.041–0.060 ms/session，比 AttenMixer 快 1.35–2.65 倍。</p>
+正则项对 <span class="arithmatex">\(\tau\)</span>单调非增（命题 1：<span class="arithmatex">\(\tau\to-\infty\)</span>时趋于<span class="arithmatex">\(L^2\)</span>，<span class="arithmatex">\(\tau\to+\infty\)</span>时趋于<span class="arithmatex">\(L^2\epsilon\)</span>），防止<span class="arithmatex">\(\tau\)</span>塌缩导致全稠密簇。<strong>无负采样</strong>，全库 softmax。复杂度<span class="arithmatex">\(O(L^2d/k+Ld^2+d|\mathcal{V}|)\)</span>，解码器仅约 30K 参数（<span class="arithmatex">\(d=100\)</span>），推理较 Naive 仅增 0.041–0.060 ms/session，比 AttenMixer 快 1.35–2.65 倍。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4305,7 +4316,7 @@ $<span class="arithmatex">\(\mathcal{L}(S)=-\log p(v_{L+1}\mid h_S)+\eta\sum_{i}
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: <strong>全局时间戳切分</strong>，按 8:1:1 分为训练/验证/测试，严格防穿越。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 无偏 <strong>Full-Ranking</strong>（对全物品词表打分，不做负采样），指标 Recall@5 与 MRR@5；5 个固定随机种子取均值，配对 t 检验 <span class="arithmatex">\(p&lt;0.05\)</span> 标 †。</li>
-<li><strong>对比基线与超参设置</strong>: 受控解码器替换协议——固定 4 类骨干（GRU4Rec / SR-GNN / GCE-GNN / MiaSRec），仅换解码器，对比 Naive、RL、Ms-PoE、AttenMixer、IDEA 五种解码方案；<span class="arithmatex">\(d=100\)</span>、batch=100、AdamW lr=1e-3、<span class="arithmatex">\(\eta\in\{0.05,0.01,0.005,0.001\}\)</span> 网格搜索、<span class="arithmatex">\(k=4\)</span>、早停 patience=5。</li>
+<li><strong>对比基线与超参设置</strong>: 受控解码器替换协议——固定 4 类骨干（GRU4Rec / SR-GNN / GCE-GNN / MiaSRec），仅换解码器，对比 Naive、RL、Ms-PoE、AttenMixer、IDEA 五种解码方案；<span class="arithmatex">\(d=100\)</span>、batch=100、AdamW lr=1e-3、<span class="arithmatex">\(\eta\in\{0.05,0.01,0.005,0.001\}\)</span>网格搜索、<span class="arithmatex">\(k=4\)</span>、早停 patience=5。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4482,12 +4493,18 @@ $<span class="arithmatex">\(\mathcal{L}(S)=-\log p(v_{L+1}\mid h_S)+\eta\sum_{i}
 <li><strong>可塑性分支比稳定性分支更不可替代，但固定选择策略最致命</strong>：<code>w/o q_pl</code> 在 Yoochoose 上 R@5 掉 1.41，大于 <code>w/o q_st</code> 的 1.07；而 <code>w F</code>（退化为单物品硬选）掉 4.38（相对 −9.4%），证明"多物品软聚合"本身贡献了主要收益，双分支是在此基础上的精调。</li>
 <li><strong>增益随会话长度与语义分散度单调上升，与命题 2 的理论退化一致</strong>：GCE-GNN+MIDA 在 Nowplaying 上 R@5 增益从短会话（1–5）的 +6.34% 升至 16+ 的 +15.06%；按语义分散度 <span class="arithmatex">\(\delta(S)\)</span> 分桶，高分散组 MRR@5 增益达 +19.7%（Nowplaying）、+16.3%（RetailRocket），而低分散组仅 +0.7%–+5.2%——低分散时会话近似同质，MIDA 优雅退化为均值池化，不产生负收益。此外 Diginetica 上簇类别纯度 0.67 远高于随机基线 0.26，验证簇确为语义分组。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 <strong>AttenMixer</strong> 的本质区别在于后者在编码器特征上再叠多层注意力传播，与 GCE-GNN 这类已做多跳传播的强编码器产生冗余与梯度干扰（GCE-GNN+AttenMixer 在四数据集全面劣于 Naive，Diginetica R@5 从 30.49 跌至 27.54）；MIDA 则把"哪些物品相关"（原始嵌入）与"如何按上下文聚合"（编码器输出）彻底分离。与 <strong>MiaSRec/DMI-GNN</strong> 等多兴趣方法相比，MIDA 不预设兴趣数、不做编码器级切分，而是把多兴趣建模下沉到解码阶段并进一步解耦稳定/演化意图。与 <strong>Ms-PoE</strong> 相比，后者仅重标定位置编码，无法解决语义层面的近因偏差。</li>
 <li><strong>可迁移亮点</strong>: ① "语义相似度用原始嵌入、上下文聚合用编码器输出"的双空间原则可直接迁移到长序列推荐与 LLM 会话推荐的 context token 聚合；② 用<strong>簇结构统计量（<span class="arithmatex">\(\bar{c}\)</span>）作为门控条件</strong>实现两阶段结构耦合，是一种低成本、可解释的"让上游结构指导下游融合"范式，可复用于多任务/多兴趣融合门控。</li>
-<li><strong>审稿级局限批判</strong>: ① 簇内两两相似度计算为 <span class="arithmatex">\(O(L^2)\)</span>，虽经 <span class="arithmatex">\(k=4\)</span> 下采样缓解，但 <span class="arithmatex">\(L\gg100\)</span> 的超长会话仍会带来不可忽视开销，且论文未给出 <span class="arithmatex">\(L&gt;50\)</span> 的延迟曲线；② 稳定/可塑性二分假设本质是"两类意图"，对真正多峰兴趣分布可能欠拟合，且 <span class="arithmatex">\(\tau\)</span> 为全数据集共享标量，逐会话 MLP 变体（<code>w τ MLP</code>）未见增益反而提示全局阈值可能掩盖会话级异质性；③ 簇纯度分析仅限 Diginetica（唯一有类目标签的数据集），其余数据集仅用嵌入内聚度间接佐证，证据链略弱。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 簇内两两相似度计算为 <span class="arithmatex">\(O(L^2)\)</span>，虽经<span class="arithmatex">\(k=4\)</span>下采样缓解，但<span class="arithmatex">\(L\gg100\)</span>的超长会话仍会带来不可忽视开销，且论文未给出<span class="arithmatex">\(L&gt;50\)</span>的延迟曲线；② 稳定/可塑性二分假设本质是"两类意图"，对真正多峰兴趣分布可能欠拟合，且<span class="arithmatex">\(\tau\)</span> 为全数据集共享标量，逐会话 MLP 变体（<code>w τ MLP</code>）未见增益反而提示全局阈值可能掩盖会话级异质性；③ 簇纯度分析仅限 Diginetica（唯一有类目标签的数据集），其余数据集仅用嵌入内聚度间接佐证，证据链略弱。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

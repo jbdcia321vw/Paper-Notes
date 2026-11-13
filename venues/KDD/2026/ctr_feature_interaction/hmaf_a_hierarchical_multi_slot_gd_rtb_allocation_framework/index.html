@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>HMAF 位于 GD 与 RTB 两条并行链路的汇合处，构建统一竞争舞台。<strong>Plan 阶段</strong>将 GD 履约建模为带 Page View 约束的凸优化问题，用分布式投影梯度迭代对偶变量 <span class="arithmatex">\(\alpha_j,\beta_i,\delta_{ij}\)</span>，得到闭式分配概率 <span class="arithmatex">\(x_{ij}\)</span>；<strong>Calibrate 阶段</strong>把对偶信号以 <span class="arithmatex">\(x_{ij}\cdot \text{PIDError}\)</span> 调制项注入 GD 打分，与 RTB 的 <span class="arithmatex">\(ctr\cdot CPC+gmv\)</span> 同台粗排，剪枝候选空间；<strong>Execute 阶段</strong>用 Transformer 生成候选-坑位分配矩阵，Evaluator 在生成列表与扰动列表集合中按列表级 eCPM 选出最优 <span class="arithmatex">\(S^\star\)</span> 作为监督标签，联合交叉熵与 eCPM 回归损失训练。</p>
+<p>HMAF 位于 GD 与 RTB 两条并行链路的汇合处，构建统一竞争舞台。<strong>Plan 阶段</strong>将 GD 履约建模为带 Page View 约束的凸优化问题，用分布式投影梯度迭代对偶变量 <span class="arithmatex">\(\alpha_j,\beta_i,\delta_{ij}\)</span>，得到闭式分配概率<span class="arithmatex">\(x_{ij}\)</span>；<strong>Calibrate 阶段</strong>把对偶信号以<span class="arithmatex">\(x_{ij}\cdot \text{PIDError}\)</span>调制项注入 GD 打分，与 RTB 的<span class="arithmatex">\(ctr\cdot CPC+gmv\)</span>同台粗排，剪枝候选空间；<strong>Execute 阶段</strong>用 Transformer 生成候选-坑位分配矩阵，Evaluator 在生成列表与扰动列表集合中按列表级 eCPM 选出最优<span class="arithmatex">\(S^\star\)</span> 作为监督标签，联合交叉熵与 eCPM 回归损失训练。</p>
 <pre class="mermaid"><code>flowchart TD
     A["请求流 + GD合约/RTB候选"] --&gt; B["Plan: PV约束对偶优化&lt;br/&gt;输出 α_j, β_i, δ_ij, x_ij"]
     B --&gt; C["Calibrate: 对偶引导统一预排&lt;br/&gt;rs_j 打分 + 候选剪枝"]
@@ -4243,13 +4254,13 @@
 <li>
 <p><strong>PV 约束对偶分配（Plan）</strong>：痛点是对偶约束只到合约/请求级，无法限制同页多坑位的过度曝光。本文新增坑位级约束 <span class="arithmatex">\(s_i x_{ij}\le pv_i\)</span>，由 KKT 条件导出闭式分配
 $<span class="arithmatex">\(x_{ij}=\max\Big\{0,\ \theta_j\Big(1+\tfrac{w_j+\lambda_j c_{ij}-\alpha_j-\beta_i-\delta_{ij}}{V_j}\Big)\Big\}\)</span>$
-其中 <span class="arithmatex">\(\alpha_j\)</span> 为合约需求影子价、<span class="arithmatex">\(\beta_i\)</span> 为请求容量价、<span class="arithmatex">\(\delta_{ij}\)</span> 为坑位曝光价。直觉：三类对偶变量把"全局资源稀缺"编码为逐请求可查的标量，在线侧无需重解优化即可感知约束紧度。</p>
+其中 <span class="arithmatex">\(\alpha_j\)</span>为合约需求影子价、<span class="arithmatex">\(\beta_i\)</span>为请求容量价、<span class="arithmatex">\(\delta_{ij}\)</span> 为坑位曝光价。直觉：三类对偶变量把"全局资源稀缺"编码为逐请求可查的标量，在线侧无需重解优化即可感知约束紧度。</p>
 </li>
 <li>
-<p><strong>对偶引导统一预排（Calibrate）</strong>：GD 打分改为 <span class="arithmatex">\(rs_j = CPM_j\cdot(1+x_{ij}\cdot \text{PIDError})+gmv_j\)</span>，其中 <span class="arithmatex">\(\text{PIDError}\)</span> 由实时交付率 <span class="arithmatex">\(dr_j(t)=N_j(t)/B_j(t)\)</span> 相对目标 <span class="arithmatex">\(dr^*\)</span> 的偏差给出，并以 <span class="arithmatex">\(\mu_0\)</span> 保底防止开关抖动。与全局统一施压的传统 PID 不同，<span class="arithmatex">\(x_{ij}\)</span> 提供<strong>上下文级置信度</strong>，使调控压力按请求-合约匹配度差异化分配。</p>
+<p><strong>对偶引导统一预排（Calibrate）</strong>：GD 打分改为 <span class="arithmatex">\(rs_j = CPM_j\cdot(1+x_{ij}\cdot \text{PIDError})+gmv_j\)</span>，其中<span class="arithmatex">\(\text{PIDError}\)</span>由实时交付率<span class="arithmatex">\(dr_j(t)=N_j(t)/B_j(t)\)</span>相对目标<span class="arithmatex">\(dr^*\)</span>的偏差给出，并以<span class="arithmatex">\(\mu_0\)</span>保底防止开关抖动。与全局统一施压的传统 PID 不同，<span class="arithmatex">\(x_{ij}\)</span> 提供<strong>上下文级置信度</strong>，使调控压力按请求-合约匹配度差异化分配。</p>
 </li>
 <li>
-<p><strong>生成-评估列表重排与训练目标（Execute）</strong>：Generator 用 Transformer 编码候选-坑位交互，输出 <span class="arithmatex">\(\hat p_{ij}=\text{softmax}(x_j^\top p_i)\)</span> 并采样列表；Evaluator 在 <span class="arithmatex">\(\{S_g,S_1,\dots,S_l\}\)</span> 中选 <span class="arithmatex">\(S^\star=\arg\max R(S_k)\)</span> 转为二值标签矩阵 <span class="arithmatex">\(Y\)</span>。总损失
+<p><strong>生成-评估列表重排与训练目标（Execute）</strong>：Generator 用 Transformer 编码候选-坑位交互，输出 <span class="arithmatex">\(\hat p_{ij}=\text{softmax}(x_j^\top p_i)\)</span>并采样列表；Evaluator 在<span class="arithmatex">\(\{S_g,S_1,\dots,S_l\}\)</span>中选<span class="arithmatex">\(S^\star=\arg\max R(S_k)\)</span>转为二值标签矩阵<span class="arithmatex">\(Y\)</span>。总损失
 $<span class="arithmatex">\(\mathcal{L}=\psi_1\cdot\big(-\textstyle\sum_{i,j}Y_{ij}\log\hat p_{ij}\big)-\psi_2\cdot\sum_{(i,j)\in\mathcal{O}}(\hat e_{ij}-e_{ij})\)</span>$
 第二项直接惩罚预测 eCPM 与线上结算值的<strong>带符号偏差</strong>，纠正系统性高/低估。训练无需人工负采样，监督来自 Evaluator 的奖励引导伪标签；在线预排 &lt;5ms/广告、GE 推理 &lt;50ms/页面。</p>
 </li>
@@ -4418,12 +4429,18 @@ $<span class="arithmatex">\(\mathcal{L}=\psi_1\cdot\big(-\textstyle\sum_{i,j}Y_{
 <li><strong>GE 模块是收益-交付平衡的关键</strong>：w/o GE 时 RE 从 1.0000 降至 0.9252、GQ 降至 0.9382，证明列表级生成-评估对"把 GD 挤到非优质坑位、释放高价库存给 RTB"的帕累托改进不可替代。</li>
 <li><strong>PR 是效率换精度的划算交易</strong>：w/o PR 的 DR/UR 反而略高（0.9647/0.9810），但端到端优化时间从约 2 天压缩到 15 分钟，以边际性能损失换取可规模化部署，是工业落地的必要折衷。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: CONFLUX 做请求级单坑位原始-对偶 + 级联蒸馏，缺跨槽建模；LIBRA 用对抗奖励引导统一分配，但离线约束与在线决策仍是松耦合；HMAF 的本质差异是把<strong>坑位级 PV 约束的对偶解直接作为在线特征</strong>，并用生成-评估把无标签列表排序转为奖励引导监督。</li>
 <li><strong>可迁移亮点</strong>: ① "离线对偶影子价 → 在线模型全局状态特征"的注入范式可迁移到任何带预算/配额约束的排序场景（如预算约束推荐、库存约束电商）；② Evaluator 用扰动列表构造伪标签 + 带符号 eCPM 偏差惩罚，可复用于缺乏 ground-truth 排序的列表级重排任务。</li>
-<li><strong>审稿级局限批判</strong>: ① 评估完全依赖单一平台日志回放与业务指标，缺少公开数据集与标准全库排序协议，GA 之外的指标难以跨系统复现；② 对偶变量依赖每日重规划与 <span class="arithmatex">\([City]\times[Category]\)</span> 冷启动均值初始化，新合约密集期或流量突变下的鲁棒性未量化；③ 超参 <span class="arithmatex">\(dr^*,\mu_0,\psi_1,\psi_2\)</span> 敏感度分析显示存在明显最优窄区间，调参成本高。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 评估完全依赖单一平台日志回放与业务指标，缺少公开数据集与标准全库排序协议，GA 之外的指标难以跨系统复现；② 对偶变量依赖每日重规划与 <span class="arithmatex">\([City]\times[Category]\)</span>冷启动均值初始化，新合约密集期或流量突变下的鲁棒性未量化；③ 超参<span class="arithmatex">\(dr^*,\mu_0,\psi_1,\psi_2\)</span> 敏感度分析显示存在明显最优窄区间，调参成本高。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>PQA 是一个<strong>提示层（prompt-level）插件</strong>，不修改 LLM 权重。离线阶段，从用户真实交互历史中提取 top-<span class="arithmatex">\(K\)</span>（<span class="arithmatex">\(K=5\)</span>）类目，按会话切分并计算加权类目重叠基线 <span class="arithmatex">\(\mu_u\)</span>；在线模拟阶段，对当前推荐页计算页面级类目重叠率并与 <span class="arithmatex">\(\mu_u\)</span> 比较得到相对质量比，映射为 ABOVE/NORMAL/BELOW 三档标签注入系统提示；模拟器先基于页面质量形成"整体感受"（活跃度被显式禁止改写该判断），再联合质量标签、活跃度与累积会话疲劳做出继续/退出决策。</p>
+<p>PQA 是一个<strong>提示层（prompt-level）插件</strong>，不修改 LLM 权重。离线阶段，从用户真实交互历史中提取 top-<span class="arithmatex">\(K\)</span>（<span class="arithmatex">\(K=5\)</span>）类目，按会话切分并计算加权类目重叠基线<span class="arithmatex">\(\mu_u\)</span>；在线模拟阶段，对当前推荐页计算页面级类目重叠率并与<span class="arithmatex">\(\mu_u\)</span> 比较得到相对质量比，映射为 ABOVE/NORMAL/BELOW 三档标签注入系统提示；模拟器先基于页面质量形成"整体感受"（活跃度被显式禁止改写该判断），再联合质量标签、活跃度与累积会话疲劳做出继续/退出决策。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户真实交互历史"] --&gt; B["top-K 类目 + 指数加权会话重叠 → 锚点 μ_u"]
     C["推荐列表分页 (4 items/page)"] --&gt; D["页面类目重叠率 / μ_u"]
@@ -4240,10 +4251,10 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>个性化页面质量锚点 <span class="arithmatex">\(\mu_u\)</span>（把"偏好标准"变成可比较的数值）</strong>：痛点在于模拟器没有量化标准，只能让活跃度自由裁量。作者直接复用诊断指标作为锚点：对会话 <span class="arithmatex">\(i\)</span> 计算 <span class="arithmatex">\(\text{overlap}_i=\frac{1}{|\text{session}_i|}\sum_{v}|\text{categories}(v)\cap \text{top-}K|\)</span>，再以 <span class="arithmatex">\(\gamma=0.9\)</span> 的指数权重聚合 <span class="arithmatex">\(\mu_u=\sum_i w_i\cdot\text{overlap}_i\)</span>（<span class="arithmatex">\(i=0\)</span> 为最近会话）。由于锚点完全来自真实历史，它天然刻画了该用户"可接受页面"的密度下界，无需人工调阈值。</p>
+<p><strong>个性化页面质量锚点 <span class="arithmatex">\(\mu_u\)</span>（把"偏好标准"变成可比较的数值）</strong>：痛点在于模拟器没有量化标准，只能让活跃度自由裁量。作者直接复用诊断指标作为锚点：对会话<span class="arithmatex">\(i\)</span>计算<span class="arithmatex">\(\text{overlap}_i=\frac{1}{|\text{session}_i|}\sum_{v}|\text{categories}(v)\cap \text{top-}K|\)</span>，再以<span class="arithmatex">\(\gamma=0.9\)</span>的指数权重聚合<span class="arithmatex">\(\mu_u=\sum_i w_i\cdot\text{overlap}_i\)</span>（<span class="arithmatex">\(i=0\)</span> 为最近会话）。由于锚点完全来自真实历史，它天然刻画了该用户"可接受页面"的密度下界，无需人工调阈值。</p>
 </li>
 <li>
-<p><strong>三档质量门控与退出规则（把活跃度关进"合规页面"的笼子）</strong>：将页面重叠率与 <span class="arithmatex">\(\mu_u\)</span> 的比值离散化为 ABOVE/NORMAL/BELOW（MovieLens 阈值 <span class="arithmatex">\((1.0,0.7)\)</span>，CDs 为 <span class="arithmatex">\((0.5,0.3)\)</span>）。ABOVE 页强制"再翻一页"，防止低活跃用户机械早退；NORMAL 页首次遇到给一页粘性探索；BELOW 页仅在首页给一次"好奇宽限"，<strong>连续两页 BELOW 则无视活跃度强制退出</strong>。直觉是：质量判断先于行为调节，活跃度只决定"在好页面里看多深"，而非"在坏页面里忍多久"。</p>
+<p><strong>三档质量门控与退出规则（把活跃度关进"合规页面"的笼子）</strong>：将页面重叠率与 <span class="arithmatex">\(\mu_u\)</span>的比值离散化为 ABOVE/NORMAL/BELOW（MovieLens 阈值<span class="arithmatex">\((1.0,0.7)\)</span>，CDs 为<span class="arithmatex">\((0.5,0.3)\)</span>）。ABOVE 页强制"再翻一页"，防止低活跃用户机械早退；NORMAL 页首次遇到给一页粘性探索；BELOW 页仅在首页给一次"好奇宽限"，<strong>连续两页 BELOW 则无视活跃度强制退出</strong>。直觉是：质量判断先于行为调节，活跃度只决定"在好页面里看多深"，而非"在坏页面里忍多久"。</p>
 </li>
 <li>
 <p><strong>训练目标、负采样与推理效率</strong>：本文无参数训练，PQA 是零样本提示工程，无损失函数与负采样设计。额外开销仅为每页一次类目集合交集运算与一次 prompt token 注入；主要成本仍是 LLM 调用（GPT-4o-mini），但由于 BELOW 页被提前截断，<strong>平均总页数反而下降</strong>，端到端模拟成本降低。</p>
@@ -4417,8 +4428,8 @@
 <tr>
 <th style="text-align: left;">受控变量</th>
 <th style="text-align: left;">设置</th>
-<th style="text-align: center;">Agent4Rec <span class="arithmatex">\(N_{exit}\)</span> (ML)</th>
-<th style="text-align: center;">Agent4Rec <span class="arithmatex">\(S_{sat}\)</span> (ML)</th>
+<th style="text-align: center;">Agent4Rec <span class="arithmatex">\(N_{exit}\)</span>(ML)</th>
+<th style="text-align: center;">Agent4Rec<span class="arithmatex">\(S_{sat}\)</span> (ML)</th>
 <th style="text-align: left;">结论</th>
 </tr>
 </thead>
@@ -4462,16 +4473,22 @@
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>膨胀是活跃度特异的，不是所有特质的通病</strong>：从众性与多样性放大后 <span class="arithmatex">\(N_{exit}\)</span> 与 <span class="arithmatex">\(S_{sat}\)</span> 波动均在 0.2 以内，而活跃度放大使 <span class="arithmatex">\(S_{sat}\)</span> 从 3.18 飙至 7.44（+134%），直接锁定行为特质为评估失效的唯一污染源。</li>
+<li><strong>膨胀是活跃度特异的，不是所有特质的通病</strong>：从众性与多样性放大后 <span class="arithmatex">\(N_{exit}\)</span>与<span class="arithmatex">\(S_{sat}\)</span>波动均在 0.2 以内，而活跃度放大使<span class="arithmatex">\(S_{sat}\)</span> 从 3.18 飙至 7.44（+134%），直接锁定行为特质为评估失效的唯一污染源。</li>
 <li><strong>膨胀与推荐质量解耦</strong>：在 1:9 极端劣化下，高活跃 Agent4Rec 仍探索 3.89 页、满意度 6.51，说明满意度度量的是"注入了多少活跃度"而非"推荐器多好"，这是对现有模拟器评估范式的根本性质疑。</li>
 <li><strong>PQA 的收益来自"过滤脏交互"而非"多造交互"</strong>：PQA-Agent4Rec 在 MovieLens 上 NDCG@5 相对 Base-Low 提升 8.1%、相对 Base-Low→High 提升 3.4%，且高活跃设定下不再出现性能倒退（Base 从 0.2945 跌至 0.2842，PQA 稳定在 0.2950），证明截断 BELOW 页确实阻止了偏好错配样本污染增广数据。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: Agent4Rec 与 SimUSER 专注于"把画像造得更真"（社会特质、感知/记忆模块），但默认特质独立且只报告聚合满意度；本文首次把矛头指向<strong>模拟器行为合规性</strong>本身，属于对评估工具的反身性审视。相较 RecoWorld 用模拟器主动反馈驱动推荐器适配，PQA 关注的是反馈信号本身是否可信，二者互补。</li>
 <li><strong>可迁移亮点</strong>: ① "用诊断指标反哺方法设计"——把度量基线直接复用为干预阈值，省去超参搜索；② 质量门控 + 连续低质强制退出的规则化 prompt 设计，可迁移到任何 LLM Agent 的多步决策早停场景（如工具调用、检索式问答）。</li>
-<li><strong>审稿级局限批判</strong>: ① 锚点仅基于<strong>类目级粗粒度重叠</strong>，对类目体系扁平或跨类目兴趣的用户（如 CDs）区分力弱，作者亦在结论中承认需引入 item-item 关系或协同信号；② 三档阈值 <span class="arithmatex">\((1.0,0.7)\)</span> / <span class="arithmatex">\((0.5,0.3)\)</span> 为数据集特定手工设定，跨域迁移需重新校准，且全文仅两个数据集、单一 LLM 后端（GPT-4o-mini），对模型规模与提示敏感性的鲁棒性证据不足；③ 人似度由 GPT-4o 自评，存在 LLM-as-judge 的自我偏好风险。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 锚点仅基于<strong>类目级粗粒度重叠</strong>，对类目体系扁平或跨类目兴趣的用户（如 CDs）区分力弱，作者亦在结论中承认需引入 item-item 关系或协同信号；② 三档阈值 <span class="arithmatex">\((1.0,0.7)\)</span>/<span class="arithmatex">\((0.5,0.3)\)</span> 为数据集特定手工设定，跨域迁移需重新校准，且全文仅两个数据集、单一 LLM 后端（GPT-4o-mini），对模型规模与提示敏感性的鲁棒性证据不足；③ 人似度由 GPT-4o 自评，存在 LLM-as-judge 的自我偏好风险。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

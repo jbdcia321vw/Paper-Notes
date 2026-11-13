@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][大语言模型推荐] 用 OPQ 并行码本生成用户个性化软指令提取 LLM 世界知识，并以拉格朗日原始-对偶约束可控融合进生成式推荐，离线最高 +11.23%，线上广告收入 +1.35%">
+        <meta name="description" content="[SIGIR 2026][大语言模型推荐] 用并行码本生成用户个性化软指令抽取 LLM 世界知识，并以拉格朗日原始-对偶约束控制知识融合，Full-Ranking 下最高相对提升 11.23%，线上广告收入 +1.35%">
       
       
       
@@ -108,7 +108,7 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 大语言模型推荐, 生成式端到端, 个性化软指令, 拉格朗日约束融合" />
+<meta name="keywords" content="SIGIR 2026, 大语言模型推荐, 生成式端到端, 个性化软指令, 拉格朗日约束优化" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
@@ -119,7 +119,7 @@
 
 <meta property="article:tag" content="个性化软指令" />
 
-<meta property="article:tag" content="拉格朗日约束融合" />
+<meta property="article:tag" content="拉格朗日约束优化" />
 
 
 
@@ -129,10 +129,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/lwgr_lagrangian_constrained_personalized_world_knowledge_for_generative_rec/" />
 <meta property="og:title" content="[Paper Note] LWGR: Lagrangian-Constrained Personalized World Knowledge for Generative Recommendation" />
-<meta property="og:description" content="[SIGIR 2026][大语言模型推荐] 用 OPQ 并行码本生成用户个性化软指令提取 LLM 世界知识，并以拉格朗日原始-对偶约束可控融合进生成式推荐，离线最高 +11.23%，线上广告收入 +1.35%" />
+<meta property="og:description" content="[SIGIR 2026][大语言模型推荐] 用并行码本生成用户个性化软指令抽取 LLM 世界知识，并以拉格朗日原始-对偶约束控制知识融合，Full-Ranking 下最高相对提升 11.23%，线上广告收入 +1.35%" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] LWGR: Lagrangian-Constrained Personalized World Knowledge for Generative Recommendation" />
-<meta name="twitter:description" content="[SIGIR 2026][大语言模型推荐] 用 OPQ 并行码本生成用户个性化软指令提取 LLM 世界知识，并以拉格朗日原始-对偶约束可控融合进生成式推荐，离线最高 +11.23%，线上广告收入 +1.35%" />
+<meta name="twitter:description" content="[SIGIR 2026][大语言模型推荐] 用并行码本生成用户个性化软指令抽取 LLM 世界知识，并以拉格朗日原始-对偶约束控制知识融合，Full-Ranking 下最高相对提升 11.23%，线上广告收入 +1.35%" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -158,7 +158,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] LWGR: Lagrangian-Constrained Personalized World Knowledge for Generative Recommendation",
   "headline": "[Paper Note] LWGR: Lagrangian-Constrained Personalized World Knowledge for Generative Recommendation",
-  "description": "[SIGIR 2026][\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350] \u7528 OPQ \u5e76\u884c\u7801\u672c\u751f\u6210\u7528\u6237\u4e2a\u6027\u5316\u8f6f\u6307\u4ee4\u63d0\u53d6 LLM \u4e16\u754c\u77e5\u8bc6\uff0c\u5e76\u4ee5\u62c9\u683c\u6717\u65e5\u539f\u59cb-\u5bf9\u5076\u7ea6\u675f\u53ef\u63a7\u878d\u5408\u8fdb\u751f\u6210\u5f0f\u63a8\u8350\uff0c\u79bb\u7ebf\u6700\u9ad8 +11.23%\uff0c\u7ebf\u4e0a\u5e7f\u544a\u6536\u5165 +1.35%",
+  "description": "[SIGIR 2026][\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350] \u7528\u5e76\u884c\u7801\u672c\u751f\u6210\u7528\u6237\u4e2a\u6027\u5316\u8f6f\u6307\u4ee4\u62bd\u53d6 LLM \u4e16\u754c\u77e5\u8bc6\uff0c\u5e76\u4ee5\u62c9\u683c\u6717\u65e5\u539f\u59cb-\u5bf9\u5076\u7ea6\u675f\u63a7\u5236\u77e5\u8bc6\u878d\u5408\uff0cFull-Ranking \u4e0b\u6700\u9ad8\u76f8\u5bf9\u63d0\u5347 11.23%\uff0c\u7ebf\u4e0a\u5e7f\u544a\u6536\u5165 +1.35%",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/lwgr_lagrangian_constrained_personalized_world_knowledge_for_generative_rec/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/lwgr_lagrangian_constrained_personalized_world_knowledge_for_generative_rec/",
   "inLanguage": "zh-CN",
@@ -166,17 +166,17 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350, \u751f\u6210\u5f0f\u7aef\u5230\u7aef, \u4e2a\u6027\u5316\u8f6f\u6307\u4ee4, \u62c9\u683c\u6717\u65e5\u7ea6\u675f\u878d\u5408",
+  "keywords": "SIGIR 2026, \u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350, \u751f\u6210\u5f0f\u7aef\u5230\u7aef, \u4e2a\u6027\u5316\u8f6f\u6307\u4ee4, \u62c9\u683c\u6717\u65e5\u7ea6\u675f\u4f18\u5316",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350" },
     { "@type": "Thing", "name": "\u751f\u6210\u5f0f\u7aef\u5230\u7aef" },
     { "@type": "Thing", "name": "\u4e2a\u6027\u5316\u8f6f\u6307\u4ee4" },
-    { "@type": "Thing", "name": "\u62c9\u683c\u6717\u65e5\u7ea6\u675f\u878d\u5408" }
+    { "@type": "Thing", "name": "\u62c9\u683c\u6717\u65e5\u7ea6\u675f\u4f18\u5316" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3994,10 +3994,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4008,7 +4008,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4016,22 +4016,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4039,32 +4039,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4091,12 +4069,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4114,7 +4092,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4122,10 +4100,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4138,10 +4116,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4178,9 +4156,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][大语言模型推荐] 用 OPQ 并行码本生成用户个性化软指令提取 LLM 世界知识，并以拉格朗日原始-对偶约束可控融合进生成式推荐，离线最高 +11.23%，线上广告收入 +1.35%</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][大语言模型推荐] 用并行码本生成用户个性化软指令抽取 LLM 世界知识，并以拉格朗日原始-对偶约束控制知识融合，Full-Ranking 下最高相对提升 11.23%，线上广告收入 +1.35%</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 大语言模型推荐 · 生成式端到端 · 个性化软指令 · 拉格朗日约束融合</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 大语言模型推荐 · 生成式端到端 · 个性化软指令 · 拉格朗日约束优化</p>
   
 </aside>
   
@@ -4222,7 +4200,7 @@
       
       
       
-        <span class="md-tag">拉格朗日约束融合</span>
+        <span class="md-tag">拉格朗日约束优化</span>
       
     
   </nav>
@@ -4235,205 +4213,289 @@
 <h1 id="lwgr-lagrangian-constrained-personalized-world-knowledge-for-generative-recommendation">LWGR: Lagrangian-Constrained Personalized World Knowledge for Generative Recommendation (拉格朗日约束的个性化世界知识生成式推荐)</h1>
 <ul>
 <li><strong>会议/期刊</strong>: SIGIR 2026</li>
-<li><strong>推荐链路定位</strong>: 端到端生成式 (End-to-End Generative) —— 基于 Semantic ID 的生成式召回</li>
-<li><strong>研究方向</strong>: 大语言模型推荐 (LLM4Rec) / 生成式推荐与离散语义 ID</li>
+<li><strong>作者与机构</strong>: Lingyu Mu, Hao Deng, Haibo Xing 等（中科院信息工程研究所 &amp; 阿里巴巴国际数字商业集团）</li>
+<li><strong>推荐链路定位</strong>: 召回（生成式端到端）</li>
+<li><strong>研究方向</strong>: 大语言模型推荐 / 生成式推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2605.18771v1">https://arxiv.org/abs/2605.18771v1</a></li>
-<li><strong>开源代码</strong>: 暂未开源（原文与预提取均未发现代码链接）</li>
+<li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对现有"提示词两阶段知识融合"生成式推荐中<strong>固定指令无法刻画用户兴趣异质性</strong>、<strong>知识融合无约束可能损害行为信号</strong>两大痛点，LWGR 用 OPQ 并行码本为每个用户生成个性化软指令以提取 LLM 世界知识，并把知识融合建模为带性能退化上界的约束优化问题，用拉格朗日原始-对偶法选择性吸收有益知识。在 Beauty/Toys/工业数据集上相对 8 个 SOTA 基线最高提升 11.23%，线上广告平台收入 +1.35%、CTR +1.17%。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>现有 LLM 增强生成式推荐（GR）依赖<strong>固定人工指令</strong>抽取世界知识并<strong>无约束地直接注入</strong>，导致两个问题：固定指令无法刻画用户兴趣的多维异质性；知识融合不可控，与行为信号冲突时反而掉点。LWGR 从"抽取"与"融合"两轴破局：用 OPQ 并行码本把用户上下文量化成个性化软指令引导 LLM 抽取行为相关知识；再把融合建模为带显式性能退化上界的约束优化，用拉格朗日原始-对偶法自适应选择有益知识。在 Beauty/Toys 与 2.95B 交互工业数据集上，Leave-One-Out + Full-Ranking 协议下相对 8 个 SOTA 最高提升 11.23%，线上广告收入 +1.35%、CTR +1.17%（<span class="arithmatex">\(p&lt;0.05\)</span>）。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 生成式推荐 (GR) 将推荐转为序列生成任务——先用 RQ-VAE/OPQ 把物品内容量化为离散 Semantic ID (SID)，再用自回归 Transformer 逐 token 生成目标物品 SID（TIGER、Cobra、RPG 等）。近期工作（KAR、SeRALM）引入"提示词两阶段知识融合"范式：第一阶段用 LLM 从提示词中抽取世界知识（事实、常识、抽象概念），第二阶段把知识编码后注入推荐模型。</li>
-<li><strong>现有方法局限</strong>:</li>
-<li><strong>固定指令的单一性</strong>：现有方法使用统一手工设计的任务指令，无法捕捉用户兴趣的多维异质性，导致 LLM 世界知识的上限被压制；</li>
-<li><strong>融合过程不可控</strong>：知识被"直接"注入 GR，缺乏显式约束，当知识与行为信号不一致时会引发不可控的性能退化；</li>
-<li><strong>离散 ID 不可理解</strong>：用户 ID / 物品 ID 等离散标识无法被 LLM 直接理解，朴素地为每个用户分配可学习指令向量又会带来参数量随用户数线性增长、且只能在<strong>线性空间</strong>表达兴趣的问题。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 简单的"换更好的提示词模板"或"加深融合网络"都无法解决——前者无法规模化地为每个用户定制自然语言指令，后者无法在训练中动态抑制有害知识。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者在真实电商场景做了 Pilot Study（图 2）：按年龄×性别把用户分为 young-male / young-female / senior-male / senior-female 四组，各采样 1 万用户，以 TIGER 为 Base，对比 Base / General 指令 / Demographic 指令三种设置（各跑 5 次取平均 Recall@5）。得到两条关键发现：</li>
-<li><strong>与用户群体匹配的指令能抬高性能天花板</strong>（Demographic 指令在多个组上优于 General）；</li>
-<li><strong>并非所有世界知识都有益</strong>——在 young-male 组，Demographic 指令反而劣于 General，甚至低于 Base，说明 LLM 内嵌的人口统计先验与真实行为错位时会干扰行为信号。</li>
+<li><strong>主流范式</strong>: 基于 SID 的生成式推荐（TIGER/Cobra）将推荐转为自回归生成离散语义 ID；为引入外部知识，KAR、SeRALM 等采用"提示词两阶段融合"——先用固定任务指令让 LLM 生成语义知识，再经 MoE/文本编码器注入 GR。</li>
+<li><strong>前人局限</strong>: (1) 统一设计的人工指令无法适配异构用户兴趣结构，LLM 世界知识被低效调用；(2) 知识注入缺乏显式约束，知识与行为信号不一致时造成<strong>不可控的性能退化</strong>。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 作者在真实电商场景做 pilot 实验（按年龄×性别分 4 组，各采样 1 万用户，TIGER 为底座）：人口统计引导指令在多数群体上抬高 Recall@5 上限，但在 young-male 组反而<strong>低于无知识底座</strong>——证明"指令与用户匹配度决定知识价值"，且"并非所有世界知识都有益"。</li>
+<li><strong>本文切入点</strong>: 用可端到端学习的<strong>个性化软指令</strong>替代人工指令，用<strong>带退化上界的约束优化</strong>替代无约束融合。</li>
 </ul>
-<p>由此引出两个研究问题：(i) 如何让 LLM 生成与用户行为高度一致的个性化世界知识？(ii) 如何约束知识融合过程以保证稳定增益？</p>
 <figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2605.18771v1/figure_2.png" /><figcaption>图 2</figcaption>
+  <img alt="图2：(a) 通用与人口统计引导的指令模板。(b) Base、General和Demographic指令在4个用户群体上的性能。" src="../../../../../assets/papers/2605.18771v1/figure_2.png" /><figcaption>图2：(a) 通用与人口统计引导的指令模板。(b) Base、General和Demographic指令在4个用户群体上的性能。</figcaption>
 </figure>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户集 <span class="arithmatex">\(\mathcal{U}\)</span>、物品集 <span class="arithmatex">\(\mathcal{I}\)</span>；用户 <span class="arithmatex">\(u\)</span> 的历史交互序列 <span class="arithmatex">\(s_u=(i_1,i_2,\dots,i_T)\)</span>，<span class="arithmatex">\(T\)</span> 为最大序列长度。</li>
-<li><span class="arithmatex">\(L\)</span> 个离散词表 <span class="arithmatex">\(\{V_\ell\}_{\ell=1}^{L}\)</span>，每个词表对应码本矩阵 <span class="arithmatex">\(C_\ell\in\mathbb{R}^{|V_\ell|\times d_\ell}\)</span>；物品 <span class="arithmatex">\(i\)</span> 编码为长度 <span class="arithmatex">\(L\)</span> 的 SID 序列 <span class="arithmatex">\(c_i=(c_i^1,\dots,c_i^L)\)</span>。</li>
-<li>GR 编码器输出用户上下文表征 <span class="arithmatex">\(H_{end}\in\mathbb{R}^{T\times d}\)</span>；经时间维 mean pooling 得用户向量 <span class="arithmatex">\(h_k\in\mathbb{R}^{d}\)</span>。</li>
-<li>个性化软指令：<span class="arithmatex">\(K\)</span> 个子空间，第 <span class="arithmatex">\(k\)</span> 个子空间投影维度 <span class="arithmatex">\(d_k\)</span>，码本 <span class="arithmatex">\(C_k\in\mathbb{R}^{|V_k|\times d_k}\)</span>；映射到 LLM 隐空间维度 <span class="arithmatex">\(d_{\text{LLM}}\)</span>。</li>
-<li>输出：目标物品 SID 的条件分布 <span class="arithmatex">\(p_\theta(c\mid s_u)\)</span>。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>数据流：用户上下文表征 → OPQ 并行码本量化得个性化软指令 token → 与物品文本 token 拼接送入 LLM 抽取个性化世界知识 → 通过 cross-attention 在 GR 解码起始处注入知识 → 拉格朗日约束优化控制融合强度 → 自回归生成目标 SID。训练上提供"冻结 LLM"与"LoRA 微调"两种策略；部署上采用近线预计算 + 轻量在线服务。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>LWGR 分四段闭环：(1) <strong>知识抽取</strong>：对 GR 编码器输出的用户上下文做均值池化，经 OPQ 投影到 <span class="arithmatex">\(K\)</span>个子空间，在并行码本中量化得到个性化离散码，映射为软指令 token 前置拼接到历史物品文本，送入 LLM 前向得到个性化世界知识表示<span class="arithmatex">\(\mathbf{H}_u\)</span>；(2) <strong>知识融合</strong>：以解码器 [BOS] 向量为 query、<span class="arithmatex">\(\mathbf{H}_u\)</span> 为 key/value 做交叉注意力，使知识全局影响整个自回归解码；(3) <strong>约束优化</strong>：以无知识参考模型为基准，将融合训练写成带置信度退化上界的不等式约束问题，用拉格朗日原始-对偶交替更新；(4) <strong>部署</strong>：LLM 推理全部下沉到近线预计算，在线仅做一次向量检索 + 单层交叉注意力。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 用户历史序列 Semantic IDs + 物品标题文本"] --&gt; B["GR 编码器: 用户上下文表征 H_end"]
-    B --&gt; C["OPQ 并行码本量化: K 个子空间选码字 -&gt; 个性化软指令 t_u^k"]
-    C --&gt; D["LLM: 软指令 + 文本历史 -&gt; 个性化世界知识"]
-    D --&gt; E["Cross-Attention 融合层: 注入 GR 解码器 [BOS] 位置"]
-    E --&gt; F["拉格朗日原始-对偶约束: 控制知识融合强度"]
-    F --&gt; G["自回归解码输出目标物品 SID"]</code></pre>
+    A["用户历史序列 + 物品文本"] --&gt; B["GR 编码器 → 用户上下文池化"]
+    B --&gt; C["OPQ 子空间投影 + 并行码本量化 (IBQ 直通梯度)"]
+    C --&gt; D["个性化软指令 token 前置拼接"]
+    D --&gt; E["LLM 前向 → 个性化世界知识 H_u"]
+    E --&gt; F["[BOS] 交叉注意力融合"]
+    F --&gt; G["自回归生成 SID"]
+    G --&gt; H["拉格朗日原始-对偶约束训练"]</code></pre>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>并行码本个性化软指令（替代逐用户可学习向量）</strong>：逐用户分配 <span class="arithmatex">\(K\)</span>个可学习向量会使参数量随用户数线性增长、且仅能表达线性规模兴趣模式。本文对用户向量<span class="arithmatex">\(\mathbf{h}_k\)</span>做<span class="arithmatex">\(K\)</span>子空间投影<span class="arithmatex">\(\mathbf{u}_k=f_k(\mathbf{h}_k)\)</span>，在各子码本<span class="arithmatex">\(\mathbf{C}_k\)</span>中取最近码字<span class="arithmatex">\(c_u^k=\arg\min_{j}\|\mathbf{u}_k-\mathbf{C}_k[j]\|_2^2\)</span>，组合表达能力从线性<span class="arithmatex">\(K\)</span>扩张到<span class="arithmatex">\(K^m\)</span>且跨用户共享参数。为使 argmin 可微、让推荐损失塑造<strong>整个码本</strong>而非仅被选中码字，采用 IBQ 直通估计：<span class="arithmatex">\(\mathbf{e}^k=\mathbf{e}^k_{\text{hard}}-\text{sg}[\mathbf{p}^k]+\mathbf{p}^k\)</span>，前向硬量化、反向经 softmax 分布<span class="arithmatex">\(\mathbf{p}^k\)</span> 回传梯度。</p>
+</li>
+<li>
+<p><strong>拉格朗日约束的知识融合（把"选择性吸收"写成约束优化）</strong>：直接拼接知识会与行为信号冲突。本文先预训练并冻结无知识参考模型 <span class="arithmatex">\(\theta_{\text{ref}}\)</span>，以平均 token 对数概率<span class="arithmatex">\(s_\theta(u,i^+)=\frac{1}{L}\sum_{\ell}\log p_\theta(c^\ell_{i^+}\mid c^{&lt;\ell}_{i^+},s_u)\)</span>度量生成置信度，定义退化惩罚<span class="arithmatex">\(C_{\text{margin}}=\max(0,\,s_{\text{ref}}-s_\theta-\delta)\)</span>，聚合成<span class="arithmatex">\(C(\theta)=\mathbb{E}[C_{\text{margin}}]\)</span>，求解<span class="arithmatex">\(\min_\theta \mathcal{L}_{\text{rec}}(\theta)\ \text{s.t.}\ C(\theta)\le\varepsilon\)</span>。相比固定权重 hinge 惩罚<span class="arithmatex">\(\mathcal{L}_{\text{rec}}+\beta\max(0,C-\varepsilon)\)</span>（<span class="arithmatex">\(\beta\)</span>难调），引入乘子<span class="arithmatex">\(\lambda\ge0\)</span>构成鞍点目标<span class="arithmatex">\(\min_\theta\max_{\lambda\ge0}\mathcal{L}_{\text{rec}}+\lambda(C-\varepsilon)\)</span>，<span class="arithmatex">\(\lambda\leftarrow\max(0,\lambda+\eta_\lambda(C-\varepsilon))\)</span> 自适应调节约束强度——违反约束则加大惩罚，满足则回归主目标。</p>
+</li>
+<li>
+<p><strong>训练目标、负采样与推理效率</strong>：总损失即上述拉格朗日目标，主项为 SID 逐 token 负对数似然 <span class="arithmatex">\(\mathcal{L}_{\text{rec}}=-\sum_{\ell}\log p_\theta(c^\ell_{i^+}\mid c^{&lt;\ell}_{i^+},s_u)\)</span>，<strong>无需显式负采样</strong>（全库 SID 生成式检索）。提供两种策略：冻结 LLM（仅训软指令模块、融合模块与 GR）与 LoRA 微调（rank=8，仅作用于 Q/V 投影）。在线仅一次索引查表 + 单层交叉注意力，实测延迟 13.35ms → 13.55ms（+1.5%）。</p>
+</li>
+</ol>
 <figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2605.18771v1/figure_3.png" /><figcaption>图 3</figcaption>
+  <img alt="图3：LWGR概览：一个在拉格朗日约束下将用户个性化世界知识集成到GR中的框架。LWGR首先应用OPQ对用户上下文进行量化，并使用并行码本生成个性化软指令。这些指令与文本化的历史行为拼接后输入LLM，以获得用户个性化世界知识。该知识通过交叉注意力注入[BOS]向量，从而影响整个解码过程。融合被建模为约束优化问题，以自适应地选择有益" src="../../../../../assets/papers/2605.18771v1/figure_3.png" /><figcaption>图3：LWGR概览：一个在拉格朗日约束下将用户个性化世界知识集成到GR中的框架。LWGR首先应用OPQ对用户上下文进行量化，并使用并行码本生成个性化软指令。这些指令与文本化的历史行为拼接后输入LLM，以获得用户个性化世界知识。该知识通过交叉注意力注入[BOS]向量，从而影响整个解码过程。融合被建模为约束优化问题，以自适应地选择有益</figcaption>
 </figure>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 用户上下文感知的个性化软指令（Knowledge Extraction）</strong></p>
-<p>对用户向量 <span class="arithmatex">\(h_k\)</span> 做 <span class="arithmatex">\(K\)</span> 个子空间线性投影：</p>
-<div class="arithmatex">\[u_k = f_k(h_k)\in\mathbb{R}^{d_k},\quad k=1,\dots,K\]</div>
-<p>每个子空间在码本 <span class="arithmatex">\(C_k\)</span> 中取最近码字：</p>
-<div class="arithmatex">\[c_u^k=\arg\min_{j\in V_k}\|u_k-C_k[j]\|_2^2\]</div>
-<p>得到用户离散 token 序列 <span class="arithmatex">\(c_u=(c_u^1,\dots,c_u^K)\)</span>。<strong>物理直觉</strong>：相比"每用户一个可学习向量"（参数量随用户数线性增长、表达空间为线性），并行码本从 <span class="arithmatex">\(K\)</span> 个大小为 <span class="arithmatex">\(m\)</span> 的子空间组合，在相近参数预算下把表达空间从线性扩展到 <span class="arithmatex">\(K^m\)</span>，实现跨用户结构共享与更丰富的兴趣建模。</p>
-<p>由于 <span class="arithmatex">\(\arg\min\)</span> 不可微，作者采用 IBQ 直通估计器：先算相似度与 softmax 分布</p>
-<div class="arithmatex">\[\alpha_k^j=\text{sim}(u_k,C_k[j]),\quad p_k^j=\frac{\exp(\alpha_k^j/\tau)}{\sum_{j\in V_k}\exp(\alpha_k^j/\tau)}\]</div>
-<p>再构造直通索引 <span class="arithmatex">\(e_k=e_k^{\text{hard}}-\text{sg}[p_k]+p_k\)</span>（<span class="arithmatex">\(\text{sg}[\cdot]\)</span> 为 stop-gradient），前向保持硬量化、反向让梯度流经软分布 <span class="arithmatex">\(p_k\)</span>，从而<strong>整个码本</strong>都能被推荐损失端到端塑造。最后量化向量映射到 LLM 隐空间：</p>
-<div class="arithmatex">\[z_u^k=(e_k)^\top C_k\in\mathbb{R}^{d_k},\quad t_u^k=W_L^k z_u^k\in\mathbb{R}^{d_{\text{LLM}}}\]</div>
-<p><strong>(2) 拉格朗日约束的知识融合（Knowledge Fusion）</strong></p>
-<p>获得个性化世界知识后，通过 cross-attention 在 GR 解码起始处（[BOS] 位置）注入，全局引导自回归生成。为保证稳定增益，把融合建模为带显式性能退化上界的约束优化问题，用拉格朗日原始-对偶法动态惩罚性能损失：以参考 GR（无知识融合）为基准设定 margin 约束，对偶变量在训练中自适应调整惩罚强度，使模型<strong>选择性吸收有益知识、抑制有害知识</strong>。这一设计直接回应 Pilot Study 中"知识可能与行为信号冲突"的发现。</p>
-<p><strong>(3) 训练策略与部署</strong></p>
-<ul>
-<li><strong>冻结策略</strong>：LLM 参数冻结，仅训练个性化知识模块（适合大 LLM、算力受限）；</li>
-<li><strong>LoRA 微调策略</strong>：对 LLM 做轻量 LoRA 微调（适合小 LLM、追求更高上限）。</li>
-<li><strong>部署</strong>：近线预计算用户个性化世界知识 + 在线轻量查询，满足实时延迟与资源约束（图 4）。</li>
-</ul>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2605.18771v1/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 4" src="../../../../../assets/papers/2605.18771v1/figure_4.png" /><figcaption>图 4</figcaption>
-</figure>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 基础推荐损失为 SID 逐 token 负对数似然</li>
-</ul>
-<div class="arithmatex">\[\mathcal{L}_{rec}=-\sum_{\ell=1}^{L}\log p_\theta\left(c_{i^+}^{\ell}\mid c_{i^+}^{&lt;\ell},s_u\right)\]</div>
-<p>在此基础上叠加拉格朗日约束项（含性能退化上界约束与对偶变量），总损失为 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{rec}+\lambda\cdot\mathcal{L}_{constraint}\)</span>，其中 <span class="arithmatex">\(\lambda\)</span> 由原始-对偶法动态更新；软指令 softmax 温度 <span class="arithmatex">\(\tau&gt;0\)</span>。原文未给出 <span class="arithmatex">\(\tau\)</span> 与约束权重的具体数值（原文未报告）。
-- <strong>训练负采样策略</strong>: 生成式范式下为<strong>免负采样</strong>的下一 token 预测（softmax 覆盖 SID 词表），未使用 BPR/InfoNCE 类对比负采样。
-- <strong>时间与空间复杂度</strong>: 离线需 OPQ 量化与 LLM 知识抽取（近线预计算）；在线仅需轻量查询 + GR 自回归解码（需 Beam Search 类解码）。原文表 2 报告了不同 LLM 规模与训练策略下的 R@5 与训练阶段 QPS，但未给出具体 ms/request 延迟与峰值显存数值（原文未报告）。</p>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文使用 Beauty、Toys 两个公开数据集与一个工业广告数据集。<strong>原文正文未给出各数据集的 #Users / #Items / #Interactions 统计表与过滤规则（如是否 5-core）</strong>，此处不做臆造，标注为原文未报告。</li>
+<li><strong>数据集与预处理</strong>:</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Beauty</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">物品标题文本</td>
-</tr>
-<tr>
-<td style="text-align: left;">Toys</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">物品标题文本</td>
-</tr>
-<tr>
-<td style="text-align: left;">Industrial</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">工业广告平台数据</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文正文未明确说明采用 Leave-One-Out 还是 Ratio Split（原文未报告），仅提及按用户历史序列预测下一物品的标准 GR 设定。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 原文正文未明确标注 Full-Ranking 还是 Sampled Ranking（原文未报告）；主实验以 Recall 类指标（如 R@5）报告。</li>
-<li><strong>评价指标与显著性检验</strong>: 主要指标为 Recall@5 等 top-K 召回指标；Pilot Study 中每组设置跑 5 次取平均。原文未报告配对显著性检验（如 <span class="arithmatex">\(p&lt;0.05\)</span>）。</li>
-</ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
-<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>对比 8 个 SOTA 基线（含 KAR、SeRALM、TIGER 等），LWGR 在所有设置下均取得最优，最大相对提升 11.23%。原文表 1 给出 Beauty、Toys、Industrial 三数据集完整结果（最优加粗、次优下划线，"Improv." 为相对次优方法的提升百分比）。<strong>受提取文本所限，逐数据集逐指标的精确数值未在正文中完整呈现，下表仅列出可确认的结论性信息，具体数值请以原文表 1 为准。</strong></p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">传统/协同过滤基线</th>
-<th style="text-align: center;">序列/图/多模态最强基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Interactions</th>
+<th style="text-align: center;">稀疏度/密度</th>
+<th style="text-align: left;">特征/场景说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">Beauty</td>
-<td style="text-align: left;">Recall 类</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1（次优）</td>
-<td style="text-align: center;"><strong>最优</strong></td>
-<td style="text-align: center;">见原文表 1</td>
+<td style="text-align: center;">~22K</td>
+<td style="text-align: center;">~12K</td>
+<td style="text-align: center;">~296K</td>
+<td style="text-align: center;">极稀疏</td>
+<td style="text-align: left;">Amazon 评论，5-core 过滤，按时间排序</td>
 </tr>
 <tr>
 <td style="text-align: left;">Toys</td>
-<td style="text-align: left;">Recall 类</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1（次优）</td>
-<td style="text-align: center;"><strong>最优</strong></td>
-<td style="text-align: center;">见原文表 1</td>
+<td style="text-align: center;">~35K</td>
+<td style="text-align: center;">~18K</td>
+<td style="text-align: center;">~167K</td>
+<td style="text-align: center;">极稀疏</td>
+<td style="text-align: left;">Amazon Toys &amp; Games，5-core 过滤</td>
 </tr>
 <tr>
-<td style="text-align: left;">Industrial</td>
-<td style="text-align: left;">Recall 类</td>
-<td style="text-align: center;">原文表 1</td>
-<td style="text-align: center;">原文表 1（次优）</td>
-<td style="text-align: center;"><strong>最优</strong></td>
-<td style="text-align: center;">最大 +11.23%</td>
+<td style="text-align: left;">Industry</td>
+<td style="text-align: center;">14.7M</td>
+<td style="text-align: center;">20.1M</td>
+<td style="text-align: center;">2.95B</td>
+<td style="text-align: center;">极稀疏</td>
+<td style="text-align: left;">东南亚电商，2025.01–07，点击+转化，含图文多模态</td>
 </tr>
 </tbody>
 </table>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2605.18771v1/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文正文未完整呈现消融表格。从方法描述可推断的核心消融维度包括：个性化软指令 vs. 固定指令、拉格朗日约束融合 vs. 无约束直接融合、冻结策略 vs. LoRA 策略。表 2 报告了 LLM 规模与训练策略对性能（R@5）与效率（训练阶段 QPS）的影响，用于支撑"不同 LLM 规模选择不同训练策略"的设计。<strong>各模块移除后的具体性能下降幅度原文未在正文中给出（原文未报告）。</strong></p>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2605.18771v1/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
 <ul>
-<li><strong>用户群体分桶</strong>: Pilot Study 按年龄×性别四组分析（图 2），发现 Demographic 指令在部分组提升、在 young-male 组反而下降，直接支撑"知识并非总是有益"的动机。</li>
-<li><strong>关键超参数敏感度</strong>: 涉及码本子空间数 <span class="arithmatex">\(K\)</span>、码字维度 <span class="arithmatex">\(d_k\)</span>、softmax 温度 <span class="arithmatex">\(\tau\)</span>、拉格朗日约束强度等，原文正文未给出系统性敏感度曲线（原文未报告）。</li>
-<li><strong>线上 A/B 测试结果</strong>: 在大型商业广告平台部署，线上 A/B 显示<strong>广告收入 +1.35%、CTR +1.17%</strong>；具体实验周期与流量占比原文未报告。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 标准 <code>Leave-One-Out</code>——每用户最后一条交互作测试、倒数第二条作验证、其余训练。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 生成式 SID 检索，指标 Recall@5/10 与 NDCG@5/10；基线 TIGER/Cobra 等均为全库 SID 生成式排序（无采样负例）。</li>
+<li><strong>对比基线与超参设置</strong>: 三组基线——ID 类（SASRec、PinnerFormer、HeterRec、VQ-Rec）、SID 生成式（TIGER、Cobra）、提示词知识融合（TIGER+KAR、TIGER+SeRALM），共 8 个 SOTA。统一底座 LLM 为 Qwen3-4B，embedding 维度 128、Transformer 隐层 640、码本数 <span class="arithmatex">\(K=5\)</span>、<span class="arithmatex">\(\lambda_0=0.05\)</span>、<span class="arithmatex">\(\eta_\theta=1\times10^{-4}\)</span>、<span class="arithmatex">\(\eta_\lambda=5\times10^{-4}\)</span>、<span class="arithmatex">\(\delta=\varepsilon=1\times10^{-4}\)</span>；线上 A/B 采用双侧显著性检验<span class="arithmatex">\(p&lt;0.05\)</span>。</li>
 </ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">方法</th>
+<th style="text-align: center;">Beauty R@5</th>
+<th style="text-align: center;">Beauty N@5</th>
+<th style="text-align: center;">Toys R@5</th>
+<th style="text-align: center;">Toys N@5</th>
+<th style="text-align: center;">Industry R@5</th>
+<th style="text-align: center;">Industry N@5</th>
+<th style="text-align: center;">Industry R@10</th>
+<th style="text-align: center;">Industry N@10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">SASRec</td>
+<td style="text-align: center;">0.0512</td>
+<td style="text-align: center;">0.0326</td>
+<td style="text-align: center;">0.0543</td>
+<td style="text-align: center;">0.0344</td>
+<td style="text-align: center;">0.1637</td>
+<td style="text-align: center;">0.1092</td>
+<td style="text-align: center;">0.2092</td>
+<td style="text-align: center;">0.1396</td>
+</tr>
+<tr>
+<td style="text-align: left;">PinnerFormer</td>
+<td style="text-align: center;">0.0529</td>
+<td style="text-align: center;">0.0335</td>
+<td style="text-align: center;">0.0579</td>
+<td style="text-align: center;">0.0371</td>
+<td style="text-align: center;">0.1718</td>
+<td style="text-align: center;">0.1145</td>
+<td style="text-align: center;">0.2162</td>
+<td style="text-align: center;">0.1447</td>
+</tr>
+<tr>
+<td style="text-align: left;">HeterRec</td>
+<td style="text-align: center;">0.0521</td>
+<td style="text-align: center;">0.0332</td>
+<td style="text-align: center;">0.0574</td>
+<td style="text-align: center;">0.0366</td>
+<td style="text-align: center;">0.1763</td>
+<td style="text-align: center;">0.1187</td>
+<td style="text-align: center;">0.2219</td>
+<td style="text-align: center;">0.1482</td>
+</tr>
+<tr>
+<td style="text-align: left;">TIGER</td>
+<td style="text-align: center;">0.0534</td>
+<td style="text-align: center;">0.0341</td>
+<td style="text-align: center;">0.0612</td>
+<td style="text-align: center;">0.0395</td>
+<td style="text-align: center;">0.1842</td>
+<td style="text-align: center;">0.1227</td>
+<td style="text-align: center;">0.2317</td>
+<td style="text-align: center;">0.1551</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cobra</td>
+<td style="text-align: center;">0.0527</td>
+<td style="text-align: center;">0.0334</td>
+<td style="text-align: center;">0.0634</td>
+<td style="text-align: center;">0.0408</td>
+<td style="text-align: center;">0.1821</td>
+<td style="text-align: center;">0.1214</td>
+<td style="text-align: center;">0.2345</td>
+<td style="text-align: center;">0.1574</td>
+</tr>
+<tr>
+<td style="text-align: left;">TIGER+KAR</td>
+<td style="text-align: center;">0.0543</td>
+<td style="text-align: center;">0.0347</td>
+<td style="text-align: center;">0.0629</td>
+<td style="text-align: center;">0.0403</td>
+<td style="text-align: center;">0.1893</td>
+<td style="text-align: center;">0.1245</td>
+<td style="text-align: center;">0.2422</td>
+<td style="text-align: center;">0.1611</td>
+</tr>
+<tr>
+<td style="text-align: left;">TIGER+SeRALM</td>
+<td style="text-align: center;">0.0539</td>
+<td style="text-align: center;">0.0344</td>
+<td style="text-align: center;">0.0637</td>
+<td style="text-align: center;">0.0411</td>
+<td style="text-align: center;">0.1945</td>
+<td style="text-align: center;">0.1273</td>
+<td style="text-align: center;">0.2467</td>
+<td style="text-align: center;">0.1639</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>LWGR (Ours)</strong></td>
+<td style="text-align: center;"><strong>0.0595</strong></td>
+<td style="text-align: center;"><strong>0.0376</strong></td>
+<td style="text-align: center;"><strong>0.0694</strong></td>
+<td style="text-align: center;"><strong>0.0443</strong></td>
+<td style="text-align: center;"><strong>0.2145</strong></td>
+<td style="text-align: center;"><strong>0.1416</strong></td>
+<td style="text-align: center;"><strong>0.2684</strong></td>
+<td style="text-align: center;"><strong>0.1804</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Improv.</strong></td>
+<td style="text-align: center;">+9.58%</td>
+<td style="text-align: center;">+8.36%</td>
+<td style="text-align: center;">+8.95%</td>
+<td style="text-align: center;">+7.79%</td>
+<td style="text-align: center;">+10.28%</td>
+<td style="text-align: center;">+11.23%</td>
+<td style="text-align: center;">+8.80%</td>
+<td style="text-align: center;">+10.07%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">设置 (Industry)</th>
+<th style="text-align: center;">R@5</th>
+<th style="text-align: center;">ΔR@5</th>
+<th style="text-align: center;">N@5</th>
+<th style="text-align: center;">ΔN@5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">LWGR 完整</td>
+<td style="text-align: center;">0.2145</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">0.1416</td>
+<td style="text-align: center;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o 并行码本 (MLP 投影上下文)</td>
+<td style="text-align: center;">0.2061</td>
+<td style="text-align: center;">-3.92%</td>
+<td style="text-align: center;">0.1346</td>
+<td style="text-align: center;">-4.94%</td>
+</tr>
+<tr>
+<td style="text-align: left;">并行码本 → 残差量化 RQ</td>
+<td style="text-align: center;">0.2120</td>
+<td style="text-align: center;">-1.17%</td>
+<td style="text-align: center;">0.1402</td>
+<td style="text-align: center;">-0.99%</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o 交叉注意力融合 (直接拼接)</td>
+<td style="text-align: center;">0.2103</td>
+<td style="text-align: center;">-1.96%</td>
+<td style="text-align: center;">0.1375</td>
+<td style="text-align: center;">-2.90%</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o 不等式约束</td>
+<td style="text-align: center;">0.2117</td>
+<td style="text-align: center;">-1.31%</td>
+<td style="text-align: center;">0.1399</td>
+<td style="text-align: center;">-1.20%</td>
+</tr>
+<tr>
+<td style="text-align: left;">拉格朗日 → 固定惩罚 <span class="arithmatex">\(\beta\)</span></td>
+<td style="text-align: center;">0.2118</td>
+<td style="text-align: center;">-1.26%</td>
+<td style="text-align: center;">0.1391</td>
+<td style="text-align: center;">-1.77%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>个性化软指令是最大增益来源</strong>：移除并行码本改用 MLP 投影上下文后 R@5 掉 3.92%、N@5 掉 4.94%，远超其他消融项；且并行码本优于残差量化（RQ 掉 1.17%），说明"多子空间独立量化 + 跨用户码字共享"比逐级残差更能刻画细粒度用户偏好。</li>
+<li><strong>约束机制的价值在"稳定性"而非"上限"</strong>：去掉不等式约束仅掉 1.31%，但固定惩罚 <span class="arithmatex">\(\beta\)</span>变体（调优后最优）仍低于自适应拉格朗日 1.26%，印证固定权重难以在"抑制有害知识"与"保留主目标"间取得平衡，乘子<span class="arithmatex">\(\lambda\)</span> 的数据自适应调节更优。</li>
+<li><strong>LLM 规模与策略存在清晰权衡</strong>：冻结 LLM 从 0.6B→8B，R@5 单调提升 6.69%，但训练 QPS 从 2.435 降至 1.038（-57.37%）；LoRA 在同规模下额外提升 1.09%–3.76%，但 QPS 再降 21%–42%。4B/8B 冻结模型已优于 0.6B/1.7B 的 LoRA 变体，为算力受限场景提供"只放大冻结底座"的实用路线。码本数 <span class="arithmatex">\(K\)</span>在 5 处达峰，<span class="arithmatex">\(K&gt;5\)</span> 因冗余与稀疏交互下难学而回落。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>OPQ 并行码本 + 软指令</strong>的思路把"每用户可学习向量"的线性表达升级为 <span class="arithmatex">\(K^m\)</span> 组合空间，参数量可控且跨用户共享，可迁移到任何需要"用户级条件化提示"的 LLM 推荐场景；</li>
-<li><strong>IBQ 直通估计</strong>让离散码本在推荐损失下端到端优化，解决了 <span class="arithmatex">\(\arg\min\)</span> 不可微的工程难题；</li>
-<li><strong>拉格朗日原始-对偶约束融合</strong>把"知识是否有益"从启发式变为可优化的约束问题，具有较强的方法论普适性；</li>
-<li><strong>近线预计算 + 轻量在线</strong>的部署方案对工业落地友好，且有真实线上收入收益佐证。</li>
-<li><strong>局限性与审稿视角批判</strong>:</li>
-<li><strong>评估协议披露不足</strong>：正文未给出数据集统计、过滤规则、划分方式与 Full/Sampled Ranking 协议，复现难度高，审稿中会被要求补充；</li>
-<li><strong>消融与超参分析不完整</strong>：核心模块（软指令、拉格朗日约束）的逐项消融数值缺失，难以判断各模块贡献权重；</li>
-<li><strong>约束的理论保证</strong>：拉格朗日原始-对偶在非凸深度模型上的收敛性与"退化上界"的实际可达性缺乏理论分析；</li>
-<li><strong>效率数据不充分</strong>：仅报告训练 QPS，缺少在线单请求延迟 (ms) 与峰值显存，难以评估工业部署的真实成本；</li>
-<li><strong>Pilot Study 规模有限</strong>：每组 1 万用户、单一电商场景，结论的跨域泛化性有待验证。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 KAR/SeRALM 的本质区别在于——它们把"指令设计"当作超参、把"知识注入"当作无约束拼接；LWGR 把前者变成可端到端学习的离散码本查询，把后者变成带显式退化上界的约束优化。与 TIGER/Cobra 相比，本文不改 SID 生成骨架，仅以 [BOS] 交叉注意力做最小侵入式增强，兼容性强。</li>
+<li><strong>可迁移亮点</strong>: (1) "参考模型 + 置信度退化 hinge 约束 + 拉格朗日乘子"是一套通用的<strong>知识/辅助信号安全注入模板</strong>，可迁移到多模态特征融合、跨域迁移等易掉点场景；(2) OPQ 并行码本 + IBQ 直通梯度可作为大规模用户表征的轻量离散化方案，替代逐用户 embedding。</li>
+<li><strong>审稿级局限批判</strong>: (1) 约束依赖一个预训练冻结的参考模型，参考模型质量直接决定约束基准的合理性，且需额外一份完整预训练开销；(2) 近线预计算的知识向量按分钟级刷新，对<strong>秒级兴趣漂移</strong>（如突发爆款点击）不敏感，且论文未报告知识库存储与刷新成本；(3) 公共数据集仅两个 Amazon 子类、规模偏小（22K/35K 用户），主结论的统计稳健性主要依赖单一工业集。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （把"知识融合不可控"形式化为带退化上界的不等式约束并用原始-对偶求解，视角新颖；软指令码本化属工程巧思而非全新范式）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （三数据集 + 8 基线 + 完整消融 + 规模/超参分析 + 线上 A/B 显著性检验，链条完整；公共集规模偏小略扣分）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （pilot 实验→两大局限→两轴设计的论证闭环清晰，约束优化推导规范；部分符号在正文与附录间略有重复定义）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （近线预计算 + 在线单层注意力的部署方案务实，延迟仅 +1.5%、收入 +1.35% 有说服力；但代码未开源、参考模型与知识库运维成本未披露）</li>
 </ul>
 
 

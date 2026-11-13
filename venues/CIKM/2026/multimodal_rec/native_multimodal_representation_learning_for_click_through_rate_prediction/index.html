@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4213,7 +4224,7 @@
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 两阶段——先在业务场景数据上用 MoCo 式对比学习（SCL）预训练多模态编码器，再冻结提特征，以语义相似度（SimTier/SA-TA）或直接拼接方式注入 ID-based CTR 模型。</li>
-<li><strong>前人局限</strong>: ① 预训练任务 <span class="arithmatex">\(\mathcal{T}_{pretrain}\)</span> 与 CTR 任务 <span class="arithmatex">\(\mathcal{T}_{ctr}\)</span> 目标错位，预训练数据 <span class="arithmatex">\(D_{train}\)</span> 与 CTR 数据 <span class="arithmatex">\(D_{ctr}\)</span> 分布错位，表征效果存在天花板；② 近期 E2EM 类工作（LEMUR 等）宣称端到端有效，但均未在「已高度优化的强预训练编码器」上验证。</li>
+<li><strong>前人局限</strong>: ① 预训练任务 <span class="arithmatex">\(\mathcal{T}_{pretrain}\)</span>与 CTR 任务<span class="arithmatex">\(\mathcal{T}_{ctr}\)</span>目标错位，预训练数据<span class="arithmatex">\(D_{train}\)</span>与 CTR 数据<span class="arithmatex">\(D_{ctr}\)</span> 分布错位，表征效果存在天花板；② 近期 E2EM 类工作（LEMUR 等）宣称端到端有效，但均未在「已高度优化的强预训练编码器」上验证。</li>
 <li><strong>核心洞察 (Key Insight)</strong>: 电商 CTR 数据只有部分可归因于多模态语义——用 SCL 表征算目标物品与历史点击的相似度，MultiModal-Mean GAUC 仅 0.541、Max 仅 0.536，接近随机。价格比较、误点、位置偏置、兴趣疲劳等非语义因素混入标签，使 CTR 损失对编码器构成<strong>模糊监督</strong>；且 ID 分支虽提供额外建模能力，却无法显式把非语义信号「路由」走，梯度实测批内相似度仅 0.016、相邻批 0.006，远低于 SCL 的 0.144/0.849。此外 E2EM 双端训练显存涨 25.09×、单步耗时涨 7.18×。</li>
 <li><strong>本文切入点</strong>: 不在损失层加正则去「压制」噪声（实测加 SCL Loss 反而 GAUC 掉 0.17pt、SCL Top-1 掉 5pt），而是在<strong>数据层隔离监督</strong>——先挖出多模态可解释的高置信样本，再只让这些样本更新编码器。</li>
 </ul>
@@ -4231,7 +4242,7 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>残差 SID 标注模型（Residual Tuning + SID Embedding）</strong>：若直接微调编码器做标注，CTR 噪声会污染共享参数；若用协同相似度（Swing/共点击）造样本，又与 ID 特征信息冗余且语义不一致。本文冻结 SCL 编码器，用 RK-Means 对表征聚类得 SID，从零初始化的 <span class="arithmatex">\(3\times8192\)</span> SID Decode Codebook 中查得嵌入作为<strong>残差</strong>加到 SCL 表征上：<span class="arithmatex">\(\mathbf{h} = \mathbf{h}_{SCL} + \mathbf{e}_{SID}\)</span>。零初始化保证训练起点不扰动原语义，码本只学「CTR 增量」；SID 与物品语义强绑定保证可解释性，且可预计算、训练时仅需 embedding lookup，远比微调编码器便宜。该标注分数作为特征注入 CTR 模型即带来 GAUC +0.13%。</p>
+<p><strong>残差 SID 标注模型（Residual Tuning + SID Embedding）</strong>：若直接微调编码器做标注，CTR 噪声会污染共享参数；若用协同相似度（Swing/共点击）造样本，又与 ID 特征信息冗余且语义不一致。本文冻结 SCL 编码器，用 RK-Means 对表征聚类得 SID，从零初始化的 <span class="arithmatex">\(3\times8192\)</span>SID Decode Codebook 中查得嵌入作为<strong>残差</strong>加到 SCL 表征上：<span class="arithmatex">\(\mathbf{h} = \mathbf{h}_{SCL} + \mathbf{e}_{SID}\)</span>。零初始化保证训练起点不扰动原语义，码本只学「CTR 增量」；SID 与物品语义强绑定保证可解释性，且可预计算、训练时仅需 embedding lookup，远比微调编码器便宜。该标注分数作为特征注入 CTR 模型即带来 GAUC +0.13%。</p>
 </li>
 <li>
 <p><strong>三重阈值三元组挖掘（Mine）</strong>：标注模型自身仍受非语义因素干扰、且 SID 学习近似 ID 记忆、泛化受限，故只把它当「筛选器」而非最终表征。对每个样本用 SCL 检索目标物品 Top-K 相似历史物品，先滤掉 <span class="arithmatex">\(Sim_{SCL}&lt;\tau_m\)</span> 的弱语义对，再组三元组并保留同时满足下式者：</p>
@@ -4240,7 +4251,7 @@
 <div class="arithmatex">\[\text{Sim}_{SCL}^{tar,1}-\text{Sim}_{SCL}^{tar,2}&lt;\tau_s,\quad \text{Score}_{Anno}^{tar,1}-\text{Score}_{Anno}^{tar,2}&gt;\tau_a\]</div>
 <p>直觉：SCL 认为两者差不多（甚至 2 更像），但标注模型明确判定用户更偏好 1——这正是 SCL 缺失的「点击偏好增量」。保留的两类样本为<strong>排序反转三元组</strong>与<strong>差距拉宽三元组</strong>。人工评测验证 <span class="arithmatex">\(\tau_a\)</span> 是可靠的质量信号：高置信组（margin&gt;0.15）人类胜率 85%，低置信组（&lt;0.05）仅 42%。</p>
 <ol>
-<li><strong>训练目标与推理效率</strong>：<span class="arithmatex">\(\mathcal{L}_{total}=\mathcal{L}_{margin}+\mathcal{L}_{SCL}\)</span>，其中 <span class="arithmatex">\(\mathcal{L}_{margin}=\max(0, m-(Sim_{tar,1}-Sim_{tar,2}))\)</span>，<span class="arithmatex">\(m=0.1\)</span>；<span class="arithmatex">\(\mathcal{L}_{SCL}\)</span> 沿用 MoCo 式 memory queue 对比损失作正则，防止细粒度电商语义遗忘。负样本来自挖掘阶段构造的三元组内部对比（免在线负采样），推理阶段完全复用 SCL 管线，无额外开销。</li>
+<li><strong>训练目标与推理效率</strong>：<span class="arithmatex">\(\mathcal{L}_{total}=\mathcal{L}_{margin}+\mathcal{L}_{SCL}\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{margin}=\max(0, m-(Sim_{tar,1}-Sim_{tar,2}))\)</span>，<span class="arithmatex">\(m=0.1\)</span>；<span class="arithmatex">\(\mathcal{L}_{SCL}\)</span> 沿用 MoCo 式 memory queue 对比损失作正则，防止细粒度电商语义遗忘。负样本来自挖掘阶段构造的三元组内部对比（免在线负采样），推理阶段完全复用 SCL 管线，无额外开销。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4287,7 +4298,7 @@
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 工业日志按时间切分（一个月窗口），未采用 Leave-One-Out；论文未披露具体比例。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 离线采用工业标准 <strong>GAUC</strong>（用户分组加权 AUC）与 <strong>AUC</strong>，在全量曝光样本上计算，非采样排序；线上采用长期 A/B 测试，指标为 CTR 与 RPM。</li>
-<li><strong>对比基线与超参设置</strong>: 基线为淘宝展示广告已部署的 SCL 编码器 + MUSE CTR 模型（强基线）。稀疏嵌入 Adam lr=2e-3，稠密部分 AdamW lr=2e-4，编码器 AdamW lr=2e-4 + cosine 调度；挖掘阈值 <span class="arithmatex">\(\tau_m=0.3,\tau_s=0.05,\tau_a=0.15\)</span>，margin <span class="arithmatex">\(m=0.1\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: 基线为淘宝展示广告已部署的 SCL 编码器 + MUSE CTR 模型（强基线）。稀疏嵌入 Adam lr=2e-3，稠密部分 AdamW lr=2e-4，编码器 AdamW lr=2e-4 + cosine 调度；挖掘阈值 <span class="arithmatex">\(\tau_m=0.3,\tau_s=0.05,\tau_a=0.15\)</span>，margin<span class="arithmatex">\(m=0.1\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4403,12 +4414,18 @@
 <li><strong>失效根因是「监督不可解释」而非「优化不充分」</strong>：MultiModal-Mean/Max GAUC 仅 0.541/0.536，证明 CTR 标签中多模态可解释成分占比有限；梯度相似度从 0.144 崩到 0.016 则直接量化了编码器更新方向被非语义信号打散。</li>
 <li><strong>数据层隔离优于损失层正则，且「筛选器」比「最终表征」更值钱</strong>：加 SCL 正则反而双指标齐跌；而标注模型仅作特征用即得 +0.13% GAUC，再经三重阈值筛选后微调编码器可进一步到 +0.22%，说明挖掘出的排序偏好增量确实超出原 SCL 表征与 ID 特征的信息量。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 LEMUR 等 E2EM 路线相比，本文的核心差异是先做<strong>否定性验证</strong>（强编码器上 E2EM 无效）再给替代方案，而非默认端到端更优；与 SCL/SimTier 等两阶段工作相比，本文不换编码器架构、不改在线管线，只在离线阶段换监督信号来源，工程落地成本极低；与直接用协同信号（Swing/共点击）造样本的做法相比，本文用 SID 残差标注模型保证了「多模态可解释性」，避免与 ID 特征信息冗余。</li>
 <li><strong>可迁移亮点</strong>: ① 「冻结主干 + 零初始化 SID 残差码本」是一种极轻量的任务适配器，可迁移到任何已有强预训练编码器的下游适配场景；② 「用下游模型当筛选器、再用筛选结果反哺表征」的解耦范式，可推广到序列推荐、跨域迁移中噪声标签的利用问题。</li>
 <li><strong>审稿级局限批判</strong>: ① 主实验仅报告相对提升（+0.22% GAUC），未给绝对数值与方差/显著性检验，且数据集统计信息大量缺失，复现性受限；② 标注模型与阈值（<span class="arithmatex">\(\tau_m,\tau_s,\tau_a\)</span>）强依赖业务数据分布，论文未给出阈值敏感性分析，跨场景迁移需重新调参；③ 三元组挖掘依赖 SCL 检索 Top-K，若原编码器在某些品类上语义能力弱，挖掘会继承该偏差。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

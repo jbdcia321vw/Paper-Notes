@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4232,7 +4243,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为物品/用户/场景三元组特征 <span class="arithmatex">\((f_i, f_u, f_s)\)</span>，经两个骨干（DeepFM 或 MLP）抽取物品嵌入；第一阶段由物品嵌入低秩分解出左右潜因子 <span class="arithmatex">\(Z^L_i, Z^R_i\)</span> 构造物品级邻接矩阵，再用用户-场景 MLP 生成的偏置向量 <span class="arithmatex">\(\gamma_{u,s}\)</span> 调制左因子得到实例级动态图；第二阶段 APM 按任务正样本率为每个任务生成 top-<span class="arithmatex">\(k_t\)</span> 二值掩码，结构性解耦共享参数；第三阶段对动态图施加硬因果掩码后做 GCN 传播，各任务节点特征经 MLP+Sigmoid 输出概率，总损失为 EMA 归一化加权的 BCE 之和。全流程对任务数 <span class="arithmatex">\(T\)</span> 保持线性复杂度，线上仅比 MMoE 增加 8ms 端到端延迟。</p>
+<p>输入为物品/用户/场景三元组特征 <span class="arithmatex">\((f_i, f_u, f_s)\)</span>，经两个骨干（DeepFM 或 MLP）抽取物品嵌入；第一阶段由物品嵌入低秩分解出左右潜因子<span class="arithmatex">\(Z^L_i, Z^R_i\)</span>构造物品级邻接矩阵，再用用户-场景 MLP 生成的偏置向量<span class="arithmatex">\(\gamma_{u,s}\)</span>调制左因子得到实例级动态图；第二阶段 APM 按任务正样本率为每个任务生成 top-<span class="arithmatex">\(k_t\)</span>二值掩码，结构性解耦共享参数；第三阶段对动态图施加硬因果掩码后做 GCN 传播，各任务节点特征经 MLP+Sigmoid 输出概率，总损失为 EMA 归一化加权的 BCE 之和。全流程对任务数<span class="arithmatex">\(T\)</span> 保持线性复杂度，线上仅比 MMoE 增加 8ms 端到端延迟。</p>
 <pre class="mermaid"><code>flowchart TD
     A["物品/用户/场景特征"] --&gt; B["骨干嵌入 + 低秩分解 Z_L, Z_R"]
     A --&gt; C["MLP 生成个性化偏置 γ_u,s"]
@@ -4247,13 +4258,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>低秩实例级依赖图 + 个性化偏置注入</strong>：直接学 <span class="arithmatex">\(T\times T\)</span> 全邻接矩阵在稀疏工业交互上极易过拟合伪相关。本文令 <span class="arithmatex">\(A_{item}=Z^L_i (Z^R_i)^\top\)</span>（<span class="arithmatex">\(q \ll T^2\)</span>），再以 <span class="arithmatex">\(\gamma_{u,s}\in\mathbb{R}^q\)</span> 广播调制左因子：<span class="arithmatex">\(A_{dyn}=Z^L_{i,u,s}(Z^R_i)^\top,\ Z^L_{i,u,s}=Z^L_i\odot(\mathbf{1}_T\otimes\gamma_{u,s}^\top)\)</span>。低秩充当结构正则，偏置注入以极轻参数量捕获上下文多样性——直觉上相当于"用 <span class="arithmatex">\(q\)</span> 维隐空间描述任务间相关模式，再按场景旋转该模式"。</p>
+<p><strong>低秩实例级依赖图 + 个性化偏置注入</strong>：直接学 <span class="arithmatex">\(T\times T\)</span>全邻接矩阵在稀疏工业交互上极易过拟合伪相关。本文令<span class="arithmatex">\(A_{item}=Z^L_i (Z^R_i)^\top\)</span>（<span class="arithmatex">\(q \ll T^2\)</span>），再以<span class="arithmatex">\(\gamma_{u,s}\in\mathbb{R}^q\)</span>广播调制左因子：<span class="arithmatex">\(A_{dyn}=Z^L_{i,u,s}(Z^R_i)^\top,\ Z^L_{i,u,s}=Z^L_i\odot(\mathbf{1}_T\otimes\gamma_{u,s}^\top)\)</span>。低秩充当结构正则，偏置注入以极轻参数量捕获上下文多样性——直觉上相当于"用<span class="arithmatex">\(q\)</span> 维隐空间描述任务间相关模式，再按场景旋转该模式"。</p>
 </li>
 <li>
-<p><strong>硬因果掩码 GCN 与自适应捷径</strong>：<span class="arithmatex">\(A=A_{dyn}\odot M_{causal}\)</span> 先剪除 Pay→Click 这类语义回流，再做 <span class="arithmatex">\(\hat{D}^{-1/2}(A+I)\hat{D}^{-1/2}XW\)</span> 传播。与固定链相比，掩码后仍保留的非相邻任务边构成<strong>信息捷径</strong>，使深任务绕过冗余中间节点直接吸收上游信号，从结构上切断累积衰减路径。</p>
+<p><strong>硬因果掩码 GCN 与自适应捷径</strong>：<span class="arithmatex">\(A=A_{dyn}\odot M_{causal}\)</span>先剪除 Pay→Click 这类语义回流，再做<span class="arithmatex">\(\hat{D}^{-1/2}(A+I)\hat{D}^{-1/2}XW\)</span> 传播。与固定链相比，掩码后仍保留的非相邻任务边构成<strong>信息捷径</strong>，使深任务绕过冗余中间节点直接吸收上游信号，从结构上切断累积衰减路径。</p>
 </li>
 <li>
-<p><strong>APM 稀疏感知渐进掩码与训练目标</strong>：梯度冲突方法（PCGrad 等）在数值层面做 <span class="arithmatex">\(O(T^2)\)</span> 投影，代价高。APM 改为参数层面：按任务正样本率 <span class="arithmatex">\(p_t\)</span> 线性映射目标掩码率 <span class="arithmatex">\(r^{target}_t=r_{min}+(r_{max}-r_{min})(1-\frac{p_t-p_{min}}{p_{max}-p_{min}})\)</span>，稀疏任务保留更多独享参数；再以 warm-up 步数 <span class="arithmatex">\(S_{warm}\)</span> 渐进放开 <span class="arithmatex">\(k_{t,s}=d-d\cdot\min(r^{target}_t,\frac{s}{S_{warm}}r^{target}_t)\)</span>。总损失 <span class="arithmatex">\(\mathcal{L}=\sum_t \beta_{t,s}\mathrm{BCE}(y_t,\hat{y}_t)\)</span>，权重 <span class="arithmatex">\(\beta_{t,s}=1/\hat{L}_{t,s}\)</span> 由损失的 EMA（<span class="arithmatex">\(\alpha=0.1\)</span>）归一化，稳定多任务量级差异。掩码训练后固定，推理零开销。</p>
+<p><strong>APM 稀疏感知渐进掩码与训练目标</strong>：梯度冲突方法（PCGrad 等）在数值层面做 <span class="arithmatex">\(O(T^2)\)</span>投影，代价高。APM 改为参数层面：按任务正样本率<span class="arithmatex">\(p_t\)</span>线性映射目标掩码率<span class="arithmatex">\(r^{target}_t=r_{min}+(r_{max}-r_{min})(1-\frac{p_t-p_{min}}{p_{max}-p_{min}})\)</span>，稀疏任务保留更多独享参数；再以 warm-up 步数<span class="arithmatex">\(S_{warm}\)</span>渐进放开<span class="arithmatex">\(k_{t,s}=d-d\cdot\min(r^{target}_t,\frac{s}{S_{warm}}r^{target}_t)\)</span>。总损失<span class="arithmatex">\(\mathcal{L}=\sum_t \beta_{t,s}\mathrm{BCE}(y_t,\hat{y}_t)\)</span>，权重<span class="arithmatex">\(\beta_{t,s}=1/\hat{L}_{t,s}\)</span>由损失的 EMA（<span class="arithmatex">\(\alpha=0.1\)</span>）归一化，稳定多任务量级差异。掩码训练后固定，推理零开销。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4545,14 +4556,20 @@
 <ol>
 <li><strong>增益集中在稀疏深任务而非头部任务</strong>：工业 Task 3 相对 PMTRec 提升 1.45%、Task 6 相对 MIT 提升 1.05%，而稠密浅任务 Task 4 反而略低于 PLE（0.9464 vs 0.9471）。这直接印证"信号侵蚀主要发生在深漏斗"的动机假设——PTDG 的收益来源是结构捷径而非更强的通用拟合能力。</li>
 <li><strong>个性化偏置是最大单点贡献</strong>：移除 <span class="arithmatex">\(\gamma_{u,s}\)</span> 掉 1.07%，超过移除 GCN（0.82%）与因果掩码（0.64%），说明"实例级边权差异"本身比"传播算子选择"更关键；而 APM 与 warm-up 合计贡献约 0.9%，证明参数级解耦与数值级梯度调和是互补而非替代关系。</li>
-<li><strong>低秩维度存在明确甜点</strong>：<span class="arithmatex">\(q\)</span> 从 1 增至 7 时性能在 <span class="arithmatex">\(q=2\)</span> 达峰后单调下降，经验规律 <span class="arithmatex">\(q\approx T/3\)</span>；这与"低秩即结构正则"的设计意图一致——维度过高即退化为全邻接矩阵，重新引入稀疏数据上的伪相关过拟合。</li>
+<li><strong>低秩维度存在明确甜点</strong>：<span class="arithmatex">\(q\)</span>从 1 增至 7 时性能在<span class="arithmatex">\(q=2\)</span>达峰后单调下降，经验规律<span class="arithmatex">\(q\approx T/3\)</span>；这与"低秩即结构正则"的设计意图一致——维度过高即退化为全邻接矩阵，重新引入稀疏数据上的伪相关过拟合。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 AITM/HTLNet 的固定转化链，PTDG 保留因果骨架但让边权随实例变化；相比 PMTRec/MoCoGrad 在损失数值层面重加权，PTDG 在<strong>图结构层面</strong>开辟捷径、在<strong>参数层面</strong>做掩码解耦，二者正交；相比 CSRL 的 <span class="arithmatex">\(O(T^2)\)</span> 因果搜索与 PCGrad 的 <span class="arithmatex">\(O(T^2)\)</span> 投影，本文全流程对 <span class="arithmatex">\(T\)</span> 线性，8ms 增量满足 SLA。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 AITM/HTLNet 的固定转化链，PTDG 保留因果骨架但让边权随实例变化；相比 PMTRec/MoCoGrad 在损失数值层面重加权，PTDG 在<strong>图结构层面</strong>开辟捷径、在<strong>参数层面</strong>做掩码解耦，二者正交；相比 CSRL 的 <span class="arithmatex">\(O(T^2)\)</span>因果搜索与 PCGrad 的<span class="arithmatex">\(O(T^2)\)</span>投影，本文全流程对<span class="arithmatex">\(T\)</span> 线性，8ms 增量满足 SLA。</li>
 <li><strong>可迁移亮点</strong>: ① "低秩分解 + 上下文偏置广播"是构造实例级动态图的极轻量范式，可直接移植到跨域迁移或多场景建模中的场景-任务关联图；② 按标签正样本率反比分配参数掩码率，是一种无需梯度计算的通用稀疏任务保护技巧。</li>
-<li><strong>审稿级局限批判</strong>: ① 实验披露不足——数据划分方式、是否 Full-Ranking、负采样策略均未说明，AUC 绝对值跨论文不可比；② 低秩维度 <span class="arithmatex">\(q\)</span> 与掩码率 <span class="arithmatex">\(r_{min}/r_{max}\)</span> 均需按数据集调参，且 <span class="arithmatex">\(q\approx T/3\)</span> 仅为经验观察、缺乏理论 scaling 分析（作者自认留待未来）；③ 任务数仅 6–7，向数十任务扩展时低秩假设与 GCN 传播的有效性未验证。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 实验披露不足——数据划分方式、是否 Full-Ranking、负采样策略均未说明，AUC 绝对值跨论文不可比；② 低秩维度 <span class="arithmatex">\(q\)</span>与掩码率<span class="arithmatex">\(r_{min}/r_{max}\)</span>均需按数据集调参，且<span class="arithmatex">\(q\approx T/3\)</span> 仅为经验观察、缺乏理论 scaling 分析（作者自认留待未来）；③ 任务数仅 6–7，向数十任务扩展时低秩假设与 GCN 传播的有效性未验证。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

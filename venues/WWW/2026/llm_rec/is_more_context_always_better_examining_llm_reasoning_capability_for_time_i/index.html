@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4244,9 +4255,9 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>三档上下文受控提示（Context Ladder）</strong>：痛点是"上下文增益"从未被隔离测量 <span class="arithmatex">\(\to\)</span> 将信息量拆成 Zero（仅间隔数字）/ Medium（品类描述 + 均值、中位数等汇总统计）/ High（近期性、生命周期叙述）三级，其余提示模板固定 <span class="arithmatex">\(\to\)</span> 使性能差异可归因于信息类型而非措辞，从而暴露"语义噪声"效应。</li>
-<li><strong>业务导向的容差精度指标 TA@k</strong>：痛点是 RMSE/MAE 无法反映补货场景"48 小时内会买"即可用的现实 <span class="arithmatex">\(\to\)</span> 定义 <span class="arithmatex">\(\mathrm{TA@}k=\frac{1}{N}\sum \mathbb{I}(|y-\hat{y}|\le k)\)</span>，报告 <span class="arithmatex">\(k=0,1,2\)</span> <span class="arithmatex">\(\to\)</span> 该指标揭示 LLM 的误差分布更"钝"但方向大致正确，为混合模型提供分工依据。</li>
-<li><strong>训练目标与基线配置</strong>：ML 基线统一用<strong>中位数分位损失</strong>（<span class="arithmatex">\(\mathcal{L}=\sum \rho_{0.5}(y-\hat{y})\)</span>，<span class="arithmatex">\(\rho_\tau\)</span> 为 pinball 损失）以适配离散目标分布，特征含历史间隔、用户近期性、品类频次；LLM 侧为纯零样本、无负采样、无微调，推理成本单列（GPT-4o 约 1.2–1.4s/次、&gt;$0.003；Claude 2–4s、约 3 倍价；Gemini 15–19s）。</li>
+<li><strong>三档上下文受控提示（Context Ladder）</strong>：痛点是"上下文增益"从未被隔离测量 <span class="arithmatex">\(\to\)</span>将信息量拆成 Zero（仅间隔数字）/ Medium（品类描述 + 均值、中位数等汇总统计）/ High（近期性、生命周期叙述）三级，其余提示模板固定<span class="arithmatex">\(\to\)</span> 使性能差异可归因于信息类型而非措辞，从而暴露"语义噪声"效应。</li>
+<li><strong>业务导向的容差精度指标 TA@k</strong>：痛点是 RMSE/MAE 无法反映补货场景"48 小时内会买"即可用的现实 <span class="arithmatex">\(\to\)</span>定义<span class="arithmatex">\(\mathrm{TA@}k=\frac{1}{N}\sum \mathbb{I}(|y-\hat{y}|\le k)\)</span>，报告<span class="arithmatex">\(k=0,1,2\)</span> <span class="arithmatex">\(\to\)</span> 该指标揭示 LLM 的误差分布更"钝"但方向大致正确，为混合模型提供分工依据。</li>
+<li><strong>训练目标与基线配置</strong>：ML 基线统一用<strong>中位数分位损失</strong>（<span class="arithmatex">\(\mathcal{L}=\sum \rho_{0.5}(y-\hat{y})\)</span>，<span class="arithmatex">\(\rho_\tau\)</span>为 pinball 损失）以适配离散目标分布，特征含历史间隔、用户近期性、品类频次；LLM 侧为纯零样本、无负采样、无微调，推理成本单列（GPT-4o 约 1.2–1.4s/次、&gt;$0.003；Claude 2–4s、约 3 倍价；Gemini 15–19s）。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4430,12 +4441,18 @@
 <li><strong>上下文呈倒 U 型，Medium 是甜点</strong>：Medium 在全部 3 个 LLM × 2 个数据集上一致改善 MAPE（专有最多 −6.8），而 High 在 6 个配置中有 5 个使 MAPE 回升（Instacart GPT-4o 从 66.80 恶化到 84.03，+25.8%），验证"上下文即噪声"效应。</li>
 <li><strong>LLM 确实超越统计中位数，但幅度有限</strong>：专有数据最佳 LLM MAPE 57.45% 优于 Stat Best 55.41% 之外的 TA@1（14.63 vs. 13.15），说明 LLM 从语义描述中提取了中位数之外的信号；但该增益远不足以弥补与 XGBoost 的鸿沟，且 Gemini 延迟高达 15–19s，部署性价比最差。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 LLMTime（把数值序列当数字串 token 做零样本连续时序预测）与 TIME-LLM（学习对齐层把时序映射进词表空间），本文不改模型、不做对齐训练，而是检验<strong>离散事件间隔</strong>这一更贴近 Web 行为的场景；相较 LSTPrompt 的长短程分解提示，本文的核心变量是"上下文信息类型"而非"提示结构"，因而能直接证伪"更多上下文更好"。</li>
 <li><strong>可迁移亮点</strong>: ① "上下文阶梯"消融范式可直接复用到 LLM 做用户生命周期/流失时机/下次活跃预测的评测；② TA@k 容差指标把回归误差转成业务可用性，适合补货、续订、召回触达等时机型任务的目标定义。</li>
 <li><strong>审稿级局限批判</strong>: ① 仅零样本、未探索 few-shot / CoT / 微调，结论对"LLM 能力上限"的刻画偏保守；② 数据集规模小（数千用户、十余品类）、间隔截断 20 天，且无显著性检验与线上 A/B，泛化性与统计可靠性存疑；③ 未给出混合模型的具体架构，仅停留在"应结合统计精度与语言灵活性"的方向性建议。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

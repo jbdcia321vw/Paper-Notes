@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>基准构建分两条流水线。<strong>画像构建侧</strong>：从 Amazon Review 采样评论数 ≥100 的用户，统计其最常购子类作为 target product type，仅保留该类购买史，交由 GPT-5-mini 结合商品元数据与评论文本生成叙事式购物上下文 <span class="arithmatex">\(X\)</span>；再从历史中随机抽 seed item，按意图生成查询 <span class="arithmatex">\(q\)</span>（TF 三种粒度 / AS 宽泛类目 / OE 无查询），并生成六维个性化清单 <span class="arithmatex">\(C\)</span>。<strong>评估侧</strong>：智能体 <span class="arithmatex">\(\mathcal{A}\)</span> 在开放网络 <span class="arithmatex">\(\mathcal{W}\)</span> 上产出商品列表 <span class="arithmatex">\(L=\mathcal{A}(q,X;\mathcal{W})\)</span>；对每个商品用 Playwright 全页渲染截图 + URL 送入带搜索能力的抽取器得到结构化信息 <span class="arithmatex">\(I(r_i)\)</span>，再由 LLM-as-a-judge 逐条二值判定清单项，聚合为策展得分。</p>
+<p>基准构建分两条流水线。<strong>画像构建侧</strong>：从 Amazon Review 采样评论数 ≥100 的用户，统计其最常购子类作为 target product type，仅保留该类购买史，交由 GPT-5-mini 结合商品元数据与评论文本生成叙事式购物上下文 <span class="arithmatex">\(X\)</span>；再从历史中随机抽 seed item，按意图生成查询<span class="arithmatex">\(q\)</span>（TF 三种粒度 / AS 宽泛类目 / OE 无查询），并生成六维个性化清单<span class="arithmatex">\(C\)</span>。<strong>评估侧</strong>：智能体<span class="arithmatex">\(\mathcal{A}\)</span>在开放网络<span class="arithmatex">\(\mathcal{W}\)</span>上产出商品列表<span class="arithmatex">\(L=\mathcal{A}(q,X;\mathcal{W})\)</span>；对每个商品用 Playwright 全页渲染截图 + URL 送入带搜索能力的抽取器得到结构化信息<span class="arithmatex">\(I(r_i)\)</span>，再由 LLM-as-a-judge 逐条二值判定清单项，聚合为策展得分。</p>
 <pre class="mermaid"><code>flowchart TD
     A["Amazon 真实购买史+评论"] --&gt; B["叙事式用户上下文 X"]
     B --&gt; C["意图特定查询 q + 六维清单 C"]
@@ -4251,7 +4262,7 @@
 <li>
 <p><strong>多模态抽取 + 清单驱动的可验证评分</strong>：纯 URL 判定会因动态加载与广告噪声失真。本文用 Playwright 渲染全页截图集 <span class="arithmatex">\(S_i\)</span> 与 URL 联合输入抽取器：
 $<span class="arithmatex">\(I(r_i)=\mathcal{M}_{\text{extract}}\big(\mathrm{URL}(r_i), S_i\big),\quad \text{Score}=\frac{1}{|\mathcal{U}|MK}\sum_{u}\sum_{m}\sum_{k} J\big(I(r_m),C_k\big)\)</span>$
-其中 <span class="arithmatex">\(J\in\{0,1\}\)</span> 为 judge 判定。与人类标注的 Cohen's <span class="arithmatex">\(\kappa=0.732\)</span>、Spearman <span class="arithmatex">\(\rho=0.743\)</span>（接近人际一致性 0.774），而去掉抽取信息后骤降至 0.44/0.38——说明"证据落地"是可靠评估的前提。该框架无需训练、无负采样，成本集中在网页渲染与 judge 调用。</p>
+其中 <span class="arithmatex">\(J\in\{0,1\}\)</span>为 judge 判定。与人类标注的 Cohen's<span class="arithmatex">\(\kappa=0.732\)</span>、Spearman<span class="arithmatex">\(\rho=0.743\)</span>（接近人际一致性 0.774），而去掉抽取信息后骤降至 0.44/0.38——说明"证据落地"是可靠评估的前提。该框架无需训练、无负采样，成本集中在网页渲染与 judge 调用。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4413,7 +4424,7 @@ $<span class="arithmatex">\(I(r_i)=\mathcal{M}_{\text{extract}}\big(\mathrm{URL}
 <th style="text-align: left;">配置</th>
 <th style="text-align: center;">清单偏好对齐 Acc</th>
 <th style="text-align: center;">Cohen's <span class="arithmatex">\(\kappa\)</span></th>
-<th style="text-align: center;">Spearman <span class="arithmatex">\(\rho\)</span></th>
+<th style="text-align: center;">Spearman<span class="arithmatex">\(\rho\)</span></th>
 </tr>
 </thead>
 <tbody>
@@ -4467,12 +4478,18 @@ $<span class="arithmatex">\(I(r_i)=\mathcal{M}_{\text{extract}}\big(\mathrm{URL}
 <li><strong>查询具体度几乎无增益</strong>：TF 三档查询得分差异普遍在 1–3 个百分点内（ChatGPT 37.81→34.79），因开放网络缺乏商业平台的结构化类目，查询改写难以带来互补检索结果。</li>
 <li><strong>失败集中在评论与价格两维</strong>：约 70% 价格失败源于超预算推荐（动态价格 + 运费/税/折扣难以聚合）；评论失败主因是策展到"无评论页面"（No Review Page 比例 0.16–0.53），即找不到评论丰富的商品而非读不懂评论；此外 ChatGPT Search 仍有约 20% 商品链接为幻觉/无效页，Gemini 失败率高达 51.14%。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 WebShop（单平台、平均奖励、无个性化）与 DeepShop（仅加查询复杂度、无个性化），AgenticShop 首次同时覆盖 TF/AS/OE 三类意图 + 开放网络 + 清单级个性化；相较 PersonalWAB 仅在任务侧引入个性化，本文将个性化真正落到评估环节。</li>
 <li><strong>可迁移亮点</strong>: ① "真实行为史 → 叙事上下文 → 原子清单"的三级偏好蒸馏管线，可直接迁移到对话推荐/可解释推荐的用户建模；② 截图+URL 多模态抽取后再判定的"证据落地"范式，可复用于任何开放网页的 LLM 评估。</li>
 <li><strong>审稿级局限批判</strong>: ① 画像、查询、清单、judge 全部依赖 GPT-5-mini，存在自偏好与生成偏差，且 judge 与人类 <span class="arithmatex">\(\kappa\)</span> 仅 0.73，仍有约 1/4 判定分歧；② 评估成本高（Playwright 全页渲染 + 多次 LLM 调用），且网页动态变化导致基准不可完全复现；③ 仅 8 个系统、单一 judge 模型，缺少跨 judge 鲁棒性与多语言/多地区电商覆盖。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

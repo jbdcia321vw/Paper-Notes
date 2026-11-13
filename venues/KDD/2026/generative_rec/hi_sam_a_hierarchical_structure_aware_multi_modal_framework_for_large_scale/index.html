@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4232,13 +4243,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>解耦模态残差量化 DMRQ（分词端核心）</strong>：痛点是对齐后多模态仍纠缠，早融合坍缩、独立量化冗余。做法：先聚合全局表示 <span class="arithmatex">\(f=\Phi_{fuse}(Z)\)</span> 用 RQ-VAE 量化出共享码 <span class="arithmatex">\(\hat z_{sh}\)</span>，残差 <span class="arithmatex">\(r_{N_{sh}}\)</span> 经多头投影展开为 <span class="arithmatex">\(H\)</span> 子空间，以原始对齐特征 <span class="arithmatex">\(z_j\)</span> 作语义探针做注意力聚合得 <span class="arithmatex">\(z_{sp}^{(j)}\)</span> 再量化到模态专属码本；用 vCLUB 互信息最小化 <span class="arithmatex">\(\mathcal{L}_{MI}=\sum_j \hat I(\hat z_{sh}; z_{sp}^{(j)})\)</span> 强制二者统计独立。直觉：共享码本吸收"复古外套"这类跨模态共识，残差码本只保留各模态独有细节，加法重构 <span class="arithmatex">\(\|z_j-(\hat z_{sh}+\hat z_{sp}^{(j)})\|^2\)</span> 保证互补不重叠。</p>
+<p><strong>解耦模态残差量化 DMRQ（分词端核心）</strong>：痛点是对齐后多模态仍纠缠，早融合坍缩、独立量化冗余。做法：先聚合全局表示 <span class="arithmatex">\(f=\Phi_{fuse}(Z)\)</span>用 RQ-VAE 量化出共享码<span class="arithmatex">\(\hat z_{sh}\)</span>，残差<span class="arithmatex">\(r_{N_{sh}}\)</span>经多头投影展开为<span class="arithmatex">\(H\)</span>子空间，以原始对齐特征<span class="arithmatex">\(z_j\)</span>作语义探针做注意力聚合得<span class="arithmatex">\(z_{sp}^{(j)}\)</span>再量化到模态专属码本；用 vCLUB 互信息最小化<span class="arithmatex">\(\mathcal{L}_{MI}=\sum_j \hat I(\hat z_{sh}; z_{sp}^{(j)})\)</span>强制二者统计独立。直觉：共享码本吸收"复古外套"这类跨模态共识，残差码本只保留各模态独有细节，加法重构<span class="arithmatex">\(\|z_j-(\hat z_{sh}+\hat z_{sp}^{(j)})\|^2\)</span> 保证互补不重叠。</p>
 </li>
 <li>
-<p><strong>分层 RoPE + 记忆锚点注意力 HMAT（架构端核心）</strong>：痛点是把物品多 token 压平后层级丢失、长序列噪声放大。H-RoPE 将维度对半拆为正交子空间，前 <span class="arithmatex">\(d/2\)</span> 维编码物品序 <span class="arithmatex">\(m\)</span>（基频 <span class="arithmatex">\(B_{inter}=10^4\)</span>，低频利于长程外推），后 <span class="arithmatex">\(d/2\)</span> 维编码属性位 <span class="arithmatex">\(n\)</span>（<span class="arithmatex">\(B_{intra}=100\)</span>，高频放大局部敏感），注意力分数严格解耦为 <span class="arithmatex">\(\langle q_{inter},k_{inter}e^{-i\Delta m\Theta_{inter}}\rangle+\langle q_{intra},k_{intra}e^{-i\Delta n\Theta_{intra}}\rangle\)</span>。MA-Attn 用掩码 <span class="arithmatex">\(M_{q,k}\)</span> 规定三条通路：用户画像全局可见、当前物品内全可见、历史物品<strong>仅可见其 [ANC] 锚点</strong>。直觉：仿人类选择性记忆，历史只留压缩概念，既滤噪又把历史注意力复杂度从 <span class="arithmatex">\(O((K\!\cdot\!L_i)^2)\)</span> 降到 <span class="arithmatex">\(\sim O(K^2)\)</span>。</p>
+<p><strong>分层 RoPE + 记忆锚点注意力 HMAT（架构端核心）</strong>：痛点是把物品多 token 压平后层级丢失、长序列噪声放大。H-RoPE 将维度对半拆为正交子空间，前 <span class="arithmatex">\(d/2\)</span>维编码物品序<span class="arithmatex">\(m\)</span>（基频<span class="arithmatex">\(B_{inter}=10^4\)</span>，低频利于长程外推），后<span class="arithmatex">\(d/2\)</span>维编码属性位<span class="arithmatex">\(n\)</span>（<span class="arithmatex">\(B_{intra}=100\)</span>，高频放大局部敏感），注意力分数严格解耦为<span class="arithmatex">\(\langle q_{inter},k_{inter}e^{-i\Delta m\Theta_{inter}}\rangle+\langle q_{intra},k_{intra}e^{-i\Delta n\Theta_{intra}}\rangle\)</span>。MA-Attn 用掩码<span class="arithmatex">\(M_{q,k}\)</span>规定三条通路：用户画像全局可见、当前物品内全可见、历史物品<strong>仅可见其 [ANC] 锚点</strong>。直觉：仿人类选择性记忆，历史只留压缩概念，既滤噪又把历史注意力复杂度从<span class="arithmatex">\(O((K\!\cdot\!L_i)^2)\)</span>降到<span class="arithmatex">\(\sim O(K^2)\)</span>。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}_{SFT}=-\sum_{j\in I_a}\log P(T_j|T_{&lt;j},M;\Theta)\)</span>，分词端 <span class="arithmatex">\(\mathcal{L}_{DMRQ}=\sum_j\|z_j-(\hat z_{sh}+\hat z_{sp}^{(j)})\|^2+\beta\mathcal{L}_{vq}+\lambda\mathcal{L}_{MI}\)</span>；全库 softmax 式 next-token 预测，<strong>免负采样</strong>。推理侧 One-Pass 并行打分时把候选 token 的物品序坐标强制重置为 <span class="arithmatex">\(L_{valid}+1\)</span> 消除位置偏置；MA-Attn 保证历史细粒度 token 永不被后续访问，故可物理驱逐其 KV，仅留锚点并维护逻辑位置映射，实现无损压缩。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}_{SFT}=-\sum_{j\in I_a}\log P(T_j|T_{&lt;j},M;\Theta)\)</span>，分词端<span class="arithmatex">\(\mathcal{L}_{DMRQ}=\sum_j\|z_j-(\hat z_{sh}+\hat z_{sp}^{(j)})\|^2+\beta\mathcal{L}_{vq}+\lambda\mathcal{L}_{MI}\)</span>；全库 softmax 式 next-token 预测，<strong>免负采样</strong>。推理侧 One-Pass 并行打分时把候选 token 的物品序坐标强制重置为<span class="arithmatex">\(L_{valid}+1\)</span> 消除位置偏置；MA-Attn 保证历史细粒度 token 永不被后续访问，故可物理驱逐其 KV，仅留锚点并维护逻辑位置映射，实现无损压缩。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4428,12 +4439,18 @@
 <li><strong>对齐不可省</strong>：去掉 CGA 直接拼接使 GAUC 暴跌 3.81%（0.6410→0.6166），冷启动 GAUC 掉 3.70%，验证球面几何对齐是量化前的必要初始化；层间相似度热图显示 DMRQ 深层 L3/L4/L5 分别与行为/图像/文本强对角相关，证明解耦确实生效。</li>
 <li><strong>锚点压缩兼顾精度与效率</strong>：去 MA-Attn 冷启动 GAUC 掉 1.47%（0.5835→0.5688），而保留掩码后历史 KV 可无损驱逐，线上同等算力下响应时间降 35%；线上 PT+SFT 变体冷启动响应率 +16.62%，印证多模态语义对稀疏用户的补偿价值。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 QARM 的早融合统一编码，DMRQ 用"共享码本 + 残差模态码本 + MI 约束"从结构上防坍缩；相比 PSRQ+MCCA 的独立量化，它显式建模跨模态共识；相比 HSTU/MTGR 的扁平序列，HMAT 首次把"物品-属性"层级写进 RoPE 与注意力掩码，且不增加算力反而降延迟。</li>
 <li><strong>可迁移亮点</strong>: ① H-RoPE 的正交双子空间 + 差异化基频设计，可直接迁移到任何"多 token 物品"的生成式推荐骨干；② 锚点掩码带来的无损 KV 驱逐 + 候选位置重对齐，是生成式召回/精排落地的通用工程技巧。</li>
-<li><strong>审稿级局限批判</strong>: ① 仅报告 AUC/GAUC 与业务指标，缺少 NDCG/HR 等 top-K 排序指标与显著性检验；② DST 依赖 BLIP-2 (2.7B) 离线提特征，分词器质量受预训练编码器上限约束，且 MI 权重 <span class="arithmatex">\(\lambda\)</span>、码本层数 <span class="arithmatex">\(N_{sh}\)</span> 的敏感性未系统分析；③ 线上仅对比自家 DLRM 基线，未与工业级语义ID系统横向 A/B。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 仅报告 AUC/GAUC 与业务指标，缺少 NDCG/HR 等 top-K 排序指标与显著性检验；② DST 依赖 BLIP-2 (2.7B) 离线提特征，分词器质量受预训练编码器上限约束，且 MI 权重 <span class="arithmatex">\(\lambda\)</span>、码本层数<span class="arithmatex">\(N_{sh}\)</span> 的敏感性未系统分析；③ 线上仅对比自家 DLRM 基线，未与工业级语义ID系统横向 A/B。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

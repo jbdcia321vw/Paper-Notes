@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][大语言模型推荐] 将 Qwen3-0.6B 量化后部署于手机端作为意图理解 Agent，把隐式行为翻译为显式搜索意图 query，配合自适应 Prompt 与意图漂移触发机制，线上平均 +1.8% CLICK / +2.7% PAY / +2.5% GMV。">
+        <meta name="description" content="[SIGIR 2026][大语言模型推荐] 将 Qwen3-0.6B 量化后部署于手机端，用意图漂移触发机制按需推理生成下一搜索意图，线上 GMV +2.5%">
       
       
       
@@ -108,20 +108,20 @@
 
 
 
-<meta name="keywords" content="SIGIR, 大语言模型推荐, 端侧意图理解/召回触发, On-Device LLM, 意图漂移触发, 自适应 Prompt 构建" />
+<meta name="keywords" content="SIGIR 2026, 大语言模型推荐, 端侧推理, 意图理解, 自适应提示构建, 意图漂移触发" />
 
 
-<meta property="article:tag" content="SIGIR" />
+<meta property="article:tag" content="SIGIR 2026" />
 
 <meta property="article:tag" content="大语言模型推荐" />
 
-<meta property="article:tag" content="端侧意图理解/召回触发" />
+<meta property="article:tag" content="端侧推理" />
 
-<meta property="article:tag" content="On-Device LLM" />
+<meta property="article:tag" content="意图理解" />
+
+<meta property="article:tag" content="自适应提示构建" />
 
 <meta property="article:tag" content="意图漂移触发" />
-
-<meta property="article:tag" content="自适应 Prompt 构建" />
 
 
 
@@ -131,10 +131,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/recgpt_mobile_on_device_large_language_models_for_user_intent_understanding/" />
 <meta property="og:title" content="[Paper Note] RecGPT-Mobile: On-Device Large Language Models for User Intent Understanding in Taobao Feed Recommendation" />
-<meta property="og:description" content="[SIGIR 2026][大语言模型推荐] 将 Qwen3-0.6B 量化后部署于手机端作为意图理解 Agent，把隐式行为翻译为显式搜索意图 query，配合自适应 Prompt 与意图漂移触发机制，线上平均 +1.8% CLICK / +2.7% PAY / +2.5% GMV。" />
+<meta property="og:description" content="[SIGIR 2026][大语言模型推荐] 将 Qwen3-0.6B 量化后部署于手机端，用意图漂移触发机制按需推理生成下一搜索意图，线上 GMV +2.5%" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] RecGPT-Mobile: On-Device Large Language Models for User Intent Understanding in Taobao Feed Recommendation" />
-<meta name="twitter:description" content="[SIGIR 2026][大语言模型推荐] 将 Qwen3-0.6B 量化后部署于手机端作为意图理解 Agent，把隐式行为翻译为显式搜索意图 query，配合自适应 Prompt 与意图漂移触发机制，线上平均 +1.8% CLICK / +2.7% PAY / +2.5% GMV。" />
+<meta name="twitter:description" content="[SIGIR 2026][大语言模型推荐] 将 Qwen3-0.6B 量化后部署于手机端，用意图漂移触发机制按需推理生成下一搜索意图，线上 GMV +2.5%" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +160,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] RecGPT-Mobile: On-Device Large Language Models for User Intent Understanding in Taobao Feed Recommendation",
   "headline": "[Paper Note] RecGPT-Mobile: On-Device Large Language Models for User Intent Understanding in Taobao Feed Recommendation",
-  "description": "[SIGIR 2026][\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350] \u5c06 Qwen3-0.6B \u91cf\u5316\u540e\u90e8\u7f72\u4e8e\u624b\u673a\u7aef\u4f5c\u4e3a\u610f\u56fe\u7406\u89e3 Agent\uff0c\u628a\u9690\u5f0f\u884c\u4e3a\u7ffb\u8bd1\u4e3a\u663e\u5f0f\u641c\u7d22\u610f\u56fe query\uff0c\u914d\u5408\u81ea\u9002\u5e94 Prompt \u4e0e\u610f\u56fe\u6f02\u79fb\u89e6\u53d1\u673a\u5236\uff0c\u7ebf\u4e0a\u5e73\u5747 +1.8% CLICK / +2.7% PAY / +2.5% GMV\u3002",
+  "description": "[SIGIR 2026][\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350] \u5c06 Qwen3-0.6B \u91cf\u5316\u540e\u90e8\u7f72\u4e8e\u624b\u673a\u7aef\uff0c\u7528\u610f\u56fe\u6f02\u79fb\u89e6\u53d1\u673a\u5236\u6309\u9700\u63a8\u7406\u751f\u6210\u4e0b\u4e00\u641c\u7d22\u610f\u56fe\uff0c\u7ebf\u4e0a GMV +2.5%",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/recgpt_mobile_on_device_large_language_models_for_user_intent_understanding/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/llm_rec/recgpt_mobile_on_device_large_language_models_for_user_intent_understanding/",
   "inLanguage": "zh-CN",
@@ -168,18 +168,18 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR, \u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350, \u7aef\u4fa7\u610f\u56fe\u7406\u89e3/\u53ec\u56de\u89e6\u53d1, On-Device LLM, \u610f\u56fe\u6f02\u79fb\u89e6\u53d1, \u81ea\u9002\u5e94 Prompt \u6784\u5efa",
+  "keywords": "SIGIR 2026, \u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350, \u7aef\u4fa7\u63a8\u7406, \u610f\u56fe\u7406\u89e3, \u81ea\u9002\u5e94\u63d0\u793a\u6784\u5efa, \u610f\u56fe\u6f02\u79fb\u89e6\u53d1",
   "about": [
-    { "@type": "Thing", "name": "SIGIR" },
+    { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u5927\u8bed\u8a00\u6a21\u578b\u63a8\u8350" },
-    { "@type": "Thing", "name": "\u7aef\u4fa7\u610f\u56fe\u7406\u89e3/\u53ec\u56de\u89e6\u53d1" },
-    { "@type": "Thing", "name": "On-Device LLM" },
-    { "@type": "Thing", "name": "\u610f\u56fe\u6f02\u79fb\u89e6\u53d1" },
-    { "@type": "Thing", "name": "\u81ea\u9002\u5e94 Prompt \u6784\u5efa" }
+    { "@type": "Thing", "name": "\u7aef\u4fa7\u63a8\u7406" },
+    { "@type": "Thing", "name": "\u610f\u56fe\u7406\u89e3" },
+    { "@type": "Thing", "name": "\u81ea\u9002\u5e94\u63d0\u793a\u6784\u5efa" },
+    { "@type": "Thing", "name": "\u610f\u56fe\u6f02\u79fb\u89e6\u53d1" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3997,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4011,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4019,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4072,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4095,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4103,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4119,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4181,9 +4159,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][大语言模型推荐] 将 Qwen3-0.6B 量化后部署于手机端作为意图理解 Agent，把隐式行为翻译为显式搜索意图 query，配合自适应 Prompt 与意图漂移触发机制，线上平均 +1.8% CLICK / +2.7% PAY / +2.5% GMV。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][大语言模型推荐] 将 Qwen3-0.6B 量化后部署于手机端，用意图漂移触发机制按需推理生成下一搜索意图，线上 GMV +2.5%</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR · 大语言模型推荐 · 端侧意图理解/召回触发 · On-Device LLM · 意图漂移触发 · 自适应 Prompt 构建</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 大语言模型推荐 · 端侧推理 · 意图理解 · 自适应提示构建 · 意图漂移触发</p>
   
 </aside>
   
@@ -4197,7 +4175,7 @@
       
       
       
-        <span class="md-tag">SIGIR</span>
+        <span class="md-tag">SIGIR 2026</span>
       
     
       
@@ -4211,14 +4189,21 @@
       
       
       
-        <span class="md-tag">端侧意图理解/召回触发</span>
+        <span class="md-tag">端侧推理</span>
       
     
       
       
       
       
-        <span class="md-tag">On-Device LLM</span>
+        <span class="md-tag">意图理解</span>
+      
+    
+      
+      
+      
+      
+        <span class="md-tag">自适应提示构建</span>
       
     
       
@@ -4228,13 +4213,6 @@
         <span class="md-tag">意图漂移触发</span>
       
     
-      
-      
-      
-      
-        <span class="md-tag">自适应 Prompt 构建</span>
-      
-    
   </nav>
 
 
@@ -4242,124 +4220,99 @@
   
 
 
-<h1 id="recgpt-mobile-on-device-large-language-models-for-user-intent-understanding-in-taobao-feed-recommendation">RecGPT-Mobile: On-Device Large Language Models for User Intent Understanding in Taobao Feed Recommendation (端侧大语言模型驱动的淘宝信息流推荐用户意图理解)</h1>
+<h1 id="recgpt-mobile-on-device-large-language-models-for-user-intent-understanding-in-taobao-feed-recommendation">RecGPT-Mobile: On-Device Large Language Models for User Intent Understanding in Taobao Feed Recommendation (端侧大语言模型驱动的淘宝信息流用户意图理解)</h1>
 <ul>
-<li><strong>会议/期刊</strong>: SIGIR 2026 (49th International ACM SIGIR Conference, Melbourne, VIC, Australia)</li>
-<li><strong>推荐链路定位</strong>: 召回触发 / 意图理解前置模块 (Intent Agent → Item Retrieval)，服务于信息流推荐与搜索意图预测</li>
-<li><strong>研究方向</strong>: 大语言模型推荐 (LLM4Rec) / 对话与智能体推荐 (Agentic Recommendation)</li>
+<li><strong>会议/期刊</strong>: SIGIR 2026</li>
+<li><strong>作者与机构</strong>: Bin Zhang, Weipeng Huang, Dimin Wang, Jialin Zhu, Yuning Jiang, Zhaode Wang, Chengfei Lv, Jian Wang, Qichao Ma, Li Chen, Junqing Wu, Yipeng Yu（淘宝天猫集团 / 阿里巴巴）</li>
+<li><strong>推荐链路定位</strong>: 召回（意图查询生成 → 站内检索召回）</li>
+<li><strong>研究方向</strong>: 大语言模型推荐 / 序列与会话推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2605.04726v1">https://arxiv.org/abs/2605.04726v1</a></li>
-<li><strong>开源代码</strong>: 暂未开源（原文与预提取均未发现开源代码链接）</li>
+<li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对云端 LLM 意图理解推理成本高、无法实时感知移动端用户意图快速漂移的痛点，本文提出 RecGPT-Mobile：将 Qwen3-0.6B 经 LoRA 微调 + 量化后直接部署在手机端，作为"意图 Agent"把异构隐式行为序列翻译为显式搜索 query，并设计自适应 Prompt 构建（模板级 + 结构级 + 预算约束）与基于熵差/Jaccard/JS 散度的意图漂移触发机制以降低冗余推理。离线 LLM 自动评测（LoRA 总分 0.829 vs Base 0.677）与淘宝四场景一个月线上 A/B（千万级用户）显示平均 +1.8% CLICK、+2.7% PAY、+2.5% GMV。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>云端 LLM 做"下一查询意图预测"存在通信延迟高、推理成本大、无法感知意图快速漂移三大痛点。本文提出 RecGPT-Mobile：把 Qwen3-0.6B 经 LoRA 微调 + 量化后直接部署在手机端，配合"模板级 + 结构级"自适应提示构建与基于熵差/Jaccard/JS 散度的意图漂移触发机制，仅在意图真正变化时才调用 LLM。离线 LLM 自动评测总分 0.794（LoRA+Quant），线上淘宝四场景 A/B 平均 CLICK +1.8%、PAY +2.7%、GMV +2.5%。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 现代电商推荐主流仍是云端集中式架构（特征中心 + 云服务器推理），近期 LLM4Rec 工作（HSTU、OneRec、RecGPT）把推荐重构为生成式/意图推理任务，显著提升语义理解能力。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>通信延迟与意图感知滞后</strong>：云端架构存在端-云通信延迟，难以捕捉移动场景下快速演化的用户意图；</li>
-<li><strong>推理成本高</strong>：LLM 参数量大、算力密集，云端部署的推理开销难以支撑高频实时调用；</li>
-<li><strong>端侧资源约束</strong>：直接在资源受限设备上部署复杂 LLM 不可行，需依赖量化/剪枝/蒸馏等压缩手段。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 端侧推荐系统（EdgeRec、快手端上实时框架、DIR）已证明本地处理可降延迟，但如何在<strong>严格延迟/内存/Token 预算</strong>下运行 LLM 并保持意图理解质量，同时避免行为稳定时的频繁无效推理，是尚未解决的矛盾。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者认为意图理解不必每次行为都重算——只有当用户意图发生"显著漂移"时才触发 LLM 推理；同时 Prompt 应随行为特征与场景自适应裁剪以适配端侧预算。这一"按需推理 + 预算感知 Prompt"的组合是本文的核心切入点。</li>
+<li><strong>主流范式</strong>: 云端推荐系统集中收集行为、集中推理；近期 RecGPT 等工作用云端 LLM 做意图挖掘与下一查询预测，替代传统 log-fitting。</li>
+<li><strong>前人局限</strong>: ① 端云通信延迟使"实时感知意图"不可行，用户意图在分钟级内漂移时云端结果已过期；② 云端 LLM 推理成本随用户规模线性膨胀，难以全量铺开。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 端侧推荐（EdgeRec、DIR）已证明本地处理可降延迟，但从未有人把 LLM 放到手机上——瓶颈不在算法而在"模型太大 + 每步都推理太浪费"。</li>
+<li><strong>本文切入点</strong>: 用 0.6B 小模型 + 量化解决"放得下"，用意图漂移触发机制解决"不必每步都算"，从而把 LLM 意图智能体真正落到端侧。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户行为序列：<span class="arithmatex">\(\mathcal{B}=\{(i_1,a_1,t_1),(i_2,a_2,t_2),\dots,(i_T,a_T,t_T)\}\)</span>，其中 <span class="arithmatex">\(i_T\)</span> 为交互物品，<span class="arithmatex">\(a_T\in\{\text{click},\text{cart},\text{favorite},\text{purchase}\}\)</span> 为行为类型，<span class="arithmatex">\(t_T\)</span> 为时间戳。</li>
-<li>目标：在资源约束下预测下一潜在搜索 query <span class="arithmatex">\(q\in\mathcal{Q}\)</span>：
-$<span class="arithmatex">\(q^*=\arg\max_{q\in\mathcal{Q}} P(q\mid \mathcal{B}) \quad \text{s.t. Resource Constraints}\)</span>$</li>
-<li>行为特征向量：<span class="arithmatex">\(\Phi(\mathcal{B})=[\Phi_{act},\Phi_{rec},\Phi_{div},\Phi_{freq}]\)</span>，分别编码行为类型分布、时间近因性、语义多样性与交互频次。</li>
-<li>端侧预算：<span class="arithmatex">\(C_{\max}\)</span>（延迟/内存/Token 上限）。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>系统由五个模块构成：<strong>用户行为采集模块</strong>（本地缓存行为）→ <strong>Prompt 构建模块</strong>（将原始行为与画像合成为结构化 Prompt）→ <strong>意图 Agent</strong>（LLM 将行为信号转为显式意图 query）→ <strong>物品召回模块</strong>（以意图 query 检索并回传物品）→ <strong>LLM 训练模块</strong>（SFT、Prompt 适配与推理优化）。论文重点阐述训练模块与端侧推理优化。</p>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2605.04726v1/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<p>图 1: RecGPT-Mobile 整体框架。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>系统由五个模块闭环构成：用户行为采集模块在本地缓存行为序列 <span class="arithmatex">\(\mathcal{B}=\{(i_t,a_t,t_t)\}\)</span>；提示构建模块在"高意图动作"触发下把原始行为与画像合成为结构化 prompt；意图智能体（端侧 LLM）将隐式行为翻译为显式搜索意图查询<span class="arithmatex">\(q\)</span>；物品检索模块以<span class="arithmatex">\(q\)</span>发起检索并回传候选物品到客户端；LLM 训练模块负责 SFT、提示适配与推理优化。核心优化目标是<span class="arithmatex">\(q^{*}=\arg\max_{q\in\mathcal{Q}}P(q\mid\mathcal{B})\)</span>，且受端侧资源约束。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["用户行为采集模块: 本地缓存 (i,a,t) 序列"] --&gt; B["Prompt 构建模块: 行为特征 Φ + 模板/结构自适应"]
-    B --&gt; C["意图 Agent: 端侧 Qwen3-0.6B (LoRA+Quant)"]
-    C --&gt; D["意图漂移触发: Δintent &gt; τ 才推理"]
-    D --&gt; E["物品召回模块: 以意图 query 检索"]
-    E --&gt; F["客户端信息流展示"]
-    C -.训练.-&gt; G["LLM 训练模块: SFT + Prompt 适配 + 推理优化"]</code></pre>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 监督微调与训练样本构造</strong>：训练集由四类互补样本构成（表 1）：行为驱动样本（购买/搜索日志，60%）、共购关系样本（物品共购矩阵，20%）、LLM 增强样本（GPT 改写提升语言多样性，15%）、人工标注样本（质量校准，5%）。Prompt 1 将时间戳与行为序列作为输入，要求模型输出最可能的搜索 query。</p>
-<p><strong>(2) 自适应 Prompt 构建（算法 1）</strong>：分四阶段——
-- <strong>特征提取</strong>：计算 <span class="arithmatex">\(\Phi(\mathcal{B})=[\Phi_{act},\Phi_{rec},\Phi_{div},\Phi_{freq}]\)</span>；
-- <strong>模板级适配</strong>：对候选模板 <span class="arithmatex">\(T_k\)</span> 用轻量打分器 <span class="arithmatex">\(M_{score}\)</span> 打分 <span class="arithmatex">\(\alpha_k\)</span>，经 softmax（温度 <span class="arithmatex">\(\beta\)</span>）选最优模板 <span class="arithmatex">\(T^*=\arg\max_{T_k\in\mathcal{T}_s} p_k\)</span>；
-- <strong>结构级适配</strong>：对每个候选组件 <span class="arithmatex">\(c\)</span>，计算边际效用 <span class="arithmatex">\(\Delta(c)=M_{score}(P\oplus c,\Phi,s)-M_{score}(P,\Phi,s)\)</span>，仅当 <span class="arithmatex">\(\Delta(c)&gt;\tau\)</span> 且 <span class="arithmatex">\(\text{Cost}(P\oplus c)\le C_{\max}\)</span> 时并入；
-- <strong>预算约束与定稿</strong>：在 <span class="arithmatex">\(\text{Cost}(P')\le C_{\max}\)</span> 下取效用最大的 <span class="arithmatex">\(P^*\)</span>，再实例化具体行为 token。</p>
-<p><strong>(3) 端侧意图漂移触发机制</strong>：将滑窗内每次交互映射为离散语义标签（类目/品牌/意图类型），得到标签分布 <span class="arithmatex">\(P_\mathcal{B}\)</span>。从三个视角量化意图漂移：
-- 熵差：<span class="arithmatex">\(\Delta H=|H(P_\mathcal{B}^{(t)})-H(P_\mathcal{B}^{(t-1)})|\)</span>，<span class="arithmatex">\(H(P_\mathcal{B})=-\sum_k P_\mathcal{B}(k)\log P_\mathcal{B}(k)\)</span>；
-- 语义重叠：<span class="arithmatex">\(\text{JA}(\mathcal{Z}^{(t)},\mathcal{Z}^{(t-1)})=\frac{|\mathcal{Z}^{(t)}\cap\mathcal{Z}^{(t-1)}|}{|\mathcal{Z}^{(t)}\cup\mathcal{Z}^{(t-1)}|}\)</span>；
-- 分布漂移：<span class="arithmatex">\(\text{JS}(P_\mathcal{B}^{(t)},P_\mathcal{B}^{(t-1)})=\frac12\text{KL}(P_\mathcal{B}^{(t)}\|M)+\frac12\text{KL}(P_\mathcal{B}^{(t-1)}\|M)\)</span>，<span class="arithmatex">\(M=\frac12(P_\mathcal{B}^{(t)}+P_\mathcal{B}^{(t-1)})\)</span>。</p>
-<p>融合为单一漂移分数：
-$<span class="arithmatex">\(\Delta_{intent}=\lambda_1\Delta H+\lambda_2(1-\text{JA})+\lambda_3\text{JS}(P_\mathcal{B}^{(t)},P_\mathcal{B}^{(t-1)}),\quad \lambda_1+\lambda_2+\lambda_3=1\)</span>$
-仅当 <span class="arithmatex">\(\Delta_{intent}&gt;\tau\)</span> 时才触发 LLM 更新 Prompt 并重新预测。线上取 <span class="arithmatex">\(\lambda_1=0.4,\lambda_2=0.3,\lambda_3=0.3,\tau=0.8\)</span>（启发式搜索确定）。</p>
+    A["本地行为序列 B（点击/加购/收藏/购买）"] --&gt; B["自适应提示构建（模板级+结构级+预算剪枝）"]
+    B --&gt; C["意图漂移触发判定 Δintent &gt; τ"]
+    C --&gt;|触发| D["端侧 Qwen3-0.6B-Quant 生成意图查询 q"]
+    C --&gt;|不触发| E["沿用上次意图，跳过推理"]
+    D --&gt; F["站内检索召回 → 客户端展示"]</code></pre>
 <figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2605.04726v1/figure_2.png" /><figcaption>图 2</figcaption>
+  <img alt="图1：RecGPT-Mobile 框架。" src="../../../../../assets/papers/2605.04726v1/figure_1.png" /><figcaption>图1：RecGPT-Mobile 框架。</figcaption>
 </figure>
-<p>图 2: 移动端意图 Agent 触发流水线。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 原文采用监督微调（LoRA），<strong>未给出显式损失函数公式</strong>（标准自回归交叉熵 SFT，原文未展开）；无对比学习/温度系数 <span class="arithmatex">\(\tau\)</span> 的损失项（文中 <span class="arithmatex">\(\tau\)</span> 为触发阈值与结构适配阈值，非 InfoNCE 温度）。</li>
-<li><strong>训练负采样策略</strong>: 本文为生成式 next-query 预测，<strong>免负采样</strong>（自回归生成目标 query），原文未报告负采样设计。</li>
-<li><strong>时间与空间复杂度</strong>: 端侧部署 Qwen3-0.6B-Quant（量化版），通过意图漂移触发机制减少冗余推理；原文未给出理论复杂度分析，仅报告真实设备 P50–P95 延迟曲线（图 3），并指出高百分位延迟上升但趋势稳定、无系统性退化。离线训练/量化耗时原文未报告。</li>
-</ul>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>多源训练样本构建 + LoRA 轻量微调</strong>：纯行为日志样本语义单一、模板化严重。作者按 60% 行为驱动（购买/搜索日志关联购后查询）、20% 共购矩阵、15% LLM 改写增强、5% 人工标注校准配比构造训练集，再对 Qwen3-0.6B 做 LoRA 微调并量化。直觉是：小模型容量有限，必须靠"数据多样性"而非"参数规模"补足语义覆盖，LLM 改写样本专门对抗模板复用导致的表达退化。</p>
+</li>
+<li>
+<p><strong>自适应提示构建（Algorithm 1）</strong>：端侧 token/延迟预算极紧，固定长 prompt 不可行。先抽取行为特征 <span class="arithmatex">\(\Phi=[\Phi_{act},\Phi_{rec},\Phi_{div},\Phi_{freq}]\)</span>（动作类型、时近性、多样性、频次），用轻量打分器<span class="arithmatex">\(M_{score}\)</span>对模板池做 softmax 选择<span class="arithmatex">\(p_k=\exp(\beta\alpha_k)/\sum_j\exp(\beta\alpha_j)\)</span>；再对候选结构组件按边际增益<span class="arithmatex">\(\Delta(c)=M_{score}(P\oplus c,\Phi,s)-M_{score}(P,\Phi,s)\)</span>逐个贪心加入，仅当<span class="arithmatex">\(\Delta(c)&gt;\tau\)</span>且<span class="arithmatex">\(\text{Cost}(P\oplus c)\le C_{max}\)</span>时保留；最后做预算感知剪枝，取满足成本约束下效用最大的子集<span class="arithmatex">\(P^{*}\)</span>。有效性来自"按场景定制提示"而非"统一长提示"，在同等预算下信息密度更高。</p>
+</li>
+<li>
+<p><strong>意图漂移触发机制（推理省算力的关键）</strong>：若每步交互都调 LLM，端侧电量和延迟都不可接受。作者把滑窗内交互映射为离散语义标签分布 <span class="arithmatex">\(P_{\mathcal{B}}\)</span>，从三个互补角度量化漂移：熵差<span class="arithmatex">\(\Delta H=|H(P_{\mathcal{B}}^{(t)})-H(P_{\mathcal{B}}^{(t-1)})|\)</span>刻画意图聚焦/发散；Jaccard 相似度<span class="arithmatex">\(JA(\mathcal{Z}^{(t)},\mathcal{Z}^{(t-1)})\)</span> 刻画语义重叠；JS 散度刻画分布整体偏移。融合为
+$<span class="arithmatex">\(\Delta_{intent}=\lambda_1\Delta H+\lambda_2(1-JA)+\lambda_3\,JS(P_{\mathcal{B}}^{(t)},P_{\mathcal{B}}^{(t-1)})\)</span>$
+仅当 <span class="arithmatex">\(\Delta_{intent}&gt;\tau\)</span>才触发推理。物理直觉：三信号分别覆盖"不确定性变化、标签集合变化、概率质量迁移"，单一信号易漏判，融合后对"换品类""同品类深挖"两类漂移都敏感。线上取<span class="arithmatex">\(\lambda_1=0.4,\lambda_2=\lambda_3=0.3,\tau=0.8\)</span>。</p>
+</li>
+</ol>
+<p><strong>训练与推理开销</strong>：SFT 采用标准下一 token 预测损失（无负采样，生成式范式），LoRA 微调 + 量化后部署 Qwen3-0.6B-Quant；在线推理因触发机制而稀疏化，P50–P95 延迟曲线趋势一致，尾部延迟放大但无系统性退化。</p>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文<strong>未提供标准基准数据集统计表</strong>（无 #Users/#Items/#Interactions/稀疏度表格），实验基于淘宝真实生产日志（购买/搜索日志、共购矩阵）与人工标注数据。训练样本构成如下：</li>
+<li><strong>数据集与场景</strong>: 淘宝移动端真实行为日志（购买、搜索、共购矩阵），线上实验覆盖四个信息流场景、数千万用户、为期一个月。论文未给出离线数据集统计表（工业界内部数据，无 #Users/#Items 明细）。</li>
 </ul>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">样本类型 (Sample Type)</th>
-<th style="text-align: left;">数据来源 (Data Source)</th>
-<th style="text-align: center;">占比 (Ratio)</th>
+<th style="text-align: left;">场景</th>
+<th style="text-align: left;">说明</th>
+<th style="text-align: center;">实验周期</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">行为驱动 (Behavior-driven)</td>
-<td style="text-align: left;">购买 &amp; 搜索日志</td>
-<td style="text-align: center;">60%</td>
+<td style="text-align: left;">支付成功页</td>
+<td style="text-align: left;">交易完成后推荐</td>
+<td style="text-align: center;">1 个月</td>
 </tr>
 <tr>
-<td style="text-align: left;">共购关系 (Co-purchase)</td>
-<td style="text-align: left;">物品共购矩阵</td>
-<td style="text-align: center;">20%</td>
+<td style="text-align: left;">物流跟踪页</td>
+<td style="text-align: left;">履约中推荐</td>
+<td style="text-align: center;">1 个月</td>
 </tr>
 <tr>
-<td style="text-align: left;">LLM 增强 (LLM-based)</td>
-<td style="text-align: left;">GPT 改写</td>
-<td style="text-align: center;">15%</td>
+<td style="text-align: left;">购物车页</td>
+<td style="text-align: left;">加购未购推荐</td>
+<td style="text-align: center;">1 个月</td>
 </tr>
 <tr>
-<td style="text-align: left;">人工标注 (Human-annotated)</td>
-<td style="text-align: left;">人工标注</td>
-<td style="text-align: center;">5%</td>
+<td style="text-align: left;">订单列表页</td>
+<td style="text-align: left;">历史订单关联推荐</td>
+<td style="text-align: center;">1 个月</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文<strong>未明确报告</strong>训练/验证/测试划分细节（无 LOO / Ratio / 全局时间戳切分的显式说明），存在审稿层面的可复现性缺口。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 本文<strong>不采用传统 Top-K 排序评测</strong>（无 Full-Ranking / Sampled Ranking、无 Recall@K / NDCG@K）。离线采用 <strong>LLM 自动评测</strong>（Prompt 2），将生成质量分解为语义一致性 <span class="arithmatex">\(S_{sem}\)</span>、逻辑连贯性 <span class="arithmatex">\(S_{logic}\)</span>、表达质量 <span class="arithmatex">\(S_{style}\)</span> 三个 <span class="arithmatex">\([0,1]\)</span> 归一化子分并加权聚合为 Total；线上采用真实流量 A/B 测试。</li>
-<li><strong>评价指标与显著性检验</strong>: 离线指标为 <span class="arithmatex">\(S_{sem}/S_{logic}/S_{style}\)</span>/Total；线上指标为 CLICK、PAY、GMV 相对提升。<strong>原文未报告</strong>多随机种子方差或配对显著性检验（<span class="arithmatex">\(p\)</span> 值），仅以"definitely significant improvement"定性表述。</li>
+<li><strong>数据划分与防穿越</strong>: 论文未明确说明离线划分方式；线上采用标准 A/B 分流（实验组 vs 对照组），属工业界常规做法。</li>
+<li><strong>排名评测协议</strong>: 离线不采用传统 Full-Ranking / Sampled Ranking，而是用 LLM 自动评测（Prompt 2）将生成查询质量分解为语义一致性 <span class="arithmatex">\(S_{sem}\)</span>、逻辑连贯性<span class="arithmatex">\(S_{logic}\)</span>、表达质量<span class="arithmatex">\(S_{style}\)</span> 三维打分；线上以 CLICK / PAY / GMV 业务指标衡量。</li>
+<li><strong>对比基线与超参</strong>: 离线对比 Base（Qwen3-0.6B 原始）、LoRA、LoRA+Quant 三种部署配置，并在 Qwen3-4B/8B/30B 三种评测模型下交叉验证；线上超参 <span class="arithmatex">\(\lambda_1=0.4,\lambda_2=0.3,\lambda_3=0.3,\tau=0.8\)</span> 由启发式搜索确定。</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>离线 LLM 自动评测（基座 Qwen3-0.6B，对比 Base / LoRA / LoRA+Quant，评测模型分别为 Qwen3-4B/8B/30B）：</p>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2605.04726v1/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
-<p>表 2: 基于 LLM 的自动评测结果。</p>
+<p>离线 LLM 自动评测（Qwen3-0.6B 为基座，三种评测模型交叉打分）：</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">评测模型</th>
-<th style="text-align: left;">目标模型设置</th>
+<th style="text-align: left;">配置</th>
 <th style="text-align: center;"><span class="arithmatex">\(S_{sem}\)</span></th>
 <th style="text-align: center;"><span class="arithmatex">\(S_{logic}\)</span></th>
 <th style="text-align: center;"><span class="arithmatex">\(S_{style}\)</span></th>
@@ -4378,9 +4331,9 @@ $<span class="arithmatex">\(\Delta_{intent}=\lambda_1\Delta H+\lambda_2(1-\text{
 <tr>
 <td style="text-align: left;">Qwen3-4B</td>
 <td style="text-align: left;">LoRA</td>
-<td style="text-align: center;">0.885</td>
-<td style="text-align: center;">0.792</td>
-<td style="text-align: center;">0.811</td>
+<td style="text-align: center;"><strong>0.885</strong></td>
+<td style="text-align: center;"><strong>0.792</strong></td>
+<td style="text-align: center;"><strong>0.811</strong></td>
 <td style="text-align: center;"><strong>0.829</strong></td>
 </tr>
 <tr>
@@ -4402,9 +4355,9 @@ $<span class="arithmatex">\(\Delta_{intent}=\lambda_1\Delta H+\lambda_2(1-\text{
 <tr>
 <td style="text-align: left;">Qwen3-8B</td>
 <td style="text-align: left;">LoRA</td>
-<td style="text-align: center;">0.807</td>
-<td style="text-align: center;">0.755</td>
-<td style="text-align: center;">0.786</td>
+<td style="text-align: center;"><strong>0.807</strong></td>
+<td style="text-align: center;"><strong>0.755</strong></td>
+<td style="text-align: center;"><strong>0.786</strong></td>
 <td style="text-align: center;"><strong>0.783</strong></td>
 </tr>
 <tr>
@@ -4426,9 +4379,9 @@ $<span class="arithmatex">\(\Delta_{intent}=\lambda_1\Delta H+\lambda_2(1-\text{
 <tr>
 <td style="text-align: left;">Qwen3-30B</td>
 <td style="text-align: left;">LoRA</td>
-<td style="text-align: center;">0.839</td>
-<td style="text-align: center;">0.797</td>
-<td style="text-align: center;">0.787</td>
+<td style="text-align: center;"><strong>0.839</strong></td>
+<td style="text-align: center;"><strong>0.797</strong></td>
+<td style="text-align: center;"><strong>0.787</strong></td>
 <td style="text-align: center;"><strong>0.808</strong></td>
 </tr>
 <tr>
@@ -4441,23 +4394,11 @@ $<span class="arithmatex">\(\Delta_{intent}=\lambda_1\Delta H+\lambda_2(1-\text{
 </tr>
 </tbody>
 </table>
-<p>关键结论：LoRA 微调在所有评测模型下均取得最高分（如 4B 评测下 Total 0.829 vs Base 0.677，相对提升约 +22.5%）；量化后 LoRA 仅轻微下降（4B 下 0.794，保留约 95.8% 的 LoRA 总分），验证端侧量化部署的可行性。</p>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文<strong>未设置传统模块级消融实验</strong>（无移除自适应 Prompt / 触发机制 / 各样本类型的对照表）。可视为"消融"的对照为表 2 中 Base → LoRA → LoRA+Quant 的三档设置：LoRA 贡献最大（语义分从 0.752 提升至 0.885），量化带来可控退化。<strong>未控制参数量对齐或进行组件级贡献拆解</strong>，这是实验扎实度的主要短板。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
-<ul>
-<li><strong>分桶表现</strong>: 原文<strong>未报告</strong>长尾物品/冷启动用户分桶结果。</li>
-<li><strong>关键超参数</strong>: 线上取 <span class="arithmatex">\(\lambda_1=0.4,\lambda_2=0.3,\lambda_3=0.3,\tau=0.8\)</span>，由"实验启发式搜索"确定；原文<strong>未给出敏感度曲线</strong>。</li>
-<li><strong>线上 A/B 测试结果</strong>: 淘宝移动端四个信息流场景，为期一个月，覆盖千万级用户，部署模型为 Qwen3-0.6B-Quant：</li>
-</ul>
-<figure class="paper-figure">
-  <img alt="表 3" src="../../../../../assets/papers/2605.04726v1/table_3.png" /><figcaption>表 3</figcaption>
-</figure>
-<p>表 3: 线上实验结果。</p>
+<p>线上 A/B（Qwen3-0.6B-Quant 部署）：</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">场景 (Scenario)</th>
+<th style="text-align: left;">场景</th>
 <th style="text-align: center;">CLICK</th>
 <th style="text-align: center;">PAY</th>
 <th style="text-align: center;">GMV</th>
@@ -4465,63 +4406,99 @@ $<span class="arithmatex">\(\Delta_{intent}=\lambda_1\Delta H+\lambda_2(1-\text{
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">支付成功页 (Payment Success Page)</td>
+<td style="text-align: left;">支付成功页</td>
 <td style="text-align: center;">+1.3%</td>
 <td style="text-align: center;">+2.3%</td>
 <td style="text-align: center;">+2.5%</td>
 </tr>
 <tr>
-<td style="text-align: left;">物流跟踪页 (Shipment Tracking Page)</td>
+<td style="text-align: left;">物流跟踪页</td>
 <td style="text-align: center;">+2.4%</td>
 <td style="text-align: center;">+2.9%</td>
 <td style="text-align: center;">+3.0%</td>
 </tr>
 <tr>
-<td style="text-align: left;">购物车页 (Shopping Cart Page)</td>
+<td style="text-align: left;">购物车页</td>
 <td style="text-align: center;">+2.5%</td>
 <td style="text-align: center;">+2.7%</td>
 <td style="text-align: center;">+2.9%</td>
 </tr>
 <tr>
-<td style="text-align: left;">订单列表页 (Order List Page)</td>
+<td style="text-align: left;">订单列表页</td>
 <td style="text-align: center;">+0.8%</td>
 <td style="text-align: center;">+1.8%</td>
 <td style="text-align: center;">+1.8%</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>平均 (Average)</strong></td>
+<td style="text-align: left;"><strong>平均</strong></td>
 <td style="text-align: center;"><strong>+1.8%</strong></td>
 <td style="text-align: center;"><strong>+2.7%</strong></td>
 <td style="text-align: center;"><strong>+2.5%</strong></td>
 </tr>
 </tbody>
 </table>
-<p>端侧延迟方面（图 3），真实设备上 P50–P95 延迟随百分位上升而增加，但跨日期趋势一致，表明模型在尾部延迟放大条件下仍保持稳定执行，百分位曲线间的适度差异反映真实设备差异而非系统性性能退化。</p>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2605.04726v1/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<p>图 3: 真实移动设备上不同百分位的运行延迟。</p>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<p>论文未提供传统模块级消融表（<code>w/o 触发机制</code>、<code>w/o 自适应提示</code> 等均缺失），仅以"Base vs LoRA vs LoRA+Quant"的部署配置对比替代：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">配置</th>
+<th style="text-align: center;">Qwen3-4B Total</th>
+<th style="text-align: center;">Qwen3-8B Total</th>
+<th style="text-align: center;">Qwen3-30B Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Base</td>
+<td style="text-align: center;">0.677</td>
+<td style="text-align: center;">0.613</td>
+<td style="text-align: center;">0.654</td>
+</tr>
+<tr>
+<td style="text-align: left;">LoRA</td>
+<td style="text-align: center;"><strong>0.829</strong></td>
+<td style="text-align: center;"><strong>0.783</strong></td>
+<td style="text-align: center;"><strong>0.808</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">LoRA+Quant</td>
+<td style="text-align: center;">0.794</td>
+<td style="text-align: center;">0.760</td>
+<td style="text-align: center;">0.780</td>
+</tr>
+<tr>
+<td style="text-align: left;">LoRA 相对 Base 提升</td>
+<td style="text-align: center;">+22.5%</td>
+<td style="text-align: center;">+27.7%</td>
+<td style="text-align: center;">+23.5%</td>
+</tr>
+<tr>
+<td style="text-align: left;">量化损失</td>
+<td style="text-align: center;">−4.2%</td>
+<td style="text-align: center;">−2.9%</td>
+<td style="text-align: center;">−3.5%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>LoRA 微调是收益主来源，量化代价可控</strong>：三种评测模型下 LoRA 相对 Base 总分提升 22.5%–27.7%，而量化仅损失 2.9%–4.2%，说明 0.6B 小模型的能力瓶颈在"任务对齐"而非"精度位宽"，量化换来的端侧可部署性是划算交易。</li>
+<li><strong>场景收益与"意图漂移强度"正相关</strong>：购物车页（+2.5% CLICK）与物流跟踪页（+2.4%）收益最高，订单列表页最低（+0.8%）——前者用户意图处于活跃探索期、漂移频繁，触发机制能及时捕捉；后者意图稳定，LLM 增量信息有限，反向印证了触发机制的设计合理性。</li>
+<li><strong>PAY 提升幅度系统性高于 CLICK</strong>（+2.7% vs +1.8%）：意图查询更精准地命中"高购买意愿"商品，说明生成式意图对转化漏斗后段的价值大于对曝光点击的价值，这对工业界"重转化"目标更友好。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>首个端侧 LLM 推荐系统落地</strong>：将 0.6B 量化 LLM 直接部署手机端做意图理解，为 LLM4Rec 的"端云协同"提供了可复制的工程范式；</li>
-<li><strong>意图漂移触发机制</strong>（熵差 + Jaccard + JS 散度融合）具有强普适性，可迁移到任意"按需调用大模型"的推荐/对话系统中，直接降低推理成本；</li>
-<li><strong>预算感知的自适应 Prompt 构建</strong>（模板级 + 结构级 + 边际效用剪枝）为端侧资源约束下的 Prompt 工程提供了可复用算法框架；</li>
-<li>千万级用户、一个月、四场景的线上 A/B 结果（+1.8% CLICK / +2.7% PAY / +2.5% GMV）具备较强工业说服力。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议不严谨</strong>：离线仅用 LLM 自动评测（且评测模型与被评模型同属 Qwen3 家族，存在自偏好偏差风险），缺少与传统 next-query 预测基线（如序列模型、云侧 LLM）的定量对比，也无 Recall@K/NDCG@K 等标准排序指标；</li>
-<li><strong>缺少模块级消融</strong>：自适应 Prompt、触发机制、四类训练样本各自的贡献未被拆解，无法判断性能增益来源；</li>
-<li><strong>可复现性缺口</strong>：未报告数据划分策略、训练超参、量化方案细节（bit 数、量化算法）、端侧内存占用与峰值显存，也未开源代码；</li>
-<li><strong>统计严谨性不足</strong>：线上提升未给出置信区间或显著性检验，离线分数无多随机种子方差；</li>
-<li><strong>触发阈值 <span class="arithmatex">\(\tau=0.8\)</span> 与 <span class="arithmatex">\(\lambda\)</span> 权重为启发式设定</strong>，缺少敏感度分析，跨场景泛化性存疑；</li>
-<li>论文仅 5 页（短文），方法细节（如 Item Retrieval 模块如何消费意图 query、与主推荐链路的融合方式）阐述较浅。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 RecGPT（云端生产级 LLM 推荐框架），本文把推理搬到端侧，用 0.6B 量化模型 + 稀疏触发替代云端大模型全量推理；相比 EdgeRec / DIR 等端侧推荐工作，本文首次把生成式 LLM 而非传统排序模型放到手机上，实现"隐式行为 → 显式意图查询"的语义跃迁。</li>
+<li><strong>可迁移亮点</strong>: ① 意图漂移三信号融合触发（熵差 + Jaccard + JS）可直接迁移到任何"按需调用大模型"的端侧/边缘场景；② 模板级 + 结构级 + 预算剪枝的三段式自适应提示构建，是资源受限下 prompt 工程的通用范式。</li>
+<li><strong>审稿级局限批判</strong>: ① 离线评测完全依赖 LLM 自动打分（且用 Qwen 系列自评），缺乏人工标注的 ground-truth 查询与召回率/NDCG 等标准检索指标，评测客观性存疑；② 缺少关键消融——触发机制、自适应提示各自的贡献未被单独量化，无法判断收益究竟来自 LLM 意图生成还是触发策略；③ 仅报告 P50–P95 延迟趋势图，未给出绝对延迟数值与端侧功耗数据，工程可复现性不足。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐（端侧 LLM + 意图漂移触发 + 预算感知 Prompt 的组合具有首创性与工程创新）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐（线上 A/B 规模大且真实，但离线评测单一、缺消融与标准排序指标、无显著性检验）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐（触发机制公式清晰，但损失函数、数据划分、复杂度分析缺失，5 页篇幅限制细节）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐（真实生产系统千万级用户验证，端侧部署路径明确；但未开源、关键实现细节不足影响复现）</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （首个端侧 LLM 推荐系统落地，意图漂移触发机制设计巧妙且有物理直觉，但各组件均为已有技术的工程组合）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （线上四场景数千万用户 A/B 极具说服力，但离线仅靠 LLM 自评、缺标准检索指标与模块级消融，学术严谨度打折）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （公式与算法伪代码清晰，触发机制三信号定义完整，但部分符号如 <span class="arithmatex">\(\mathcal{Z}\)</span>与<span class="arithmatex">\(P_{\mathcal{B}}\)</span> 的关系交代略简）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （真实淘宝全量场景验证、GMV +2.5%，端侧部署路径完整可复制，是 LLM4Rec 工业落地的标杆案例；可惜未开源）</li>
 </ul>
 
 

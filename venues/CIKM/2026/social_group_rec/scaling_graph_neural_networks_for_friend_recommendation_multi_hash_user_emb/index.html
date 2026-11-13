@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,17 +4220,17 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/makut/VK-GNN">https://github.com/makut/VK-GNN</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>工业级好友推荐（PYMK）的 GNN 精排面临三重约束：194M 用户 / 28B 边的存储规模、用户画像特征极弱导致必须依赖可训练 ID、以及动态图上的时序防泄漏。本文提出两个"承重"设计：(1) 以多哈希嵌入作为 GNN 的<strong>主输入层</strong>，把 ID 表从 &gt;200GB 压到 2GB（&lt;1%）且质量不降；(2) 时间戳排序 CSR + 二分查找的时序邻居采样，把单次采样从 <span class="arithmatex">\(O(d_u+K)\)</span> 降到 <span class="arithmatex">\(O(\log d_u+K)\)</span>，训练开销从 1473ms/batch 降至 595ms。离线 per-user ROC-AUC 0.6278（vs. 生产基线 WalkGNN 0.5572），线上 A/B 好友添加 +16.0%、独立添加用户 +11.5%。</p>
+<p>工业级好友推荐（PYMK）的 GNN 精排面临三重约束：194M 用户 / 28B 边的存储规模、用户画像特征极弱导致必须依赖可训练 ID、以及动态图上的时序防泄漏。本文提出两个"承重"设计：(1) 以多哈希嵌入作为 GNN 的<strong>主输入层</strong>，把 ID 表从 &gt;200GB 压到 2GB（&lt;1%）且质量不降；(2) 时间戳排序 CSR + 二分查找的时序邻居采样，把单次采样从 <span class="arithmatex">\(O(d_u+K)\)</span>降到<span class="arithmatex">\(O(\log d_u+K)\)</span>，训练开销从 1473ms/batch 降至 595ms。离线 per-user ROC-AUC 0.6278（vs. 生产基线 WalkGNN 0.5572），线上 A/B 好友添加 +16.0%、独立添加用户 +11.5%。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 好友推荐采用"候选生成 + 排序"两阶段漏斗；排序侧从结构启发式（共同邻居、Adamic–Adar）演进到 GNN 消息传递（GraFRank、SSNet、LiGNN），把多跳社交上下文聚合为节点表征。</li>
-<li><strong>前人局限</strong>: ① 工业 GNN 系统要么<strong>放弃可训练 ID</strong>（仅用内容特征，但本文场景画像信号极弱），要么接受 <span class="arithmatex">\(|V|\times d\)</span> 全表——200M×256 float32 即 ≈205GB，服务栈无法承受；② 时序采样在原理上成熟，但 DGL/PyG 等主流库的实现是<strong>全邻接表扫描</strong>，对 <span class="arithmatex">\(deg\sim 10^4\)</span> 的 hub 用户是训练瓶颈。</li>
+<li><strong>前人局限</strong>: ① 工业 GNN 系统要么<strong>放弃可训练 ID</strong>（仅用内容特征，但本文场景画像信号极弱），要么接受 <span class="arithmatex">\(|V|\times d\)</span>全表——200M×256 float32 即 ≈205GB，服务栈无法承受；② 时序采样在原理上成熟，但 DGL/PyG 等主流库的实现是<strong>全邻接表扫描</strong>，对<span class="arithmatex">\(deg\sim 10^4\)</span> 的 hub 用户是训练瓶颈。</li>
 <li><strong>核心洞察 (Key Insight)</strong>: 好友排序中<strong>结构信号远强于画像信号</strong>（仅结构的多哈希模型 0.5997 vs. 仅特征 0.5244），因此 ID 表征不可省；而哈希带来的有界碰撞共享反而充当隐式正则，使压缩后的表征质量不劣于全表。</li>
 <li><strong>本文切入点</strong>: 把多哈希从"高基数特征压缩技巧"提升为 GNN 的<strong>一等公民输入层</strong>，并用"预排序 + 二分前缀切分"把时序采样的代价从度数线性降为对数。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>用户 <span class="arithmatex">\(u\)</span> 的初始节点表征由两路相加构成：3 个分桶表格特征（性别、年龄、度数）经各自线性层 + LayerNorm 求和得 <span class="arithmatex">\(z^{feat}_u\)</span>；用户 ID 经 <span class="arithmatex">\(k=3\)</span> 个独立哈希映射到共享表 <span class="arithmatex">\(T\in\mathbb{R}^{B\times d}\)</span>（<span class="arithmatex">\(B=2^{21}\)</span>）取行拼接后投影得 <span class="arithmatex">\(z^{emb}_u\)</span>。二者相加为 <span class="arithmatex">\(h^{(0)}_u\)</span>，送入 <span class="arithmatex">\(L=2\)</span> 层 GATv2（8 头，<span class="arithmatex">\(H=512\)</span>）在<strong>时序受限邻域</strong> <span class="arithmatex">\(N_{&lt;\tau}(u)\)</span> 上做消息传递，得到上下文表征 <span class="arithmatex">\(h_u\)</span>。随后经<strong>角色分离的双头</strong>投影为查询 <span class="arithmatex">\(q_u\)</span> 与候选 <span class="arithmatex">\(c_v\)</span>，以内积打分。训练侧 CPU 原生采样器与 GPU DDP 训练解耦为生产者-消费者流水线；推理侧周期性离线刷新全量用户嵌入写入嵌入存储，在线排序器仅读嵌入做内积。</p>
+<p>用户 <span class="arithmatex">\(u\)</span>的初始节点表征由两路相加构成：3 个分桶表格特征（性别、年龄、度数）经各自线性层 + LayerNorm 求和得<span class="arithmatex">\(z^{feat}_u\)</span>；用户 ID 经<span class="arithmatex">\(k=3\)</span>个独立哈希映射到共享表<span class="arithmatex">\(T\in\mathbb{R}^{B\times d}\)</span>（<span class="arithmatex">\(B=2^{21}\)</span>）取行拼接后投影得<span class="arithmatex">\(z^{emb}_u\)</span>。二者相加为<span class="arithmatex">\(h^{(0)}_u\)</span>，送入<span class="arithmatex">\(L=2\)</span>层 GATv2（8 头，<span class="arithmatex">\(H=512\)</span>）在<strong>时序受限邻域</strong><span class="arithmatex">\(N_{&lt;\tau}(u)\)</span>上做消息传递，得到上下文表征<span class="arithmatex">\(h_u\)</span>。随后经<strong>角色分离的双头</strong>投影为查询<span class="arithmatex">\(q_u\)</span>与候选<span class="arithmatex">\(c_v\)</span>，以内积打分。训练侧 CPU 原生采样器与 GPU DDP 训练解耦为生产者-消费者流水线；推理侧周期性离线刷新全量用户嵌入写入嵌入存储，在线排序器仅读嵌入做内积。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户特征(性别/年龄/度数) + 多哈希ID(k=3, B=2^21)"] --&gt; B["初始节点表征 h(0)"]
     B --&gt; C["时序邻居采样: 时间戳排序CSR + 二分前缀"]
@@ -4231,15 +4242,15 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>多哈希 ID 嵌入作为主输入层（表压缩 &gt;98%）</strong>：痛点是不起 <span class="arithmatex">\(|V|\times d\)</span> 全表，而纯内容特征信号太弱。做法是用 <span class="arithmatex">\(k\)</span> 个独立哈希 <span class="arithmatex">\(r_i(u)=h_i(u)\bmod B\)</span> 索引共享表并拼接投影：</li>
+<li><strong>多哈希 ID 嵌入作为主输入层（表压缩 &gt;98%）</strong>：痛点是不起 <span class="arithmatex">\(|V|\times d\)</span>全表，而纯内容特征信号太弱。做法是用<span class="arithmatex">\(k\)</span>个独立哈希<span class="arithmatex">\(r_i(u)=h_i(u)\boldsymbol{o}d B\)</span> 索引共享表并拼接投影：</li>
 </ol>
 <div class="arithmatex">\[e^{hash}_u = T_{r_1(u)}\|\cdots\|T_{r_k(u)}\in\mathbb{R}^{kd},\quad z^{emb}_u=\text{LayerNorm}(W_h e^{hash}_u+b_h)\]</div>
-<p>均匀哈希下两用户全碰撞概率为 <span class="arithmatex">\((1/B)^k\)</span>，随 <span class="arithmatex">\(k\)</span> 迅速衰减；部分碰撞只影响 <span class="arithmatex">\(k\)</span> 行中的一行，投影 <span class="arithmatex">\(W_h\)</span> 仍可区分。直觉上，这种<strong>有界共享</strong>等价于对用户行施加隐式正则，抑制了全表在稀疏用户上的过拟合——这正是它质量不降反升的原因。</p>
+<p>均匀哈希下两用户全碰撞概率为 <span class="arithmatex">\((1/B)^k\)</span>，随<span class="arithmatex">\(k\)</span>迅速衰减；部分碰撞只影响<span class="arithmatex">\(k\)</span>行中的一行，投影<span class="arithmatex">\(W_h\)</span> 仍可区分。直觉上，这种<strong>有界共享</strong>等价于对用户行施加隐式正则，抑制了全表在稀疏用户上的过拟合——这正是它质量不降反升的原因。</p>
 <ol>
-<li><strong>时间戳排序 CSR + 二分时序采样（<span class="arithmatex">\(O(d_u+K)\to O(\log d_u+K)\)</span>）</strong>：痛点是对 hub 用户扫描全邻接表过滤时间戳过慢。做法是构图时对每个顶点的邻接表按边时间戳升序排序（一次性 <span class="arithmatex">\(O(|E|\log d_{max})\)</span>，跨 epoch 复用），采样时对 <span class="arithmatex">\(ts_u\)</span> 做 <code>lower_bound(τ−Δ)</code> 得到合法前缀边界 <span class="arithmatex">\(p\)</span>，再从前缀均匀抽 <span class="arithmatex">\(K\)</span> 个：</li>
+<li><strong>时间戳排序 CSR + 二分时序采样（<span class="arithmatex">\(O(d_u+K)\to O(\log d_u+K)\)</span>）</strong>：痛点是对 hub 用户扫描全邻接表过滤时间戳过慢。做法是构图时对每个顶点的邻接表按边时间戳升序排序（一次性<span class="arithmatex">\(O(|E|\log d_{max})\)</span>，跨 epoch 复用），采样时对<span class="arithmatex">\(ts_u\)</span>做 <code>lower_bound(τ−Δ)</code> 得到合法前缀边界<span class="arithmatex">\(p\)</span>，再从前缀均匀抽<span class="arithmatex">\(K\)</span> 个：</li>
 </ol>
 <div class="arithmatex">\[N_{&lt;\tau}(u)=\{v\in N(u): t_{uv}&lt;\tau-\Delta\},\quad p=\text{lower\_bound}(ts_u,\ \tau-\Delta)\]</div>
-<p>关键细节：<strong>同一截止 <span class="arithmatex">\(\tau\)</span> 传播到全部 <span class="arithmatex">\(L\)</span> 跳</strong>（而非按中间边时间戳逐跳平移），由训练样本而非中间边定义可见历史；<span class="arithmatex">\(\Delta=30\)</span>min 安全偏移吸收生产管线的边更新延迟。</p>
+<p>关键细节：<strong>同一截止 <span class="arithmatex">\(\tau\)</span>传播到全部<span class="arithmatex">\(L\)</span>跳</strong>（而非按中间边时间戳逐跳平移），由训练样本而非中间边定义可见历史；<span class="arithmatex">\(\Delta=30\)</span>min 安全偏移吸收生产管线的边更新延迟。</p>
 <ol>
 <li><strong>训练目标、负采样与推理效率</strong>：以曝光日志 <span class="arithmatex">\(\mathcal{D}=\{(u_i,v_i,y_i,\tau_i)\}\)</span> 做二分类交叉熵，负样本即"曝光未点击/显式隐藏"，<strong>无需额外负采样器</strong>（与下游 GBDT 同分布）：</li>
 </ol>
@@ -4274,7 +4285,7 @@
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 按<strong>曝光时间戳全局切分</strong>，最近三年为训练集，测试为留出曝光；消息传递严格限制在 <span class="arithmatex">\(t_{uv}&lt;\tau-\Delta\)</span> 的时序邻域内，杜绝未来边泄漏。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 采用 <strong>per-user ROC-AUC</strong>（每个用户内部对其候选集排序），候选来自上游召回而非全库，属<strong>采样候选排序</strong>而非 Full-Ranking；标签为曝光条件下的接受/未接受。</li>
-<li><strong>对比基线与超参设置</strong>: Top-pop（入度先验，无参下界）、MF（同日志矩阵分解）、WalkGNN（公司原生产方案，ego-net 上下文聚合，最强基线）。GATv2 <span class="arithmatex">\(L=2\)</span>、8 头、<span class="arithmatex">\(H=512\)</span>、头输出 128 维、<span class="arithmatex">\(k=3\)</span>、<span class="arithmatex">\(B=2^{21}\)</span>、<span class="arithmatex">\(d=256\)</span>、fanout <span class="arithmatex">\(K=30\)</span>、Adam lr <span class="arithmatex">\(1.5\times10^{-3}\)</span>、batch 1024/GPU、8×A100 DDP；线上 A/B 双周，<span class="arithmatex">\(p&lt;0.01\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: Top-pop（入度先验，无参下界）、MF（同日志矩阵分解）、WalkGNN（公司原生产方案，ego-net 上下文聚合，最强基线）。GATv2 <span class="arithmatex">\(L=2\)</span>、8 头、<span class="arithmatex">\(H=512\)</span>、头输出 128 维、<span class="arithmatex">\(k=3\)</span>、<span class="arithmatex">\(B=2^{21}\)</span>、<span class="arithmatex">\(d=256\)</span>、fanout<span class="arithmatex">\(K=30\)</span>、Adam lr<span class="arithmatex">\(1.5\times10^{-3}\)</span>、batch 1024/GPU、8×A100 DDP；线上 A/B 双周，<span class="arithmatex">\(p&lt;0.01\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4343,7 +4354,7 @@
 </tr>
 <tr>
 <td style="text-align: left;">共享表规模 <span class="arithmatex">\(B\)</span></td>
-<td style="text-align: left;"><span class="arithmatex">\(2^{17}\)</span> / <span class="arithmatex">\(2^{18}\)</span> / <span class="arithmatex">\(2^{19}\)</span> / <span class="arithmatex">\(2^{20}\)</span> / <span class="arithmatex">\(2^{21}\)</span> / <span class="arithmatex">\(2^{22}\)</span></td>
+<td style="text-align: left;"><span class="arithmatex">\(2^{17}\)</span>/<span class="arithmatex">\(2^{18}\)</span>/<span class="arithmatex">\(2^{19}\)</span>/<span class="arithmatex">\(2^{20}\)</span>/<span class="arithmatex">\(2^{21}\)</span>/<span class="arithmatex">\(2^{22}\)</span></td>
 <td style="text-align: center;">128MB→4GB</td>
 <td style="text-align: center;">0.5952 / 0.6044 / 0.6092 / 0.6184 / <strong>0.6278</strong> / 0.6310</td>
 </tr>
@@ -4371,14 +4382,20 @@
 <ol>
 <li><strong>结构信号压倒画像信号，且哈希压缩"免费"</strong>：仅多哈希 ID（0.5997）比仅特征（0.5244）高 0.0753 AUC；而 2GB 多哈希（0.6278）反超 202.88GB 全表（0.6246）0.0032，验证了碰撞共享的隐式正则假设——压缩不仅无损，还略微有益。</li>
 <li><strong>时序防泄漏的收益被精确量化</strong>：关闭时序采样后 AUC 掉 0.0371（0.6278→0.5907），这是未来边泄漏带来的虚高；而二分采样器在<strong>完全相同的质量</strong>下把每 batch 采样从 1473ms 降到 595ms（≈2.5×），甚至与无时序采样（581ms）几乎持平，说明时序正确性在工程上可以"零成本"获得。</li>
-<li><strong>表规模存在明确拐点</strong>：<span class="arithmatex">\(B\)</span> 从 <span class="arithmatex">\(2^{17}\)</span> 到 <span class="arithmatex">\(2^{22}\)</span> 单调上升，但 <span class="arithmatex">\(2^{21}\to2^{22}\)</span> 表翻倍仅换 +0.0032 AUC，故取 <span class="arithmatex">\(2^{21}\)</span> 为生产配置；端到端训练 63h 收敛、全量嵌入刷新 6.57h，单机 8 卡即可承载 225GB 图。</li>
+<li><strong>表规模存在明确拐点</strong>：<span class="arithmatex">\(B\)</span>从<span class="arithmatex">\(2^{17}\)</span>到<span class="arithmatex">\(2^{22}\)</span>单调上升，但<span class="arithmatex">\(2^{21}\to2^{22}\)</span>表翻倍仅换 +0.0032 AUC，故取<span class="arithmatex">\(2^{21}\)</span> 为生产配置；端到端训练 63h 收敛、全量嵌入刷新 6.57h，单机 8 卡即可承载 225GB 图。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 LiGNN/GiGL/GraphStorm 等<strong>平台型</strong>工作，本文不铺平台而是深挖两个具体决策的量化收益；相比 GraFRank（Snapchat，多模态图注意力）与 SSNet（度数感知重标定），本文的差异点在于"如何把上亿 ID 喂进 GNN"与"如何不付 <span class="arithmatex">\(O(deg)\)</span> 代价保时序正确"；相比 TGL 的 temporal-CSR 并行采样，本文给出更简洁的二分前缀方案并直接报告训练吞吐影响。</li>
 <li><strong>可迁移亮点</strong>: ① 多哈希作为 GNN 主输入层 + "碰撞即正则"的经验结论，可直接迁移到任何高基数 ID、弱内容特征的场景（如电商用户侧）；② 时间戳排序 CSR + <code>lower_bound</code> 前缀切分是极低改造成本的工程技巧，且"同一 <span class="arithmatex">\(\tau\)</span> 传播到所有跳"的语义约定值得作为时序 GNN 的规范写法。</li>
 <li><strong>审稿级局限批判</strong>: ① <strong>冷启动无解</strong>：多哈希绑定训练快照的用户 cohort，新用户无入射边、只能靠偶然哈希碰撞兜底，冷窗口长度完全由重训周期决定，文中未给出该窗口的量化评估；② <strong>非实时性与单场景验证</strong>：嵌入按周期离线刷新，好友关系变化慢尚可接受，但对会话内兴趣漂移的场景不适用；且全部结论来自单一社交图与单一产品面，缺少跨数据集/跨场景的泛化证据，A/B 也仅报告相对提升而无置信区间与分流比例。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

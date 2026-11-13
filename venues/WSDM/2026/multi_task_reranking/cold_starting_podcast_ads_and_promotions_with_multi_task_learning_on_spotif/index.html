@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为一次曝光 <span class="arithmatex">\((u,c,x)\)</span> 的四组特征：用户信号（收听史、follow、搜索、画像）、内容信号（show/episode ID 嵌入、genre、topic）、上下文（时间、surface、session）、创意元数据（广告格式、campaign、slot、layout）。共享编码器 <span class="arithmatex">\(h_\phi\)</span>（带 post-batch norm）将四组特征压成联合表征 <span class="arithmatex">\(z\)</span>，再由各任务塔 <span class="arithmatex">\(g_{\psi_t}\)</span> 输出 logit，经 sigmoid 得 <span class="arithmatex">\(p_t(x)=\sigma(g_{\psi_t}(h_\phi(x)))\)</span>。训练时对 5 个二值任务做加权 BCE，配合掩码与平衡采样；推理时单次前向同时产出广告与推广的全部目标分，替代原先两套在线服务。</p>
+<p>输入为一次曝光 <span class="arithmatex">\((u,c,x)\)</span>的四组特征：用户信号（收听史、follow、搜索、画像）、内容信号（show/episode ID 嵌入、genre、topic）、上下文（时间、surface、session）、创意元数据（广告格式、campaign、slot、layout）。共享编码器<span class="arithmatex">\(h_\phi\)</span>（带 post-batch norm）将四组特征压成联合表征<span class="arithmatex">\(z\)</span>，再由各任务塔<span class="arithmatex">\(g_{\psi_t}\)</span>输出 logit，经 sigmoid 得<span class="arithmatex">\(p_t(x)=\sigma(g_{\psi_t}(h_\phi(x)))\)</span>。训练时对 5 个二值任务做加权 BCE，配合掩码与平衡采样；推理时单次前向同时产出广告与推广的全部目标分，替代原先两套在线服务。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户/内容/上下文/创意 四组特征"] --&gt; B["共享编码器 h_φ (post-batch norm)"]
     B --&gt; C["任务塔: PromoStream / AdStream / Click / Like / Follow"]
@@ -4241,12 +4252,12 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>非对称损失掩码（Directional Transfer Mask）</strong>：痛点是广告创意特征（creative ID、format）与推广塔语义无关，直接联合训练会把广告侧噪声灌入推广塔。作者定义源-任务掩码 <span class="arithmatex">\(m_{s,t}=0\)</span> 当 <span class="arithmatex">\(s=A\)</span> 且 <span class="arithmatex">\(t\in\mathcal{T}_P\)</span>，否则为 1，即<strong>推广曝光更新全部塔，广告曝光只更新广告塔</strong>。总目标为
+<p><strong>非对称损失掩码（Directional Transfer Mask）</strong>：痛点是广告创意特征（creative ID、format）与推广塔语义无关，直接联合训练会把广告侧噪声灌入推广塔。作者定义源-任务掩码 <span class="arithmatex">\(m_{s,t}=0\)</span>当<span class="arithmatex">\(s=A\)</span>且<span class="arithmatex">\(t\in\mathcal{T}_P\)</span>，否则为 1，即<strong>推广曝光更新全部塔，广告曝光只更新广告塔</strong>。总目标为
 $<span class="arithmatex">\(\mathcal{L}=\sum_{t\in\mathcal{T}}\lambda_t\,\mathbb{E}_{(x,y_t)\sim\mathcal{D}}\big[m_{s(x),t}\,\ell_{\mathrm{BCE}}(y_t,p_t(x))\big]\)</span>$
 直觉：推广数据量大且信号干净，可安全地为广告塔提供辅助梯度；反向则有害，故单向截断。</p>
 </li>
 <li>
-<p><strong>源平衡采样（Source-Balanced Sampling）</strong>：广告日志量远大于推广，若按自然分布采样，联合模型会塌缩到广告源、推广塔欠拟合。作者强制每个 mini-batch 中 <span class="arithmatex">\(\mathcal{D}_P\)</span> 与 <span class="arithmatex">\(\mathcal{D}_A\)</span> 各占约 50%，使两渠道梯度量级可比，等价于对高流量源做隐式降采样。</p>
+<p><strong>源平衡采样（Source-Balanced Sampling）</strong>：广告日志量远大于推广，若按自然分布采样，联合模型会塌缩到广告源、推广塔欠拟合。作者强制每个 mini-batch 中 <span class="arithmatex">\(\mathcal{D}_P\)</span>与<span class="arithmatex">\(\mathcal{D}_A\)</span> 各占约 50%，使两渠道梯度量级可比，等价于对高流量源做隐式降采样。</p>
 </li>
 <li>
 <p><strong>辅助头（ANC: Click / Like / Follow）与训练细节</strong>：在 stream 主任务外挂点击、点赞、follow 三个中间参与信号头，为共享编码器提供更稠密的监督。全部任务权重 <span class="arithmatex">\(\lambda_t=1\)</span>（未做不确定性加权或 PCGrad），Adam + 统一学习率调度，超参按验证集 stream AP 调优；推理为单塔前向，无额外在线开销。</p>
@@ -4388,12 +4399,18 @@ $<span class="arithmatex">\(\mathcal{L}=\sum_{t\in\mathcal{T}}\lambda_t\,\mathbb
 <li><strong>辅助头必须与跨渠道数据协同才有效</strong>：ANC 头在广告单任务下把 Ads AP 从 +27.0% 拉到 +46.5%（+19.5pt），但代价是推广 AP 崩至 −64.8%；只有在联合训练下辅助标签才"双赢"，验证了共享编码器需要足够多样的监督才能学到通用表征。</li>
 <li><strong>收益随流量分层单调放大，直击冷启动</strong>：按 30 天收听小时数分 8 档，Tier 0→2 的 i2s 增益从 +7% 升至 +20%、CPS 降 4–17%；Tier 3/4/5 则分别达 +27%/+33%/+60% i2s、CPS 降 20%/24%/38%，低流量段增益约为高流量段的 3 倍，证明统一模型在数据稀疏区替代专用模型的价值最大。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 MMoE/PLE 等靠专家门控缓解负迁移的架构方案，本文不改网络结构，而是用<strong>样本级掩码 + 采样配比</strong>做"数据侧梯度手术"，工程改动极小、易上线；相较 PCGrad/不确定性加权等梯度干预，本文的方向性先验（推广→广告单向）更贴合业务因果，无需在线求解冲突。</li>
 <li><strong>可迁移亮点</strong>: ① "非对称掩码"可直接用于任何主-辅业务对（如主推荐→新业务冷启动），只需明确哪一侧数据可信；② 源平衡采样是解决多源日志量级失衡的零成本技巧，优于调 loss 权重。</li>
 <li><strong>审稿级局限批判</strong>: ① 全文仅 5 页，未披露特征维度、塔结构、数据规模与训练成本，离线仅报 AP 单一指标，缺少 NDCG/校准等排序视角评估，复现性弱；② 掩码方向（推广→广告）是人工先验，未做反向或双向掩码的对照实验，也未与 PLE/PCGrad 等强基线在同等数据上比较，无法判断"数据侧技巧"是否已触及架构侧方案的上限；③ 线上增益与离线 AP 提升幅度（+50.2% vs. +18% i2s）缺乏定量对齐分析。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

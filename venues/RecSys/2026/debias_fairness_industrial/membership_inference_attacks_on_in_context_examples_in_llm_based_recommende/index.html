@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>威胁模型为最严格黑盒：攻击者已知 victim 的历史交互 <span class="arithmatex">\(I_u\)</span> 与采样推荐 <span class="arithmatex">\(R_u\)</span>，可访问目标 LLM 但无 tokenizer 与输出概率，仅可用开源 LLM 的通用词嵌入。攻击流程为：选定 victim → 构造正常推荐查询（ItemMem）或扰动历史查询（RecInertia）→ 观察输出 → 计算重复项数或推荐相似度 → 与阈值比较判定成员/非成员。评估时成员集与非成员集随机二分，每次从成员集抽若干 demonstration 入 prompt 并选 1 个成员样本、配 1 个非成员样本，重复 100 次构成平衡测试集。</p>
+<p>威胁模型为最严格黑盒：攻击者已知 victim 的历史交互 <span class="arithmatex">\(I_u\)</span>与采样推荐<span class="arithmatex">\(R_u\)</span>，可访问目标 LLM 但无 tokenizer 与输出概率，仅可用开源 LLM 的通用词嵌入。攻击流程为：选定 victim → 构造正常推荐查询（ItemMem）或扰动历史查询（RecInertia）→ 观察输出 → 计算重复项数或推荐相似度 → 与阈值比较判定成员/非成员。评估时成员集与非成员集随机二分，每次从成员集抽若干 demonstration 入 prompt 并选 1 个成员样本、配 1 个非成员样本，重复 100 次构成平衡测试集。</p>
 <pre class="mermaid"><code>flowchart TD
     A["Victim 历史 I_u + 采样推荐 R_u"] --&gt; B["构造查询：正常请求 / 扰动历史"]
     B --&gt; C["目标 LLM (黑盒) 返回 R'_u"]
@@ -4240,10 +4251,10 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>ItemMem 攻击（利用模式记忆）</strong>：痛点在于直接问"你见过用户 x 吗"会被 sanitization 拦截。本文改为发<strong>完全正常的推荐请求</strong>，假设模型学到 demonstration 中的 <span class="arithmatex">\(I_u \to R^h_u\)</span> 映射后会复述推荐物品。判定式为 <span class="arithmatex">\(\mathbb{1}\big[\,|R'_u \cap R^h_u| &gt; \tau_m \,\big]\)</span>，最优 <span class="arithmatex">\(\tau_m \approx 6\text{–}10\)</span>。直觉：复述是 ICL 上下文学习的副产物，无法通过输入过滤识别为恶意查询。</p>
+<p><strong>ItemMem 攻击（利用模式记忆）</strong>：痛点在于直接问"你见过用户 x 吗"会被 sanitization 拦截。本文改为发<strong>完全正常的推荐请求</strong>，假设模型学到 demonstration 中的 <span class="arithmatex">\(I_u \to R^h_u\)</span>映射后会复述推荐物品。判定式为<span class="arithmatex">\(\mathbb{1}\big[\,|R'_u \cap R^h_u| &gt; \tau_m \,\big]\)</span>，最优<span class="arithmatex">\(\tau_m \approx 6\text{–}10\)</span>。直觉：复述是 ICL 上下文学习的副产物，无法通过输入过滤识别为恶意查询。</p>
 </li>
 <li>
-<p><strong>RecInertia 攻击（利用推荐惯性）</strong>：对 victim 历史中随机选中的物品 <span class="arithmatex">\(i_k\)</span> 替换为全库最低相似物品 <span class="arithmatex">\(i'_k = \arg\min_{j\in I}\mathrm{sim}(i_k, j)\)</span>，多次查询后比较推荐列表语义相似度 <span class="arithmatex">\(\mathrm{Sim}(R_u, R'_u)=\mathrm{sim}(\mathrm{con}(R_u),\mathrm{con}(R'_u))\)</span>，以 <span class="arithmatex">\(\tau_p \in [0.6, 0.85]\)</span> 判定。直觉：成员用户的旧记忆在 prompt 中"锚定"了推荐，扰动难以撼动；非成员则被新上下文主导。有趣的是，<strong>增加投毒物品数反而降低攻击效果</strong>——过度扰动使模型转向依赖新上下文，印证"近期记忆覆盖旧记忆"。</p>
+<p><strong>RecInertia 攻击（利用推荐惯性）</strong>：对 victim 历史中随机选中的物品 <span class="arithmatex">\(i_k\)</span>替换为全库最低相似物品<span class="arithmatex">\(i'_k = \arg\min_{j\in I}\mathrm{sim}(i_k, j)\)</span>，多次查询后比较推荐列表语义相似度<span class="arithmatex">\(\mathrm{Sim}(R_u, R'_u)=\mathrm{sim}(\mathrm{con}(R_u),\mathrm{con}(R'_u))\)</span>，以<span class="arithmatex">\(\tau_p \in [0.6, 0.85]\)</span> 判定。直觉：成员用户的旧记忆在 prompt 中"锚定"了推荐，扰动难以撼动；非成员则被新上下文主导。有趣的是，<strong>增加投毒物品数反而降低攻击效果</strong>——过度扰动使模型转向依赖新上下文，印证"近期记忆覆盖旧记忆"。</p>
 </li>
 <li>
 <p><strong>训练目标、负采样与推理效率</strong>：本文是攻击研究，无训练损失；demo 推荐由 LightGCN（<span class="arithmatex">\(d=64\)</span>、3 层、SGD lr=0.001、batch=256、负采样比 1:4、最多 30 epoch、5 轮早停）离线生成。攻击本身仅需 1 次（ItemMem）或数次（RecInertia）黑盒查询，开销极低，具备实际可利用性。</p>
@@ -4420,12 +4431,18 @@
 <li><strong>现有提示抽取防御不迁移</strong>：输入 sanitization 几乎无法削弱两种新攻击（降幅 &lt; 0.05），输出过滤仅在 Beauty 等少数场景有效；而同一防御能让 Inquiry 基线从 ~0.70 崩至 ~0，证明新攻击利用了防御未覆盖的推荐任务结构。</li>
 <li><strong>攻击对 prompt 配置鲁棒但受投毒数反向影响</strong>：ItemMem 在 1/5/10-shot 下均稳定有效；RecInertia 随 shot 数增加略有下降（小模型更明显，注意力被摊薄）；投毒物品数从 1 增至 5 时攻击优势<strong>单调下降</strong>，验证"过度扰动使模型转向新上下文"的假设。此外预训练记忆率仅 0.03%–0.22%（ML-1M），排除预训练数据污染对结论的干扰。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 Item-Diff / DL-MIA 等传统 RecSys MIA，本文攻击对象从"参数编码的训练数据"转为"推理期 prompt 注入数据"，且不依赖 CF 嵌入；相比 prompt extraction，本文不重建 prompt 而是探测推荐行为差异，因而对 sanitization 免疫。</li>
 <li><strong>可迁移亮点</strong>: ① "行为惯性"作为成员信号可迁移到任何 ICL 下游任务（如 ICL 分类、ICL 问答）的 MIA 设计；② 用"正常请求伪装"规避输入过滤的思路，对红队测试 LLM 应用隐私有直接参考价值。</li>
 <li><strong>审稿级局限批判</strong>: ① 攻击依赖攻击者已知 victim 完整历史与采样推荐，现实中获取难度被低估；② 仅评估开源模型与离线 demo，未涉及商用 API 的速率限制、温度采样与 DP prompt 等更强防御；③ 阈值 <span class="arithmatex">\(\tau_m,\tau_p\)</span> 需验证集调优，跨模型/数据集的泛化稳定性论证偏弱。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

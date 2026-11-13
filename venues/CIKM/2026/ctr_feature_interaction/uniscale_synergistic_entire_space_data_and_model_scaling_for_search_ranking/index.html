@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4253,7 +4264,7 @@
 <div class="arithmatex">\[q_i^{(l)}=h_i^{(l)}W_i^Q,\quad k_i^{(l)}=h_i^{(l)}W_i^K,\quad v_i^{(l)}=h_i^{(l)}W_i^V,\quad h_i^{(l+1)}=\text{FFN}_i(a_i^{(l)})\]</div>
 <p>随后 GFA 用复合投影 <span class="arithmatex">\(\tilde{k}_j=\text{concat}([h_1^{L_H},\dots,h_n^{L_H}])\tilde{W}_j^K\)</span> 在拼接 token 上做全局多头注意力，捕获跨字段高阶交互。物理直觉：先保字段分布、再融全局语义，避免"一刀切"投影抹平异构性。</p>
 <ol>
-<li><strong>ESUIF 域路由专家 + 域感知门控（负迁移的结构化吸收）</strong>：朴素混合跨域样本会引发严重负迁移。DREF 引入<strong>样本路由约束</strong>：共享专家 <span class="arithmatex">\(f_s\)</span> 接收全部样本，域专家 <span class="arithmatex">\(f_d\)</span> 仅接收本域样本梯度，在优化层面隔离跨域噪声，门控按 <span class="arithmatex">\([\alpha_s,\alpha_d]=\text{softmax}(g_{moe}(z))\)</span> 融合。DAPGA 进一步做"前向可见、后向隔离"的跨域注意力：目标域输出作 query，各域输出经梯度停止 <span class="arithmatex">\(\text{sg}(\cdot)\)</span> 后作 K/V，并以用户/域特征生成 sigmoid 门控 <span class="arithmatex">\(\gamma\)</span> 做逐元素调制 <span class="arithmatex">\(\hat{o}=\gamma\odot\tilde{o}\)</span>。总损失为各域 BCE 之和 <span class="arithmatex">\(\mathcal{L}=-\sum_d\sum_{(x,y)\in S_d}[y\log\hat{y}^{(d)}+(1-y)\log(1-\hat{y}^{(d)})]\)</span>，无额外负采样，推理仅走 search 域分支。</li>
+<li><strong>ESUIF 域路由专家 + 域感知门控（负迁移的结构化吸收）</strong>：朴素混合跨域样本会引发严重负迁移。DREF 引入<strong>样本路由约束</strong>：共享专家 <span class="arithmatex">\(f_s\)</span>接收全部样本，域专家<span class="arithmatex">\(f_d\)</span>仅接收本域样本梯度，在优化层面隔离跨域噪声，门控按<span class="arithmatex">\([\alpha_s,\alpha_d]=\text{softmax}(g_{moe}(z))\)</span>融合。DAPGA 进一步做"前向可见、后向隔离"的跨域注意力：目标域输出作 query，各域输出经梯度停止<span class="arithmatex">\(\text{sg}(\cdot)\)</span>后作 K/V，并以用户/域特征生成 sigmoid 门控<span class="arithmatex">\(\gamma\)</span>做逐元素调制<span class="arithmatex">\(\hat{o}=\gamma\odot\tilde{o}\)</span>。总损失为各域 BCE 之和<span class="arithmatex">\(\mathcal{L}=-\sum_d\sum_{(x,y)\in S_d}[y\log\hat{y}^{(d)}+(1-y)\log(1-\hat{y}^{(d)})]\)</span>，无额外负采样，推理仅走 search 域分支。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4429,15 +4440,21 @@
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>数据扩展是"双刃剑"，架构决定符号</strong>：同一份 ES³ 全空间数据在 HHFI 骨干上直接混合导致 −0.43% AUC、HR@5 暴跌 4.76%，而加上 DREF+DAPGA 后翻转为 +0.32%/+0.44%，证明负迁移必须靠结构化解耦吸收，而非标签级容噪。</li>
-<li><strong>容量应优先分配给高阶融合层</strong>：固定搜索域数据下，扩 GFA 维度 <span class="arithmatex">\(d_G\)</span> 的收益（+0.30% ΔAUC@300M）显著高于扩 HFA 维度 <span class="arithmatex">\(d_H\)</span>（+0.17%），说明分层设计把参数预算精准投向了跨字段高阶交互。</li>
+<li><strong>容量应优先分配给高阶融合层</strong>：固定搜索域数据下，扩 GFA 维度 <span class="arithmatex">\(d_G\)</span>的收益（+0.30% ΔAUC@300M）显著高于扩 HFA 维度<span class="arithmatex">\(d_H\)</span>（+0.17%），说明分层设计把参数预算精准投向了跨字段高阶交互。</li>
 <li><strong>协同缩放推远收益递减点</strong>：HHSFT+Search 曲线在 100M→300M 明显趋平，而 HHSFT+ES³ 保持正斜率，二者差距从 40M 的 +0.12% 扩大到 300M 的 +0.32%；线上 10 天 A/B 中购买 +1.70%、GMV +2.04%，且工程优化使 GPU 推理成本降约 55%、训练开销降约 40%。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 Wukong/RankMixer 等纯结构缩放路线不同，本文把数据构成视为缩放的一阶变量；与 ESMM/STAR/PEPNet 等全空间建模相比，本文不止于共享底层或软门控，而是先扩数据再用硬路由 + 梯度停止做"前向可见、后向隔离"的迁移；与 MMoE/PLE 相比，DREF 的样本路由约束在优化层面而非仅门控层面隔离域噪声。</li>
 <li><strong>可迁移亮点</strong>: ① 层级标签归因的"优先级传播"逻辑可直接迁移到任何多阶段漏斗系统，用于修正曝光偏差闭环；② 跨域样本"搜索化"（相似性感知负采样 + 历史 query 复用/共现/ANN 三级对齐）是把非目标域行为注入目标域训练集的通用范式。</li>
 <li><strong>审稿级局限批判</strong>: ① 实验仅限淘宝单一平台与 search 单目标域，跨域收益高度依赖辅助域行为丰富度，泛化性缺乏公开数据集验证；② 300M 参数仅做 7× 受控扫描，作者自认不足以拟合幂律，"scaling law" 表述偏弱；③ ES³ 依赖离线日级管线与多层质量护栏，工程复现成本高，且归因传播引入的分布差异被完全推给架构吸收，缺乏对标签噪声上界的理论分析。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入序列由用户画像 <span class="arithmatex">\(E_U\)</span>、行为序列 <span class="arithmatex">\(E_S\)</span>、K 个候选 <span class="arithmatex">\(E_I\)</span> 组成，经冻结骨干得到初始分数 <span class="arithmatex">\(S_0\)</span> 与首步推理 token；随后每步把上一步输出的最后 K 个隐状态作为新推理 token 追加进序列，连同固定的 History Queries 一起送入 LoRA 增强的 Transformer，由专用推理头输出残差 <span class="arithmatex">\(S_r\)</span>，累加得 <span class="arithmatex">\(S_{\text{cum},r}=S_0+\sum_{i\le r}S_i\)</span>。训练仅更新 LoRA 与推理头，推理时按步数 <span class="arithmatex">\(R_{\text{steps}}\)</span> 自回归展开。</p>
+<p>输入序列由用户画像 <span class="arithmatex">\(E_U\)</span>、行为序列<span class="arithmatex">\(E_S\)</span>、K 个候选<span class="arithmatex">\(E_I\)</span>组成，经冻结骨干得到初始分数<span class="arithmatex">\(S_0\)</span>与首步推理 token；随后每步把上一步输出的最后 K 个隐状态作为新推理 token 追加进序列，连同固定的 History Queries 一起送入 LoRA 增强的 Transformer，由专用推理头输出残差<span class="arithmatex">\(S_r\)</span>，累加得<span class="arithmatex">\(S_{\text{cum},r}=S_0+\sum_{i\le r}S_i\)</span>。训练仅更新 LoRA 与推理头，推理时按步数<span class="arithmatex">\(R_{\text{steps}}\)</span> 自回归展开。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户画像 + 行为序列 + K 候选"] --&gt; B["冻结骨干 T_pretrain"]
     B --&gt; C["初始分数 S0 + History Queries + 首步推理 token"]
@@ -4247,10 +4258,10 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{reasoning}}=\sum_{r=1}^{R_{\text{
 直觉上每步只需拟合"剩余误差"，天然形成由粗到细的课程式优化，且与排序目标（分数序）直接对齐，而非 BCE 式的独立重分类。</p>
 </li>
 <li>
-<p><strong>History Queries（历史查询）</strong>：痛点是候选专属推理 token 只能看到自身候选与用户侧信息，缺乏对全局兴趣的"压缩摘要"。作者从初始序列 <span class="arithmatex">\(H_0=T(X_0,M_0)\)</span> 中取行为序列段末 <span class="arithmatex">\(N_{HQ}\)</span> 个位置的隐状态作为固定查询 <span class="arithmatex">\(E_{HQ}\)</span>，在所有推理步复用；掩码上 <span class="arithmatex">\(E_{HQ}\)</span> 段内部保持因果掩码、对外可见全部用户历史。这样以极少量 token（<span class="arithmatex">\(N_{HQ}=2\sim4\)</span>）为每个候选的推理注入全局上下文，且不引入候选间信息泄漏。</p>
+<p><strong>History Queries（历史查询）</strong>：痛点是候选专属推理 token 只能看到自身候选与用户侧信息，缺乏对全局兴趣的"压缩摘要"。作者从初始序列 <span class="arithmatex">\(H_0=T(X_0,M_0)\)</span>中取行为序列段末<span class="arithmatex">\(N_{HQ}\)</span>个位置的隐状态作为固定查询<span class="arithmatex">\(E_{HQ}\)</span>，在所有推理步复用；掩码上<span class="arithmatex">\(E_{HQ}\)</span>段内部保持因果掩码、对外可见全部用户历史。这样以极少量 token（<span class="arithmatex">\(N_{HQ}=2\sim4\)</span>）为每个候选的推理注入全局上下文，且不引入候选间信息泄漏。</p>
 </li>
 <li>
-<p><strong>参数高效微调与推理掩码</strong>：冻结 <span class="arithmatex">\(E_{\text{pretrain}},T_{\text{pretrain}},P_{\text{pretrain}}\)</span>，仅在 Transformer 中插入 LoRA（rank <span class="arithmatex">\(r\in\{32,64,128\}\)</span>，<span class="arithmatex">\(\alpha\in\{64,128,256\}\)</span>）并新增推理头 <span class="arithmatex">\(P_{\text{reasoning}}\)</span>；扩展候选掩码保证第 <span class="arithmatex">\(r\)</span> 步推理 token 只能访问用户侧信息、自身候选及同候选的历史推理 token（图 1）。训练负采样沿用"每正样本配 1 个随机负样本"（<span class="arithmatex">\(K=2\)</span>），推理开销随步数线性增长，实测 1–2 步即达性价比拐点。</p>
+<p><strong>参数高效微调与推理掩码</strong>：冻结 <span class="arithmatex">\(E_{\text{pretrain}},T_{\text{pretrain}},P_{\text{pretrain}}\)</span>，仅在 Transformer 中插入 LoRA（rank<span class="arithmatex">\(r\in\{32,64,128\}\)</span>，<span class="arithmatex">\(\alpha\in\{64,128,256\}\)</span>）并新增推理头<span class="arithmatex">\(P_{\text{reasoning}}\)</span>；扩展候选掩码保证第<span class="arithmatex">\(r\)</span>步推理 token 只能访问用户侧信息、自身候选及同候选的历史推理 token（图 1）。训练负采样沿用"每正样本配 1 个随机负样本"（<span class="arithmatex">\(K=2\)</span>），推理开销随步数线性增长，实测 1–2 步即达性价比拐点。</p>
 </li>
 </ol>
 <figure class="paper-figure">
@@ -4432,12 +4443,18 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{reasoning}}=\sum_{r=1}^{R_{\text{
 <li><strong>冷门物品与长序列用户获益最大</strong>：分组实验中 Refiner 在最低流行度物品组增益最显著，在最长序列用户组仍稳定为正——基模型表征越不可靠（冷启动物品）或行为越复杂（长序列），可精化空间越大；热门物品因协同信号充分，增益自然收窄。</li>
 <li><strong>步数与查询数存在明显性价比拐点</strong>：<span class="arithmatex">\(N_{HQ}=2\sim4\)</span> 时性能最佳且相对推理延迟 RIL &lt; 1.1；推理步数 1–2 步即取得主要增益，第 3–4 步残差幅度 ARR 快速衰减、增量收益 IRS 趋零而延迟线性上升，故线上仅启用 1 步即换来 PV-CTR +0.75%。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 ReaRec/CaLR 这类"精化用户表征做 next-item 召回"的隐推理，Refiner 把推理直接落在<strong>候选分数空间</strong>并保持候选隔离；相比 OnePiece 的 set-wise 端到端训练（需候选间交互与业务上下文输入），Refiner 不改动骨干、只训轻量模块，工程可落地性显著更强；相比 LLM 文本 CoT，无文本生成开销。</li>
 <li><strong>可迁移亮点</strong>: ① "冻结骨干 + 残差头 + 累积 MSE"可作为任意已上线精排模型的通用增益插件；② History Queries 用少量隐状态 token 为逐候选计算注入全局上下文，可迁移到多候选并行的重排/生成式检索场景。</li>
 <li><strong>审稿级局限批判</strong>: ① 公开集采用 1:1 采样排序（<span class="arithmatex">\(K=2\)</span>），与真实全库/大候选集排序分布差距较大，AUC 增益的绝对量级可能被高估；② 推理延迟仅报告未做 serving 优化的 RIL，多步自回归在严格时延约束的线上场景扩展性存疑，且缺少与 OnePiece 的直接对比（作者自述受骨干接口限制）。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

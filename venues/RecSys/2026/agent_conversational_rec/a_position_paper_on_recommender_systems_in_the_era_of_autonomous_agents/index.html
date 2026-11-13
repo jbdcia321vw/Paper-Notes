@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4243,17 +4254,17 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>含智能体的交易型推荐任务定义（式2）</strong>：传统式1 <span class="arithmatex">\(\langle u,t,(U\times I)_{\le t},s(I_{\le t})\rangle\to R_{u,t}\)</span> 无法表达"谁在请求"与"显式目标"。本文引入请求实体 <span class="arithmatex">\(e\in\{u,a_u\}\)</span> 与目标 <span class="arithmatex">\(g_t\)</span>，并让系统利用用户与智能体的<strong>联合历史</strong> <span class="arithmatex">\(((U\cup A)\times I)_{\le t}\)</span>：
+<p><strong>含智能体的交易型推荐任务定义（式2）</strong>：传统式1 <span class="arithmatex">\(\langle u,t,(U\times I)_{\le t},s(I_{\le t})\rangle\to R_{u,t}\)</span>无法表达"谁在请求"与"显式目标"。本文引入请求实体<span class="arithmatex">\(e\in\{u,a_u\}\)</span>与目标<span class="arithmatex">\(g_t\)</span>，并让系统利用用户与智能体的<strong>联合历史</strong><span class="arithmatex">\(((U\cup A)\times I)_{\le t}\)</span>：
 $<span class="arithmatex">\(\langle e,t,g_t,((U\cup A)\times I)_{\le t},s(I_{\le t},g_t)\rangle\to R_{e,t}\)</span>$
-直觉：当 <span class="arithmatex">\(e=a_u\)</span> 时 <span class="arithmatex">\(g_t\)</span> 是程序化约束（如"续航≥16h 且价格&lt;$1000"），平台输出须从"视觉说服型版式"转为"高密度、可验证的数据结构"。</p>
+直觉：当 <span class="arithmatex">\(e=a_u\)</span>时<span class="arithmatex">\(g_t\)</span>是程序化约束（如"续航≥16h 且价格&lt;$1000"），平台输出须从"视觉说服型版式"转为"高密度、可验证的数据结构"。</p>
 </li>
 <li>
 <p><strong>跨平台代理聚合（式3）</strong>：单平台只有碎片化视图，智能体可聚合多平台候选：
 $<span class="arithmatex">\(\tilde{R}_t=f_{a_u}\big(\{R_{p,t}\}_{p\in\mathcal{P}},\,g_t,\,h^{\text{cross}}_t\big)\)</span>$
-其中 <span class="arithmatex">\(h^{\text{cross}}_t\)</span> 是仅客户端可见的跨平台行为证据。这是全新研究面：如何检测并纠正平台侧偏差、如何为 <span class="arithmatex">\(h^{\text{cross}}_t\)</span> 加权、如何设计抗博弈的机器可读协议。</p>
+其中 <span class="arithmatex">\(h^{\text{cross}}_t\)</span>是仅客户端可见的跨平台行为证据。这是全新研究面：如何检测并纠正平台侧偏差、如何为<span class="arithmatex">\(h^{\text{cross}}_t\)</span> 加权、如何设计抗博弈的机器可读协议。</p>
 </li>
 <li>
-<p><strong>三方交互前沿（Tripartite Dynamics）</strong>：Human-to-Platform 仍是传统优化域（利用认知偏差、视觉层级、人为稀缺）；Agent-to-Platform 中视觉说服失效，平台会试图从 <span class="arithmatex">\(g_t\)</span> <strong>反推</strong>用户全局状态以夺回信息优势，并存在针对智能体校验的元数据操纵风险；Human-to-Agent 是全新域，核心是<strong>目标错配</strong>——用户给出模糊 <span class="arithmatex">\(g_t\)</span> 时智能体会过度优化代理指标（如只买最便宜的"高评分"机器），忽略未言明的审美/重量/品牌偏好。</p>
+<p><strong>三方交互前沿（Tripartite Dynamics）</strong>：Human-to-Platform 仍是传统优化域（利用认知偏差、视觉层级、人为稀缺）；Agent-to-Platform 中视觉说服失效，平台会试图从 <span class="arithmatex">\(g_t\)</span><strong>反推</strong>用户全局状态以夺回信息优势，并存在针对智能体校验的元数据操纵风险；Human-to-Agent 是全新域，核心是<strong>目标错配</strong>——用户给出模糊<span class="arithmatex">\(g_t\)</span> 时智能体会过度优化代理指标（如只买最便宜的"高评分"机器），忽略未言明的审美/重量/品牌偏好。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4269,15 +4280,21 @@ $<span class="arithmatex">\(\tilde{R}_t=f_{a_u}\big(\{R_{p,t}\}_{p\in\mathcal{P}
 <p>不适用（无模型、无组件可消融）。</p>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <p>作为 position paper，其"发现"为概念性论断，归纳三条：
-1. <strong>信息优势反转</strong>：智能体聚合跨平台历史 <span class="arithmatex">\(h^{\text{cross}}_t\)</span> 后，比任何单平台更懂用户，平台被迫从 <span class="arithmatex">\(g_t\)</span> 反推用户状态，重塑了平台-用户权力结构。
+1. <strong>信息优势反转</strong>：智能体聚合跨平台历史 <span class="arithmatex">\(h^{\text{cross}}_t\)</span>后，比任何单平台更懂用户，平台被迫从<span class="arithmatex">\(g_t\)</span> 反推用户状态，重塑了平台-用户权力结构。
 2. <strong>任务类型决定可委托性</strong>：内容型推荐（娱乐/资讯消费）本质是人类体验、不可委托，仍将直接服务人类；交易型推荐（价值在结果而非过程）才适合委托给智能体——这是全文讨论的边界条件。
 3. <strong>历史盲点会被继承</strong>：若把"刷静态榜、指标错配、模拟理想用户"的旧习惯带入 agentic 时代，将放大而非解决评估效度危机；故须以"显式、可验证、基于约束的任务执行"为共同主线重构。</p>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与主流 "agentic RecSys"（LLM Agent 内嵌平台做推荐，如平台侧 Agent 增强）本质区别在于<strong>代理归属与利益立场</strong>——本文智能体在客户端、仅代表用户、可跨平台套利；与 Conversational RecSys 的区别在于目标不是"推荐一个物品"，而是"把采购任务规格化到任何合格智能体都能正确执行"。</li>
-<li><strong>可迁移亮点</strong>: (i) 用"请求实体 <span class="arithmatex">\(e\)</span> + 显式目标 <span class="arithmatex">\(g_t\)</span> + 联合历史"三元组改造任务定义，可直接用于设计 agent-native 推荐 API 的输入契约；(ii) "约束可满足性 + 端到端任务完成度"的评估思路，可迁移到任何需要可验证输出的推荐场景（如比价、行程规划）。</li>
+<li><strong>可迁移亮点</strong>: (i) 用"请求实体 <span class="arithmatex">\(e\)</span>+ 显式目标<span class="arithmatex">\(g_t\)</span> + 联合历史"三元组改造任务定义，可直接用于设计 agent-native 推荐 API 的输入契约；(ii) "约束可满足性 + 端到端任务完成度"的评估思路，可迁移到任何需要可验证输出的推荐场景（如比价、行程规划）。</li>
 <li><strong>审稿级局限批判</strong>: (i) 全文无实证、无原型、无 benchmark 落地，四大方向均停留在"提出好问题"层面，可操作性弱；(ii) 强假设"每用户至多授权一个跨全平台智能体"，且将内容型/交易型的二分边界处理得较粗，现实中大量混合意图场景（如种草后购买）难以归类；(iii) 隐私、同意与跨平台数据治理被作者明确"超出范围"，但这恰是该生态能否成立的前提，回避了最硬的约束。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

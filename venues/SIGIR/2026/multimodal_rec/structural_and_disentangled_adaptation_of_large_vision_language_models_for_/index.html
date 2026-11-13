@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][多模态推荐] 提出 SDA 轻量框架，用结构对齐软教师与模态解耦 LoRA 适配 LVLM，在 Amazon 三数据集上 H@10 平均提升 6.15%。">
+        <meta name="description" content="[SIGIR 2026][多模态推荐] 用模态内结构软教师对齐 LVLM 跨模态表征，并以专家化门控 LoRA 解耦梯度流，即插即用提升多模态与序列推荐，长尾增益最高 18.70%。">
       
       
       
@@ -108,20 +108,18 @@
 
 
 
-<meta name="keywords" content="SIGIR, 多模态推荐, 召回/特征表征, LVLM 适配, 模态解耦 LoRA, 结构对比对齐" />
+<meta name="keywords" content="SIGIR 2026, 多模态推荐, 召回/表征增强, LVLM 适配, 模态解耦 LoRA" />
 
 
-<meta property="article:tag" content="SIGIR" />
+<meta property="article:tag" content="SIGIR 2026" />
 
 <meta property="article:tag" content="多模态推荐" />
 
-<meta property="article:tag" content="召回/特征表征" />
+<meta property="article:tag" content="召回/表征增强" />
 
 <meta property="article:tag" content="LVLM 适配" />
 
 <meta property="article:tag" content="模态解耦 LoRA" />
-
-<meta property="article:tag" content="结构对比对齐" />
 
 
 
@@ -131,10 +129,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/multimodal_rec/structural_and_disentangled_adaptation_of_large_vision_language_models_for_/" />
 <meta property="og:title" content="[Paper Note] Structural and Disentangled Adaptation of Large Vision Language Models for Multimodal Recommendation" />
-<meta property="og:description" content="[SIGIR 2026][多模态推荐] 提出 SDA 轻量框架，用结构对齐软教师与模态解耦 LoRA 适配 LVLM，在 Amazon 三数据集上 H@10 平均提升 6.15%。" />
+<meta property="og:description" content="[SIGIR 2026][多模态推荐] 用模态内结构软教师对齐 LVLM 跨模态表征，并以专家化门控 LoRA 解耦梯度流，即插即用提升多模态与序列推荐，长尾增益最高 18.70%。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] Structural and Disentangled Adaptation of Large Vision Language Models for Multimodal Recommendation" />
-<meta name="twitter:description" content="[SIGIR 2026][多模态推荐] 提出 SDA 轻量框架，用结构对齐软教师与模态解耦 LoRA 适配 LVLM，在 Amazon 三数据集上 H@10 平均提升 6.15%。" />
+<meta name="twitter:description" content="[SIGIR 2026][多模态推荐] 用模态内结构软教师对齐 LVLM 跨模态表征，并以专家化门控 LoRA 解耦梯度流，即插即用提升多模态与序列推荐，长尾增益最高 18.70%。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +158,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] Structural and Disentangled Adaptation of Large Vision Language Models for Multimodal Recommendation",
   "headline": "[Paper Note] Structural and Disentangled Adaptation of Large Vision Language Models for Multimodal Recommendation",
-  "description": "[SIGIR 2026][\u591a\u6a21\u6001\u63a8\u8350] \u63d0\u51fa SDA \u8f7b\u91cf\u6846\u67b6\uff0c\u7528\u7ed3\u6784\u5bf9\u9f50\u8f6f\u6559\u5e08\u4e0e\u6a21\u6001\u89e3\u8026 LoRA \u9002\u914d LVLM\uff0c\u5728 Amazon \u4e09\u6570\u636e\u96c6\u4e0a H@10 \u5e73\u5747\u63d0\u5347 6.15%\u3002",
+  "description": "[SIGIR 2026][\u591a\u6a21\u6001\u63a8\u8350] \u7528\u6a21\u6001\u5185\u7ed3\u6784\u8f6f\u6559\u5e08\u5bf9\u9f50 LVLM \u8de8\u6a21\u6001\u8868\u5f81\uff0c\u5e76\u4ee5\u4e13\u5bb6\u5316\u95e8\u63a7 LoRA \u89e3\u8026\u68af\u5ea6\u6d41\uff0c\u5373\u63d2\u5373\u7528\u63d0\u5347\u591a\u6a21\u6001\u4e0e\u5e8f\u5217\u63a8\u8350\uff0c\u957f\u5c3e\u589e\u76ca\u6700\u9ad8 18.70%\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/multimodal_rec/structural_and_disentangled_adaptation_of_large_vision_language_models_for_/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/multimodal_rec/structural_and_disentangled_adaptation_of_large_vision_language_models_for_/",
   "inLanguage": "zh-CN",
@@ -168,18 +166,17 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR, \u591a\u6a21\u6001\u63a8\u8350, \u53ec\u56de/\u7279\u5f81\u8868\u5f81, LVLM \u9002\u914d, \u6a21\u6001\u89e3\u8026 LoRA, \u7ed3\u6784\u5bf9\u6bd4\u5bf9\u9f50",
+  "keywords": "SIGIR 2026, \u591a\u6a21\u6001\u63a8\u8350, \u53ec\u56de/\u8868\u5f81\u589e\u5f3a, LVLM \u9002\u914d, \u6a21\u6001\u89e3\u8026 LoRA",
   "about": [
-    { "@type": "Thing", "name": "SIGIR" },
+    { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u591a\u6a21\u6001\u63a8\u8350" },
-    { "@type": "Thing", "name": "\u53ec\u56de/\u7279\u5f81\u8868\u5f81" },
+    { "@type": "Thing", "name": "\u53ec\u56de/\u8868\u5f81\u589e\u5f3a" },
     { "@type": "Thing", "name": "LVLM \u9002\u914d" },
-    { "@type": "Thing", "name": "\u6a21\u6001\u89e3\u8026 LoRA" },
-    { "@type": "Thing", "name": "\u7ed3\u6784\u5bf9\u6bd4\u5bf9\u9f50" }
+    { "@type": "Thing", "name": "\u6a21\u6001\u89e3\u8026 LoRA" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3994,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4008,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4016,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4039,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4069,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4092,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4100,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4116,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4181,9 +4156,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][多模态推荐] 提出 SDA 轻量框架，用结构对齐软教师与模态解耦 LoRA 适配 LVLM，在 Amazon 三数据集上 H@10 平均提升 6.15%。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][多模态推荐] 用模态内结构软教师对齐 LVLM 跨模态表征，并以专家化门控 LoRA 解耦梯度流，即插即用提升多模态与序列推荐，长尾增益最高 18.70%。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR · 多模态推荐 · 召回/特征表征 · LVLM 适配 · 模态解耦 LoRA · 结构对比对齐</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 多模态推荐 · 召回/表征增强 · LVLM 适配 · 模态解耦 LoRA</p>
   
 </aside>
   
@@ -4197,7 +4172,7 @@
       
       
       
-        <span class="md-tag">SIGIR</span>
+        <span class="md-tag">SIGIR 2026</span>
       
     
       
@@ -4211,7 +4186,7 @@
       
       
       
-        <span class="md-tag">召回/特征表征</span>
+        <span class="md-tag">召回/表征增强</span>
       
     
       
@@ -4228,13 +4203,6 @@
         <span class="md-tag">模态解耦 LoRA</span>
       
     
-      
-      
-      
-      
-        <span class="md-tag">结构对比对齐</span>
-      
-    
   </nav>
 
 
@@ -4245,86 +4213,63 @@
 <h1 id="structural-and-disentangled-adaptation-of-large-vision-language-models-for-multimodal-recommendation">Structural and Disentangled Adaptation of Large Vision Language Models for Multimodal Recommendation (面向多模态推荐的大视觉语言模型结构与解耦适配)</h1>
 <ul>
 <li><strong>会议/期刊</strong>: SIGIR 2026</li>
-<li><strong>推荐链路定位</strong>: 召回/特征表征（作为多模态特征提取器，离线预计算后接入下游推荐模型）</li>
-<li><strong>研究方向</strong>: 多模态推荐 / 序列推荐</li>
+<li><strong>作者与机构</strong>: Zhongtao Rao, Peilin Zhou, Dading Chong, Zhiwei Chen, Shoujin Wang, Nan Tang (HKUST-GZ / NYU Abu Dhabi / PKU / UTS)</li>
+<li><strong>推荐链路定位</strong>: 召回前的表征增强（离线预计算特征，供下游推荐模型使用）</li>
+<li><strong>研究方向</strong>: 多模态推荐 / 冷启动与长尾推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2512.06883v2">https://arxiv.org/abs/2512.06883v2</a></li>
 <li><strong>开源代码</strong>: <a href="https://github.com/RaoZhongtao/SDA">https://github.com/RaoZhongtao/SDA</a></li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对 LVLM 直接用于多模态推荐时的<strong>表征错位</strong>（领域鸿沟导致图文嵌入空间不对齐）与<strong>梯度冲突</strong>（共享 LoRA 适配器使视觉/文本梯度相互干扰）两大痛点，本文提出 SDA 轻量框架：CMSA 以模态内结构作为软教师做分布级跨模态对齐，MoDA 用专家化门控低秩路径解耦梯度流。在 Amazon 三数据集、四种骨干（SLMRec/VBPR/SASRec/BERT4Rec）上，H@10 平均提升 6.15%、N@10 提升 8.64%，长尾最高提升 12.83%/18.70%，推理开销极小。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>直接把 Qwen2.5-VL 7B 的零样本特征喂给推荐模型会<strong>负迁移</strong>（Sports 上 SLMRec 的 H@10 从 0.4632 掉到 0.4337），根源是商品图文与通用预训练语料存在域鸿沟（表征不对齐），而共享 LoRA 适配器又让视觉/文本梯度互相打架。本文提出 SDA：用<strong>模态内结构软教师</strong>做分布级跨模态对齐（CMSA），再用<strong>专家化门控低秩路径</strong>解耦梯度流（MoDA）。在 Amazon 三数据集、四种骨干上平均提升 H@10 6.15%、N@10 8.64%，长尾最高提升 12.83%/18.70%，且推理零额外开销。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 多模态推荐早期依赖独立编码器（CNN/Transformer）或双塔 CLIP 提取图文特征，再与 ID 嵌入融合。LVLM（如 Qwen-VL、GPT-4o）凭借统一架构与深层跨模态注意力，在细粒度图文关系建模与世界知识迁移上更具潜力，被视为理想的多模态特征骨干。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>表征错位 (C1)</strong>：商品图片/短标题等域内数据与 LVLM 的通用预训练数据存在显著领域鸿沟，导致同一物品的图文嵌入空间不对齐（图 1(a)）。</li>
-<li><strong>梯度冲突 (C2)</strong>：参数高效微调（如 LoRA）在视觉与文本间共享低秩适配器，造成梯度相互干扰，使视觉相似但功能不同的物品被错误聚类（图 1(b)）。</li>
-<li>零样本 LVLM 特征并非"即插即用"：实验显示 vanilla QwenVL 在多数场景下甚至不如 CLIP 或原始 Base 特征（如 SLMRec 在 Sports 上 0.4337 vs. 0.4632 H@10），存在负迁移。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 简单特征拼接或加深网络无法解决——错位是分布层面的语义鸿沟，需在适配阶段对齐；冲突源于共享适配器的结构性缺陷，需从梯度路由层面解耦。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者观察到，即便跨模态对齐丢失，<strong>模态内关系结构仍然完好保留</strong>，可将其作为软教师指导跨模态对齐；同时梯度冲突的根因是共享适配器，可用专家化门控低秩路径替代。</li>
+<li><strong>主流范式</strong>: 多模态推荐依赖 CNN/Transformer 或 CLIP 双塔抽取图文特征，再与 ID 嵌入融合；近期尝试用 LVLM 作为统一多模态特征提取器。</li>
+<li><strong>前人局限</strong>: (i) 商品图片与短标题属强域内数据，与 LVLM 通用预训练分布差异大，同一商品的图文嵌入空间严重错位；(ii) 参数高效微调（LoRA）在视觉与文本间共享低秩适配器，两模态梯度相互干扰，导致"视觉相似但功能不同"的商品被错误聚簇。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 跨模态对齐丢失时，<strong>模态内</strong>的邻域关系（图-图相似、文-文相似）依然完好，可作为"软教师"监督跨模态对齐；梯度冲突的根因是共享适配器，而非低秩本身。</li>
+<li><strong>本文切入点</strong>: 用模态内结构做分布级软对齐 + 用模态专属门控专家拆分低秩子空间，两步分别对症 C1/C2。</li>
 </ul>
 <figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2512.06883v2/figure_1.png" /><figcaption>图 1</figcaption>
+  <img alt="图1：将LVLM应用于推荐时两个关键挑战的示意图。" src="../../../../../assets/papers/2512.06883v2/figure_1.png" /><figcaption>图1：将LVLM应用于推荐时两个关键挑战的示意图。</figcaption>
 </figure>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户集 <span class="arithmatex">\(\mathcal{U}\)</span>、物品集 <span class="arithmatex">\(\mathcal{I}\)</span>，物品 <span class="arithmatex">\(i\)</span> 具有图像与文本模态。</li>
-<li>文本提示：拼接标题、类别、品牌等字段并附指令 "The product has the following attributes:"；视觉提示："The product has the image:"。</li>
-<li>两路提示输入预训练 LVLM，对最后一层隐状态做均值池化并投影，得到 <span class="arithmatex">\(d_m\)</span> 维文本/视觉嵌入 <span class="arithmatex">\(\mathbf{e}^t_i, \mathbf{e}^v_i \in \mathbb{R}^{d_m}\)</span>。</li>
-<li>下游推荐模型统一嵌入维度 <span class="arithmatex">\(d=128\)</span>。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>两阶段流水线：先向 LVLM 插入 MoDA，仅优化其参数以最小化 <span class="arithmatex">\(\mathcal{L}_{CL}\)</span>，得到适配后的图文嵌入；随后冻结 LVLM，离线预计算全部物品嵌入，通过拼接或适配器融合接入现有多模态/序列推荐器。</p>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>两阶段流水线：第一阶段冻结 LVLM 主干，仅训练 MoDA 低秩专家，以 CMSA 的结构感知对比损失在商品数据上适配，得到文本/视觉嵌入 <span class="arithmatex">\(\mathbf{e}^t_i,\mathbf{e}^v_i\)</span>；第二阶段冻结 LVLM、离线预计算全部商品嵌入，以拼接等方式注入下游多模态（SLMRec/VBPR）或序列（SASRec/BERT4Rec）推荐器。CMSA 本身不引入可训练参数，MoDA 仅增加少量低秩专家，故服务期开销与原始推荐器基本持平。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 物品图像 + 文本提示 (标题/类别/品牌)"] --&gt; B["LVLM 骨干 (Qwen2.5-VL 7B, 冻结)"]
-    B --&gt; C["MoDA: 专家化门控低秩路径 (模态解耦)"]
-    C --&gt; D["均值池化 + 投影: 文本嵌入 e_t / 视觉嵌入 e_v"]
-    D --&gt; E["CMSA: 结构软教师分布级跨模态对齐 (L_CL)"]
-    E --&gt; F["离线预计算物品嵌入"]
-    F --&gt; G["下游推荐器 (SLMRec/VBPR/SASRec/BERT4Rec)"]
-    G --&gt; H["打分预测"]</code></pre>
+    A["商品图文 + 提示模板"] --&gt; B["冻结 Qwen2.5-VL + MoDA 门控专家"]
+    B --&gt; C["文本/视觉嵌入 e_t, e_v"]
+    C --&gt; D["CMSA 结构软教师对齐"]
+    D --&gt; E["离线预计算嵌入"]
+    E --&gt; F["下游推荐器 (SLMRec/VBPR/SASRec/BERT4Rec)"]</code></pre>
 <figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2512.06883v2/figure_2.png" /><figcaption>图 2</figcaption>
+  <img alt="图2：所提出的SDA框架概览。" src="../../../../../assets/papers/2512.06883v2/figure_2.png" /><figcaption>图2：所提出的SDA框架概览。</figcaption>
 </figure>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>模块一：跨模态结构对齐 (CMSA)</strong></p>
-<p>给定批内 <span class="arithmatex">\(N\)</span> 个物品，先计算跨模态相似度矩阵：</p>
-<div class="arithmatex">\[S_{ij} = \frac{\mathbf{e}^t_i \cdot \mathbf{e}^v_j}{\tau}, \quad i,j \in \{1,\dots,N\}\]</div>
-<p>再以模态内相似度均值构造结构软教师分布：</p>
-<div class="arithmatex">\[T_{ij} = \mathrm{Softmax}_j\left(\tau_2\left(\mathbf{e}^t_i \cdot \mathbf{e}^t_j + \mathbf{e}^v_i \cdot \mathbf{e}^v_j\right)\right)\]</div>
-<p>其中 <span class="arithmatex">\(\mathrm{Softmax}_j\)</span> 为按行归一化。<span class="arithmatex">\(T_{i,:}\)</span> 编码了锚点物品 <span class="arithmatex">\(i\)</span> 在图文联合视角下的邻域结构。结构感知对比损失为双向 KL 匹配：</p>
-<div class="arithmatex">\[\mathcal{L}_{CL} = \frac{1}{2N}\sum_{i=1}^{N}\left[\mathrm{KL}(T_{i,:} \| P_{i,:}) + \mathrm{KL}(T_{:,i} \| P^\top_{:,i})\right]\]</div>
-<p>其中 <span class="arithmatex">\(P_{ij} = \mathrm{Softmax}_j(S_{ij})\)</span>。<strong>物理直觉</strong>：不直接对齐单个图文对，而是对齐整个相似度分布，从而把模态内关系知识迁移到联合空间，得到更具判别性、模态不变性的嵌入。</p>
-<p><strong>模块二：模态解耦适配 (MoDA)</strong></p>
-<p>标准 LoRA 更新 <span class="arithmatex">\(\Delta W = BA\)</span>。MoDA 将低秩空间分解为 <span class="arithmatex">\(N_e\)</span> 个专家，各模态软组合：</p>
-<div class="arithmatex">\[\Delta W = \sum_{i=1}^{N_e} \omega_i B_i A_i, \quad B_i \in \mathbb{R}^{d_{in} \times r_e}, A_i \in \mathbb{R}^{r_e \times d_{out}}, r_e = r/N_e\]</div>
-<p>每个模态 <span class="arithmatex">\(m\)</span> 引入可训练模态嵌入 <span class="arithmatex">\(\mathrm{Emb}_m\)</span>，经小门控网络产生专家权重：</p>
-<div class="arithmatex">\[\omega^m = \mathrm{Gate}(\mathrm{Emb}_m) \in \mathbb{R}^{N_e}\]</div>
-<p>前向计算为：</p>
-<div class="arithmatex">\[h = W_0 x + \sum_{i=1}^{N_e} \omega^m_i B_i A_i x\]</div>
-<p><strong>物理直觉</strong>：各模态共享同一专家池，但通过 <span class="arithmatex">\(\omega^m\)</span> 强调不同子集，无需维护完全独立的适配器，在保持总秩 <span class="arithmatex">\(r\)</span>（参数量与标准 LoRA 相当）的前提下解耦视觉/文本梯度流。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 仅使用结构感知对比损失 <span class="arithmatex">\(\mathcal{L}_{CL}\)</span>（双向 KL 散度），温度系数 <span class="arithmatex">\(\tau\)</span> 与 <span class="arithmatex">\(\tau_2\)</span> 为超参；CMSA 本身不引入额外可训练参数。</li>
-<li><strong>训练负采样策略</strong>: 采用批内对比（in-batch），批大小 <span class="arithmatex">\(N=32\)</span>（训练），通过批内其他物品隐式构成负例，无需显式负采样。</li>
-<li><strong>时间与空间复杂度</strong>: 仅向冻结 LVLM 添加少量低秩专家，可训练参数为骨干的极小比例；物品嵌入离线预计算，下游推荐器服务时复杂度基本不变。训练最多 4000 步，更新所有线性层但冻结 ViT 视觉编码器；专家数 <span class="arithmatex">\(N_e=8\)</span>。</li>
-</ul>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>跨模态结构对齐 CMSA（用模态内邻域当软教师）</strong>：痛点是对齐目标只有"配对正样本"，丢失了细粒度邻域结构。做法是先算跨模态相似度 <span class="arithmatex">\(S_{ij}=\mathbf{e}^t_i\cdot\mathbf{e}^v_j/\tau\)</span>，再由图文各自模态内相似度均值构造软目标<span class="arithmatex">\(T_{ij}=\mathrm{Softmax}_j\!\big(\tfrac{\tau}{2}(\mathbf{e}^t_i\cdot\mathbf{e}^t_j+\mathbf{e}^v_i\cdot\mathbf{e}^v_j)\big)\)</span>，最后双向 KL 对齐：
+$<span class="arithmatex">\(\mathcal{L}_{CL}=\frac{1}{2N}\sum_{i=1}^{N}\Big[\mathrm{KL}(T_{i,:}\|P_{i,:})+\mathrm{KL}(T_{:,i}\|P^{\top}_{:,i})\Big]\)</span>$
+其中 <span class="arithmatex">\(P_{ij}=\mathrm{Softmax}_j(S_{ij})\)</span>。直觉：把"谁和谁像"的模态内知识蒸馏进联合空间，比 InfoNCE 的 one-hot 正样本约束信息量更大（消融中换回 InfoNCE 掉 8.41%）。</p>
+</li>
+<li>
+<p><strong>模态解耦适配 MoDA（专家化门控低秩路径）</strong>：把标准 LoRA 的 <span class="arithmatex">\(\Delta W=BA\)</span>分解为<span class="arithmatex">\(N_e\)</span>个专家<span class="arithmatex">\(\Delta W=\sum_{i=1}^{N_e}\omega_i B_iA_i\)</span>，每个专家秩<span class="arithmatex">\(r_e=r/N_e\)</span>，总参数量与标准 LoRA 持平。每个模态<span class="arithmatex">\(m\)</span>用可训练模态嵌入经门控网络产生权重<span class="arithmatex">\(\boldsymbol{\omega}^m=\mathrm{Gate}(\mathrm{Emb}_m)\)</span>，前向为<span class="arithmatex">\(h=W_0x+\sum_{i}\omega^m_i B_iA_ix\)</span>。视觉与文本共享专家池但走不同组合，从而在低秩子空间内解耦梯度流——实测 LoRA 的模态梯度余弦相似度为负（q_proj<span class="arithmatex">\(-0.0955\)</span>），MoDA 转为强正（<span class="arithmatex">\(0.4422\)</span>）。</p>
+</li>
+<li>
+<p><strong>训练目标与推理效率</strong>：总损失即 <span class="arithmatex">\(\mathcal{L}_{CL}\)</span>，无负采样（批内全配对，batch size 32），训练最多 4000 步、ViT 冻结、仅更新线性层；专家数<span class="arithmatex">\(N_e=8\)</span>、LoRA 秩<span class="arithmatex">\(r=8\)</span>。推理阶段嵌入全部离线预计算，下游推荐器零额外延迟。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 采用 Amazon Reviews 的 Beauty、Sports、Toys 三个类目：</li>
+<li><strong>数据集与预处理</strong>: Amazon Reviews 三个类目，未额外过滤（沿用原始划分）：</li>
 </ul>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2512.06883v2/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
+<th style="text-align: left;">数据集</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Interactions</th>
+<th style="text-align: center;">稀疏度</th>
+<th style="text-align: left;">场景说明</th>
 </tr>
 </thead>
 <tbody>
@@ -4334,7 +4279,7 @@
 <td style="text-align: center;">57,019</td>
 <td style="text-align: center;">391,956</td>
 <td style="text-align: center;">99.986%</td>
-<td style="text-align: left;">图像 (AlexNet 特征) + 文本 (all-MiniLM-L6-v2)</td>
+<td style="text-align: left;">美妆</td>
 </tr>
 <tr>
 <td style="text-align: left;">Sports</td>
@@ -4342,7 +4287,7 @@
 <td style="text-align: center;">83,006</td>
 <td style="text-align: center;">582,372</td>
 <td style="text-align: center;">99.991%</td>
-<td style="text-align: left;">同上</td>
+<td style="text-align: left;">运动户外</td>
 </tr>
 <tr>
 <td style="text-align: left;">Toys</td>
@@ -4350,116 +4295,143 @@
 <td style="text-align: center;">68,556</td>
 <td style="text-align: center;">404,955</td>
 <td style="text-align: center;">99.989%</td>
-<td style="text-align: left;">同上</td>
+<td style="text-align: left;">玩具</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 遵循标准 <strong>Leave-One-Out (留一法)</strong> 协议 [4,13,15]。原文未明确报告全局时间戳切分，存在一定未来信息泄露风险（LOO 常见问题）。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: <strong>Sampled Ranking</strong>——每个正样本物品与 100 个用户未交互的随机负样本共同排序（1 正配 100 负），非全库排序。</li>
-<li><strong>评价指标与显著性检验</strong>: H@10、N@10；长尾定义为交互数少于 4 的物品，对应真值物品属长尾的用户构成长尾用户集，报告 TailH@10、TailN@10。所有模型嵌入维度统一为 128。采用配对 <span class="arithmatex">\(t\)</span> 检验，<span class="arithmatex">\(p&lt;0.05\)</span> 标注为 ∗。</li>
+<li><strong>数据划分与防穿越</strong>: 标准 <code>Leave-One-Out</code> 协议（最后一件交互为测试、倒数第二为验证）。</li>
+<li><strong>排名评测协议</strong>: <code>Sampled Ranking</code>，每个真值物品与 100 个用户未交互负样本共同排序；指标 H@10 / N@10，另设长尾子集（交互数 &lt; 4 的物品）报告 TailH@10 / TailN@10。</li>
+<li><strong>对比基线与超参</strong>: 四种骨干（SLMRec、VBPR、SASRec、BERT4Rec）× 三种特征源（Base 原生特征、CLIP <code>clip-vit-large-patch14</code>、QwenVL 零样本 Qwen2.5-VL 7B）；统一嵌入维度 <span class="arithmatex">\(d=128\)</span>，配对 t 检验<span class="arithmatex">\(p&lt;0.05\)</span>。</li>
 </ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>SDA 特征对比 Base、CLIP（clip-vit-large-patch14）、QwenVL（vanilla Qwen2.5-VL 7B）三种特征设置，接入四种骨干。以下摘取代表性结果：</p>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2512.06883v2/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">数据集</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">Base</th>
-<th style="text-align: center;">CLIP</th>
-<th style="text-align: center;">QwenVL</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (vs. 次优)</th>
+<th style="text-align: left;">骨干</th>
+<th style="text-align: left;">特征源</th>
+<th style="text-align: center;">Beauty H@10</th>
+<th style="text-align: center;">Beauty N@10</th>
+<th style="text-align: center;">Sports H@10</th>
+<th style="text-align: center;">Toys H@10</th>
+<th style="text-align: center;">Toys TailH@10</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">Beauty (SLMRec)</td>
-<td style="text-align: left;">H@10 / N@10</td>
-<td style="text-align: center;">0.4258 / 0.2852</td>
-<td style="text-align: center;">0.4363 / 0.2887</td>
-<td style="text-align: center;">0.4187 / 0.2652</td>
-<td style="text-align: center;"><strong>0.4805 / 0.3295</strong></td>
-<td style="text-align: center;">+10.13% / +14.13% (vs. CLIP)</td>
+<td style="text-align: left;">SLMRec</td>
+<td style="text-align: left;">Base</td>
+<td style="text-align: center;">0.4258</td>
+<td style="text-align: center;">0.2852</td>
+<td style="text-align: center;">0.4632</td>
+<td style="text-align: center;">0.4617</td>
+<td style="text-align: center;">0.3315</td>
 </tr>
 <tr>
-<td style="text-align: left;">Sports (SLMRec)</td>
-<td style="text-align: left;">H@10 / N@10</td>
-<td style="text-align: center;">0.4632 / 0.2962</td>
-<td style="text-align: center;">0.4710 / 0.3024</td>
-<td style="text-align: center;">0.4337 / 0.2636</td>
-<td style="text-align: center;"><strong>0.5115 / 0.3367</strong></td>
-<td style="text-align: center;">+8.60% / +11.34% (vs. CLIP)</td>
+<td style="text-align: left;">SLMRec</td>
+<td style="text-align: left;">CLIP</td>
+<td style="text-align: center;">0.4363</td>
+<td style="text-align: center;">0.2887</td>
+<td style="text-align: center;">0.4710</td>
+<td style="text-align: center;">0.4687</td>
+<td style="text-align: center;">0.3319</td>
 </tr>
 <tr>
-<td style="text-align: left;">Toys (SLMRec)</td>
-<td style="text-align: left;">H@10 / N@10</td>
-<td style="text-align: center;">0.4617 / 0.3115</td>
-<td style="text-align: center;">0.4687 / 0.3107</td>
-<td style="text-align: center;">0.4502 / 0.2900</td>
-<td style="text-align: center;"><strong>0.5048 / 0.3453</strong></td>
-<td style="text-align: center;">+7.70% / +11.14% (vs. CLIP)</td>
+<td style="text-align: left;">SLMRec</td>
+<td style="text-align: left;">QwenVL</td>
+<td style="text-align: center;">0.4187</td>
+<td style="text-align: center;">0.2652</td>
+<td style="text-align: center;">0.4337</td>
+<td style="text-align: center;">0.4502</td>
+<td style="text-align: center;">0.2727</td>
 </tr>
 <tr>
-<td style="text-align: left;">Beauty (SASRec)</td>
-<td style="text-align: left;">H@10 / N@10</td>
-<td style="text-align: center;">0.4141 / 0.2760</td>
-<td style="text-align: center;">0.5331 / 0.3524</td>
-<td style="text-align: center;">0.5569 / 0.3675</td>
-<td style="text-align: center;"><strong>0.5752 / 0.3951</strong></td>
-<td style="text-align: center;">+3.29% / +7.51% (vs. QwenVL)</td>
+<td style="text-align: left;">SLMRec</td>
+<td style="text-align: left;"><strong>SDA</strong></td>
+<td style="text-align: center;"><strong>0.4805</strong></td>
+<td style="text-align: center;"><strong>0.3295</strong></td>
+<td style="text-align: center;"><strong>0.5115</strong></td>
+<td style="text-align: center;"><strong>0.5048</strong></td>
+<td style="text-align: center;"><strong>0.3988</strong></td>
 </tr>
 <tr>
-<td style="text-align: left;">Beauty (VBPR)</td>
-<td style="text-align: left;">H@10 / N@10</td>
-<td style="text-align: center;">0.4572 / 0.3112</td>
-<td style="text-align: center;">0.5093 / 0.3506</td>
-<td style="text-align: center;">0.4379 / 0.2877</td>
-<td style="text-align: center;"><strong>0.5375 / 0.3745</strong></td>
-<td style="text-align: center;">+5.54% / +6.82% (vs. CLIP)</td>
+<td style="text-align: left;">VBPR</td>
+<td style="text-align: left;">CLIP</td>
+<td style="text-align: center;">0.5093</td>
+<td style="text-align: center;">0.3506</td>
+<td style="text-align: center;">0.5416</td>
+<td style="text-align: center;">0.5329</td>
+<td style="text-align: center;">0.4501</td>
 </tr>
 <tr>
-<td style="text-align: left;">Beauty (BERT4Rec)</td>
-<td style="text-align: left;">H@10 / N@10</td>
-<td style="text-align: center;">0.3955 / 0.2349</td>
-<td style="text-align: center;">0.5380 / 0.3468</td>
-<td style="text-align: center;">0.4913 / 0.3027</td>
-<td style="text-align: center;"><strong>0.5535 / 0.3521</strong></td>
-<td style="text-align: center;">+2.88% / +1.53% (vs. CLIP)</td>
+<td style="text-align: left;">VBPR</td>
+<td style="text-align: left;"><strong>SDA</strong></td>
+<td style="text-align: center;"><strong>0.5375</strong></td>
+<td style="text-align: center;"><strong>0.3745</strong></td>
+<td style="text-align: center;"><strong>0.5731</strong></td>
+<td style="text-align: center;"><strong>0.5556</strong></td>
+<td style="text-align: center;"><strong>0.4761</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">SASRec</td>
+<td style="text-align: left;">QwenVL</td>
+<td style="text-align: center;">0.5569</td>
+<td style="text-align: center;">0.3675</td>
+<td style="text-align: center;">0.5952</td>
+<td style="text-align: center;">0.6106</td>
+<td style="text-align: center;">0.5172</td>
+</tr>
+<tr>
+<td style="text-align: left;">SASRec</td>
+<td style="text-align: left;"><strong>SDA</strong></td>
+<td style="text-align: center;"><strong>0.5752</strong></td>
+<td style="text-align: center;"><strong>0.3951</strong></td>
+<td style="text-align: center;"><strong>0.6192</strong></td>
+<td style="text-align: center;"><strong>0.6125</strong></td>
+<td style="text-align: center;"><strong>0.5522</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">BERT4Rec</td>
+<td style="text-align: left;">CLIP</td>
+<td style="text-align: center;">0.5380</td>
+<td style="text-align: center;">0.3468</td>
+<td style="text-align: center;">0.5684</td>
+<td style="text-align: center;">0.5843</td>
+<td style="text-align: center;">0.5084</td>
+</tr>
+<tr>
+<td style="text-align: left;">BERT4Rec</td>
+<td style="text-align: left;"><strong>SDA</strong></td>
+<td style="text-align: center;"><strong>0.5535</strong></td>
+<td style="text-align: center;"><strong>0.3521</strong></td>
+<td style="text-align: center;"><strong>0.5847</strong></td>
+<td style="text-align: center;"><strong>0.6138</strong></td>
+<td style="text-align: center;"><strong>0.5288</strong></td>
 </tr>
 </tbody>
 </table>
-<p>整体上 SDA 在四种骨干、三个数据集的所有 Overall 指标上均取得最优；长尾指标同样全面领先（如 Beauty SLMRec TailH@10 0.3191 vs. CLIP 0.2127）。值得注意的是 vanilla QwenVL 表现不稳定，多数场景不如 CLIP 甚至 Base，验证了表征错位诊断。</p>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<figure class="paper-figure">
-  <img alt="表 3" src="../../../../../assets/papers/2512.06883v2/table_3.png" /><figcaption>表 3</figcaption>
-</figure>
+<p>相对最强基线（CLIP 或 QwenVL）提升：SLMRec 上 Beauty H@10 +10.1%、Sports +8.6%、Toys +7.7%；长尾 TailH@10 在 SLMRec/Beauty 上从 0.2127 升至 0.3191（+50.0%），全表平均 H@10 +6.15%、N@10 +8.64%。</p>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">方法</th>
-<th style="text-align: center;">Overall H@10</th>
-<th style="text-align: center;">Overall N@10</th>
-<th style="text-align: center;">Δ</th>
-<th style="text-align: center;">Tail H@10</th>
-<th style="text-align: center;">Tail N@10</th>
-<th style="text-align: center;">Δ</th>
+<th style="text-align: left;">变体 (Beauty, SASRec 骨干)</th>
+<th style="text-align: center;">H@10</th>
+<th style="text-align: center;">N@10</th>
+<th style="text-align: center;">Δ(平均)</th>
+<th style="text-align: center;">TailH@10</th>
+<th style="text-align: center;">TailN@10</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">SDA (full)</td>
-<td style="text-align: center;">0.5752</td>
-<td style="text-align: center;">0.3951</td>
+<td style="text-align: left;">SDA 完整</td>
+<td style="text-align: center;"><strong>0.5752</strong></td>
+<td style="text-align: center;"><strong>0.3951</strong></td>
 <td style="text-align: center;">0.00%</td>
-<td style="text-align: center;">0.4692</td>
-<td style="text-align: center;">0.3118</td>
-<td style="text-align: center;">0.00%</td>
+<td style="text-align: center;"><strong>0.4692</strong></td>
+<td style="text-align: center;"><strong>0.3118</strong></td>
 </tr>
 <tr>
 <td style="text-align: left;">w/o CMSA</td>
@@ -4468,73 +4440,51 @@
 <td style="text-align: center;">-6.34%</td>
 <td style="text-align: center;">0.4266</td>
 <td style="text-align: center;">0.2622</td>
-<td style="text-align: center;">-12.50%</td>
 </tr>
 <tr>
-<td style="text-align: left;">w/o MoDA</td>
+<td style="text-align: left;">w/o MoDA（换标准 LoRA）</td>
 <td style="text-align: center;">0.5604</td>
 <td style="text-align: center;">0.3843</td>
 <td style="text-align: center;">-2.65%</td>
 <td style="text-align: center;">0.4496</td>
 <td style="text-align: center;">0.2969</td>
-<td style="text-align: center;">-4.48%</td>
 </tr>
 <tr>
-<td style="text-align: left;">w/o CMSA and MoDA</td>
-<td style="text-align: center;">0.4141</td>
-<td style="text-align: center;">0.2760</td>
-<td style="text-align: center;">-29.08%</td>
-<td style="text-align: center;">0.0229</td>
-<td style="text-align: center;">0.0462</td>
-<td style="text-align: center;">-90.15%</td>
-</tr>
-<tr>
-<td style="text-align: left;">w/o Soft Target</td>
+<td style="text-align: left;">w/o Soft Target（换 InfoNCE）</td>
 <td style="text-align: center;">0.5485</td>
 <td style="text-align: center;">0.3470</td>
 <td style="text-align: center;">-8.41%</td>
 <td style="text-align: center;">0.4291</td>
 <td style="text-align: center;">0.2512</td>
-<td style="text-align: center;">-14.00%</td>
+</tr>
+<tr>
+<td style="text-align: left;">w/o CMSA &amp; MoDA</td>
+<td style="text-align: center;">0.4141</td>
+<td style="text-align: center;">0.2760</td>
+<td style="text-align: center;">-29.08%</td>
+<td style="text-align: center;">0.0229</td>
+<td style="text-align: center;">0.0462</td>
 </tr>
 </tbody>
 </table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>零样本 LVLM 是负资产，适配才是关键</strong>：QwenVL 零样本在 Sports 上比 Base 还低（0.4337 vs 0.4632），直接验证 C1 域鸿沟诊断；SDA 适配后同一骨干反超 CLIP 约 8.6%，说明增益来自对齐而非模型规模。</li>
+<li><strong>结构软教师优于 one-hot 对比</strong>：把 CMSA 的软目标换成标准 InfoNCE 掉 8.41%，比整块移除 CMSA（-6.34%）更惨，证明"保留模态内细粒度邻域"是核心增量，而非对比学习框架本身。</li>
+<li><strong>长尾收益远超整体收益</strong>：TailH@10 相对提升最高达 50%（SLMRec/Beauty），且移除双组件后长尾指标近乎崩塌（0.4692→0.0229，-90.15%），说明解耦后的多模态表征对稀疏物品的语义补全作用最显著。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>CMSA 贡献最大</strong>（移除后 Overall 降 6.34%，长尾降 12.50%）；将结构软教师替换为标准 InfoNCE（w/o Soft Target）降幅更大（8.41%），证明保留细粒度模态内结构优于简单对齐。</li>
-<li>MoDA 替换为标准 LoRA 降 2.65%，验证专家化门控缓解梯度冲突的有效性。</li>
-<li>两者同时移除性能崩塌（-29.08%，长尾 -90.15%），说明二者缺一不可。</li>
-<li>消融未显式报告参数量对齐或图拓扑度数匹配的控制变量细节。</li>
-</ul>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
-<ul>
-<li><strong>长尾表现</strong>: 长尾物品（交互数 &lt; 4）上 SDA 提升显著大于整体，最高相对增益 12.83%（H@10）与 18.70%（N@10），说明对稀疏/冷启动物品表征质量改善明显。</li>
-<li><strong>模态贡献分析</strong>: 在 Toys + SLMRec 上（图 3），SDA 适配后的文本与视觉特征单独均优于原始 SLMRec 基线，视觉特征增益更大；两者组合在所有指标上最优，体现互补协同。</li>
-<li><strong>梯度冲突分析</strong>: 在 Qwen2.5-VL 最后解码层 q_proj/k_proj 的 LoRA <span class="arithmatex">\(B\)</span> 矩阵上，标准 LoRA 的模态梯度余弦相似度为负（-0.0955 / -0.0705），MoDA 则为强正（0.4422 / 0.7096），直接证明解耦有效。</li>
-<li><strong>超参敏感度</strong>: 固定 LoRA 秩为 8，专家数 <span class="arithmatex">\(N_e \in \{0,2,4,8\}\)</span>（<span class="arithmatex">\(N_e=0\)</span> 即标准 LoRA），性能随专家数增加持续提升（图 4），<span class="arithmatex">\(N_e=8\)</span> 最佳。</li>
-<li><strong>线上 A/B 测试</strong>: 原文仅包含离线实验，未报告线上结果。</li>
-</ul>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2512.06883v2/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
-<ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>结构软教师对齐</strong>思路具有普适性——利用模态内保留结构指导跨模态对齐，可迁移到其他跨模态检索/多模态融合任务。</li>
-<li><strong>MoDA 专家化门控低秩路径</strong>在保持 LoRA 参数量级的同时解耦梯度流，可直接迁移到其他多模态 LLM 微调场景。</li>
-<li>作为<strong>即插即用特征提取器</strong>，与四种异构骨干无缝集成，工程落地友好，离线预计算使服务开销几乎不变。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议偏弱</strong>：采用 1 正配 100 随机负样本的 Sampled Ranking，而非全库 Full-Ranking，可能高估绝对性能；LOO 划分未明确时间戳切分，存在未来信息泄露风险。</li>
-<li><strong>数据集单一</strong>：仅 Amazon 三个类目，作者亦承认未覆盖短视频/新闻等场景，泛化性存疑。</li>
-<li><strong>对齐量化不足</strong>：表征错位虽有经验证据（vanilla LVLM 表现差），但缺乏系统性量化指标或诊断工具，理论解释偏定性。</li>
-<li><strong>超参敏感</strong>：专家数 <span class="arithmatex">\(N_e\)</span> 需调至 8 才最佳，训练步数上限 4000 防过拟合，实际部署调参成本未充分讨论。</li>
-<li><strong>基线对比</strong>：QwenVL 零样本基线较弱，SDA 相对其提升部分源于适配本身，与 CLIP 的对比更能说明问题，但部分场景（如 BERT4Rec Beauty N@10）提升幅度有限（+1.53%）。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 CLIP 双塔（仅配对对齐、无域适配）与 LLMEmb 类工作（直接拿 LLM 嵌入喂序列模型），SDA 首次把"模态内结构"作为对齐监督信号，并用 MoE 式门控替代共享 LoRA，同时解决对齐与干扰两个独立病灶；相比通用 LoRA 微调，参数量持平但梯度余弦相似度由负转正。</li>
+<li><strong>可迁移亮点</strong>: (i) "模态内结构当软教师"可直接迁移到跨域推荐、图文电商匹配中的任意双塔对齐；(ii) 门控专家低秩分解是一种通用的多模态梯度解耦手段，可套用到任意多编码器融合场景。</li>
+<li><strong>审稿级局限批判</strong>: (i) 仅在 Amazon 三个类目验证，且评测为 100 负样本的 Sampled Ranking，未报告 Full-Ranking，绝对数值可能偏乐观；(ii) 依赖 Qwen2.5-VL 7B 离线预计算，商品库更新时需重跑全量嵌入，冷启动新品的实时性成本未讨论；专家数 <span class="arithmatex">\(N_e\)</span>单调增至 8 才最优，超参敏感度与更大<span class="arithmatex">\(N_e\)</span> 的收益边界缺乏分析。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （结构软教师 + 门控专家解耦的组合针对性强，梯度余弦相似度的实证支撑扎实，但单点技术均为已有模块的巧妙重组）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （四骨干 × 三数据集 × 长尾分桶 + 消融 + 梯度分析完整，扣分在 Sampled Ranking 与单一数据域）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （CMSA/MoDA 公式简洁、动机图清晰，但缺复杂度定量分析与对齐程度的显式度量）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （离线预计算、推理零开销、代码开源、即插即用兼容四类骨干，工程落地门槛极低）</li>
 </ul>
 
 

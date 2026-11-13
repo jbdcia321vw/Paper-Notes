@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4230,7 +4241,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入用户-物品二部图，经 <span class="arithmatex">\(L\)</span> 层 LightGCN 式传播得到基础嵌入。左侧两个可训练视图生成器并行产出互补图视图：VGAE 生成器捕捉全局结构语义，关系感知去噪器通过逐层边掩码与自适应门控过滤噪声边。右侧对物品嵌入执行 <span class="arithmatex">\(T\)</span> 步前向高斯加噪与反向去噪，得到去噪视图，与原视图、跨去噪视图分别构造 intra/inter 对比。最终以 BPR + 扩散自监督 + IB 约束三阶段分层优化，推理时仅用传播嵌入做内积打分。</p>
+<p>输入用户-物品二部图，经 <span class="arithmatex">\(L\)</span>层 LightGCN 式传播得到基础嵌入。左侧两个可训练视图生成器并行产出互补图视图：VGAE 生成器捕捉全局结构语义，关系感知去噪器通过逐层边掩码与自适应门控过滤噪声边。右侧对物品嵌入执行<span class="arithmatex">\(T\)</span> 步前向高斯加噪与反向去噪，得到去噪视图，与原视图、跨去噪视图分别构造 intra/inter 对比。最终以 BPR + 扩散自监督 + IB 约束三阶段分层优化，推理时仅用传播嵌入做内积打分。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户-物品二部图"] --&gt; B["LightGCN 传播嵌入"]
     B --&gt; C1["VGAE 生成视图"]
@@ -4246,13 +4257,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>关系感知边精炼（Relation-aware Edge Refinement）</strong>：随机 dropout 无差别删边，会误删真实协同信号。本文用逐层可学习二值掩码 <span class="arithmatex">\(A^l = A \odot M^l\)</span> 并施加全局稀疏预算 <span class="arithmatex">\(\sum_l \|M^l\|_0 \le \tau_{sparse}\)</span>，掩码参数由自适应门控 + 关系注意力给出：<span class="arithmatex">\(\alpha^l_{i,j} = f_{att}\big(G(e_i,e_j)\oplus G(e_j,e_i)\oplus[e_i;e_j]\big)\)</span>，其中 <span class="arithmatex">\(G(e_i,e_j)=g\odot\tau(W_{embed}[e_i;a_{r,i}])+(1-g)\odot e_i\)</span>。用 concrete 分布 + hard sigmoid 重参数化实现可微采样，损失 <span class="arithmatex">\(\mathcal{L}_{den}=\mathcal{L}_c+\mathcal{L}^{gen}_{bpr}+\lambda_2\|\Theta\|_F^2\)</span>。直觉：让"该留的边"由潜在节点语义而非随机数决定，稀疏预算则防止退化为全保留。</p>
+<p><strong>关系感知边精炼（Relation-aware Edge Refinement）</strong>：随机 dropout 无差别删边，会误删真实协同信号。本文用逐层可学习二值掩码 <span class="arithmatex">\(A^l = A \odot M^l\)</span>并施加全局稀疏预算<span class="arithmatex">\(\sum_l \|M^l\|_0 \le \tau_{sparse}\)</span>，掩码参数由自适应门控 + 关系注意力给出：<span class="arithmatex">\(\alpha^l_{i,j} = f_{att}\big(G(e_i,e_j)\oplus G(e_j,e_i)\oplus[e_i;e_j]\big)\)</span>，其中<span class="arithmatex">\(G(e_i,e_j)=g\odot\tau(W_{embed}[e_i;a_{r,i}])+(1-g)\odot e_i\)</span>。用 concrete 分布 + hard sigmoid 重参数化实现可微采样，损失<span class="arithmatex">\(\mathcal{L}_{den}=\mathcal{L}_c+\mathcal{L}^{gen}_{bpr}+\lambda_2\|\Theta\|_F^2\)</span>。直觉：让"该留的边"由潜在节点语义而非随机数决定，稀疏预算则防止退化为全保留。</p>
 </li>
 <li>
-<p><strong>表征空间扩散增广（Diffusion-guided Augmentation）</strong>：图结构扰动代价高且易失真，本文改为在 GCN 末层物品嵌入 <span class="arithmatex">\(h^{(L)}\)</span> 上建 <span class="arithmatex">\(T\)</span> 步马尔可夫链，前向闭式采样 <span class="arithmatex">\(\chi_t=\sqrt{\bar\alpha_t}\chi_0+\sqrt{1-\bar\alpha_t}\epsilon\)</span>，反向用 MLP <span class="arithmatex">\(\hat\chi_\theta(\chi_t,t)\)</span> 预测 <span class="arithmatex">\(\chi_0\)</span>，以 ELBO 训练。对比损失拆为 intra-view 对齐 <span class="arithmatex">\(\mathcal{L}_{intra}\)</span> 与 inter-view 正则 <span class="arithmatex">\(\mathcal{L}_{inter}\)</span>，合成 <span class="arithmatex">\(\mathcal{L}_{diff\text{-}ssl}=\mathcal{L}_{ssl}+\lambda_1\mathcal{L}_{intra}+\lambda_2\mathcal{L}_{inter}\)</span>。直觉：加噪-去噪等价于在嵌入空间做"高频噪声滤波"，比丢边更保语义，且计算量与图规模无关。</p>
+<p><strong>表征空间扩散增广（Diffusion-guided Augmentation）</strong>：图结构扰动代价高且易失真，本文改为在 GCN 末层物品嵌入 <span class="arithmatex">\(h^{(L)}\)</span>上建<span class="arithmatex">\(T\)</span>步马尔可夫链，前向闭式采样<span class="arithmatex">\(\chi_t=\sqrt{\bar\alpha_t}\chi_0+\sqrt{1-\bar\alpha_t}\epsilon\)</span>，反向用 MLP<span class="arithmatex">\(\hat\chi_\theta(\chi_t,t)\)</span>预测<span class="arithmatex">\(\chi_0\)</span>，以 ELBO 训练。对比损失拆为 intra-view 对齐<span class="arithmatex">\(\mathcal{L}_{intra}\)</span>与 inter-view 正则<span class="arithmatex">\(\mathcal{L}_{inter}\)</span>，合成<span class="arithmatex">\(\mathcal{L}_{diff\text{-}ssl}=\mathcal{L}_{ssl}+\lambda_1\mathcal{L}_{intra}+\lambda_2\mathcal{L}_{inter}\)</span>。直觉：加噪-去噪等价于在嵌入空间做"高频噪声滤波"，比丢边更保语义，且计算量与图规模无关。</p>
 </li>
 <li>
-<p><strong>非对称对比与三阶段训练</strong>：传统 InfoNCE 强制同质性一跳对齐。本文用双编码器 <span class="arithmatex">\(f_\theta,f_\xi\)</span> 分别产出身份表征 <span class="arithmatex">\(v\)</span> 与上下文表征 <span class="arithmatex">\(u\)</span>，非对称预测器 <span class="arithmatex">\(g_\phi\)</span> 由身份重建邻域上下文，使两跳邻居可经共享中心节点对齐（单质性）。总目标分三阶段：<span class="arithmatex">\(\mathcal{L}_1=\mathcal{L}_{bpr}+\lambda_3\mathcal{L}_{diff\text{-}ssl}+\lambda_4\|\Theta\|_F^2\)</span> → <span class="arithmatex">\(\mathcal{L}_{IB}=\mathcal{L}_A(G,g_\phi(v),v,u)\)</span> → <span class="arithmatex">\(\mathcal{L}_{generators}=\mathcal{L}_{gen}+\mathcal{L}_{den}\)</span>。负采样为 batch 内全局负采样（非均匀难负采样），推理零额外开销。</p>
+<p><strong>非对称对比与三阶段训练</strong>：传统 InfoNCE 强制同质性一跳对齐。本文用双编码器 <span class="arithmatex">\(f_\theta,f_\xi\)</span>分别产出身份表征<span class="arithmatex">\(v\)</span>与上下文表征<span class="arithmatex">\(u\)</span>，非对称预测器<span class="arithmatex">\(g_\phi\)</span>由身份重建邻域上下文，使两跳邻居可经共享中心节点对齐（单质性）。总目标分三阶段：<span class="arithmatex">\(\mathcal{L}_1=\mathcal{L}_{bpr}+\lambda_3\mathcal{L}_{diff\text{-}ssl}+\lambda_4\|\Theta\|_F^2\)</span>→<span class="arithmatex">\(\mathcal{L}_{IB}=\mathcal{L}_A(G,g_\phi(v),v,u)\)</span>→<span class="arithmatex">\(\mathcal{L}_{generators}=\mathcal{L}_{gen}+\mathcal{L}_{den}\)</span>。负采样为 batch 内全局负采样（非均匀难负采样），推理零额外开销。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4308,7 +4319,7 @@
 <ul>
 <li><strong>数据划分与防穿越</strong>: 比例划分 7:2:1（train/val/test），非 Leave-One-Out；加权边场景按 DiffGraph 公开协议将多行为聚合为二值图。</li>
 <li><strong>排名评测协议</strong>: 无偏 <strong>Full-Ranking（all-ranking）</strong>，对每个用户对全部未交互物品排序，指标 Recall@20/40、NDCG@20/40。</li>
-<li><strong>对比基线与超参</strong>: 覆盖 BiasMF/NCF（传统 CF）、NGCF/LightGCN（GNN）、SGL/SLRec（自监督）、DirectAU/AdaGCL（对比/扩散）四类；加权边另加 NMTR/MBGCN/HGT/MATN/DiffGraph。嵌入维度 <span class="arithmatex">\(d\)</span> 未在正文显式给出（附录 A），显著性以 <span class="arithmatex">\(p\)</span>-value 报告（均 <span class="arithmatex">\(&lt;10^{-2}\)</span>）。</li>
+<li><strong>对比基线与超参</strong>: 覆盖 BiasMF/NCF（传统 CF）、NGCF/LightGCN（GNN）、SGL/SLRec（自监督）、DirectAU/AdaGCL（对比/扩散）四类；加权边另加 NMTR/MBGCN/HGT/MATN/DiffGraph。嵌入维度 <span class="arithmatex">\(d\)</span>未在正文显式给出（附录 A），显著性以<span class="arithmatex">\(p\)</span>-value 报告（均<span class="arithmatex">\(&lt;10^{-2}\)</span>）。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4460,14 +4471,20 @@
 <ol>
 <li><strong>去噪模块主导召回、扩散主导排序</strong>：去掉关系感知去噪（Gen+Linear）Last.FM Recall 掉 0.95%，而完整去掉显式去噪掉 2.17%；反之扩散增广对 Last.FM NDCG 贡献 +1.53% 而 Recall 增益微弱——两组件呈"覆盖 vs 精度"的明确分工。</li>
 <li><strong>稀疏度越高收益越大</strong>：Yelp（密度 1.6e-4）上 Recall@20 相对提升 4.70% 高于 BeerAdvocate（9.5e-3）的 3.78%；噪声注入 5%–25% 实验中，Yelp 上 RaDAR 相对 Recall 曲线衰减最缓，验证扩散去噪在极端稀疏下的必要性。</li>
-<li><strong>ACL 权重需按密度调参</strong>：Last.FM 在 <span class="arithmatex">\(\lambda=5.5\)</span>（Recall）/ <span class="arithmatex">\(3.5\)</span>（NDCG）达峰，偏好关系感知去噪；Yelp 在 <span class="arithmatex">\(\lambda=1.5\)</span>/<span class="arithmatex">\(1.0\)</span> 达峰，需两视图均衡以防过拟合——说明 <span class="arithmatex">\(\lambda\)</span> 是稀疏度敏感的落地超参。</li>
+<li><strong>ACL 权重需按密度调参</strong>：Last.FM 在 <span class="arithmatex">\(\lambda=5.5\)</span>（Recall）/<span class="arithmatex">\(3.5\)</span>（NDCG）达峰，偏好关系感知去噪；Yelp 在<span class="arithmatex">\(\lambda=1.5\)</span>/<span class="arithmatex">\(1.0\)</span>达峰，需两视图均衡以防过拟合——说明<span class="arithmatex">\(\lambda\)</span> 是稀疏度敏感的落地超参。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比</strong>: 相比 SGL/SimGCL 的随机扰动增广，RaDAR 用可学习去噪 + 生成式双视图替代盲扰动，从"制造差异"转向"保留语义"；相比 GraphACL 仅做非对称对比，本文把扩散去噪嵌入表征空间并与 ACL 联合，补上多跳单质性的建模缺口；相比 AdaGCL 的图级扩散，本文扩散作用于嵌入而非结构，开销与图规模解耦。</li>
 <li><strong>可迁移亮点</strong>: (1) 表征空间加噪-去噪作为低成本增广，可直接替换序列/多模态推荐中的 dropout 增广；(2) 逐层稀疏预算 + concrete 掩码的边精炼，可迁移到社交去噪与知识图谱边剪枝。</li>
 <li><strong>审稿级局限批判</strong>: (1) 三阶段分层训练 + 双视图生成器 + 扩散 MLP 使训练流程复杂，超参 <span class="arithmatex">\(\lambda_1,\lambda_2,\lambda\)</span> 均需按数据集调，论文未给自适应方案；(2) 假设静态图，无时序建模，且加权边场景仅把多行为聚合为二值图，未真正利用行为强度，RetailRocket 上 +120% 的异常增益也缺乏深入归因。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

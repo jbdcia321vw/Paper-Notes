@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4241,7 +4252,7 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>混合参数化 (Mixed Parameterization)</strong>：LLM 所有 token 同质共享权重，但推荐中 NS token 语义高度异构（用户 ID、价格、类目统计量尺度差异巨大），全共享会抹平特征区分度、全独立则参数量爆炸。故对 S token 共享一套 <span class="arithmatex">\(W^{Q/K/V}_S\)</span> 与 FFN，对第 <span class="arithmatex">\(i\)</span> 个 NS token 分配专属 <span class="arithmatex">\(W^{\Psi}_{NS,i}\)</span>：</li>
+<li><strong>混合参数化 (Mixed Parameterization)</strong>：LLM 所有 token 同质共享权重，但推荐中 NS token 语义高度异构（用户 ID、价格、类目统计量尺度差异巨大），全共享会抹平特征区分度、全独立则参数量爆炸。故对 S token 共享一套 <span class="arithmatex">\(W^{Q/K/V}_S\)</span>与 FFN，对第<span class="arithmatex">\(i\)</span>个 NS token 分配专属<span class="arithmatex">\(W^{\Psi}_{NS,i}\)</span>：</li>
 </ol>
 <div class="arithmatex">\[W^{\Psi}_{i}=\begin{cases}W^{\Psi}_{S}, &amp; i\le L_S\\ W^{\Psi}_{NS,i}, &amp; i&gt;L_S\end{cases},\quad \Psi\in\{Q,K,V\}\]</div>
 <p>直觉：同质行为序列共享统计强度，异质特征保留独立语义通道；消融显示改为全共享后 CTR UAUC 掉 0.29%。同时全 token 采用 RMSNorm pre-norm，缓解 NS token 数值尺度差异导致的 attention collapse。</p>
@@ -4249,9 +4260,9 @@
 <li><strong>金字塔查询剪枝 (Pyramid Stack)</strong>：因果掩码使信息天然向尾部位置汇聚，故每层仅让最近 <span class="arithmatex">\(L'\)</span> 个 S token 发起 query，K/V 仍覆盖全序列：</li>
 </ol>
 <div class="arithmatex">\[q_i=W^Q_i x_i,\ i\in\mathcal{Q}=\{L-L'+1,\dots,L\}\]</div>
-<p>输出仅保留 <span class="arithmatex">\(\mathcal{Q}\)</span> 对应位置，token 长度逐层收缩（OneTrans_S 从 1190 降至 12）。收益双重：长行为史被渐进蒸馏进少量 query 与 NS token；注意力开销降为 <span class="arithmatex">\(O(LL'd)\)</span>，同等 FLOPs 下可支撑约 1.75× 更长序列。</p>
+<p>输出仅保留 <span class="arithmatex">\(\mathcal{Q}\)</span>对应位置，token 长度逐层收缩（OneTrans_S 从 1190 降至 12）。收益双重：长行为史被渐进蒸馏进少量 query 与 NS token；注意力开销降为<span class="arithmatex">\(O(LL'd)\)</span>，同等 FLOPs 下可支撑约 1.75× 更长序列。</p>
 <ol>
-<li><strong>训练目标、负采样与推理效率</strong>：损失为 CTR/CVR 双任务加权 BCE（沿用生产设定，论文未引入新负采样策略，样本即曝光日志）。效率核心是跨请求 KV 缓存：Stage I 每请求对 S 侧做一次因果前向并缓存 K/V；Stage II 每个候选仅计算 NS token 并对缓存做 cross-attention。由于行为序列 append-only，跨请求复用上一轮缓存，每请求序列计算从 <span class="arithmatex">\(O(L)\)</span> 降至 <span class="arithmatex">\(O(\Delta L)\)</span>，<span class="arithmatex">\(C\)</span> 个候选的序列侧复杂度由 <span class="arithmatex">\(O(C)\)</span> 降为 <span class="arithmatex">\(O(1)\)</span>；再叠加 FlashAttention-2、BF16 混合精度与激活重计算。</li>
+<li><strong>训练目标、负采样与推理效率</strong>：损失为 CTR/CVR 双任务加权 BCE（沿用生产设定，论文未引入新负采样策略，样本即曝光日志）。效率核心是跨请求 KV 缓存：Stage I 每请求对 S 侧做一次因果前向并缓存 K/V；Stage II 每个候选仅计算 NS token 并对缓存做 cross-attention。由于行为序列 append-only，跨请求复用上一轮缓存，每请求序列计算从 <span class="arithmatex">\(O(L)\)</span>降至<span class="arithmatex">\(O(\Delta L)\)</span>，<span class="arithmatex">\(C\)</span>个候选的序列侧复杂度由<span class="arithmatex">\(O(C)\)</span>降为<span class="arithmatex">\(O(1)\)</span>；再叠加 FlashAttention-2、BF16 混合精度与激活重计算。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4282,7 +4293,7 @@
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 全局时间戳切分（chronological split），特征按曝光时刻快照，标签在固定窗口内聚合，杜绝时序泄漏。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 采用 next-batch 评估——每个 mini-batch 先在 eval 模式记录预测再训练同批数据，按天计算 AUC/UAUC 后跨天宏平均；UAUC 为曝光加权用户级 AUC。非采样排序，指标为全量曝光上的 AUC 体系。</li>
-<li><strong>对比基线与超参设置</strong>: 基线分三组——特征交叉侧 DCNv2→Wukong→HiFormer→RankMixer（均配 DIN）；序列侧固定 RankMixer 后换 StackDIN→Transformer→LONGER。OneTrans_S 为 6 层 / <span class="arithmatex">\(d\)</span>=256 / 4 头（≈100M 稠密参数），OneTrans_L 为 8 层 / <span class="arithmatex">\(d\)</span>=384（330M）；稀疏 embedding 用 Adagrad，稠密参数用 RMSProp (lr=0.005)，16×H100 数据并行，per-GPU batch 2048。文中以 +0.1% 为有意义增益、+0.3% 对应线上显著。</li>
+<li><strong>对比基线与超参设置</strong>: 基线分三组——特征交叉侧 DCNv2→Wukong→HiFormer→RankMixer（均配 DIN）；序列侧固定 RankMixer 后换 StackDIN→Transformer→LONGER。OneTrans_S 为 6 层 / <span class="arithmatex">\(d\)</span>=256 / 4 头（≈100M 稠密参数），OneTrans_L 为 8 层 /<span class="arithmatex">\(d\)</span>=384（330M）；稀疏 embedding 用 Adagrad，稠密参数用 RMSProp (lr=0.005)，16×H100 数据并行，per-GPU batch 2048。文中以 +0.1% 为有意义增益、+0.3% 对应线上显著。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4463,12 +4474,18 @@
 <li><strong>混合参数化与 tokenizer 选择均有实质贡献</strong>：全共享参数掉 0.29% CTR UAUC，说明 NS token 异构性必须保留；Auto-Split 优于人工分组（+0.30% UAUC），时间戳感知融合优于意图排序（+0.22% UAUC），即「让模型自己切 token、让时间自己排序列」更优。</li>
 <li><strong>线上收益与延迟双赢</strong>：Feeds 场景 click/u +7.74%、GMV/u +5.68%、p99 延迟 -3.91%；冷启动商品 order/u +13.59%，说明统一骨干对稀疏物品泛化更强。OneTrans_L 虽 TFLOPs 为基线 143×，但靠 KV 缓存与混合精度，p99 13.2ms 反低于 DCNv2+DIN 的 13.6ms，MFU 从 13.4 升至 30.8。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 RankMixer（仅交叉侧 token-mixing + MoE 扩 FFN）与 LONGER（仅序列侧长历史因果 Transformer），OneTrans 把二者合并进同一注意力矩阵，NS token 对 S 全史的 attention 同时充当 target-attention 与高阶交叉；相比 InterFormer 的「双模块 + 双向 cross 桥接」，本文彻底取消模块边界，因而能直接继承 KV 缓存等 LLM 系统优化，这是架构层面的本质差异。</li>
 <li><strong>可迁移亮点</strong>: ① 「同质 token 共享 / 异质 token 专属」的混合参数化可直接迁移到多场景、多域特征共存的精排模型；② 跨请求 KV 缓存利用「同请求 S 侧不变、候选侧变化」的工业结构，是任何序列精排模型都可套用的降本手段。</li>
 <li><strong>审稿级局限批判</strong>: ① 实验完全基于单一平台私有日志，无公开数据集复现，Auto-Split 与金字塔调度比例（1190→12）等超参的跨场景鲁棒性未知；② 未报告训练侧显存与吞吐的绝对成本，OneTrans_L 训练显存 32GB 已高于基线 20GB，且论文自承「显著超越 L 规模受线上效率约束」，scaling 上限实际被封顶；③ 负采样与损失设计完全沿用生产设定，未讨论统一骨干下样本构造是否需要重新设计。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

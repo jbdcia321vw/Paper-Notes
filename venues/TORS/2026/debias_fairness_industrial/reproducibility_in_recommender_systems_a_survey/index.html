@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>本文属元研究（meta-research），无推荐模型，其"方法"即一套可审计的文献编码流程。作者从 ACM Digital Library 按官方 proceedings 索引抓取 2020–2025 年赛道全部论文（<span class="arithmatex">\(n=51\)</span>，剔除 1 篇非推荐系统主题后 <span class="arithmatex">\(n=50\)</span>），经 scoping → data collection → coding → analysis 四阶段处理。编码 schema 覆盖五维：(i) 贡献类型（benchmarking / evaluation / resource / survey，单标签主导归类）；(ii) 评测设置（数据集、指标、基线）；(iii) 复现方式（复用原代码 / 重实现 / 扩展至新情境）；(iv) artifact 可得性；(v) 框架/库使用。两位作者独立编码、分歧讨论至共识，编码结果随补充材料公开以自证可复现。</p>
+<p>本文属元研究（meta-research），无推荐模型，其"方法"即一套可审计的文献编码流程。作者从 ACM Digital Library 按官方 proceedings 索引抓取 2020–2025 年赛道全部论文（<span class="arithmatex">\(n=51\)</span>，剔除 1 篇非推荐系统主题后<span class="arithmatex">\(n=50\)</span>），经 scoping → data collection → coding → analysis 四阶段处理。编码 schema 覆盖五维：(i) 贡献类型（benchmarking / evaluation / resource / survey，单标签主导归类）；(ii) 评测设置（数据集、指标、基线）；(iii) 复现方式（复用原代码 / 重实现 / 扩展至新情境）；(iv) artifact 可得性；(v) 框架/库使用。两位作者独立编码、分歧讨论至共识，编码结果随补充材料公开以自证可复现。</p>
 <pre class="mermaid"><code>flowchart TD
     A["ACM DL 抓取 2020–2025 赛道论文 n=51"] --&gt; B["双人独立编码: 贡献类型/数据集/算法/框架/指标/划分"]
     B --&gt; C["共识消歧 → 单标签归类 n=50"]
@@ -4231,7 +4242,7 @@
 <p><strong>四类贡献单标签分类体系（Table 2）</strong>：痛点是赛道扩围后"可复现性"边界模糊、难以聚合统计。作者定义 Benchmarking（复现或扩展前人实验做算法对比）、Evaluation（验证特定实验设置/结论）、Resource（数据集/库/工具）、Survey（综述、指南、方法论反思）四类，每篇按主导焦点赋唯一标签。这一离散化使跨年份的贡献结构演化可被量化追踪，是后续所有趋势结论的统计基座。</p>
 </li>
 <li>
-<p><strong>复现努力的"增减计数"量化（Table 9 / Fig. 10）</strong>：痛点是"复现"一词在实践中含义漂移，无法用二元标签刻画。作者对明确复现单一前人工作的子集，逐篇记录相对原文在算法、数据集、指标三维上的删除数 <span class="arithmatex">\(n^-\)</span> 与新增数 <span class="arithmatex">\(n^+\)</span>，形成差异向量 <span class="arithmatex">\(\Delta = (n^-_{\text{alg}}, n^+_{\text{alg}}, n^-_{\text{data}}, n^+_{\text{data}}, n^-_{\text{metric}}, n^+_{\text{metric}})\)</span>。该设计把"是否严格复刻"转化为可比较的连续量，直接支撑 RQ4 的核心论断：算法维度改动最频繁（如 Lops et al. 2024 对 RecSys 2022 原文 <span class="arithmatex">\(-16\)</span> 算法、<span class="arithmatex">\(+3\)</span> 算法），数据集维度最稳定（多为 <span class="arithmatex">\(-0/+0\)</span> 或仅 <span class="arithmatex">\(+1\)</span>），指标维度以新增为主（如 Anelli et al. 2021 对 Rendle et al. 2020 新增 15 个指标）。</p>
+<p><strong>复现努力的"增减计数"量化（Table 9 / Fig. 10）</strong>：痛点是"复现"一词在实践中含义漂移，无法用二元标签刻画。作者对明确复现单一前人工作的子集，逐篇记录相对原文在算法、数据集、指标三维上的删除数 <span class="arithmatex">\(n^-\)</span>与新增数<span class="arithmatex">\(n^+\)</span>，形成差异向量<span class="arithmatex">\(\Delta = (n^-_{\text{alg}}, n^+_{\text{alg}}, n^-_{\text{data}}, n^+_{\text{data}}, n^-_{\text{metric}}, n^+_{\text{metric}})\)</span>。该设计把"是否严格复刻"转化为可比较的连续量，直接支撑 RQ4 的核心论断：算法维度改动最频繁（如 Lops et al. 2024 对 RecSys 2022 原文<span class="arithmatex">\(-16\)</span>算法、<span class="arithmatex">\(+3\)</span>算法），数据集维度最稳定（多为<span class="arithmatex">\(-0/+0\)</span>或仅<span class="arithmatex">\(+1\)</span>），指标维度以新增为主（如 Anelli et al. 2021 对 Rendle et al. 2020 新增 15 个指标）。</p>
 </li>
 <li>
 <p><strong>赛道制度演化的纵向对照（Table 1）</strong>：作者将 CFP 规则变化（2022 年 ACM 术语标准化导致 reproducibility/replicability 定义互换、2023 年引入 resource/methodology/reflective 类型并转双盲、2026 年重新收窄至复现与资源两类）与录用论文的贡献分布对齐，从而把"方法论同质化"归因于制度激励而非单纯作者惰性——扩围带来投稿量激增（2024 年 14 篇、2025 年 22 篇），却未带来实验配置的多样化。</p>
@@ -4348,8 +4359,8 @@
 <th style="text-align: left;">复现案例（原文 → 复现）</th>
 <th style="text-align: center;">年份跨度</th>
 <th style="text-align: center;">算法 <span class="arithmatex">\(\Delta\)</span></th>
-<th style="text-align: center;">数据集 <span class="arithmatex">\(\Delta\)</span></th>
-<th style="text-align: center;">指标 <span class="arithmatex">\(\Delta\)</span></th>
+<th style="text-align: center;">数据集<span class="arithmatex">\(\Delta\)</span></th>
+<th style="text-align: center;">指标<span class="arithmatex">\(\Delta\)</span></th>
 </tr>
 </thead>
 <tbody>
@@ -4406,16 +4417,22 @@
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>算法维度是复现改动的绝对主战场，数据集维度近乎冻结</strong>：17 个复现案例中算法增删幅度最大（单篇最高 <span class="arithmatex">\(-16/+13\)</span>），而数据集多为 <span class="arithmatex">\(-0/+0\)</span> 或仅 <span class="arithmatex">\(+1\)</span>，说明复现研究优先保证与原工作的可比性，主动放弃了对泛化性的检验——这正是"确认而非挑战"的直接证据。</li>
+<li><strong>算法维度是复现改动的绝对主战场，数据集维度近乎冻结</strong>：17 个复现案例中算法增删幅度最大（单篇最高 <span class="arithmatex">\(-16/+13\)</span>），而数据集多为<span class="arithmatex">\(-0/+0\)</span>或仅<span class="arithmatex">\(+1\)</span>，说明复现研究优先保证与原工作的可比性，主动放弃了对泛化性的检验——这正是"确认而非挑战"的直接证据。</li>
 <li><strong>指标膨胀而非指标革新</strong>：Anelli et al. 2021 一次性新增 15 个指标、Fioretti et al. 2025 新增 9 个，但新增项仍集中于排序相关性家族；beyond-accuracy 指标在 50 篇中仅各出现 2–4 次，公平性/多样性维度实质缺席。</li>
 <li><strong>制度扩围与投稿量强相关、与方法论多样性弱相关</strong>：2023 年引入 resource/methodology 类型后，2024–2025 年录用 36 篇（占六年总量 72%），但数据集、算法、指标三大维度的集中度未见下降，证明赛道扩围提升的是"参与度"而非"实验空间"。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 Bauer et al. 的评测综述（覆盖全领域、指出数据集/指标窄化），本文把镜头对准"以可复现为使命"的专属赛道，从而能给出更强的反身性结论——连复现论文自身也未能跳出窄化陷阱。相较 Beel et al. 对复现影响因素的定性归纳，本文以 50 篇封闭样本 + 增减计数提供了可复算的定量证据。相较赛道历年 CFP 文本，本文首次将制度规则变迁与论文贡献分布做纵向对齐。</li>
 <li><strong>可迁移亮点</strong>: (1) "增减计数"差异向量 <span class="arithmatex">\(\Delta\)</span> 可迁移为任何复现/基准研究的标准化报告模板，强制作者披露相对原文的组件改动；(2) 单标签主导归类 + 双人共识编码的流程，可直接复用于其他子领域的元研究审计。</li>
 <li><strong>审稿级局限批判</strong>: (1) 样本仅限单一会议赛道，无法外推至 RecSys/KDD/SIGIR 主会的复现实践，且赛道本身存在自选择偏差（投稿者本就重视可复现）；(2) 编码依赖论文"报告了什么"而非"实际做了什么"，未报告框架/划分的 29 篇被计为缺失，但其中部分可能只是省略而非未做，存在测量误差；(3) 未报告编码者间信度系数，也未做框架间实测对比（作者自己在 Future Work 中承认需补做 Elliot/RecBole/Cornac 的对照实验）。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

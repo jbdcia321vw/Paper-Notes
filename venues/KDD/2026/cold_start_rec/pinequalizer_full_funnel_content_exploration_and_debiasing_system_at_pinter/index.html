@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4244,13 +4255,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>语料选择的先验融合后验（Model-based Prior）</strong>：纯 Thompson Sampling 冷启动初期方差极大、浪费流量。本文将 ML 模型预测的互动率 <span class="arithmatex">\(\alpha\)</span> 作为 Beta 先验均值，与经验观测融合为后验估计 <span class="arithmatex">\(\hat{r}=\frac{\alpha N+e}{N+n}\)</span>（<span class="arithmatex">\(e\)</span> 为正向互动数、<span class="arithmatex">\(n\)</span> 为曝光数、<span class="arithmatex">\(N\)</span> 控制先验强度），按 <span class="arithmatex">\(\hat{r}\)</span> 取 top-<span class="arithmatex">\(K\)</span> 入池；内容"毕业"（累计互动达阈值 <span class="arithmatex">\(X\)</span>）或置信上界低于阈值 <span class="arithmatex">\(Z\)</span> 即退役。直觉：用站外/内容信号把新内容的探索起点从"零知识"抬到"有信息先验"，同等流量下更快收敛。</p>
+<p><strong>语料选择的先验融合后验（Model-based Prior）</strong>：纯 Thompson Sampling 冷启动初期方差极大、浪费流量。本文将 ML 模型预测的互动率 <span class="arithmatex">\(\alpha\)</span>作为 Beta 先验均值，与经验观测融合为后验估计<span class="arithmatex">\(\hat{r}=\frac{\alpha N+e}{N+n}\)</span>（<span class="arithmatex">\(e\)</span>为正向互动数、<span class="arithmatex">\(n\)</span>为曝光数、<span class="arithmatex">\(N\)</span>控制先验强度），按<span class="arithmatex">\(\hat{r}\)</span>取 top-<span class="arithmatex">\(K\)</span>入池；内容"毕业"（累计互动达阈值<span class="arithmatex">\(X\)</span>）或置信上界低于阈值<span class="arithmatex">\(Z\)</span> 即退役。直觉：用站外/内容信号把新内容的探索起点从"零知识"抬到"有信息先验"，同等流量下更快收敛。</p>
 </li>
 <li>
 <p><strong>互动特征个体级 Dropout + 显式特征交叉</strong>：精排模型过度依赖物品历史互动计数，导致新内容被低估。本文对<strong>每个</strong>物品互动特征独立 dropout（优于整体 uniform dropout），迫使模型转向内容与上下文特征；再用 DCNv2 将内容年龄、内容特征、互动特征显式交叉，使模型能<strong>动态</strong>地"新内容多看内容、老内容多看历史"。特征重要性分析证实 dropout 后互动特征权重下降、内容特征权重上升。配套：缺失嵌入按各维度经验分布独立采样插补（而非填默认值），并对校准模型引入内容类型类别信号做分群校准。</p>
 </li>
 <li>
-<p><strong>效用层探索与训练目标</strong>：启发式 UCB 用实时曝光数代理不确定性，<span class="arithmatex">\(\text{UCB}_i=\alpha\sqrt{1+\beta\cdot\text{impressions}_i}\)</span>；Neural Linear UCB 取末层隐表示 <span class="arithmatex">\(\phi(x)\)</span>，<span class="arithmatex">\(\hat{y}_i=\phi(x_i)^\top\theta+\alpha\sqrt{\phi(x_i)^\top\Sigma\phi(x_i)}\)</span>，其中 <span class="arithmatex">\(\Sigma=H^{-1}\)</span>、<span class="arithmatex">\(H=\sum_i\phi(x_i)\phi(x_i)^\top+\lambda I\)</span>，并引入 <span class="arithmatex">\(\alpha=\sqrt{N/N_o}\,\alpha_o\)</span> 稳定不同批次下的探索强度。Search 场景用 <span class="arithmatex">\(\text{UCB}'_i=\text{relevance}_i^{\gamma}\cdot\text{UCB}_i\)</span> 抑制低相关内容的探索红利。训练侧无特殊负采样设计（工业双塔沿用常规采样），推理开销主要在 ANN 检索与 UCB 打分，均为轻量级。</p>
+<p><strong>效用层探索与训练目标</strong>：启发式 UCB 用实时曝光数代理不确定性，<span class="arithmatex">\(\text{UCB}_i=\alpha\sqrt{1+\beta\cdot\text{impressions}_i}\)</span>；Neural Linear UCB 取末层隐表示<span class="arithmatex">\(\phi(x)\)</span>，<span class="arithmatex">\(\hat{y}_i=\phi(x_i)^\top\theta+\alpha\sqrt{\phi(x_i)^\top\Sigma\phi(x_i)}\)</span>，其中<span class="arithmatex">\(\Sigma=H^{-1}\)</span>、<span class="arithmatex">\(H=\sum_i\phi(x_i)\phi(x_i)^\top+\lambda I\)</span>，并引入<span class="arithmatex">\(\alpha=\sqrt{N/N_o}\,\alpha_o\)</span>稳定不同批次下的探索强度。Search 场景用<span class="arithmatex">\(\text{UCB}'_i=\text{relevance}_i^{\gamma}\cdot\text{UCB}_i\)</span> 抑制低相关内容的探索红利。训练侧无特殊负采样设计（工业双塔沿用常规采样），推理开销主要在 ANN 检索与 UCB 打分，均为轻量级。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4400,12 +4411,18 @@
 <li><strong>购物场景对冷启动最敏感</strong>：北美购物会话 +63%，是整体会话增益（+24%）的 2.6 倍，国际场景为 8.3 倍差距——说明商家批量上传的商品目录因脱离 pin-board 图，冷启动问题最尖锐，也最受益于内容侧特征与去偏。</li>
 <li><strong>探索的短期成本被长期留存覆盖</strong>：新鲜内容留出实验（图 1b）显示探索带来的短期互动损失在长期留存收益面前可忽略；同时成功内容提供方数量 +99%，证明系统实质缓解了"富者愈富"，改善了内容生态健康度。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 [17] 的 Neural Thompson Sampling 纯探索路线，本文主张去偏替代探索、并以三层度量框架替代其 user-corpus co-diverted 设计（后者在多语料、多场景下分段成本过高且无法测用户级指标）；相比 [19] 训练独立冷启动双塔，本文用统一双塔 + 去偏特征在保持效果的同时大幅降低基建与维护成本。</li>
 <li><strong>可迁移亮点</strong>: ① "互动特征个体级 dropout + 内容年龄显式交叉"是极低成本、可直接移植到任意精排模型的去偏 trick；② "输入可得率 vs 输出存活率"的全漏斗瓶颈诊断法，可帮助团队判断该投召回还是投精排，避免盲目优化。</li>
 <li><strong>审稿级局限批判</strong>: ① 全部结论基于 Pinterest 单平台线上流量，无公开数据集与离线复现实验，外部有效性存疑；② 各组件增益为多次上线结果的简单聚合而非严格消融，组件间交互效应未解耦；③ 三层度量中"未充分探索内容互动量"仍存在内容级泄漏（被低估而非高估），且毕业阈值 <span class="arithmatex">\(X\)</span>、<span class="arithmatex">\(Z\)</span> 依赖经验设定，超参敏感性未讨论。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

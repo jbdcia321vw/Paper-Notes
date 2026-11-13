@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入用户特征 <span class="arithmatex">\(X\)</span> 与档位 <span class="arithmatex">\(T\in\{0,\dots,K\}\)</span>，共享表征后分出转化头（Bernoulli）与条件价值头（在转化子样本上对 <span class="arithmatex">\(\log(1+\mathrm{GMV})\)</span> 做回归），推理时经 LogNormal 均值修正还原到货币尺度并按硬乘积合成 GMV 期望；随后用 RCT 臂均值做加性锚定修正系统性水平偏差，送入拉格朗日松弛分配器在预算约束下逐用户解耦求解档位；另设一条旁路：对两个结局的 CATE 摘要分别做 split-conformal 区间并以 Bonferroni 并集给出联合覆盖，配合 Top-<span class="arithmatex">\(K\)</span> 边界冲突筛查作为审计层（不进入分配器）。</p>
+<p>输入用户特征 <span class="arithmatex">\(X\)</span>与档位<span class="arithmatex">\(T\in\{0,\dots,K\}\)</span>，共享表征后分出转化头（Bernoulli）与条件价值头（在转化子样本上对<span class="arithmatex">\(\log(1+\mathrm{GMV})\)</span>做回归），推理时经 LogNormal 均值修正还原到货币尺度并按硬乘积合成 GMV 期望；随后用 RCT 臂均值做加性锚定修正系统性水平偏差，送入拉格朗日松弛分配器在预算约束下逐用户解耦求解档位；另设一条旁路：对两个结局的 CATE 摘要分别做 split-conformal 区间并以 Bonferroni 并集给出联合覆盖，配合 Top-<span class="arithmatex">\(K\)</span> 边界冲突筛查作为审计层（不进入分配器）。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户特征 X + 档位 T"] --&gt; B["共享表征"]
     B --&gt; C["转化头 μ_conv (Bernoulli)"]
@@ -4245,19 +4256,19 @@
 <li>
 <p><strong>硬漏斗组合与方差机制（Prop.1/Prop.2）</strong>：痛点是零膨胀使直接回归的方差被 Bernoulli 切换项主导。方差分解为
 $<span class="arithmatex">\(\mathrm{Var}(Y_g|X{=}x,T{=}t)=p\sigma_v^2+p(1-p)\mu_v^2,\)</span>$
-在 (A1) RCT 识别、(A2) 漏斗支撑、(A3) 转化头 <span class="arithmatex">\(O_p(n^{-1/2})\)</span>、(A4) 价值头非参 <span class="arithmatex">\(1/r_n\)</span> 速率、(A5) 跨头协方差可控下，delta 方法给出理想化 MSE 比
+在 (A1) RCT 识别、(A2) 漏斗支撑、(A3) 转化头 <span class="arithmatex">\(O_p(n^{-1/2})\)</span>、(A4) 价值头非参<span class="arithmatex">\(1/r_n\)</span> 速率、(A5) 跨头协方差可控下，delta 方法给出理想化 MSE 比
 $<span class="arithmatex">\(\frac{\mathrm{MSE}(\hat\mu^{\text{funnel}}_g)}{\mathrm{MSE}(\hat\mu^{\text{direct}}_g)}\to\frac{1}{1+(1-p)\mu_v^2/\sigma_v^2}.\)</span>$
 直觉：零质量 <span class="arithmatex">\((1-p)\)</span> 越大或条件消费均值相对其波动越占优，漏斗组合越省方差——这正是 hurdle/two-part 结构在券场景的再表述。作者明确声明这只是<strong>区域启发式</strong>，共享神经表征下的相关误差不被覆盖。</p>
 </li>
 <li>
 <p><strong>RCT 锚定 + 拉格朗日多档分配</strong>：痛点是极端零膨胀下预测 GMV 水平存在系统偏差，直接喂给优化器会扭曲 ROI。做法是在 held-in 切片上用 RCT 各臂均值估计加性偏移，修正奖励后再解
 $<span class="arithmatex">\(\max_{\pi}\ \sum_i \hat\tau^{\pi(x_i)}_g(x_i)\quad \text{s.t.}\ \sum_i c(x_i,\pi(x_i))\le B,\)</span>$
-对偶标量 <span class="arithmatex">\(\lambda\)</span> 更新使内层问题按用户解耦，<span class="arithmatex">\(10^6\)</span> 用户量级对偶更新仅约 0.13 s，而稠密 LP 在 <span class="arithmatex">\(10^5\)</span> 即超十秒并 OOM。</p>
+对偶标量 <span class="arithmatex">\(\lambda\)</span>更新使内层问题按用户解耦，<span class="arithmatex">\(10^6\)</span>用户量级对偶更新仅约 0.13 s，而稠密 LP 在<span class="arithmatex">\(10^5\)</span> 即超十秒并 OOM。</p>
 </li>
 <li>
 <p><strong>训练目标、负采样与推理效率</strong>：总损失
 $<span class="arithmatex">\(\mathcal{L}_{\text{total}}=\mathcal{L}_{\text{conv}}+\alpha\mathcal{L}_{\text{val}}+\beta\mathcal{L}_{\text{consist}}+\gamma\mathcal{L}_{\text{mono}},\)</span>$
-其中 <span class="arithmatex">\(\mathcal{L}_{\text{conv}}\)</span> 为 BCE-with-logits、<span class="arithmatex">\(\mathcal{L}_{\text{val}}\)</span> 为转化者上的归一化 <span class="arithmatex">\(\log(1+\mathrm{GMV})\)</span> MSE；一致性/单调性项为可选软约束。作者指出该默认路径在固定 LogNormal 离散度时等价于分层 Bernoulli–LogNormal 模型的负对数似然（差一个常数）。软漏斗变体（大惩罚替代硬乘积）在标签异步缺失时更稳，但在本文 RCT 日志中硬组合全面占优。无负采样概念（回归/分类而非检索），推理开销为两次前向 + 一次对偶迭代。</p>
+其中 <span class="arithmatex">\(\mathcal{L}_{\text{conv}}\)</span>为 BCE-with-logits、<span class="arithmatex">\(\mathcal{L}_{\text{val}}\)</span>为转化者上的归一化<span class="arithmatex">\(\log(1+\mathrm{GMV})\)</span> MSE；一致性/单调性项为可选软约束。作者指出该默认路径在固定 LogNormal 离散度时等价于分层 Bernoulli–LogNormal 模型的负对数似然（差一个常数）。软漏斗变体（大惩罚替代硬乘积）在标签异步缺失时更稳，但在本文 RCT 日志中硬组合全面占优。无负采样概念（回归/分类而非检索），推理开销为两次前向 + 一次对偶迭代。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4304,7 +4315,7 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{total}}=\mathcal{L}_{\text{conv}}
 </table>
 <ul>
 <li><strong>数据划分与防穿越</strong>: 训练/校准/测试三折不相交；保形分位数在独立校准折上估计；工业侧按记录级置换切分（作者自承重复用户可能跨折，属局限）。标准化统计量仅在训练切片拟合。</li>
-<li><strong>排名评测协议</strong>: Criteo-MT7 用 oracle ITE 计算 PEHE 与 AUUC（全评估集）；工业侧采用 <strong>EOM（expected-outcome metric）</strong>，即在策略匹配子集上做 Hájek IPW，扫描对偶乘子 <span class="arithmatex">\(\alpha\)</span> 得到完整 <span class="arithmatex">\((\Delta\mathrm{GMV}\%,\Delta\mathrm{ROI})\)</span> 前沿，而非单点。</li>
+<li><strong>排名评测协议</strong>: Criteo-MT7 用 oracle ITE 计算 PEHE 与 AUUC（全评估集）；工业侧采用 <strong>EOM（expected-outcome metric）</strong>，即在策略匹配子集上做 Hájek IPW，扫描对偶乘子 <span class="arithmatex">\(\alpha\)</span>得到完整<span class="arithmatex">\((\Delta\mathrm{GMV}\%,\Delta\mathrm{ROI})\)</span> 前沿，而非单点。</li>
 <li><strong>对比基线与超参设置</strong>: 11 个基线——S/T/X-Learner、Causal Forest、DualHeadNet、CFRNet、DragonNet、EFIN、DESCN-style、ECUP、RERUM；全部在统一 PyTorch 管线重实现，25 epoch（工业 30 epoch）、Adam、3 种子聚合。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4488,7 +4499,7 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{total}}=\mathcal{L}_{\text{conv}}
 <thead>
 <tr>
 <th style="text-align: center;">生成器 <span class="arithmatex">\(\mu_p\)</span></th>
-<th style="text-align: center;">观测 <span class="arithmatex">\(\hat p\)</span></th>
+<th style="text-align: center;">观测<span class="arithmatex">\(\hat p\)</span></th>
 <th style="text-align: center;">PEHE (A)</th>
 <th style="text-align: center;">PEHE (C)</th>
 <th style="text-align: center;">收益</th>
@@ -4527,16 +4538,22 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{total}}=\mathcal{L}_{\text{conv}}
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>漏斗耦合的收益随零膨胀单调放大</strong>：在 <span class="arithmatex">\(\hat p\in[4.6\%,45.4\%]\)</span> 全程优于直接回归，峰值 +48.3% 出现在 <span class="arithmatex">\(\hat p\approx24\%\)</span>；最极端 <span class="arithmatex">\(\hat p=4.6\%\)</span> 端收益回落至 +18.1%，与转化者样本过少导致价值头噪声的有限样本解释一致，方向与式 (8) 吻合。</li>
+<li><strong>漏斗耦合的收益随零膨胀单调放大</strong>：在 <span class="arithmatex">\(\hat p\in[4.6\%,45.4\%]\)</span>全程优于直接回归，峰值 +48.3% 出现在<span class="arithmatex">\(\hat p\approx24\%\)</span>；最极端<span class="arithmatex">\(\hat p=4.6\%\)</span> 端收益回落至 +18.1%，与转化者样本过少导致价值头噪声的有限样本解释一致，方向与式 (8) 吻合。</li>
 <li><strong>硬组合优于软惩罚与 ZILN 似然路径</strong>：软惩罚虽把违背率从 62–71% 压到约 1.2%，但 PEHE 几乎无改善（25.94→26.12）；ZILN 在 100K 时逼近硬组合（17.67 vs 15.97，相对超出约 11%），但在 10K 时因转化者样本不足而崩坏（38.02），说明硬约束在中小样本下更稳健。</li>
 <li><strong>半合成优势不迁移到工业前沿，但工业前沿全面领先</strong>：EFIN 在 MT7 的 AUUC_GMV 最高（0.615）却在 OTA 上 LP 前沿右端最短（≈61.8% vs 本文 ≈90.4%），本文在 7/7 锚点均值最优、中高锚点领先次优 0.18–0.21 ROI 单位；但作者诚实指出锚点共享同一 LP 前沿、种子为同一 RCT 的置换切分，配对 bootstrap 95% CI 均含 0，故仅为描述性一致性而非独立显著性。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 DESCN/EFIN/ECUP 等深度 uplift 网络，本文的差异不在多头结构本身，而在<strong>强制代数一致性</strong> <span class="arithmatex">\(\mu_{\mathrm{gmv}}=\mu_{\mathrm{conv}}\mu_{\mathrm{val}}\)</span> 并给出速率差下的方差区域判据；相较 RERUM 等营收排序方法，本文显式建模确定性零质量而非把 GMV 当无约束重尾响应；相较预算激励类工作（拉格朗日/背包），本文把 RCT 臂级重校准嵌入分配奖励，而非把效应估计当插件。</li>
 <li><strong>可迁移亮点</strong>: (i) "硬乘积 + 加性 RCT 锚定"这一组合可直接迁移到任何"曝光→点击→转化→GMV"多级漏斗的增益建模，尤其适合零膨胀严重的场景；(ii) 把保形区间定位为<strong>审计带而非优化器输入</strong>的工程立场，避免了窄 <span class="arithmatex">\(\alpha\)</span> 下 LCB 策略退化为全对照的实践陷阱。</li>
-<li><strong>审稿级局限批判</strong>: (i) 最强证据来自不可复现的私有工业 RCT，且记录级置换切分允许重复用户跨折，削弱 IID 与区间解释，需用户分组切分与聚类不确定性；(ii) Prop.2 依赖参数速率差与跨头协方差可控，共享神经表征下并不成立，作者自认为启发式；联合保形覆盖为边际且保守（超出名义 3–15 pp），窄 <span class="arithmatex">\(\alpha\)</span> 下 <span class="arithmatex">\(\tau_g\)</span> 区间宽度达 <span class="arithmatex">\(10^4\)</span> 货币单位量级，实际不可用；(iii) 档位为离散报价，未利用连续剂量上的平滑/单调性。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: (i) 最强证据来自不可复现的私有工业 RCT，且记录级置换切分允许重复用户跨折，削弱 IID 与区间解释，需用户分组切分与聚类不确定性；(ii) Prop.2 依赖参数速率差与跨头协方差可控，共享神经表征下并不成立，作者自认为启发式；联合保形覆盖为边际且保守（超出名义 3–15 pp），窄 <span class="arithmatex">\(\alpha\)</span>下<span class="arithmatex">\(\tau_g\)</span>区间宽度达<span class="arithmatex">\(10^4\)</span> 货币单位量级，实际不可用；(iii) 档位为离散报价，未利用连续剂量上的平滑/单调性。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

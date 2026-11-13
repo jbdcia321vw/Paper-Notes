@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>输入为用户历史物品标题序列构成的 prompt，先由预训练 ID-based 序列模型（SASRec/BERT4Rec 等）产出用户/物品嵌入并计算物品级 CF logits；Collaborative Tokenizer 在自回归解码的每个位置 <span class="arithmatex">\(j\)</span> 上，先筛出与当前前缀一致的候选物品集，再在候选集内 softmax 归一化，最后按"共享同一 next token"聚合为 token 级分布 <span class="arithmatex">\(p_u(v|y_{&lt;j})\)</span>；Soft Label Alignment 将该分布与 ground-truth one-hot 按 <span class="arithmatex">\(\alpha\)</span> 加权融合为软标签，替换标准交叉熵中的指示函数，用 soft-NTP 损失微调 LLM；推理时按标准自回归解码生成物品标题。整个框架与具体 CF 模型、具体 LLM 推荐骨干均解耦。</p>
+<p>输入为用户历史物品标题序列构成的 prompt，先由预训练 ID-based 序列模型（SASRec/BERT4Rec 等）产出用户/物品嵌入并计算物品级 CF logits；Collaborative Tokenizer 在自回归解码的每个位置 <span class="arithmatex">\(j\)</span>上，先筛出与当前前缀一致的候选物品集，再在候选集内 softmax 归一化，最后按"共享同一 next token"聚合为 token 级分布<span class="arithmatex">\(p_u(v|y_{&lt;j})\)</span>；Soft Label Alignment 将该分布与 ground-truth one-hot 按<span class="arithmatex">\(\alpha\)</span> 加权融合为软标签，替换标准交叉熵中的指示函数，用 soft-NTP 损失微调 LLM；推理时按标准自回归解码生成物品标题。整个框架与具体 CF 模型、具体 LLM 推荐骨干均解耦。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户历史物品标题 Prompt"] --&gt; B["预训练CF模型(SASRec/BERT4Rec) 产出物品级logits z_u"]
     B --&gt; C["Collaborative Tokenizer: 候选集筛选→候选内Softmax→按next token聚合"]
@@ -4235,15 +4246,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>Collaborative Tokenizer（物品级 logits → token 级分布）</strong>：痛点是 logits 未归一化、跨物品直接求和会严重扭曲偏好，且 LLM 逐 token 生成时并非所有物品都是合法候选。三步算子：候选集 <span class="arithmatex">\(\mathcal{C}(y_{&lt;j})=\{i\in\mathcal{I}\mid (w_{i,1},...,w_{i,j-1})=y_{&lt;j}\}\)</span>；候选内归一化 <span class="arithmatex">\(\pi^{(j)}_{u,i}=\exp(z_{u,i})/\sum_{k\in\mathcal{C}}\exp(z_{u,k})\)</span>；按共享 token 聚合 <span class="arithmatex">\(p_u(v|y_{&lt;j})=\sum_{i\in\mathcal{C}}\pi^{(j)}_{u,i}\mathbb{1}[w_{i,j}=v]\)</span>。直觉：先在"仍可能被生成"的物品子集内保持偏好的相对可比性，再把概率质量搬到 token 维度，使 <span class="arithmatex">\(\sum_v p_u(v|y_{&lt;j})=1\)</span>，与 LLM 词表分布严格同构。</p>
+<p><strong>Collaborative Tokenizer（物品级 logits → token 级分布）</strong>：痛点是 logits 未归一化、跨物品直接求和会严重扭曲偏好，且 LLM 逐 token 生成时并非所有物品都是合法候选。三步算子：候选集 <span class="arithmatex">\(\mathcal{C}(y_{&lt;j})=\{i\in\mathcal{I}\mid (w_{i,1},...,w_{i,j-1})=y_{&lt;j}\}\)</span>；候选内归一化<span class="arithmatex">\(\pi^{(j)}_{u,i}=\exp(z_{u,i})/\sum_{k\in\mathcal{C}}\exp(z_{u,k})\)</span>；按共享 token 聚合<span class="arithmatex">\(p_u(v|y_{&lt;j})=\sum_{i\in\mathcal{C}}\pi^{(j)}_{u,i}\mathbb{1}[w_{i,j}=v]\)</span>。直觉：先在"仍可能被生成"的物品子集内保持偏好的相对可比性，再把概率质量搬到 token 维度，使<span class="arithmatex">\(\sum_v p_u(v|y_{&lt;j})=1\)</span>，与 LLM 词表分布严格同构。</p>
 </li>
 <li>
 <p><strong>Soft Label Alignment（软标签 + soft-NTP）</strong>：痛点是硬 one-hot 无法承载 CF 偏好，而外挂 KL 辅助损失又会让 CF 与语义监督相互竞争。做法是借标签平滑思想构造 <span class="arithmatex">\(\tilde{y}_j(v)=(1-\alpha)\mathbb{1}[v=y_j]+\alpha p_u(v|y_{&lt;j})\)</span>，并优化
 $<span class="arithmatex">\(\mathcal{L}_{\text{soft-NTP}}=-\sum_{j=1}^{|t|}\log\sum_{v\in\mathcal{V}}\tilde{y}_j(v)\cdot P(v|x_u,y_{&lt;j};\theta).\)</span>$
-<span class="arithmatex">\(\alpha=0\)</span> 退化为标准 NTP，<span class="arithmatex">\(\alpha=1\)</span> 完全跟随协同分布，从而提供显式的"行为对齐 vs 语义流畅"调节旋钮。</p>
+<span class="arithmatex">\(\alpha=0\)</span>退化为标准 NTP，<span class="arithmatex">\(\alpha=1\)</span> 完全跟随协同分布，从而提供显式的"行为对齐 vs 语义流畅"调节旋钮。</p>
 </li>
 <li>
-<p><strong>与辅助 KL 损失的梯度差异（理论增量）</strong>：KL 方案的 logit 梯度为 <span class="arithmatex">\(P_j(v)-\tilde{y}_j(v)\)</span>，权重是<strong>固定</strong>目标分布；soft-NTP 的梯度为 <span class="arithmatex">\(P_j(v)-q_j(v)\)</span>，其中 <span class="arithmatex">\(q_j(v)=\tilde{y}_j(v)P_j(v)/\sum_u\tilde{y}_j(u)P_j(u)\)</span> 是<strong>自适应</strong>分布，同时依赖协同标签与模型当前预测。直觉：当模型已高置信预测某 token 时，soft-NTP 会自动降低该 token 的纠偏力度，避免 CF 噪声过度主导；训练无需额外负采样（全词表 softmax），推理仅多一次 CF 前向，开销可忽略。</p>
+<p><strong>与辅助 KL 损失的梯度差异（理论增量）</strong>：KL 方案的 logit 梯度为 <span class="arithmatex">\(P_j(v)-\tilde{y}_j(v)\)</span>，权重是<strong>固定</strong>目标分布；soft-NTP 的梯度为<span class="arithmatex">\(P_j(v)-q_j(v)\)</span>，其中<span class="arithmatex">\(q_j(v)=\tilde{y}_j(v)P_j(v)/\sum_u\tilde{y}_j(u)P_j(u)\)</span> 是<strong>自适应</strong>分布，同时依赖协同标签与模型当前预测。直觉：当模型已高置信预测某 token 时，soft-NTP 会自动降低该 token 的纠偏力度，避免 CF 噪声过度主导；训练无需额外负采样（全词表 softmax），推理仅多一次 CF 前向，开销可忽略。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4291,7 +4302,7 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{soft-NTP}}=-\sum_{j=1}^{|t|}\log\
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 按时间顺序 <code>8:1:1</code> 比例划分 train/valid/test，严格时序切分防泄漏；测试集含大量未见用户与物品，具<strong>冷启动性质</strong>（这也是非序列模型全面失效的原因）。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 报告 N@5/N@10/H@5/H@10，属生成式设定下的全库候选评估（模型直接生成物品标题，无负采样候选集）。</li>
-<li><strong>对比基线与超参设置</strong>: 传统序列模型 SASRec/BERT4Rec、图模型 LightGCN、语义增强 AlphaRec/RLMRec、LLM 推荐 TallRec/LLaRA/CoLLM/MSL，以及量化路线 TIGER/LETTER（sentence-T5 骨干，Llama3.1-3b 生成语义嵌入）；核心超参为融合权重 <span class="arithmatex">\(\alpha\)</span>，在 <span class="arithmatex">\(\{0,0.001,0.005,0.01,0.05,0.1,0.5,1.0\}\)</span> 上扫描。</li>
+<li><strong>对比基线与超参设置</strong>: 传统序列模型 SASRec/BERT4Rec、图模型 LightGCN、语义增强 AlphaRec/RLMRec、LLM 推荐 TallRec/LLaRA/CoLLM/MSL，以及量化路线 TIGER/LETTER（sentence-T5 骨干，Llama3.1-3b 生成语义嵌入）；核心超参为融合权重 <span class="arithmatex">\(\alpha\)</span>，在<span class="arithmatex">\(\{0,0.001,0.005,0.01,0.05,0.1,0.5,1.0\}\)</span> 上扫描。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4455,16 +4466,22 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{soft-NTP}}=-\sum_{j=1}^{|t|}\log\
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>CT 是命门，SA 是增益器</strong>：去掉 CT 后 Sports 上 N@5 从 0.0309 跌至 0.0189（低于 backbone 的 0.0259），说明均匀 token 分布等于注入纯噪声；而 w/o SA 用 KL 替代仍优于 MSL（Toys 0.0276 vs 0.0145），但全面落后于 soft-NTP，实证了自适应梯度权重 <span class="arithmatex">\(q_j\)</span> 优于固定权重 <span class="arithmatex">\(\tilde{y}_j\)</span> 的理论分析。</li>
+<li><strong>CT 是命门，SA 是增益器</strong>：去掉 CT 后 Sports 上 N@5 从 0.0309 跌至 0.0189（低于 backbone 的 0.0259），说明均匀 token 分布等于注入纯噪声；而 w/o SA 用 KL 替代仍优于 MSL（Toys 0.0276 vs 0.0145），但全面落后于 soft-NTP，实证了自适应梯度权重 <span class="arithmatex">\(q_j\)</span>优于固定权重<span class="arithmatex">\(\tilde{y}_j\)</span> 的理论分析。</li>
 <li><strong>CF 信号越强，收益越大，且 TCA 能"吸收"而 CoLLM 不能</strong>：固定 LLM 训练集为 10K，仅放大 SASRec 训练数据（Small→Large），TCA 的 Toys N@5 单调升至 0.0332，而 CoLLM 反而从 0.0180 降至 0.0161；换用更强的 SASRec 替代 BERT4Rec 作 CF 源，Toys N@5 从 0.0222 升至 0.0332，验证了"信号质量—收益"的正相关与噪声敏感性。</li>
-<li><strong>协同一致性 (CC) 与性能呈倒 U 型</strong>：随 <span class="arithmatex">\(\alpha\)</span> 增大，LLM top-1 与 CF top-1 的一致率持续上升，但 NDCG@5 先升后降——CF 信号含噪，<span class="arithmatex">\(\alpha\)</span> 过大反而损害效果；同时 TallRec 仅微调即可把 Sports 的 CC 从 19.54% 提到 42.01%，说明微调本身已部分习得协同结构，TCA 是在此基础上的显式强化。</li>
+<li><strong>协同一致性 (CC) 与性能呈倒 U 型</strong>：随 <span class="arithmatex">\(\alpha\)</span>增大，LLM top-1 与 CF top-1 的一致率持续上升，但 NDCG@5 先升后降——CF 信号含噪，<span class="arithmatex">\(\alpha\)</span> 过大反而损害效果；同时 TallRec 仅微调即可把 Sports 的 CC 从 19.54% 提到 42.01%，说明微调本身已部分习得协同结构，TCA 是在此基础上的显式强化。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 CoLLM/LLaRA 的本质区别在于 CF 的作用位置——前者把 CF 塞进输入侧软提示（表征偏置），本文改写<strong>损失函数</strong>；与 TIGER/LETTER 的区别在于不依赖量化码本承载协同信息，而是保留原始 CF logits 的完整偏好序，避免量化信息损失；与朴素 KL 辅助损失的区别在于梯度权重自适应而非固定。</li>
 <li><strong>可迁移亮点</strong>: (1) "物品级打分 → 前缀约束候选集 → token 级聚合"这套投影算子可直接复用到任何"结构化打分器 + 自回归生成器"的耦合场景（如生成式召回融合双塔分数）；(2) 软标签 + 单旋钮 <span class="arithmatex">\(\alpha\)</span> 的融合方式可作为蒸馏/多源监督的通用轻量方案。</li>
 <li><strong>审稿级局限批判</strong>: (1) 增益高度依赖 CF 源质量，弱 CF 模型（BERT4Rec）在 Sports 上甚至使 H@5 从 0.0170 降至 0.0153，缺乏对噪声 CF 的自适应降权机制；(2) 仅在 Amazon 三域、单一 prompt 模板与标题级生成上验证，未报告工业级延迟与更大规模 LLM 的表现，量化路线整体绝对值偏低（TIGER 系 N@5 &lt; 0.01）也削弱了该分支结论的说服力。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

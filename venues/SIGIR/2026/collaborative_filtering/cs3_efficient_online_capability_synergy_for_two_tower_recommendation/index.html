@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>CS3 保持标准双塔打分 <span class="arithmatex">\(p=\mathbf{u}^\top\mathbf{v}\)</span> 不变，在每塔内部用 CAS 替换普通 FC 层实现逐层自校正；两塔输入除原始特征 <span class="arithmatex">\(\mathbf{x}_u^t,\mathbf{x}_v^t\)</span> 外，额外拼接来自 CTS 的伙伴塔缓存向量 <span class="arithmatex">\(\mathbf{c}_u^{t-1},\mathbf{c}_v^{t-1}\)</span> 与来自 CMS 的级联模型缓存向量 <span class="arithmatex">\(\mathbf{s}_u^{t-1},\mathbf{s}_v^{t-1}\)</span>，即 <span class="arithmatex">\(\mathbf{u}^t=U_{\theta_u}(\mathbf{x}_u^t,\mathbf{c}_u^{t-1},\mathbf{s}_u^{t-1})\)</span>。训练侧用参数服务器（ParSvr）承载梯度更新的稀疏 embedding、以自定义梯度实现 CTS 的 EMA 更新；CMS 向量因双塔与精排常走不同数据流，单独存入高 QPS 的 Embedding Server（EmbSvr，p99 &lt; 5ms），训练与 serving 均并行拉取。</p>
+<p>CS3 保持标准双塔打分 <span class="arithmatex">\(p=\mathbf{u}^\top\mathbf{v}\)</span>不变，在每塔内部用 CAS 替换普通 FC 层实现逐层自校正；两塔输入除原始特征<span class="arithmatex">\(\mathbf{x}_u^t,\mathbf{x}_v^t\)</span>外，额外拼接来自 CTS 的伙伴塔缓存向量<span class="arithmatex">\(\mathbf{c}_u^{t-1},\mathbf{c}_v^{t-1}\)</span>与来自 CMS 的级联模型缓存向量<span class="arithmatex">\(\mathbf{s}_u^{t-1},\mathbf{s}_v^{t-1}\)</span>，即<span class="arithmatex">\(\mathbf{u}^t=U_{\theta_u}(\mathbf{x}_u^t,\mathbf{c}_u^{t-1},\mathbf{s}_u^{t-1})\)</span>。训练侧用参数服务器（ParSvr）承载梯度更新的稀疏 embedding、以自定义梯度实现 CTS 的 EMA 更新；CMS 向量因双塔与精排常走不同数据流，单独存入高 QPS 的 Embedding Server（EmbSvr，p99 &lt; 5ms），训练与 serving 均并行拉取。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户/物品原始特征 x_u, x_v"] --&gt; B["CAS 循环自适应层（pre-forward → 自适应重加权 → cycle-forward）"]
     C["CTS 伙伴塔缓存 c_u, c_v (EMA)"] --&gt; B
@@ -4242,7 +4253,7 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>CAS 循环自适应结构（塔内自修正去噪）</strong>：普通 FC 直接令 <span class="arithmatex">\(\mathbf{x}_{i+1}=\mathbf{z}_i\)</span>，缺乏对输入特征的可靠性甄别。CAS 先做 pre-forward <span class="arithmatex">\(\mathbf{z}_i=\sigma(\mathbf{W}_i\mathbf{x}_i+\mathbf{b}_i)\)</span>，再由 <span class="arithmatex">\(\mathbf{z}_i\)</span> 反推特征级重要性 <span class="arithmatex">\(\mathbf{e}_i=\text{Sigmoid}(\mathbf{W}'_i\mathbf{z}_i+\mathbf{b}'_i)\)</span>，以 <span class="arithmatex">\(\tilde{\mathbf{x}}_i=\mathbf{x}_i\odot 2\mathbf{e}_i\)</span> 重加权（乘 2 使权重落在 <span class="arithmatex">\((0,2)\)</span>、期望为 1，避免激活过小与梯度消失），最后用<strong>共享参数</strong>重算 <span class="arithmatex">\(\mathbf{z}'_i=\sigma(\mathbf{W}_i\tilde{\mathbf{x}}_i+\mathbf{b}_i)\)</span>。直觉：让每层先"看一眼输出"再回头修正输入，等价于一次轻量去噪自编码，且不引入新特征、不增加参数量。</p>
+<p><strong>CAS 循环自适应结构（塔内自修正去噪）</strong>：普通 FC 直接令 <span class="arithmatex">\(\mathbf{x}_{i+1}=\mathbf{z}_i\)</span>，缺乏对输入特征的可靠性甄别。CAS 先做 pre-forward<span class="arithmatex">\(\mathbf{z}_i=\sigma(\mathbf{W}_i\mathbf{x}_i+\mathbf{b}_i)\)</span>，再由<span class="arithmatex">\(\mathbf{z}_i\)</span>反推特征级重要性<span class="arithmatex">\(\mathbf{e}_i=\text{Sigmoid}(\mathbf{W}'_i\mathbf{z}_i+\mathbf{b}'_i)\)</span>，以<span class="arithmatex">\(\tilde{\mathbf{x}}_i=\mathbf{x}_i\odot 2\mathbf{e}_i\)</span>重加权（乘 2 使权重落在<span class="arithmatex">\((0,2)\)</span>、期望为 1，避免激活过小与梯度消失），最后用<strong>共享参数</strong>重算<span class="arithmatex">\(\mathbf{z}'_i=\sigma(\mathbf{W}_i\tilde{\mathbf{x}}_i+\mathbf{b}_i)\)</span>。直觉：让每层先"看一眼输出"再回头修正输入，等价于一次轻量去噪自编码，且不引入新特征、不增加参数量。</p>
 </li>
 <li>
 <p><strong>CTS 跨塔同步（显式塔间对齐）</strong>：隐式晚交互不直接利用伙伴塔表征，在线漂移下对齐不足。CTS 为每个用户/物品维护伙伴塔正样本表征的 EMA 缓存，仅当 <span class="arithmatex">\(y=1\)</span> 时更新：
@@ -4250,7 +4261,7 @@ $<span class="arithmatex">\(\mathbf{c}_u^t=\alpha\mathbf{c}_u^{t-1}+(1-\alpha)\m
 负样本不更新，保证缓存刻画的是"被偏好的对方表征"。EMA 免梯度、可实时刷新，使两塔在输入层面就感知对方，显著缓解 embedding 空间错位。</p>
 </li>
 <li>
-<p><strong>CMS 级联模型共享（跨阶段一致性）</strong>：蒸馏只迁移软标签、未利用精排架构能力。CMS 直接把精排模型倒数第二层输出 <span class="arithmatex">\(\mathbf{h}_{uv}^t\)</span> 以 EMA 回写为双塔输入：<span class="arithmatex">\(\mathbf{s}_u^t=\beta\mathbf{s}_u^{t-1}+(1-\beta)\mathbf{h}_{uv}^t\)</span>，<span class="arithmatex">\(\mathbf{s}_v^t\)</span> 同理。与 CTS 不同，CMS <strong>正负样本均更新</strong>，因精排中间表征本身编码了丰富的交叉特征知识。这相当于把精排的"计算"部分前移到召回，而非仅迁移"结论"。</p>
+<p><strong>CMS 级联模型共享（跨阶段一致性）</strong>：蒸馏只迁移软标签、未利用精排架构能力。CMS 直接把精排模型倒数第二层输出 <span class="arithmatex">\(\mathbf{h}_{uv}^t\)</span>以 EMA 回写为双塔输入：<span class="arithmatex">\(\mathbf{s}_u^t=\beta\mathbf{s}_u^{t-1}+(1-\beta)\mathbf{h}_{uv}^t\)</span>，<span class="arithmatex">\(\mathbf{s}_v^t\)</span> 同理。与 CTS 不同，CMS <strong>正负样本均更新</strong>，因精排中间表征本身编码了丰富的交叉特征知识。这相当于把精排的"计算"部分前移到召回，而非仅迁移"结论"。</p>
 </li>
 <li>
 <p><strong>训练目标与效率</strong>：总损失沿用双塔原有点击/偏好损失（各骨干自带，如 BCE/BPR），三模块均为免梯度 EMA 或轻量重加权，不新增监督项。CAS 使单塔计算略增，但召回延迟由大规模相似度检索主导且物品 embedding 可预计算，实测仅对输入层以外的 FC 施加 CAS，召回服务 QPS 下降 &lt; 1%。</p>
@@ -4453,12 +4464,18 @@ $<span class="arithmatex">\(\mathbf{c}_u^t=\alpha\mathbf{c}_u^{t-1}+(1-\alpha)\m
 <li><strong>CMS 是线上收益主引擎</strong>：线上 Scenario A 中 CAS 单独仅 +1.677% 收入，加入 CMS 后跃升至 +7.880%，最终加 CTS 达 +8.356%，说明精排→召回的知识复用对端到端一致性贡献最大；而 CAS 在 KuaiRand 离线增益最大（0.6646→0.7416），因其特征丰富、去噪收益高，体现模块收益随数据特性分化。</li>
 <li><strong>跨骨干、跨场景强泛化且延迟可控</strong>：CS3 对 DSSM/IntTower/IHM-DAT/RCG 四类架构（含 Transformer 骨干）均带来显著提升；线上三场景收入分别 +8.356%/+1.366%/+2.177%，QPS 仅降 0.589%/0.388%/0.456%，证明毫秒级约束下仍可落地。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 IntTower 的隐式晚交互（仅塔间特征交叉、无显式伙伴表征），CTS 直接注入伙伴塔 EMA 表征；相比传统蒸馏（只迁移软标签、不解决架构容量瓶颈），CMS 复用精排中间层计算而非结论；相比单一轴线改进，CS3 首次统一塔内/塔间/跨阶段三层能力交换。</li>
 <li><strong>可迁移亮点</strong>: ① 用 EMA 缓存 + 自定义梯度在参数服务器上实现免梯度跨塔/跨阶段信号注入，可直接迁移到任何在线学习双塔系统；② 独立 EmbSvr 解耦双塔与精排数据流，解决联合训练难以对齐采样策略的工程难题。</li>
 <li><strong>审稿级局限批判</strong>: ① 离线仅报告 AUC/LogLoss 点估计指标，缺少 Top-K 召回（Recall@K/NDCG@K）与 Full-Ranking 协议，与召回任务真实目标存在偏差；② 未给出 CAS 循环次数、EMA 系数 <span class="arithmatex">\(\alpha/\beta\)</span> 的敏感性分析，且 CMS 依赖精排中间层，精排模型迭代时缓存需同步重建，存在运维耦合风险。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

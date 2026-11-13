@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4214,12 +4225,12 @@
 <ul>
 <li><strong>主流范式</strong>: 大规模召回依赖双塔（DPR/ANCE/E5），每物品一个 <span class="arithmatex">\(d\)</span> 维向量、单次点积打分，以换取 ANN 索引与低延迟；多目标场景下要么用加权多目标损失训练单嵌入（MTSH），要么每目标一套独立检索栈（MTMH）。</li>
 <li><strong>前人局限</strong>: (1) MTSH 把权衡"烘焙"进训练，优先级一变就得重训，且目标间几何干扰无法靠损失加权消除；(2) MTMH 每目标一个 ANN 索引，基础设施随目标数线性膨胀，且 <span class="arithmatex">\(n/2\)</span> 合并会同时拉低各目标指标。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 作者将多目标检索形式化为子空间逼近问题，证明共享嵌入的所需维度下界为 <span class="arithmatex">\(d \ge r(1+(k-1)\varepsilon)\)</span>，随目标数 <span class="arithmatex">\(k\)</span> 与子空间冲突度 <span class="arithmatex">\(\varepsilon\)</span> 线性增长；而正交分块构造只需 <span class="arithmatex">\(d=\sum_i r_i\)</span>，与冲突模式无关。在 MS MARCO 上实测 Kendall <span class="arithmatex">\(\tau=0.34\)</span>，即 <span class="arithmatex">\(\varepsilon=0.66\)</span>，预测共享嵌入损失约 40% 有效秩容量。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 作者将多目标检索形式化为子空间逼近问题，证明共享嵌入的所需维度下界为 <span class="arithmatex">\(d \ge r(1+(k-1)\varepsilon)\)</span>，随目标数<span class="arithmatex">\(k\)</span>与子空间冲突度<span class="arithmatex">\(\varepsilon\)</span>线性增长；而正交分块构造只需<span class="arithmatex">\(d=\sum_i r_i\)</span>，与冲突模式无关。在 MS MARCO 上实测 Kendall<span class="arithmatex">\(\tau=0.34\)</span>，即<span class="arithmatex">\(\varepsilon=0.66\)</span>，预测共享嵌入损失约 40% 有效秩容量。</li>
 <li><strong>本文切入点</strong>: 干扰是<strong>架构性</strong>而非优化器问题（PCGrad 只能缓解不能消除），因此应在输出层做硬性正交划分，并把权衡旋钮从训练搬到服务时。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>ESP 将嵌入划分为 <span class="arithmatex">\(k\)</span> 个正交子空间，第 <span class="arithmatex">\(i\)</span> 个子空间产出 L2 归一化的子嵌入 <span class="arithmatex">\(\mathbf{e}_i\in\mathbb{R}^{d_i}\)</span>，拼接为 <span class="arithmatex">\(\mathbf{e}=[\mathbf{e}_1;\dots;\mathbf{e}_k]\)</span>，维度按各目标有效秩比例分配。检索分数为加权和 <span class="arithmatex">\(S(q,d)=\sum_i w_i\langle \mathbf{e}_i,\mathbf{e}'_i\rangle\)</span>，权重 <span class="arithmatex">\(\{w_i\}\)</span> 在请求侧服务时施加，不进入模型。每个子空间用各自的目标损失独立训练（InfoNCE / MSE / BCE 可自由混搭），因 <span class="arithmatex">\(\partial\mathcal{L}_i/\partial\mathbf{e}_j=0\ (j\neq i)\)</span>，输出层不存在"折中方向"。服务端用 GPU 加速的穷举 kNN 在单一拼接索引上打分，避免每目标一套 ANN。</p>
+<p>ESP 将嵌入划分为 <span class="arithmatex">\(k\)</span>个正交子空间，第<span class="arithmatex">\(i\)</span>个子空间产出 L2 归一化的子嵌入<span class="arithmatex">\(\mathbf{e}_i\in\mathbb{R}^{d_i}\)</span>，拼接为<span class="arithmatex">\(\mathbf{e}=[\mathbf{e}_1;\dots;\mathbf{e}_k]\)</span>，维度按各目标有效秩比例分配。检索分数为加权和<span class="arithmatex">\(S(q,d)=\sum_i w_i\langle \mathbf{e}_i,\mathbf{e}'_i\rangle\)</span>，权重<span class="arithmatex">\(\{w_i\}\)</span>在请求侧服务时施加，不进入模型。每个子空间用各自的目标损失独立训练（InfoNCE / MSE / BCE 可自由混搭），因<span class="arithmatex">\(\partial\mathcal{L}_i/\partial\mathbf{e}_j=0\ (j\neq i)\)</span>，输出层不存在"折中方向"。服务端用 GPU 加速的穷举 kNN 在单一拼接索引上打分，避免每目标一套 ANN。</p>
 <pre class="mermaid"><code>flowchart TD
     A["输入: 属性段 + 文本段 (EOS 分隔)"] --&gt; B["分段感知注意力掩码 + 位置 ID 重置"]
     B --&gt; C["各段 EOS 隐状态 → 正交子嵌入 e_i"]
@@ -4229,7 +4240,7 @@
 <ol>
 <li><strong>EOS 分隔的 Transformer 子空间隔离（零新增参数）</strong>：痛点是用新增特殊 token 需重训词表。ESP 复用模型原生 EOS 作为段分隔符，采用"属性在前"排序（因果注意力下属性 EOS 天然只看到属性 token），再加分段感知因果掩码使每个 EOS 仅关注本段，并对 RoPE 在每个段边界重置位置 ID（否则同一属性文本因绝对位置不同产生不同嵌入）。消融显示：仅实体前置即让相同实体文本余弦≈0.97；加掩码使实体可区分度 92.8%→100%；位置重置把余弦从≈0.50 恢复到≈0.73–1.0。</li>
 <li><strong>服务时权重旋钮与单索引服务</strong>：核心算子即式 (1) 的加权和，<span class="arithmatex">\(w_i=1\)</span> 时退化为标准点积，完全兼容现有穷举 kNN。关键系统洞察：IVFPQ 等划分式 ANN 预设嵌入是"单一连贯几何体"，而独立子空间拼接不满足该假设，故 ESP 必须搭配 GPU 穷举检索——这是模型-硬件协同设计，而非纯算法改进。</li>
-<li><strong>训练目标与维度分配</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\sum_i \alpha_i\mathcal{L}_i\)</span>，排序目标用 InfoNCE（温度 <span class="arithmatex">\(\tau\)</span>），训练权重 <span class="arithmatex">\(\alpha_i\)</span> 只影响收敛速度不影响几何容量。维度按定理 5 比例分配 <span class="arithmatex">\(d_i^*=d\cdot r_i/\sum_j r_j\)</span>；实测实体匹配在 <span class="arithmatex">\(d_{\text{ent}}=32\)</span>（<span class="arithmatex">\(H=1024\)</span> 的 3%）即饱和，语义需 <span class="arithmatex">\(d_{\text{sem}}\gtrsim 750\)</span>，形成约 1:20 的分辨率差，辅助业务目标可只占极小空间。</li>
+<li><strong>训练目标与维度分配</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\sum_i \alpha_i\mathcal{L}_i\)</span>，排序目标用 InfoNCE（温度<span class="arithmatex">\(\tau\)</span>），训练权重<span class="arithmatex">\(\alpha_i\)</span>只影响收敛速度不影响几何容量。维度按定理 5 比例分配<span class="arithmatex">\(d_i^*=d\cdot r_i/\sum_j r_j\)</span>；实测实体匹配在<span class="arithmatex">\(d_{\text{ent}}=32\)</span>（<span class="arithmatex">\(H=1024\)</span>的 3%）即饱和，语义需<span class="arithmatex">\(d_{\text{sem}}\gtrsim 750\)</span>，形成约 1:20 的分辨率差，辅助业务目标可只占极小空间。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4260,7 +4271,7 @@
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 按查询级划分训练/评测集（1,993 唯一查询），评测查询与训练查询不重叠；所有方法在 1,359 个评测查询上对全语料排序。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 无偏 <code>Full-Ranking</code>（每查询对 ~39K 段落全库排序），指标为 Semantic NDCG@10 与 Entity Recall@10；显著性用 bootstrap 95% CI（1,359 查询重采样），<span class="arithmatex">\(p&lt;0.001\)</span>。</li>
-<li><strong>对比基线与超参设置</strong>: 预训练 0.6B 嵌入模型（<span class="arithmatex">\(H=1024\)</span>），基线含无实体 Baseline、Entity-in-prompt（指令路由）、模拟 MTMH（分目标 prompt + <span class="arithmatex">\(n/2\)</span> 合并）、ColBERT；训练版对比 MTSH（<span class="arithmatex">\(\alpha_e\in\{1,5,10\}\)</span>）、MTSH+PCGrad。ESP 训练 1 epoch，服务权重 <span class="arithmatex">\(w_e\)</span> 扫描不重训。</li>
+<li><strong>对比基线与超参设置</strong>: 预训练 0.6B 嵌入模型（<span class="arithmatex">\(H=1024\)</span>），基线含无实体 Baseline、Entity-in-prompt（指令路由）、模拟 MTMH（分目标 prompt +<span class="arithmatex">\(n/2\)</span>合并）、ColBERT；训练版对比 MTSH（<span class="arithmatex">\(\alpha_e\in\{1,5,10\}\)</span>）、MTSH+PCGrad。ESP 训练 1 epoch，服务权重<span class="arithmatex">\(w_e\)</span> 扫描不重训。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4382,14 +4393,14 @@
 <td style="text-align: left;">修正 RoPE 位置偏置</td>
 </tr>
 <tr>
-<td style="text-align: left;"><span class="arithmatex">\(d_{\text{ent}}\)</span> 扫描</td>
+<td style="text-align: left;"><span class="arithmatex">\(d_{\text{ent}}\)</span>扫描</td>
 <td style="text-align: center;"><span class="arithmatex">\(d_{\text{ent}}=32\)</span> 即 100% 实体准确率</td>
 <td style="text-align: left;">低分辨率目标</td>
 </tr>
 <tr>
 <td style="text-align: left;"><span class="arithmatex">\(k=3\)</span>（+长度偏好）</td>
 <td style="text-align: center;">.843 / .957 / .912</td>
-<td style="text-align: left;">相比 <span class="arithmatex">\(k=2\)</span> 仅 −1.8pp / −2.8pp 语义/实体，+5.4pp 长度匹配</td>
+<td style="text-align: left;">相比<span class="arithmatex">\(k=2\)</span> 仅 −1.8pp / −2.8pp 语义/实体，+5.4pp 长度匹配</td>
 </tr>
 <tr>
 <td style="text-align: left;">单目标 BEIR（NFCorpus/SciFact/FiQA）</td>
@@ -4401,15 +4412,21 @@
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>干扰是几何性的，梯度手术治标不治本</strong>：MTSH 把实体权重从 1 提到 10，语义 NDCG 单调下滑 .924→.823；PCGrad 只把损失从 −4.9pp 缓解到 −4.6pp，而 ESP 在同等实体召回下保持 .900，证明瓶颈在嵌入容量而非梯度冲突。</li>
-<li><strong>语义 NDCG 平台源于信号互补而非无冲突</strong>：<span class="arithmatex">\(w_e\in[0.3,0.8]\)</span> 时语义稳定在 .899–.900，且 <span class="arithmatex">\(w_e=0.3\)</span> 比纯语义（.870）还高 +2.9pp，因为基准中实体匹配段落与语义相关正相关；只有 <span class="arithmatex">\(w_e=1.0\)</span> 时语义才崩到 .583——子空间隔离使实体加权只能"重加权"而不能"腐蚀"语义排序。</li>
+<li><strong>语义 NDCG 平台源于信号互补而非无冲突</strong>：<span class="arithmatex">\(w_e\in[0.3,0.8]\)</span>时语义稳定在 .899–.900，且<span class="arithmatex">\(w_e=0.3\)</span>比纯语义（.870）还高 +2.9pp，因为基准中实体匹配段落与语义相关正相关；只有<span class="arithmatex">\(w_e=1.0\)</span> 时语义才崩到 .583——子空间隔离使实体加权只能"重加权"而不能"腐蚀"语义排序。</li>
 <li><strong>生产规模下干扰被放大、ESP 收益被放大</strong>：MTSH 在收入权重 0.99 时损失 28.24% in-batch 召回与 21.19% 离线 KNN 召回；同等收入强调下 ESP 仅损失 0.54%，约 <strong>50×</strong> 改善。7 天线上 A/B 中 <span class="arithmatex">\(w_{d1}=0.3\)</span> 同时取得 +4.01% 收入、+3.95% 投递、+0.92% 点击，且不匹配率降 8.95%。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 MTSH/Uni-Retriever，ESP 把权衡从训练搬到服务时，单模型覆盖整条 Pareto 前沿；相比 MTMH，ESP 只需一个拼接索引与一次加权点积，避免 <span class="arithmatex">\(k\)</span> 套 ANN 与后置合并；相比 ColBERT，ESP 以每文档 1 个向量（<span class="arithmatex">\(k\)</span> 个子空间拼接）达到接近的实体召回，存储与打分成本低一个量级。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 MTSH/Uni-Retriever，ESP 把权衡从训练搬到服务时，单模型覆盖整条 Pareto 前沿；相比 MTMH，ESP 只需一个拼接索引与一次加权点积，避免 <span class="arithmatex">\(k\)</span>套 ANN 与后置合并；相比 ColBERT，ESP 以每文档 1 个向量（<span class="arithmatex">\(k\)</span> 个子空间拼接）达到接近的实体召回，存储与打分成本低一个量级。</li>
 <li><strong>可迁移亮点</strong>: (1) 用原生 EOS + 段边界位置重置实现"零参数子空间隔离"，可直接迁移到任何 RoPE Transformer 双塔的多字段/多目标编码；(2) 按有效秩比例分配子空间维度，对"低分辨率业务目标 + 高分辨率语义目标"的工业组合极具参考价值。</li>
 <li><strong>审稿级局限批判</strong>: (1) 强依赖 GPU 穷举 kNN，与 IVFPQ 等主流划分式 ANN 不兼容，语料规模再上一个量级时系统成本存疑；(2) 依赖上游实体/属性标注器，且开源基准仅 39K 语料、单一实体-语义冲突对，高熵多目标冲突（如语义 vs 主题多样性）场景尚未验证；子空间分数校准（等渗回归）仍留作未来工作。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

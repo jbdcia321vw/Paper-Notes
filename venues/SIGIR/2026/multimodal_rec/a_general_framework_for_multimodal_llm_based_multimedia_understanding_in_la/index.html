@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4271,7 +4282,7 @@
 </table>
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 比例划分（7:1），未说明是否按全局时间戳切分，存在特征穿越风险未澄清。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 非 ranking 指标评测，采用工业标准 <strong>AUC（报告 <span class="arithmatex">\(1-\text{AUC}\)</span> 的相对变化）与 NE（Normalized Entropy，越低越好）</strong> 的多任务平均值；显著性用<strong>多个不重叠独立采样子集上的 paired t-test，<span class="arithmatex">\(p&lt;0.01\)</span></strong>，并声明在该模型复杂度下 <strong>+0.1% 即视为显著</strong>。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 非 ranking 指标评测，采用工业标准 <strong>AUC（报告 <span class="arithmatex">\(1-\text{AUC}\)</span>的相对变化）与 NE（Normalized Entropy，越低越好）</strong> 的多任务平均值；显著性用<strong>多个不重叠独立采样子集上的 paired t-test，<span class="arithmatex">\(p&lt;0.01\)</span></strong>，并声明在该模型复杂度下 <strong>+0.1% 即视为显著</strong>。</li>
 <li><strong>对比基线与超参设置</strong>: 基线为<strong>已含视觉编码器 embedding 拼接的生产模型</strong>（visual-encoder baseline），消融为移除 MM-LLM 特征；变量维度是 tokenizer 类型（A/B）与特征种类（内容特征 vs. 用户兴趣画像）；未报告 embedding 维度与训练超参。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4403,12 +4414,18 @@
 <li><strong>tokenizer 是隐藏的性能杠杆</strong>：同一字幕换用 Tokenizer B，AUC 增益从 0.16% 掉到 0.07%（近乎腰斩），表明离散化粒度/词表设计直接决定语义保真度，是比模型规模更易被忽视的调优点。</li>
 <li><strong>增益集中在高语义表达型行为</strong>：Like 与 Consumption 任务 NE 降幅达 -0.14%，而 Time Spent 仅 -0.04%，印证字幕语义主要帮助"内容偏好匹配"类判断，对纯时长/沉浸度信号的边际贡献有限；线上 A/B 同步取得 +0.02% 互动指标显著提升，且延迟与算力开销中性。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 RLMRec（LLM 生成用户/物品画像文本再嵌入）与 AlphaRec（文本元数据投影进 CF 空间），本文的差异在于<strong>输入是原始图像而非已有文本元数据</strong>，且输出走"离散 token ID 类别特征"而非稠密 embedding，天然兼容工业稀疏特征表；相较 InstructRec/BIGRec 的生成式端到端推荐，本文不做生成式检索，而是把 MM-LLM 降级为<strong>特征生产器</strong>，以工程可行性换取了部署确定性。</li>
 <li><strong>可迁移亮点</strong>: ① "生成式模型输出 → tokenizer → 稀疏类别特征"的解耦范式可平移到视频/音频/商品图文场景，无需改动排序主架构；② 内容 token 与用户行为 token <strong>共享词表</strong>构造兴趣画像，是一种极低成本的用户侧语义对齐技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① <strong>实验可复现性薄弱</strong>——仅单一内部数据集、无公开 benchmark、无用户/物品统计、无负采样与超参披露，+0.02% 线上增益虽称显著但缺乏置信区间与实验时长；② <strong>方法增量偏工程</strong>，三阶段框架与 BLIP-2/LLaMA2 均为现成组件拼装，缺少与视觉 embedding 融合方式的消融（如 concat vs. cross-attention）及 tokenizer 设计的原理性分析；此外"条件触发"策略的触发准则未量化，字幕质量（幻觉、噪声）对排序的负面影响亦未评估。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

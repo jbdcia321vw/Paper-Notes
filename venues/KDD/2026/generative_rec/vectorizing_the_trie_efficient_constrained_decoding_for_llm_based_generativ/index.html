@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/youtube/static-constraint-decoding">https://github.com/youtube/static-constraint-decoding</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>生成式检索（GR）用 LLM 自回归解码 Semantic ID 召回物品，但工业场景需按业务逻辑（新鲜度、品类、库存）限制输出空间，标准解码无法原生支持；而基于前缀树（Trie）的约束解码在 TPU/GPU 上因指针追逐导致严重延迟（CPU Trie 使推理时间翻倍）。本文提出 STATIC，将前缀树离线展平为静态 CSR 稀疏转移矩阵，把不规则树遍历转为全向量化稀疏算子，I/O 复杂度从 <span class="arithmatex">\(O(\log|C|)\)</span> 降至 <span class="arithmatex">\(O(1)\)</span>。在 YouTube 20M 约束词表上每步仅增 0.033ms（占推理 0.25%），较 CPU Trie 加速 948×、较硬件二分基线加速 47–1033×，线上 A/B 中 7 日新鲜视频观看 +5.1%。</p>
+<p>生成式检索（GR）用 LLM 自回归解码 Semantic ID 召回物品，但工业场景需按业务逻辑（新鲜度、品类、库存）限制输出空间，标准解码无法原生支持；而基于前缀树（Trie）的约束解码在 TPU/GPU 上因指针追逐导致严重延迟（CPU Trie 使推理时间翻倍）。本文提出 STATIC，将前缀树离线展平为静态 CSR 稀疏转移矩阵，把不规则树遍历转为全向量化稀疏算子，I/O 复杂度从 <span class="arithmatex">\(O(\log|C|)\)</span>降至<span class="arithmatex">\(O(1)\)</span>。在 YouTube 20M 约束词表上每步仅增 0.033ms（占推理 0.25%），较 CPU Trie 加速 948×、较硬件二分基线加速 47–1033×，线上 A/B 中 7 日新鲜视频观看 +5.1%。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: TIGER/PLUM/OneRec 等用 RQ-VAE 将物品量化为分层 Semantic ID，训练 Transformer 自回归逐 token 解码目标物品，绕过双塔 ANN 索引。</li>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>离线阶段：给定受限词表 <span class="arithmatex">\(\mathcal{C}\subset\mathcal{V}^L\)</span>，在 CPU 上构建前缀树，将每个唯一前缀节点映射为状态整数 <span class="arithmatex">\(s\in[S]\)</span>，展平为 CSR 稀疏转移矩阵 <span class="arithmatex">\(\mathbf{T}\in\mathbb{Z}^{S\times|\mathcal{V}|}\)</span>（行指针 P、列索引 C、目标状态 V 三数组）。在线解码阶段：每步维护每条 beam 的当前节点向量 <span class="arithmatex">\(\mathbf{n}_t\in\mathbb{Z}^{B\times M}\)</span>，前 <span class="arithmatex">\(d\)</span> 层（默认 <span class="arithmatex">\(d=2\)</span>）用稠密布尔掩码张量 <span class="arithmatex">\(\mathbf{D}\)</span> 做 <span class="arithmatex">\(O(1)\)</span> 查表，深层用向量化节点转移核 VNTK 从 CSR 中切片取子节点，经 Scatter 生成稠密掩码，将非法 token 的 log-prob 置 <span class="arithmatex">\(-\infty\)</span> 后进入 beam search，并 Gather 更新节点状态。</p>
+<p>离线阶段：给定受限词表 <span class="arithmatex">\(\mathcal{C}\subset\mathcal{V}^L\)</span>，在 CPU 上构建前缀树，将每个唯一前缀节点映射为状态整数<span class="arithmatex">\(s\in[S]\)</span>，展平为 CSR 稀疏转移矩阵<span class="arithmatex">\(\mathbf{T}\in\mathbb{Z}^{S\times|\mathcal{V}|}\)</span>（行指针 P、列索引 C、目标状态 V 三数组）。在线解码阶段：每步维护每条 beam 的当前节点向量<span class="arithmatex">\(\mathbf{n}_t\in\mathbb{Z}^{B\times M}\)</span>，前<span class="arithmatex">\(d\)</span>层（默认<span class="arithmatex">\(d=2\)</span>）用稠密布尔掩码张量<span class="arithmatex">\(\mathbf{D}\)</span>做<span class="arithmatex">\(O(1)\)</span>查表，深层用向量化节点转移核 VNTK 从 CSR 中切片取子节点，经 Scatter 生成稠密掩码，将非法 token 的 log-prob 置<span class="arithmatex">\(-\infty\)</span> 后进入 beam search，并 Gather 更新节点状态。</p>
 <pre class="mermaid"><code>flowchart TD
     A["受限词表 C (SID 集合)"] --&gt; B["离线构建前缀树 → CSR 稀疏转移矩阵 T"]
     C["LLM 输出 logits L_t"] --&gt; D["LogSoftmax"]
@@ -4247,13 +4258,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>CSR 展平的静态转移矩阵（消除指针追逐）</strong>：痛点是指针树访存随机、无法合并读取。核心算子：对状态 <span class="arithmatex">\(s\)</span> 取 <code>row_start=P[s]</code>、<code>row_end=P[s+1]</code>，切片 <code>C[row_start:row_end]</code> 得合法 token、<code>V[row_start:row_end]</code> 得后继节点。由于约束词表极稀疏（常 ≤0.01% 合法路径），CSR 内存高效；且采用<strong>堆叠 CSR 布局</strong>把 token ID 与后继节点打包为 <span class="arithmatex">\((N_{edges},2)\)</span> 张量，单次合并读取同时取回两者，随机访存减半。</p>
+<p><strong>CSR 展平的静态转移矩阵（消除指针追逐）</strong>：痛点是指针树访存随机、无法合并读取。核心算子：对状态 <span class="arithmatex">\(s\)</span>取 <code>row_start=P[s]</code>、<code>row_end=P[s+1]</code>，切片 <code>C[row_start:row_end]</code> 得合法 token、<code>V[row_start:row_end]</code> 得后继节点。由于约束词表极稀疏（常 ≤0.01% 合法路径），CSR 内存高效；且采用<strong>堆叠 CSR 布局</strong>把 token ID 与后继节点打包为<span class="arithmatex">\((N_{edges},2)\)</span> 张量，单次合并读取同时取回两者，随机访存减半。</p>
 </li>
 <li>
-<p><strong>无分支向量化节点转移核 VNTK（适配静态图编译）</strong>：痛点是各节点子节点数不一，动态分支在 XLA 触发重编译、在 GPU 引发 warp divergence。核心算子：对第 <span class="arithmatex">\(\ell\)</span> 层固定切片长度 <span class="arithmatex">\(B_\ell=\max_{n\in N_\ell} b^\ell_n\)</span>（最大分支因子），用 <code>DynamicSlice</code> 取定长 <span class="arithmatex">\(B_\ell\)</span> 个候选，再用 <code>Range(B_ℓ) &lt; N_child</code> 生成有效性掩码、<code>Where</code> 清洗越界项，最后 <code>Scatter</code> 投影为稠密布尔掩码。这样把"循环 N 次"的动态控制流变为"取定长 B 再掩码"的静态数据流，整个解码步保持单一静态计算图，算术单元满负荷。</p>
+<p><strong>无分支向量化节点转移核 VNTK（适配静态图编译）</strong>：痛点是各节点子节点数不一，动态分支在 XLA 触发重编译、在 GPU 引发 warp divergence。核心算子：对第 <span class="arithmatex">\(\ell\)</span>层固定切片长度<span class="arithmatex">\(B_\ell=\max_{n\in N_\ell} b^\ell_n\)</span>（最大分支因子），用 <code>DynamicSlice</code> 取定长<span class="arithmatex">\(B_\ell\)</span> 个候选，再用 <code>Range(B_ℓ) &lt; N_child</code> 生成有效性掩码、<code>Where</code> 清洗越界项，最后 <code>Scatter</code> 投影为稠密布尔掩码。这样把"循环 N 次"的动态控制流变为"取定长 B 再掩码"的静态数据流，整个解码步保持单一静态计算图，算术单元满负荷。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：本文是<strong>推理期无损优化</strong>，不改变训练目标（标准自回归交叉熵），也不涉及负采样。推理开销：每步仅 +0.033ms（3B 模型推理的 0.25%）；内存约 90MB/百万约束（20M 约束约 1.5GB HBM），可每芯片复制、免跨芯片通信。I/O 复杂度对约束集大小 <span class="arithmatex">\(|C|\)</span> 为 <span class="arithmatex">\(O(1)\)</span>，对最大分支因子为渐近线性 <span class="arithmatex">\(O(B)\)</span>。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：本文是<strong>推理期无损优化</strong>，不改变训练目标（标准自回归交叉熵），也不涉及负采样。推理开销：每步仅 +0.033ms（3B 模型推理的 0.25%）；内存约 90MB/百万约束（20M 约束约 1.5GB HBM），可每芯片复制、免跨芯片通信。I/O 复杂度对约束集大小 <span class="arithmatex">\(|C|\)</span>为<span class="arithmatex">\(O(1)\)</span>，对最大分支因子为渐近线性<span class="arithmatex">\(O(B)\)</span>。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4278,7 +4289,7 @@
 <td style="text-align: center;">1亿–10亿</td>
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">—</td>
-<td style="text-align: left;">SID: <span class="arithmatex">\(L=8\)</span>, <span class="arithmatex">\(\|\mathcal{V}\|=2048\)</span>；约束集为近 7 日 20M 新鲜视频</td>
+<td style="text-align: left;">SID: <span class="arithmatex">\(L=8\)</span>,<span class="arithmatex">\(\|\mathcal{V}\|=2048\)</span>；约束集为近 7 日 20M 新鲜视频</td>
 </tr>
 <tr>
 <td style="text-align: left;">Amazon Beauty</td>
@@ -4286,7 +4297,7 @@
 <td style="text-align: center;">1–2万</td>
 <td style="text-align: center;">—</td>
 <td style="text-align: center;">—</td>
-<td style="text-align: left;">SID: <span class="arithmatex">\(L=4\)</span>, <span class="arithmatex">\(\|\mathcal{V}\|=256\)</span>，RQ-VAE 量化</td>
+<td style="text-align: left;">SID: <span class="arithmatex">\(L=4\)</span>,<span class="arithmatex">\(\|\mathcal{V}\|=256\)</span>，RQ-VAE 量化</td>
 </tr>
 <tr>
 <td style="text-align: left;">Amazon Sports</td>
@@ -4488,7 +4499,7 @@
 <td style="text-align: left;">约束集大小 <span class="arithmatex">\(\|C\|\)</span></td>
 <td style="text-align: center;"><span class="arithmatex">\(10^5\to10^8\)</span></td>
 <td style="text-align: center;">0.023→0.039（近恒定）</td>
-<td style="text-align: left;">PPV Exact 6.4→38.7；CPU Trie 在 <span class="arithmatex">\(10^8\)</span> OOM</td>
+<td style="text-align: left;">PPV Exact 6.4→38.7；CPU Trie 在<span class="arithmatex">\(10^8\)</span> OOM</td>
 </tr>
 <tr>
 <td style="text-align: left;">SID 词表 <span class="arithmatex">\(\|\mathcal{V}\|\)</span></td>
@@ -4499,29 +4510,35 @@
 <tr>
 <td style="text-align: left;">最大分支因子 <span class="arithmatex">\(B\)</span></td>
 <td style="text-align: center;"><span class="arithmatex">\(2^1\to2^{18}\)</span></td>
-<td style="text-align: center;">渐近线性 <span class="arithmatex">\(O(B)\)</span></td>
+<td style="text-align: center;">渐近线性<span class="arithmatex">\(O(B)\)</span></td>
 <td style="text-align: left;">—</td>
 </tr>
 <tr>
 <td style="text-align: left;">稠密层数 <span class="arithmatex">\(d\)</span></td>
-<td style="text-align: center;"><span class="arithmatex">\(d=2\)</span> vs 纯 CSR</td>
-<td style="text-align: center;">前两层 <span class="arithmatex">\(O(1)\)</span> 查表显著降延迟</td>
+<td style="text-align: center;"><span class="arithmatex">\(d=2\)</span>vs 纯 CSR</td>
+<td style="text-align: center;">前两层<span class="arithmatex">\(O(1)\)</span> 查表显著降延迟</td>
 <td style="text-align: left;">—</td>
 </tr>
 </tbody>
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>I/O 复杂度是分水岭</strong>：STATIC 对 <span class="arithmatex">\(|C|\)</span> 从 <span class="arithmatex">\(10^5\)</span> 到 <span class="arithmatex">\(10^8\)</span> 延迟几乎不变（0.023→0.039ms），而 PPV Exact 因 <span class="arithmatex">\(O(\log|C|)\)</span> 二分从 6.4ms 涨到 38.7ms、CPU Trie 在 <span class="arithmatex">\(10^8\)</span> 直接 OOM——证明 <span class="arithmatex">\(O(1)\)</span> 合并读取在大词表下是数量级优势。</li>
-<li><strong>混合稠密+稀疏策略是近恒定扩展的关键</strong>：前 <span class="arithmatex">\(d=2\)</span> 层用稠密掩码吸收高分支，深层稀疏查找的最大分支因子因 <span class="arithmatex">\(|\mathcal{V}|^\ell\)</span> 指数增长而迅速超过 <span class="arithmatex">\(|C|\)</span> 保持很小，故对 <span class="arithmatex">\(|\mathcal{V}|\)</span> 从 256 到 32768 延迟稳定在 ~0.04ms，而 PPV Exact 暴涨 96×。</li>
+<li><strong>I/O 复杂度是分水岭</strong>：STATIC 对 <span class="arithmatex">\(|C|\)</span>从<span class="arithmatex">\(10^5\)</span>到<span class="arithmatex">\(10^8\)</span>延迟几乎不变（0.023→0.039ms），而 PPV Exact 因<span class="arithmatex">\(O(\log|C|)\)</span>二分从 6.4ms 涨到 38.7ms、CPU Trie 在<span class="arithmatex">\(10^8\)</span>直接 OOM——证明<span class="arithmatex">\(O(1)\)</span> 合并读取在大词表下是数量级优势。</li>
+<li><strong>混合稠密+稀疏策略是近恒定扩展的关键</strong>：前 <span class="arithmatex">\(d=2\)</span>层用稠密掩码吸收高分支，深层稀疏查找的最大分支因子因<span class="arithmatex">\(|\mathcal{V}|^\ell\)</span>指数增长而迅速超过<span class="arithmatex">\(|C|\)</span>保持很小，故对<span class="arithmatex">\(|\mathcal{V}|\)</span> 从 256 到 32768 延迟稳定在 ~0.04ms，而 PPV Exact 暴涨 96×。</li>
 <li><strong>约束解码本身即冷启动利器</strong>：不重训模型、仅将解码限制在冷启动物品集，Beauty/Toys 的 2% 冷启动 Recall@1 从 0 跃至 4.29%/4.39%，约为 Dense Retrieval 的 5–9 倍——说明 GR 的冷启动瓶颈部分源于"模型不会生成未见 SID"，而非表征不足。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 DISC-PPV 的扁平排序数组+并行二分（<span class="arithmatex">\(O(\log|C|)\)</span> I/O、且仅验 top-50 logits 为近似解），STATIC 用 CSR 稀疏矩阵实现精确且 <span class="arithmatex">\(O(1)\)</span> 的约束；相比 CPU Trie 的主机-设备往返（+31.3ms），STATIC 全程留在加速器；相比 FST，避免百万级 SID 词表下的状态爆炸（FST 需 4.96GB vs STATIC 1.5GB）与 XLA 不兼容。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 DISC-PPV 的扁平排序数组+并行二分（<span class="arithmatex">\(O(\log|C|)\)</span>I/O、且仅验 top-50 logits 为近似解），STATIC 用 CSR 稀疏矩阵实现精确且<span class="arithmatex">\(O(1)\)</span> 的约束；相比 CPU Trie 的主机-设备往返（+31.3ms），STATIC 全程留在加速器；相比 FST，避免百万级 SID 词表下的状态爆炸（FST 需 4.96GB vs STATIC 1.5GB）与 XLA 不兼容。</li>
 <li><strong>可迁移亮点</strong>: (1) "树/图结构 → 静态 CSR + 定长切片 + 掩码清洗"的无分支向量化范式，可迁移到任何需在加速器上做结构化约束的解码或检索场景；(2) 用约束解码提升冷启动，是一种零重训的推理期干预技巧。</li>
-<li><strong>审稿级局限批判</strong>: (1) 稀疏转移矩阵目前为<strong>离线构建</strong>，实时库存/新鲜度变化需重建或重编译，动态更新尚未支持；(2) 冷启动实验仅在 1–2 万物品的 Amazon 子集、<span class="arithmatex">\(L=4\)</span> 小规模上验证，向工业十亿级语料的泛化性证据不足；内存随 <span class="arithmatex">\(|C|\)</span> 线性增长（~90MB/百万），十亿级约束需分片策略。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: (1) 稀疏转移矩阵目前为<strong>离线构建</strong>，实时库存/新鲜度变化需重建或重编译，动态更新尚未支持；(2) 冷启动实验仅在 1–2 万物品的 Amazon 子集、<span class="arithmatex">\(L=4\)</span>小规模上验证，向工业十亿级语料的泛化性证据不足；内存随<span class="arithmatex">\(|C|\)</span> 线性增长（~90MB/百万），十亿级约束需分片策略。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

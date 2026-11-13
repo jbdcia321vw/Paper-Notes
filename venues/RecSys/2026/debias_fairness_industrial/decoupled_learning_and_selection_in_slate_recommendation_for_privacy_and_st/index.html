@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/mlgorithm/decoupled-slate-recommendation-recsys-2026">https://github.com/mlgorithm/decoupled-slate-recommendation-recsys-2026</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>工业列表推荐普遍是「模型打分 + 规则层选列表」两段式，但 DP、公平、校准等保证只覆盖打分器，规则层（去重、多样性、长度控制、审计日志）的隐私与稳定性无人负责。本文把流程形式化为随机学习算子 <span class="arithmatex">\(\mathcal{L}\)</span> + 确定性选择算子 <span class="arithmatex">\(\mathcal{S}\)</span>，给出两条结论：(1) 隐私仅在选择器侧输入满足「公开/独立、前序 DP 输出、单独记账」契约时经后处理传递到完整链路与审计轨迹；(2) 提出可审计的 margin 证书 <span class="arithmatex">\(M&lt;\Gamma/2\)</span> 保证有序 slate 不变。在 OULAD/EdNet/MovieLens-25M/Amazon 上，锚点权重 <span class="arithmatex">\(w=0.75\)</span> 使 Flip@K 相对无锚点下降 53–81%，固定 margin 实验拟合斜率 <span class="arithmatex">\(-0.220\)</span>（95% CI <span class="arithmatex">\([-0.231,-0.210]\)</span>）逼近理论 <span class="arithmatex">\(-1/4\)</span>。</p>
+<p>工业列表推荐普遍是「模型打分 + 规则层选列表」两段式，但 DP、公平、校准等保证只覆盖打分器，规则层（去重、多样性、长度控制、审计日志）的隐私与稳定性无人负责。本文把流程形式化为随机学习算子 <span class="arithmatex">\(\mathcal{L}\)</span>+ 确定性选择算子<span class="arithmatex">\(\mathcal{S}\)</span>，给出两条结论：(1) 隐私仅在选择器侧输入满足「公开/独立、前序 DP 输出、单独记账」契约时经后处理传递到完整链路与审计轨迹；(2) 提出可审计的 margin 证书<span class="arithmatex">\(M&lt;\Gamma/2\)</span>保证有序 slate 不变。在 OULAD/EdNet/MovieLens-25M/Amazon 上，锚点权重<span class="arithmatex">\(w=0.75\)</span>使 Flip@K 相对无锚点下降 53–81%，固定 margin 实验拟合斜率<span class="arithmatex">\(-0.220\)</span>（95% CI<span class="arithmatex">\([-0.231,-0.210]\)</span>）逼近理论<span class="arithmatex">\(-1/4\)</span>。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 列表推荐 = 学习器打分 + 确定性重排/组装层（MMR 多样性、校准推荐、公平曝光重排、slate size 自适应），后者给定输入完全可复现。</li>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>每轮策略接收候选池 <span class="arithmatex">\(C_t\)</span>，学习算子 <span class="arithmatex">\(\mathcal{L}\)</span> 输出物品分数 <span class="arithmatex">\(\mu_t\)</span>（私有场景下用 DP-SGD，是链路中唯一被分析的随机性来源），确定性选择算子 <span class="arithmatex">\(\mathcal{S}\)</span> 依次执行三阶段：<strong>塑形</strong>（分数 + 目标邻近度 + 探索奖励）→ <strong>组装</strong>（贪心相关性、多样性、新鲜度记忆、slate size <span class="arithmatex">\(K_t\)</span>）→ <strong>固定 item-ID 平局打破</strong>，输出有序 slate <span class="arithmatex">\(S_t\)</span> 与审计轨迹 <span class="arithmatex">\(\tau_t\)</span>。轨迹记录候选身份、杠杆参数、塑形分数、相似度、最终列表与平局规则，使决策可精确重放，并直接提供证书所需的 margin 与扰动包络量。隐私经后处理从 <span class="arithmatex">\(\mathcal{L}\)</span> 传到 <span class="arithmatex">\(\mathcal{S}\)</span> 及 <span class="arithmatex">\(\tau_t\)</span>，但作用域由选择器侧每个非学习器输入的状态决定。</p>
+<p>每轮策略接收候选池 <span class="arithmatex">\(C_t\)</span>，学习算子<span class="arithmatex">\(\mathcal{L}\)</span>输出物品分数<span class="arithmatex">\(\mu_t\)</span>（私有场景下用 DP-SGD，是链路中唯一被分析的随机性来源），确定性选择算子<span class="arithmatex">\(\mathcal{S}\)</span>依次执行三阶段：<strong>塑形</strong>（分数 + 目标邻近度 + 探索奖励）→ <strong>组装</strong>（贪心相关性、多样性、新鲜度记忆、slate size<span class="arithmatex">\(K_t\)</span>）→ <strong>固定 item-ID 平局打破</strong>，输出有序 slate<span class="arithmatex">\(S_t\)</span>与审计轨迹<span class="arithmatex">\(\tau_t\)</span>。轨迹记录候选身份、杠杆参数、塑形分数、相似度、最终列表与平局规则，使决策可精确重放，并直接提供证书所需的 margin 与扰动包络量。隐私经后处理从<span class="arithmatex">\(\mathcal{L}\)</span>传到<span class="arithmatex">\(\mathcal{S}\)</span>及<span class="arithmatex">\(\tau_t\)</span>，但作用域由选择器侧每个非学习器输入的状态决定。</p>
 <pre class="mermaid"><code>flowchart TD
     A["交互日志 D"] --&gt; B["学习算子 L（DP-SGD，唯一随机源）"]
     B --&gt; C["分数 μ_t"]
@@ -4243,19 +4254,19 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>隐私作用域契约（Privacy-Scope Contract）</strong>：痛点是非学习器输入被默认视为「无害」。本文将选择器侧输入分为四类状态：(i) 公开或独立于 <span class="arithmatex">\(D\)</span>；(ii) 前序 DP 输出或其确定性后处理；(iii) 单独 DP 记账的输出（预算需组合）；(iv) 显式条件化输入。仅 (i)–(iii) 支持端到端声明，(iv) 只能得到「以该输入为条件」的弱声明。若每用户最多贡献 <span class="arithmatex">\(B\)</span> 条受保护轮次记录，记录级 <span class="arithmatex">\((\varepsilon,\delta)\)</span>-DP 经群隐私提升为
+<p><strong>隐私作用域契约（Privacy-Scope Contract）</strong>：痛点是非学习器输入被默认视为「无害」。本文将选择器侧输入分为四类状态：(i) 公开或独立于 <span class="arithmatex">\(D\)</span>；(ii) 前序 DP 输出或其确定性后处理；(iii) 单独 DP 记账的输出（预算需组合）；(iv) 显式条件化输入。仅 (i)–(iii) 支持端到端声明，(iv) 只能得到「以该输入为条件」的弱声明。若每用户最多贡献<span class="arithmatex">\(B\)</span>条受保护轮次记录，记录级<span class="arithmatex">\((\varepsilon,\delta)\)</span>-DP 经群隐私提升为
 $<span class="arithmatex">\(\Big(B\varepsilon,\ \delta\sum_{j=0}^{B-1}e^{j\varepsilon}\Big)\text{-DP}.\)</span>$
 直觉：确定性选择器本身不消耗预算，但会把「条件化」伪装成「端到端」，契约把这一漏洞显式化；非私有锚点可支撑稳定性分析，却必须被排除在 DP 声明之外。</p>
 </li>
 <li>
-<p><strong>Margin 证书（Margin-Certified Selector Stability）</strong>：痛点是分数扰动是否改变最终列表缺乏可检验判据。设贪心第 <span class="arithmatex">\(q\)</span> 步参考分数 <span class="arithmatex">\(\mu^0\)</span> 下选中 <span class="arithmatex">\(i_q^0\)</span>，定义步内 margin 与全局 margin
+<p><strong>Margin 证书（Margin-Certified Selector Stability）</strong>：痛点是分数扰动是否改变最终列表缺乏可检验判据。设贪心第 <span class="arithmatex">\(q\)</span>步参考分数<span class="arithmatex">\(\mu^0\)</span>下选中<span class="arithmatex">\(i_q^0\)</span>，定义步内 margin 与全局 margin
 $<span class="arithmatex">\(\Gamma_q=F_{\mu^0_q}(i_q^0\mid S^0_{q-1})-\max_{j\neq i_q^0}F_{\mu^0_q}(j\mid S^0_{q-1}),\quad \Gamma=\min_q\Gamma_q,\)</span>$
-若沿参考轨迹每个候选目标移动满足 <span class="arithmatex">\(|F_\mu(i\mid S^0_{q-1})-F_{\mu^0}(i\mid S^0_{q-1})|\le M\)</span> 且 <span class="arithmatex">\(M&lt;\Gamma/2\)</span>，则 <span class="arithmatex">\(\mu\)</span> 与 <span class="arithmatex">\(\mu^0\)</span> 产生相同有序 slate。直觉：每个候选最多移动 <span class="arithmatex">\(M\)</span>，参考 gap 最多缩 <span class="arithmatex">\(2M\)</span>，<span class="arithmatex">\(\Gamma-2M&gt;0\)</span> 保证归纳每一步贪心选择不变。实现上用事后包络 <span class="arithmatex">\(M_t=(1-\lambda_t)\|\mu-\mu^0\|_\infty\)</span> 做日志不等式健全性检查。</p>
+若沿参考轨迹每个候选目标移动满足 <span class="arithmatex">\(|F_\mu(i\mid S^0_{q-1})-F_{\mu^0}(i\mid S^0_{q-1})|\le M\)</span>且<span class="arithmatex">\(M&lt;\Gamma/2\)</span>，则<span class="arithmatex">\(\mu\)</span>与<span class="arithmatex">\(\mu^0\)</span>产生相同有序 slate。直觉：每个候选最多移动<span class="arithmatex">\(M\)</span>，参考 gap 最多缩<span class="arithmatex">\(2M\)</span>，<span class="arithmatex">\(\Gamma-2M&gt;0\)</span>保证归纳每一步贪心选择不变。实现上用事后包络<span class="arithmatex">\(M_t=(1-\lambda_t)\|\mu-\mu^0\|_\infty\)</span> 做日志不等式健全性检查。</p>
 </li>
 <li>
-<p><strong>锚点混合的 Top-K 翻转界与训练/推理开销</strong>：对原始 top-<span class="arithmatex">\(K\)</span>，margin 退化为锚点 gap <span class="arithmatex">\(\gamma\)</span>（原 top-<span class="arithmatex">\(K\)</span> 与其余候选的分差），成对噪声下翻转概率满足
+<p><strong>锚点混合的 Top-K 翻转界与训练/推理开销</strong>：对原始 top-<span class="arithmatex">\(K\)</span>，margin 退化为锚点 gap<span class="arithmatex">\(\gamma\)</span>（原 top-<span class="arithmatex">\(K\)</span> 与其余候选的分差），成对噪声下翻转概率满足
 $<span class="arithmatex">\(P_{\text{flip}}\lesssim K(|C|-K)\exp\!\Big[-\frac{\gamma^2}{2(1-w)^2\tau^2}\Big],\)</span>$
-独立坐标噪声下指数退化为 <span class="arithmatex">\(-\gamma^2/[4(1-w)^2\sigma^2]\)</span>。锚点分数 <span class="arithmatex">\(\mu^w_t(i)=w\mu^{\text{ALS}}_t(i)+(1-w)\mu^{\text{neural}}_t(i)\)</span>，<span class="arithmatex">\(w\)</span> 越大噪声自适应分数影响越小。训练侧无新增损失项（学习器可为任意 DP 打分器）；推理侧审计只需 <span class="arithmatex">\(O(|C_t|)\)</span> 标量字段与至多 <span class="arithmatex">\(O(K_t|C_t|)\)</span> 次相似度查询，证书监控仅存 <span class="arithmatex">\(O(K_t)\)</span> 个 margin，不引入新的排序 pass。</p>
+独立坐标噪声下指数退化为 <span class="arithmatex">\(-\gamma^2/[4(1-w)^2\sigma^2]\)</span>。锚点分数<span class="arithmatex">\(\mu^w_t(i)=w\mu^{\text{ALS}}_t(i)+(1-w)\mu^{\text{neural}}_t(i)\)</span>，<span class="arithmatex">\(w\)</span>越大噪声自适应分数影响越小。训练侧无新增损失项（学习器可为任意 DP 打分器）；推理侧审计只需<span class="arithmatex">\(O(|C_t|)\)</span>标量字段与至多<span class="arithmatex">\(O(K_t|C_t|)\)</span>次相似度查询，证书监控仅存<span class="arithmatex">\(O(K_t)\)</span> 个 margin，不引入新的排序 pass。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4309,9 +4320,9 @@ $<span class="arithmatex">\(P_{\text{flip}}\lesssim K(|C|-K)\exp\!\Big[-\frac{\g
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 闭环实验按用户划分（seed 42），候选池每轮生成一次并在各模式间复用，保证配对差异归因于学习器/选择器而非召回；会话 <span class="arithmatex">\(T=20\)</span> 轮（另有 <span class="arithmatex">\(T=50\)</span> 长周期变体）。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 原始排序诊断采用全候选池 top-<span class="arithmatex">\(K\)</span>（<span class="arithmatex">\(|C|=100\)</span>，<span class="arithmatex">\(K=10\)</span>），指标为 <span class="arithmatex">\(\text{Flip}@K\)</span> 与 <span class="arithmatex">\(\text{Jaccard}@K\)</span>；闭环指标为每轮尝试数、物品级采纳、轮级正确率、固定 IRT 效用探针、目标值跳变、slate 重叠与 Kendall-<span class="arithmatex">\(\tau\)</span>。固定 margin 实验每格 64 池 × 500 扰动 = 32,000 次试验。</li>
-<li><strong>对比基线与超参设置</strong>: 基线含 Fixed、Greedy-Target、LinUCB、纯 ALS，以及 BKT/DKT/SAKT 三个教育状态追踪器（仅作打分器接口对照）；自适应打分器为双塔（96 隐藏 / 48 嵌入），ALS 为 32 维 5 epoch；锚点权重主实验 <span class="arithmatex">\(w=0.75\)</span>，诊断扫描 <span class="arithmatex">\(w\in\{0,0.5,0.75\}\)</span>；闭环比较为会话级配对 bootstrap 95% CI，sign-test <span class="arithmatex">\(p\)</span> 值仅作探索性描述、未做多重校正。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 闭环实验按用户划分（seed 42），候选池每轮生成一次并在各模式间复用，保证配对差异归因于学习器/选择器而非召回；会话 <span class="arithmatex">\(T=20\)</span>轮（另有<span class="arithmatex">\(T=50\)</span> 长周期变体）。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 原始排序诊断采用全候选池 top-<span class="arithmatex">\(K\)</span>（<span class="arithmatex">\(|C|=100\)</span>，<span class="arithmatex">\(K=10\)</span>），指标为<span class="arithmatex">\(\text{Flip}@K\)</span>与<span class="arithmatex">\(\text{Jaccard}@K\)</span>；闭环指标为每轮尝试数、物品级采纳、轮级正确率、固定 IRT 效用探针、目标值跳变、slate 重叠与 Kendall-<span class="arithmatex">\(\tau\)</span>。固定 margin 实验每格 64 池 × 500 扰动 = 32,000 次试验。</li>
+<li><strong>对比基线与超参设置</strong>: 基线含 Fixed、Greedy-Target、LinUCB、纯 ALS，以及 BKT/DKT/SAKT 三个教育状态追踪器（仅作打分器接口对照）；自适应打分器为双塔（96 隐藏 / 48 嵌入），ALS 为 32 维 5 epoch；锚点权重主实验 <span class="arithmatex">\(w=0.75\)</span>，诊断扫描<span class="arithmatex">\(w\in\{0,0.5,0.75\}\)</span>；闭环比较为会话级配对 bootstrap 95% CI，sign-test<span class="arithmatex">\(p\)</span> 值仅作探索性描述、未做多重校正。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4453,16 +4464,22 @@ $<span class="arithmatex">\(P_{\text{flip}}\lesssim K(|C|-K)\exp\!\Big[-\frac{\g
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>锚点加权是稳定性的主开关，而非效用开关</strong>：<span class="arithmatex">\(w=0.75\)</span> 在三个语料、全部噪声尺度上把 Flip@K 压低 53–81%（如 OULAD <span class="arithmatex">\(\sigma=0.10\)</span> 从 0.603 到 0.216），但闭环效用变化在 OULAD 仅 0.005–0.007、EdNet 更小且方向混杂——作者明确只主张「分数噪声衰减」，不主张通用效用提升。</li>
-<li><strong>证书实现健全但非独立证据</strong>：OULAD 全部 320 个候选池 <span class="arithmatex">\(\gamma\)</span> 与 <span class="arithmatex">\(\Gamma_t\)</span> 为正（中位数 0.0577 / <span class="arithmatex">\(7.33\times10^{-4}\)</span>），3,877 次事后扰动零违例；EdNet 8,000 次扰动同样零违例，但 <span class="arithmatex">\(M_t\)</span> 由已实现扰动算出，属健全性检查而非前瞻性概率保证。</li>
+<li><strong>锚点加权是稳定性的主开关，而非效用开关</strong>：<span class="arithmatex">\(w=0.75\)</span>在三个语料、全部噪声尺度上把 Flip@K 压低 53–81%（如 OULAD<span class="arithmatex">\(\sigma=0.10\)</span> 从 0.603 到 0.216），但闭环效用变化在 OULAD 仅 0.005–0.007、EdNet 更小且方向混杂——作者明确只主张「分数噪声衰减」，不主张通用效用提升。</li>
+<li><strong>证书实现健全但非独立证据</strong>：OULAD 全部 320 个候选池 <span class="arithmatex">\(\gamma\)</span>与<span class="arithmatex">\(\Gamma_t\)</span>为正（中位数 0.0577 /<span class="arithmatex">\(7.33\times10^{-4}\)</span>），3,877 次事后扰动零违例；EdNet 8,000 次扰动同样零违例，但<span class="arithmatex">\(M_t\)</span> 由已实现扰动算出，属健全性检查而非前瞻性概率保证。</li>
 <li><strong>窗口强制选择器换来干净的漂移界，代价不统一</strong>：SCPO 在非松弛轮上给出精确漂移包络 <span class="arithmatex">\(|\bar d(A_{t+1})-\bar d(A_t)|\le\eta+2\Delta_{\max}+w_t+w_{t+1}\)</span>，软窗口 MMR 仅在 &gt;98% 轮对上满足固定窗口事件；但 SCPO 在 OULAD 掉效用、EdNet 反升，说明「证书更干净」与「下游更好」不可互换。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 DP 推荐（DP-SGD 协同过滤等）相比，本文不改进学习器，而是补齐「私有打分器 → top-K/重排/审计日志」这段被默认免费的后处理；与 MMR/校准推荐/公平曝光重排相比，本文不优化重排目标，而是给重排层加隐私作用域与可审计稳定性判据；与 rank-list sensitivity、stability-based private top-K 相比，本文方向相反——把已私有的学习器经确定性选择器传播，且证书是选择时刻的日志量而非训练扰动界。</li>
 <li><strong>可迁移亮点</strong>: ① 「margin + 扰动包络」证书可直接嵌入工业重排层做在线监控，只需 <span class="arithmatex">\(O(K_t)\)</span> 存储且复用选择阶段已算的量；② 锚点混合（固定非自适应打分器 + 自适应打分器凸组合）是抑制在线更新抖动的低成本手段，适合冷启动/探索流量。</li>
-<li><strong>审稿级局限批判</strong>: ① 隐私侧实验未建立采样机制、<span class="arithmatex">\(q\)</span> 的分母与逐轮梯度聚合，标称 <span class="arithmatex">\(\varepsilon\approx0.36/0.16/0.07\)</span> 只能算配置压力测试，非经验证的 <span class="arithmatex">\((\varepsilon,\delta)\)</span> 曲线，且未设用户贡献上限 <span class="arithmatex">\(B\)</span>，无法给出用户级预算；② OULAD/EdNet 无曝光日志，参与度靠模拟器，闭环结论仅为趋势级；证书的零违例是事后健全性检查，且固定 margin 拟合的八格筛选规则未预注册，斜率虽显著偏离 <span class="arithmatex">\(-1/4\)</span> 但解释力有限。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 隐私侧实验未建立采样机制、<span class="arithmatex">\(q\)</span>的分母与逐轮梯度聚合，标称<span class="arithmatex">\(\varepsilon\approx0.36/0.16/0.07\)</span>只能算配置压力测试，非经验证的<span class="arithmatex">\((\varepsilon,\delta)\)</span>曲线，且未设用户贡献上限<span class="arithmatex">\(B\)</span>，无法给出用户级预算；② OULAD/EdNet 无曝光日志，参与度靠模拟器，闭环结论仅为趋势级；证书的零违例是事后健全性检查，且固定 margin 拟合的八格筛选规则未预注册，斜率虽显著偏离<span class="arithmatex">\(-1/4\)</span> 但解释力有限。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

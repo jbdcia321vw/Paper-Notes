@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4241,7 +4252,7 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>Structural Reasoning（结构化推理）</strong>：痛点是无交互时 LLM 直接打分缺乏依据。做法是把历史按偏好因子 <span class="arithmatex">\(f\)</span> 拆成推理路径集合 <span class="arithmatex">\(\{P_f\}\)</span>，对候选 <span class="arithmatex">\(i\)</span> 计算逐路径匹配分 <span class="arithmatex">\(s_f(i)\)</span>，再以 LLM 自评的重要性权重 <span class="arithmatex">\(w_f\)</span>（融合因子显著度、行为类型、时近性）聚合：
+<p><strong>Structural Reasoning（结构化推理）</strong>：痛点是无交互时 LLM 直接打分缺乏依据。做法是把历史按偏好因子 <span class="arithmatex">\(f\)</span>拆成推理路径集合<span class="arithmatex">\(\{P_f\}\)</span>，对候选<span class="arithmatex">\(i\)</span>计算逐路径匹配分<span class="arithmatex">\(s_f(i)\)</span>，再以 LLM 自评的重要性权重<span class="arithmatex">\(w_f\)</span>（融合因子显著度、行为类型、时近性）聚合：
    $<span class="arithmatex">\(S(i)=\sum_{f} w_f \cdot s_f(i),\quad \hat{i}=\arg\max_{i} S(i)\)</span>$
    直觉：把"用户为什么喜欢"显式分解为可核验的证据链，降低 LLM 对冷启动物品的幻觉打分。</p>
 </li>
@@ -4249,7 +4260,7 @@
 <p><strong>Soft Self-Consistency（软自洽）</strong>：经典 Self-Consistency 用严格多数投票聚合多条推理路径，会丢弃路径间的细粒度互补信息。本文改为让 LLM 自主决定优先关注哪些偏好侧面、生成多条路径后做<strong>软摘要融合</strong>而非硬投票。它本质是 Structural Reasoning 的"最简变体"——路径构建与聚合全部交给模型自由发挥，无显式指令约束，因而更省 token、更平衡。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：SFT 用 QLoRA 4-bit 量化、单 epoch、7,252 条来自 Base-Reason 与 Soft Self-Consistency 的成功轨迹混合训练（刻意跨策略混合以抗过拟合）。GRPO 奖励为规则解析式：正确 <span class="arithmatex">\(+1\)</span>、错误 <span class="arithmatex">\(-0.1\)</span>、解析失败 <span class="arithmatex">\(-1\)</span>，并对成功 prompt 过采样（SSC 2,834 条 / Base-Reason 3,484 条）以提升正奖励密度。任务本身是 50 候选重排，无全库负采样环节；推理开销集中在长上下文多路径生成。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：SFT 用 QLoRA 4-bit 量化、单 epoch、7,252 条来自 Base-Reason 与 Soft Self-Consistency 的成功轨迹混合训练（刻意跨策略混合以抗过拟合）。GRPO 奖励为规则解析式：正确 <span class="arithmatex">\(+1\)</span>、错误<span class="arithmatex">\(-0.1\)</span>、解析失败<span class="arithmatex">\(-1\)</span>，并对成功 prompt 过采样（SSC 2,834 条 / Base-Reason 3,484 条）以提升正奖励密度。任务本身是 50 候选重排，无全库负采样环节；推理开销集中在长上下文多路径生成。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4464,12 +4475,18 @@
 <li><strong>SFT 与 GRPO 存在目标错位</strong>：Base-Reason 上 SFT 把 AnyPlay 拉高 8.16% 但 Discovery 仅 +2.63%，GRPO 反之（+5.10% / +18.42%），二者组合只能折中（+7.14% / +7.89%）。这解释了为何冷启动下 SFT+GRPO 无法兼得——训练数据不含冷启动物品，擅长复现熟悉物品的 SFT 与擅长探索的 GRPO 难以协同。</li>
 <li><strong>小样本推理微调可逼近工业级排序模型</strong>：warm-start 下 SSC+SFT+GRPO 的 Discovery 相对提升（+32.61%）比 Netflix 生产模型（+23.91%）高出约 8%，而后者训练于数亿样本与精细调优的奖励机制，本文仅用数千样本与一条三值规则奖励，凸显 LLM 推理范式的性价比。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 Direct-Rec / Base-Reason 等纯提示式 LLM4Rec，本文首次把 <strong>GRPO 强化学习微调</strong>引入冷启动推荐并系统刻画 SFT/RL/混合三者的目标错位；相较传统冷启动方法（依赖侧信息嵌入或元学习），本文完全绕开 ID 嵌入，仅靠语义属性 + 世界知识推理，天然适配"上线即冷启"的流媒体场景。</li>
 <li><strong>可迁移亮点</strong>: ① "按偏好因子拆路径 + 重要性加权聚合"的结构化推理模板可直接迁移到电商/短视频冷启动物品重排；② 三值规则奖励（对/错/解析失败）设计极简且鲁棒，适合作为 LLM 重排任务 RL 微调的默认起点。</li>
 <li><strong>审稿级局限批判</strong>: ① 评测仅为 50 候选列表级重排、单一 Netflix 域、无全库 Full-Ranking，泛化性与统计显著性（未报告 <span class="arithmatex">\(p\)</span> 值或置信区间）存疑；② 冷启动下 SFT+GRPO 反而退化、且推理需长上下文多路径生成，在线延迟与成本未量化，工业落地可行性缺乏证据。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

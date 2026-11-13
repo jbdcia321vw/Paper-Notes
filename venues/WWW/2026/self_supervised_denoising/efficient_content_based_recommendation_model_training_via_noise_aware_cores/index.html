@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>NaCS 分两阶段闭环：<strong>阶段一（选+修）</strong> 从随机初始化模型出发，迭代 <span class="arithmatex">\(N_{choose}\)</span> 轮，每轮在当前模型下用末层梯度解子模优化、从各 batch 选出 <span class="arithmatex">\(k/N_{choose}\)</span> 个样本并入核集，同时用当前核集模型对全量数据做渐进标签自校正（软标签），再在更新后的核集上微调；<strong>阶段二（去噪）</strong> 对核集样本开启 dropout 做 <span class="arithmatex">\(N_{denoise}=10\)</span> 次前向，按损失上界剔除最不确定的 10%，得到最终干净核集用于下游训练。全流程仅需前向 + 末层反传，避免全模型双层优化。</p>
+<p>NaCS 分两阶段闭环：<strong>阶段一（选+修）</strong> 从随机初始化模型出发，迭代 <span class="arithmatex">\(N_{choose}\)</span>轮，每轮在当前模型下用末层梯度解子模优化、从各 batch 选出<span class="arithmatex">\(k/N_{choose}\)</span>个样本并入核集，同时用当前核集模型对全量数据做渐进标签自校正（软标签），再在更新后的核集上微调；<strong>阶段二（去噪）</strong> 对核集样本开启 dropout 做<span class="arithmatex">\(N_{denoise}=10\)</span> 次前向，按损失上界剔除最不确定的 10%，得到最终干净核集用于下游训练。全流程仅需前向 + 末层反传，避免全模型双层优化。</p>
 <pre class="mermaid"><code>flowchart TD
     A["全量数据 D（类别特征）"] --&gt; B["末层梯度 + 子模优化&lt;br/&gt;随机贪心/GPU批并行"]
     B --&gt; C["渐进核集 S"]
@@ -4236,10 +4247,10 @@
 <li>
 <p><strong>Adam 感知的末层梯度子模目标</strong>：痛点是要匹配全量梯度却不想全模型反传。作者把子模目标建立在 Adam 偏差校正后的末层梯度 <span class="arithmatex">\(\hat g^L_{i,t}=\hat m_{i,t}/(\sqrt{\hat v_{i,t}}+\varepsilon)\)</span> 上，目标为
 $<span class="arithmatex">\(\mathcal{S}^*=\arg\max_{|\mathcal{S}|\le k}\Big(C-\sum_{i\in\mathcal{D}}\min_{j\in\mathcal{S}}\|\hat g^L_{i,t}-\hat g^L_{j,t}\|\Big),\)</span>$
-即最小化"每个样本到最近核集样本的梯度距离"之和。该函数单调子模，贪心有 <span class="arithmatex">\(1-1/e\)</span> 保证；再按 batch 分解为式 (10) 的多个子问题并在 GPU 上并行求解随机贪心，把 <span class="arithmatex">\(O(|\mathcal{D}|\times k)\)</span> 降到近线性。直觉：核集只需在梯度空间"覆盖"全量样本的更新方向。</p>
+即最小化"每个样本到最近核集样本的梯度距离"之和。该函数单调子模，贪心有 <span class="arithmatex">\(1-1/e\)</span>保证；再按 batch 分解为式 (10) 的多个子问题并在 GPU 上并行求解随机贪心，把<span class="arithmatex">\(O(|\mathcal{D}|\times k)\)</span> 降到近线性。直觉：核集只需在梯度空间"覆盖"全量样本的更新方向。</p>
 </li>
 <li>
-<p><strong>渐进标签自校正（软标签）</strong>：隐式反馈的 <span class="arithmatex">\(y\in\{0,1\}\)</span> 本身有噪。用 <span class="arithmatex">\(y^*=(1-\epsilon)y+\epsilon\hat y\)</span> 把硬标签软化为模型预测与观测的凸组合，其中 <span class="arithmatex">\(\epsilon=g(t)\times p(\hat y)\)</span>，全局信任 <span class="arithmatex">\(g(t)=\sigma(\beta(t/T-0.5))\)</span> 随训练推进单调上升，局部信任由预测熵 <span class="arithmatex">\(l(\hat y)=1-H(\hat y)/H(u)\)</span> 调制。直觉：训练早期不信模型、保留原标签；后期模型可靠则更多采信预测，从而在核集增长过程中同步"洗掉"错误监督。损失改为对 <span class="arithmatex">\(y^*\)</span> 的 BCE <span class="arithmatex">\(\mathcal{L}_{lc}\)</span>。</p>
+<p><strong>渐进标签自校正（软标签）</strong>：隐式反馈的 <span class="arithmatex">\(y\in\{0,1\}\)</span>本身有噪。用<span class="arithmatex">\(y^*=(1-\epsilon)y+\epsilon\hat y\)</span>把硬标签软化为模型预测与观测的凸组合，其中<span class="arithmatex">\(\epsilon=g(t)\times p(\hat y)\)</span>，全局信任<span class="arithmatex">\(g(t)=\sigma(\beta(t/T-0.5))\)</span>随训练推进单调上升，局部信任由预测熵<span class="arithmatex">\(l(\hat y)=1-H(\hat y)/H(u)\)</span>调制。直觉：训练早期不信模型、保留原标签；后期模型可靠则更多采信预测，从而在核集增长过程中同步"洗掉"错误监督。损失改为对<span class="arithmatex">\(y^*\)</span>的 BCE<span class="arithmatex">\(\mathcal{L}_{lc}\)</span>。</p>
 </li>
 <li>
 <p><strong>MC-Dropout 核集去噪与推理开销</strong>：即便修了标签，极小核集仍残留离群点。对每样本做 10 次 dropout 前向，取损失 95% 上置信界 <span class="arithmatex">\(L_{upper}=m_{loss}+1.96\sqrt{v_{loss}/N_{denoise}}\)</span>，剔除 top-10%。上界同时惩罚"高均值"与"高方差"，精准锁定既难学又不稳的样本。训练侧负样本即原始曝光未点击（CTR 天然负例），无需额外负采样；推理阶段与普通 CTR 模型完全一致，零额外在线开销。</p>
@@ -4412,12 +4423,18 @@ $<span class="arithmatex">\(\mathcal{S}^*=\arg\max_{|\mathcal{S}|\le k}\Big(C-\s
 <li><strong>标签软化优于硬 BCE 与 T-CE</strong>：渐进自校正的软标签在三数据集全面领先；T-CE 因过度丢弃正例反而最差，印证隐式反馈中"正例稀缺、误删代价高"的物理直觉。</li>
 <li><strong>效率与架构可迁移性双赢</strong>：Criteo/Avazu 上 3–4 分钟即可选出 1% 核集，而全量训练需 12.5/11 分钟；自研 GPU 批并行随机贪心较 Submodlib 最高加速 138.65×（朴素贪心 180.74×）；核集在 DeepFM/DCNv2/FinalMLP 间可迁移，MIND 文本推荐上亦稳定优于随机选择。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 CGM 的稠密合成样本，NaCS 直接选真实稀疏样本、无失真且更省存储；相比 DeepCore/Submodlib 的通用无噪假设核集，NaCS 首次把"标签自校正 + 不确定性去噪"嵌入选择循环，专治隐式反馈噪声；相比 D2K 只加速推理，NaCS 真正削减训练数据量。</li>
 <li><strong>可迁移亮点</strong>: ① 末层梯度 + Adam 校正做子模选样，可低成本移植到任何 Embedding+MLP 推荐主干；② MC-Dropout 损失上置信界剔除，是通用的小样本集清洗技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① 随机 8:1:1 划分而非时间切分，未验证概念漂移下的核集时效性；② 去噪比例 10%、<span class="arithmatex">\(\beta=16\)</span>、<span class="arithmatex">\(N_{denoise}=10\)</span> 等超参敏感度仅在附录，且核集选择本身仍需全量前向，数据规模极大时前向成本不可忽略。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

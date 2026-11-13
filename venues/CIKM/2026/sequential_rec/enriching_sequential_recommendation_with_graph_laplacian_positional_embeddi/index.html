@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>仅用训练集交互构造二值矩阵 <span class="arithmatex">\(R\)</span>，令物品邻接 <span class="arithmatex">\(A=R^\top R\)</span> 并置零对角（边权 = 共同消费用户数）；计算对称归一化拉普拉斯 <span class="arithmatex">\(L\)</span> 并做特征分解，取 <span class="arithmatex">\(k\)</span> 个最小非零特征值对应特征向量堆成 <span class="arithmatex">\(P\in\mathbb{R}^{N\times k}\)</span>，经（可选）线性/MLP 投影到 <span class="arithmatex">\(d\)</span> 维后<strong>冻结</strong>为 LPE 查找表。训练与推理时，SASRec 输入层把原来的 <span class="arithmatex">\(E[i_t]+p_t\)</span> 换成 <span class="arithmatex">\(E[i_t]+\alpha\cdot\mathrm{LPE}[i_t]\)</span>，其中 <span class="arithmatex">\(\alpha\)</span> 是唯一新增的可学习标量；因果掩码与有序序列本身继续承担时序信息。整个流程无在线图卷积、无逐层位置旋转、无时间间隔编码。</p>
+<p>仅用训练集交互构造二值矩阵 <span class="arithmatex">\(R\)</span>，令物品邻接<span class="arithmatex">\(A=R^\top R\)</span>并置零对角（边权 = 共同消费用户数）；计算对称归一化拉普拉斯<span class="arithmatex">\(L\)</span>并做特征分解，取<span class="arithmatex">\(k\)</span>个最小非零特征值对应特征向量堆成<span class="arithmatex">\(P\in\mathbb{R}^{N\times k}\)</span>，经（可选）线性/MLP 投影到<span class="arithmatex">\(d\)</span>维后<strong>冻结</strong>为 LPE 查找表。训练与推理时，SASRec 输入层把原来的<span class="arithmatex">\(E[i_t]+p_t\)</span>换成<span class="arithmatex">\(E[i_t]+\alpha\cdot\mathrm{LPE}[i_t]\)</span>，其中<span class="arithmatex">\(\alpha\)</span> 是唯一新增的可学习标量；因果掩码与有序序列本身继续承担时序信息。整个流程无在线图卷积、无逐层位置旋转、无时间间隔编码。</p>
 <pre class="mermaid"><code>flowchart TD
     A["训练集交互 R"] --&gt; B["共现图 A=RᵀR, 去对角"]
     B --&gt; C["归一化拉普拉斯 L=I-D^-1/2 A D^-1/2"]
@@ -4231,19 +4242,19 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>度归一化共现图 + 低频谱坐标（抑制流行度主导）</strong>：若直接用 <span class="arithmatex">\(A\)</span> 或随机游走矩阵，高度数热门物品会垄断前几个特征向量，谱坐标退化为"流行度编码"。改用 <span class="arithmatex">\(L=I-D^{-1/2}AD^{-1/2}\)</span> 后，特征值落在 <span class="arithmatex">\([0,2]\)</span>，最小非零特征向量对应图上最平滑（低频）的分区函数，等价于把物品嵌入到"共现社区坐标"中：
+<p><strong>度归一化共现图 + 低频谱坐标（抑制流行度主导）</strong>：若直接用 <span class="arithmatex">\(A\)</span>或随机游走矩阵，高度数热门物品会垄断前几个特征向量，谱坐标退化为"流行度编码"。改用<span class="arithmatex">\(L=I-D^{-1/2}AD^{-1/2}\)</span>后，特征值落在<span class="arithmatex">\([0,2]\)</span>，最小非零特征向量对应图上最平滑（低频）的分区函数，等价于把物品嵌入到"共现社区坐标"中：
 $<span class="arithmatex">\(L=U\Lambda U^\top,\quad P=[u_2,\dots,u_{k+1}]\)</span>$
 直觉：低频分量刻画"哪些物品属于同一消费语境"，正是序列局部窗口看不到的全局结构。</p>
 </li>
 <li>
-<p><strong>位置槽位的语义替换（零架构改动）</strong>：原式 <span class="arithmatex">\(h_t^{(0)}=E[i_t]+p_t\)</span> 中 <span class="arithmatex">\(p_t\)</span> 只依赖位置 <span class="arithmatex">\(t\)</span>，同一物品在不同位置得到不同偏移；替换为
+<p><strong>位置槽位的语义替换（零架构改动）</strong>：原式 <span class="arithmatex">\(h_t^{(0)}=E[i_t]+p_t\)</span>中<span class="arithmatex">\(p_t\)</span>只依赖位置<span class="arithmatex">\(t\)</span>，同一物品在不同位置得到不同偏移；替换为
 $<span class="arithmatex">\(h_t^{(0)}=E[i_t]+\alpha\cdot\mathrm{LPE}[i_t],\quad \mathrm{LPE}[i]=P_i W_p\ (k\neq d)\)</span>$
 后，偏移只依赖物品身份，<span class="arithmatex">\(\alpha\)</span> 自适应调节结构信号强度。这样位置通道从"序数编码器"变为"结构编码器"，而顺序信息由因果掩码 + 有序输入隐式保留——这也是 NoPE 基线仍然有效、但 LapPE 在 @100 上系统性优于 NoPE 的原因。</p>
 </li>
 <li>
 <p><strong>训练目标、负采样与推理效率</strong>：损失沿用 SASRec+ 的全库 softmax 交叉熵（免负采样）：
 $<span class="arithmatex">\(\mathcal{L}=-\frac{1}{|\mathcal{B}|}\sum_{(u,t)\in\mathcal{B}}\log\frac{\exp(h_t^\top E[y_t])}{\sum_{j\in\mathcal{I}}\exp(h_t^\top E[j])}\)</span>$
-图构造与特征分解仅在训练前执行一次（Lanczos 迭代，时间 <span class="arithmatex">\(O(k|E|+Nk^2)\)</span>、空间 <span class="arithmatex">\(O(|E|+Nk)\)</span>），实测 Beauty 2.52s、Yelp2018 95.86s；在线阶段只多一次查表与标量乘，参数量反而比学习 <span class="arithmatex">\(p_t\)</span> 更少。</p>
+图构造与特征分解仅在训练前执行一次（Lanczos 迭代，时间 <span class="arithmatex">\(O(k|E|+Nk^2)\)</span>、空间<span class="arithmatex">\(O(|E|+Nk)\)</span>），实测 Beauty 2.52s、Yelp2018 95.86s；在线阶段只多一次查表与标量乘，参数量反而比学习<span class="arithmatex">\(p_t\)</span> 更少。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4494,16 +4505,22 @@ $<span class="arithmatex">\(\mathcal{L}=-\frac{1}{|\mathcal{B}|}\sum_{(u,t)\in\m
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>增益不是"删掉 <span class="arithmatex">\(p_t\)</span>"的副产品</strong>：NoPE 在 Beauty 上 R@10 仅 3.39，而 LapPE 达 3.65；Clothing R@100 上 NoPE 6.74 vs. LapPE 8.22，说明冻结谱坐标注入了 <span class="arithmatex">\(p_t\)</span> 与纯无序模型都不具备的结构判别力，且四个数据集 @100 排序指标全部优于 NoPE。</li>
+<li><strong>增益不是"删掉 <span class="arithmatex">\(p_t\)</span>"的副产品</strong>：NoPE 在 Beauty 上 R@10 仅 3.39，而 LapPE 达 3.65；Clothing R@100 上 NoPE 6.74 vs. LapPE 8.22，说明冻结谱坐标注入了<span class="arithmatex">\(p_t\)</span> 与纯无序模型都不具备的结构判别力，且四个数据集 @100 排序指标全部优于 NoPE。</li>
 <li><strong>稀疏数据集受益最大、稠密数据集受益于覆盖率</strong>：Clothing（密度 0.031%）NDCG@10 +24.7%、R@100 +29.0%，因稀疏场景下局部共现窗口信息不足，全局图结构补位价值最高；Yelp2018 上 LapPE 同时拿下最佳 Coverage@100（67.47 vs. SASRec 58.86），精度与目录扩散双赢。</li>
 <li><strong>可学习投影是负向设计，且谱截断存在精度-多样性权衡</strong>：LapPE-MLP 在 Beauty R@10 掉到 3.20、Coverage@10 仅 41.65（SASRec 64.41），说明对冻结谱坐标再做非线性变换会过拟合训练共现模式；Clothing 上 LapPE 精度大涨但 Coverage@10 降至 48.89，低频谱分量把推荐压缩进紧密物品社区，谱频段选择是明确的后续调优维度。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 MCLSR/MRGSRec/GSAU/LOOM 等图-序列混合模型的本质区别是"图只离线用一次"——无额外分支、无对比/蒸馏目标、无融合模块，参数量甚至少于 SASRec；与 RoPE/TiSASRec 相比，不引入逐层位置旋转或成对时间编码，在线开销更低（图 1 显示训练时间相当、推理略快，TiSASRec 显著更慢）。</li>
 <li><strong>可迁移亮点</strong>: ① "冻结谱查找表替换位置槽位"这一 trick 可直接移植到 BERT4Rec、GRU4Rec 及基于 Mamba/MLP 的序列骨干；② 用度归一化拉普拉斯而非原始共现矩阵，是抑制热门物品主导谱空间的低成本通用手段。</li>
 <li><strong>审稿级局限批判</strong>: ① 谱截断 <span class="arithmatex">\(k=d\)</span> 固定取最小非零特征向量，未做频段搜索，Clothing 上覆盖率下滑说明该选择并非普适最优；② 绝对增益量级偏小（Beauty NDCG@10 仅 1.85），且 Yelp2018 上 RoPE 在 NDCG@100/Recall@100 仍略优，方法更像"轻量替代"而非"全面超越"；③ 图需在训练集变化时重算特征分解（Yelp 近 96s），对增量/在线学习场景不友好。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

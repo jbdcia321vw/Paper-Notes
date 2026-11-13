@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4220,7 +4231,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>物品经冻结 CLIP 编码得 <span class="arithmatex">\(e_{img}, e_{txt}\)</span>，与 ID 嵌入 <span class="arithmatex">\(e_{id}\)</span> 一同送入交互专家层：4 个 MLP 专家 <span class="arithmatex">\(E_j\ (j\in\{\text{uni-i},\text{uni-t},\text{syn},\text{rdn}\})\)</span> 各自输出融合表征 <span class="arithmatex">\(e_j\)</span>，分别接序列编码器与预测层。训练时对每个专家额外跑两次"随机向量掩码单模态"的前向，得到 <span class="arithmatex">\(y^{img}, y^{txt}\)</span>，与完整模态预测 <span class="arithmatex">\(y\)</span> 构成锚-正-负三元组，由 4 条交互损失驱动专家分化。推理阶段仅保留完整模态前向，4 个专家输出经自适应融合层按用户序列打分加权得 <span class="arithmatex">\(e_m\)</span>，再走骨干预测。总损失为骨干原生损失 + 交互损失。</p>
+<p>物品经冻结 CLIP 编码得 <span class="arithmatex">\(e_{img}, e_{txt}\)</span>，与 ID 嵌入<span class="arithmatex">\(e_{id}\)</span>一同送入交互专家层：4 个 MLP 专家<span class="arithmatex">\(E_j\ (j\in\{\text{uni-i},\text{uni-t},\text{syn},\text{rdn}\})\)</span>各自输出融合表征<span class="arithmatex">\(e_j\)</span>，分别接序列编码器与预测层。训练时对每个专家额外跑两次"随机向量掩码单模态"的前向，得到<span class="arithmatex">\(y^{img}, y^{txt}\)</span>，与完整模态预测<span class="arithmatex">\(y\)</span>构成锚-正-负三元组，由 4 条交互损失驱动专家分化。推理阶段仅保留完整模态前向，4 个专家输出经自适应融合层按用户序列打分加权得<span class="arithmatex">\(e_m\)</span>，再走骨干预测。总损失为骨干原生损失 + 交互损失。</p>
 <pre class="mermaid"><code>flowchart TD
     A["ID / CLIP 图文嵌入"] --&gt; B["交互专家层: 4×MLP (uni-i/uni-t/syn/rdn)"]
     B --&gt; C["掩码前向: y, y_img, y_txt"]
@@ -4234,13 +4245,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>交互专家层与掩码式 PID 监督（把"协同"变成可监督量）</strong>：痛点是协同信息无标签、不可直接观测。做法是用随机向量 <span class="arithmatex">\(r\)</span> 替换某一模态嵌入（比置零/均值更能抑制残差泄漏），得到 <span class="arithmatex">\(y^{img}=P_j(S_j(E_j(e_{img},r),e_{id}))\)</span> 与 <span class="arithmatex">\(y^{txt}\)</span>。四类专家据此配不同锚-正-负：唯一性专家用 Triplet，<span class="arithmatex">\(\mathcal{L}_{\text{uni-i}}=\max(0, m + d(y,y^{img}) - d(y,y^{txt}))\)</span>；协同专家要求 <span class="arithmatex">\(y\)</span> 同时远离两个单模态扰动，<span class="arithmatex">\(\mathcal{L}_{\text{syn}}=\tfrac12[\text{CosSim}(y,y^{img})+\text{CosSim}(y,y^{txt})]\)</span>；冗余专家反之拉近三者，<span class="arithmatex">\(\mathcal{L}_{\text{rdn}}=1-\tfrac12[\cdot]\)</span>。直觉：<strong>"掩掉一个模态后预测变了多少"正是该模态贡献的因果代理</strong>，协同量即"两模态都在时才出现、缺一即消失"的增量。</p>
+<p><strong>交互专家层与掩码式 PID 监督（把"协同"变成可监督量）</strong>：痛点是协同信息无标签、不可直接观测。做法是用随机向量 <span class="arithmatex">\(r\)</span>替换某一模态嵌入（比置零/均值更能抑制残差泄漏），得到<span class="arithmatex">\(y^{img}=P_j(S_j(E_j(e_{img},r),e_{id}))\)</span>与<span class="arithmatex">\(y^{txt}\)</span>。四类专家据此配不同锚-正-负：唯一性专家用 Triplet，<span class="arithmatex">\(\mathcal{L}_{\text{uni-i}}=\max(0, m + d(y,y^{img}) - d(y,y^{txt}))\)</span>；协同专家要求<span class="arithmatex">\(y\)</span>同时远离两个单模态扰动，<span class="arithmatex">\(\mathcal{L}_{\text{syn}}=\tfrac12[\text{CosSim}(y,y^{img})+\text{CosSim}(y,y^{txt})]\)</span>；冗余专家反之拉近三者，<span class="arithmatex">\(\mathcal{L}_{\text{rdn}}=1-\tfrac12[\cdot]\)</span>。直觉：<strong>"掩掉一个模态后预测变了多少"正是该模态贡献的因果代理</strong>，协同量即"两模态都在时才出现、缺一即消失"的增量。</p>
 </li>
 <li>
-<p><strong>自适应融合层（用户意图粒度的重加权）</strong>：痛点是既有方法只在模态粒度加权，无法区分"独有/协同/冗余"。将四个专家嵌入与 <span class="arithmatex">\(e_{id}\)</span> 拼接过轻量 MLP 得权重 <span class="arithmatex">\(w_j=\mathcal{W}(e_{\text{uni-i}},e_{\text{uni-t}},e_{\text{syn}},e_{\text{rdn}},e_{id})\)</span>，融合为 <span class="arithmatex">\(e_m=\sum_j w_j e_j\)</span>。<span class="arithmatex">\(e_{id}\)</span> 承载序列协同信号，充当用户偏好代理，使权重随序列上下文变化；权重本身即解释性输出（案例中协同权重升至 40.27%）。</p>
+<p><strong>自适应融合层（用户意图粒度的重加权）</strong>：痛点是既有方法只在模态粒度加权，无法区分"独有/协同/冗余"。将四个专家嵌入与 <span class="arithmatex">\(e_{id}\)</span>拼接过轻量 MLP 得权重<span class="arithmatex">\(w_j=\mathcal{W}(e_{\text{uni-i}},e_{\text{uni-t}},e_{\text{syn}},e_{\text{rdn}},e_{id})\)</span>，融合为<span class="arithmatex">\(e_m=\sum_j w_j e_j\)</span>。<span class="arithmatex">\(e_{id}\)</span> 承载序列协同信号，充当用户偏好代理，使权重随序列上下文变化；权重本身即解释性输出（案例中协同权重升至 40.27%）。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{rec}+\mathcal{L}_{exp}\)</span>，其中 <span class="arithmatex">\(\mathcal{L}_{rec}\)</span> 直接继承骨干原生损失（SASRec 用 BCE、STOSA 用 BPR），负采样策略随骨干不变，PRISM 不引入额外负采样。<span class="arithmatex">\(\mathcal{L}_{exp}\)</span> 四项权重 <span class="arithmatex">\(\lambda\)</span> 独立可调（默认搜索区间 0.01–1.0）。推理时掩码分支全部丢弃，仅多出 4 个 MLP 前向，时间/空间复杂度随专家数 <span class="arithmatex">\(N_{exp}=4\)</span> 线性增长，与标准多模态融合同量级。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{rec}+\mathcal{L}_{exp}\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{rec}\)</span>直接继承骨干原生损失（SASRec 用 BCE、STOSA 用 BPR），负采样策略随骨干不变，PRISM 不引入额外负采样。<span class="arithmatex">\(\mathcal{L}_{exp}\)</span>四项权重<span class="arithmatex">\(\lambda\)</span>独立可调（默认搜索区间 0.01–1.0）。推理时掩码分支全部丢弃，仅多出 4 个 MLP 前向，时间/空间复杂度随专家数<span class="arithmatex">\(N_{exp}=4\)</span> 线性增长，与标准多模态融合同量级。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4487,15 +4498,21 @@
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>协同专家是"真增量"而非装饰</strong>：去掉 <span class="arithmatex">\(E_{\text{syn}}\)</span> 后 N@10 从 0.0305 掉到 0.0269（−11.8%），跌幅仅次于文本唯一性专家，证明协同信号无法由单模态信号线性替代；而 t-SNE 上 PRISM 出现第 4 个"图文共现但不重叠"的协同簇，REARM 仅 3 簇，从表征层面佐证了分解的有效性。</li>
-<li><strong>文本主导、冗余最弱</strong>：w/o <span class="arithmatex">\(E_{\text{uni-t}}\)</span> 跌幅最大（N@10 −15.7%），w/o <span class="arithmatex">\(E_{\text{rdn}}\)</span> 跌幅最小（−9.2%），说明 Yelp 场景下文本语义比视觉更直接承载用户意图，冗余信息主要起稳定器作用——这也与超参分析中 <span class="arithmatex">\(\lambda_{\text{rdn}}\)</span> 曲线最平坦（0.5 附近最优、越界几乎不退化）相互印证。</li>
+<li><strong>文本主导、冗余最弱</strong>：w/o <span class="arithmatex">\(E_{\text{uni-t}}\)</span>跌幅最大（N@10 −15.7%），w/o<span class="arithmatex">\(E_{\text{rdn}}\)</span>跌幅最小（−9.2%），说明 Yelp 场景下文本语义比视觉更直接承载用户意图，冗余信息主要起稳定器作用——这也与超参分析中<span class="arithmatex">\(\lambda_{\text{rdn}}\)</span> 曲线最平坦（0.5 附近最优、越界几乎不退化）相互印证。</li>
 <li><strong>个性化重加权不可省且可解释</strong>：w/o AFL 使 N@10 降至 0.0278（−8.9%），与去掉单个专家的损失同量级；案例研究中引入偏好引导后协同权重升至 40.27%，Ground Truth 物品排名显著上移，说明"权重即解释"不是事后附会而是决策路径本身。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 REARM/DGMRec 的"独有-共享"二分 + 正交/图约束，PRISM 首次把 PID 的第三项 synergy 显式建模并给出可监督损失；相比 HM4SR 的层级 MoE 在模态粒度融合，PRISM 的专家按<strong>信息类型</strong>而非模态划分，重加权粒度更细；相比 TedRec 的频域去冗余，PRISM 的掩码三元组监督直接作用于预测空间，与骨干损失天然兼容。</li>
 <li><strong>可迁移亮点</strong>: ①"随机向量掩码 + 预测偏移"可作为任意多源特征（行为域、场景域、跨域）贡献度的通用因果代理监督；②把 <span class="arithmatex">\(e_{id}\)</span> 作为用户偏好代理注入重加权 MLP，是低成本实现"序列感知个性化融合"的轻量范式。</li>
-<li><strong>审稿级局限批判</strong>: ①仅覆盖图文两模态，扩展到音频/视频时专家数与掩码前向数（<span class="arithmatex">\(1+M\)</span>）线性膨胀，训练开销需重新评估；②掩码用随机向量 <span class="arithmatex">\(r\)</span> 的分布与尺度未做敏感性分析，若 <span class="arithmatex">\(r\)</span> 与真实模态分布偏差过大会污染 <span class="arithmatex">\(y^{img}/y^{txt}\)</span> 的语义；③四个 <span class="arithmatex">\(\lambda\)</span> 需网格搜索（0.01–1.0 六档），且最优值在数据集间不一致（<span class="arithmatex">\(\lambda_{\text{uni-i}}\)</span> 最优 0.2、<span class="arithmatex">\(\lambda_{\text{uni-t}}\)</span> 最优 0.05），跨域迁移成本偏高；④评估仅限离线 Leave-One-Out，缺少线上 A/B 与冷启动分桶验证。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ①仅覆盖图文两模态，扩展到音频/视频时专家数与掩码前向数（<span class="arithmatex">\(1+M\)</span>）线性膨胀，训练开销需重新评估；②掩码用随机向量<span class="arithmatex">\(r\)</span>的分布与尺度未做敏感性分析，若<span class="arithmatex">\(r\)</span>与真实模态分布偏差过大会污染<span class="arithmatex">\(y^{img}/y^{txt}\)</span>的语义；③四个<span class="arithmatex">\(\lambda\)</span>需网格搜索（0.01–1.0 六档），且最优值在数据集间不一致（<span class="arithmatex">\(\lambda_{\text{uni-i}}\)</span>最优 0.2、<span class="arithmatex">\(\lambda_{\text{uni-t}}\)</span> 最优 0.05），跨域迁移成本偏高；④评估仅限离线 Leave-One-Out，缺少线上 A/B 与冷启动分桶验证。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

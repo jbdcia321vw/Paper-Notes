@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/theresiavr/robustness-DPFR-recsys-evaluation">https://github.com/theresiavr/robustness-DPFR-recsys-evaluation</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>推荐系统的相关性与物品公平性本质不同，单独度量会给出两个互相矛盾的模型排序，而现有"相关性感知公平"联合度量又常偏向单一维度、尺度不可比。本文提出 DPFR：在测试集真实标签上生成相关性-公平性的帕累托前沿（PF），以模型得分到前沿上由权重 <span class="arithmatex">\(\alpha\)</span> 定位的参考点的距离作为联合分数。在 6 个真实数据集、4 个推荐器 × 3 个公平重排器（16 组 run）上，DPFR 与现有联合度量的模型排序 Kendall <span class="arithmatex">\(\tau\)</span> 显著不一致，且在人工推荐、距离度量、<span class="arithmatex">\(\alpha\)</span> 扰动下表现出更强稳健性。</p>
+<p>推荐系统的相关性与物品公平性本质不同，单独度量会给出两个互相矛盾的模型排序，而现有"相关性感知公平"联合度量又常偏向单一维度、尺度不可比。本文提出 DPFR：在测试集真实标签上生成相关性-公平性的帕累托前沿（PF），以模型得分到前沿上由权重 <span class="arithmatex">\(\alpha\)</span>定位的参考点的距离作为联合分数。在 6 个真实数据集、4 个推荐器 × 3 个公平重排器（16 组 run）上，DPFR 与现有联合度量的模型排序 Kendall<span class="arithmatex">\(\tau\)</span>显著不一致，且在人工推荐、距离度量、<span class="arithmatex">\(\alpha\)</span> 扰动下表现出更强稳健性。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 相关性用 HR/MRR/P/R/MAP/NDCG 逐用户计算后平均；物品公平性用 Jain/QF/Ent/FSat/Gini 基于全库曝光频次计算；另有 IBO/MME/IAA/II-F/AI-F 等"相关性感知公平"联合度量。</li>
@@ -4232,7 +4243,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>给定一对 Rel 度量与 Fair 度量，DPFR 分三步：(1) 用 Oracle2Fair 算法在测试集上生成经验 PF；(2) 按权重 <span class="arithmatex">\(\alpha\)</span> 在 PF 上定位参考点 <span class="arithmatex">\(s_\alpha\)</span>；(3) 计算每个模型得分 <span class="arithmatex">\((x_r, x_f)\)</span> 到 <span class="arithmatex">\(s_\alpha\)</span> 的距离 <span class="arithmatex">\(d\)</span>，距离最小者为综合最优。PF 由真实标签生成，故与模型无关、可跨模型比较；<span class="arithmatex">\(\alpha\)</span> 控制公平-相关性的权衡偏好。</p>
+<p>给定一对 Rel 度量与 Fair 度量，DPFR 分三步：(1) 用 Oracle2Fair 算法在测试集上生成经验 PF；(2) 按权重 <span class="arithmatex">\(\alpha\)</span>在 PF 上定位参考点<span class="arithmatex">\(s_\alpha\)</span>；(3) 计算每个模型得分<span class="arithmatex">\((x_r, x_f)\)</span>到<span class="arithmatex">\(s_\alpha\)</span>的距离<span class="arithmatex">\(d\)</span>，距离最小者为综合最优。PF 由真实标签生成，故与模型无关、可跨模型比较；<span class="arithmatex">\(\alpha\)</span> 控制公平-相关性的权衡偏好。</p>
 <pre class="mermaid"><code>flowchart TD
     A["测试集真实交互 + 候选物品池"] --&gt; B["Oracle 初始化：最大化相关性推荐"]
     B --&gt; C["Oracle2Fair 替换：最热物品→未曝光/最冷物品"]
@@ -4242,15 +4253,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>Oracle2Fair 前沿生成（词法优化 + 替换）</strong>：穷举真实 PF 不可行（Jester 上 <span class="arithmatex">\(n=100,k=10\)</span> 单用户即 <span class="arithmatex">\(\binom{100}{10}\approx 17\)</span> 万亿组合）。作者采用词法优化：先由 Oracle 生成最大相关性推荐（恰有 <span class="arithmatex">\(k\)</span> 个测试物品的用户优先固定；<span class="arithmatex">\(&gt;k\)</span> 者取曝光最少 <span class="arithmatex">\(k\)</span> 个；<span class="arithmatex">\(&lt;k\)</span> 者补以全库曝光最少物品），再迭代将"被推荐次数最多的物品"替换为"未曝光物品→最冷物品"，直至任一物品推荐次数达上界 <span class="arithmatex">\(\lceil km/n\rceil\)</span>。每次替换后按相关性重排以保住 top-weighted 指标。直觉：沿此路径 Fair 单调升、Rel 单调降，天然勾勒前沿。</p>
+<p><strong>Oracle2Fair 前沿生成（词法优化 + 替换）</strong>：穷举真实 PF 不可行（Jester 上 <span class="arithmatex">\(n=100,k=10\)</span>单用户即<span class="arithmatex">\(\binom{100}{10}\approx 17\)</span>万亿组合）。作者采用词法优化：先由 Oracle 生成最大相关性推荐（恰有<span class="arithmatex">\(k\)</span>个测试物品的用户优先固定；<span class="arithmatex">\(&gt;k\)</span>者取曝光最少<span class="arithmatex">\(k\)</span>个；<span class="arithmatex">\(&lt;k\)</span>者补以全库曝光最少物品），再迭代将"被推荐次数最多的物品"替换为"未曝光物品→最冷物品"，直至任一物品推荐次数达上界<span class="arithmatex">\(\lceil km/n\rceil\)</span>。每次替换后按相关性重排以保住 top-weighted 指标。直觉：沿此路径 Fair 单调升、Rel 单调降，天然勾勒前沿。</p>
 </li>
 <li>
 <p><strong>弧长参考点定位（避免点密度偏置）</strong>：PF 上点分布不均，用分位数会偏向密集区。定义前沿长度 <span class="arithmatex">\(\mathrm{lenPF}(T)=\sum_{t=1}^{|T|-1} d_E(x_t,x_{t+1})\)</span>，参考点取
 $<span class="arithmatex">\(t^\*=\arg\min_{j\in[1,|P|-1]}\left|\mathrm{lenPF}(T_j)-\alpha\cdot \mathrm{lenPF}(P)\right|,\quad s_\alpha=x_{t^\*}\)</span>$
-即从最相关端沿弧长走 <span class="arithmatex">\(\alpha\)</span> 比例处。<span class="arithmatex">\(\alpha=0.5\)</span> 为前沿中点，<span class="arithmatex">\(\alpha\)</span> 越大越偏公平。</p>
+即从最相关端沿弧长走 <span class="arithmatex">\(\alpha\)</span>比例处。<span class="arithmatex">\(\alpha=0.5\)</span>为前沿中点，<span class="arithmatex">\(\alpha\)</span> 越大越偏公平。</p>
 </li>
 <li>
-<p><strong>高效近似与训练/推理开销</strong>：完整 PF 生成代价高，故只采样 <span class="arithmatex">\(p\)</span>（如 10）个点：先由物品频次与上界 <span class="arithmatex">\(\lceil km/n\rceil\)</span> 之差估计总替换数 <span class="arithmatex">\(\mathrm{numRep}\)</span>，每 <span class="arithmatex">\(\mathrm{numRep}\,\mathrm{div}\,(p-1)\)</span> 次替换计算一次度量，使 <span class="arithmatex">\(p\)</span> 点在弧长上均匀铺开。DPFR 本身无训练损失；开销集中在一次性 PF 生成（离线、与模型无关，可跨模型复用），推理阶段仅需一次距离计算。</p>
+<p><strong>高效近似与训练/推理开销</strong>：完整 PF 生成代价高，故只采样 <span class="arithmatex">\(p\)</span>（如 10）个点：先由物品频次与上界<span class="arithmatex">\(\lceil km/n\rceil\)</span>之差估计总替换数<span class="arithmatex">\(\mathrm{numRep}\)</span>，每<span class="arithmatex">\(\mathrm{numRep}\,\mathrm{div}\,(p-1)\)</span>次替换计算一次度量，使<span class="arithmatex">\(p\)</span> 点在弧长上均匀铺开。DPFR 本身无训练损失；开销集中在一次性 PF 生成（离线、与模型无关，可跨模型复用），推理阶段仅需一次距离计算。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4425,9 +4436,9 @@ $<span class="arithmatex">\(t^\*=\arg\min_{j\in[1,|P|-1]}\left|\mathrm{lenPF}(T_
 <td style="text-align: left;">两种距离下模型排序 Kendall <span class="arithmatex">\(\tau\)</span> 高一致（图 5(i)）</td>
 </tr>
 <tr>
-<td style="text-align: left;">权衡权重 <span class="arithmatex">\(\alpha\)</span> (RQ4)</td>
-<td style="text-align: left;"><span class="arithmatex">\(\alpha\in[0,1]\)</span> 扫描</td>
-<td style="text-align: left;">DPFR 与 Rel/Fair 的期望一致性随 <span class="arithmatex">\(\alpha\)</span> 单调变化，行为可解释（图 6）</td>
+<td style="text-align: left;">权衡权重 <span class="arithmatex">\(\alpha\)</span>(RQ4)</td>
+<td style="text-align: left;"><span class="arithmatex">\(\alpha\in[0,1]\)</span>扫描</td>
+<td style="text-align: left;">DPFR 与 Rel/Fair 的期望一致性随<span class="arithmatex">\(\alpha\)</span> 单调变化，行为可解释（图 6）</td>
 </tr>
 <tr>
 <td style="text-align: left;">人工推荐 (RQ2/5)</td>
@@ -4450,14 +4461,20 @@ $<span class="arithmatex">\(t^\*=\arg\min_{j\in[1,|P|-1]}\left|\mathrm{lenPF}(T_
 <ol>
 <li><strong>现有联合度量不是帕累托评估的可靠代理</strong>：在 6 个数据集上，IBO 有 4/6 次给出与其他 Joint 度量不同的最优模型；IAA 与 II-F 的最优模型总相同且 4/6 次与 Rel 度量一致——说明它们实质偏向相关性，与 DPFR 排序的 Kendall <span class="arithmatex">\(\tau\)</span> 显著偏低（图 3）。</li>
 <li><strong>"平均"会系统性误判</strong>：图 1 玩具例中 avg 判定模型 A 两方面皆最优（avg=0.55），但 A 距 PF 达 0.582，而 C 仅 0.376；真实数据上 avg 与 DPFR 的排序相关性同样低，且差距在更大数据集与 rank-based 度量（MAP/NDCG）下进一步放大。</li>
-<li><strong>公平不必牺牲相关性</strong>：QK-video/Jester 随机切分使测试物品多样（占全库 64–100%），PF 在 <span class="arithmatex">\(\{MAP,R,NDCG\}\times\{Jain,Ent,Gini\}\)</span> 上逼近 <span class="arithmatex">\((1,1)\)</span>，即存在几乎同时最大化两方面的帕累托最优推荐；而 Lastfm 因人均相关物品更多，PF 更长、权衡更明显。</li>
+<li><strong>公平不必牺牲相关性</strong>：QK-video/Jester 随机切分使测试物品多样（占全库 64–100%），PF 在 <span class="arithmatex">\(\{MAP,R,NDCG\}\times\{Jain,Ent,Gini\}\)</span>上逼近<span class="arithmatex">\((1,1)\)</span>，即存在几乎同时最大化两方面的帕累托最优推荐；而 Lastfm 因人均相关物品更多，PF 更长、权衡更明显。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 IBO/MME/IAA/II-F/AI-F 等 ad hoc 联合度量，DPFR 不引入新公式而是复用现有度量、模块化且可解释为"距可达最优的距离"；相比 avg/COMBSUM/COMBMNZ/Borda/RRF 等聚合或秩融合，DPFR 能给出<strong>性能差距的量化</strong>而非仅模型排序，且避免量纲不可比问题；相比 Ge 等用 Pareto 做多目标<strong>优化</strong>，本文用 Pareto 做<strong>评估</strong>，且 PF 由真实标签而非模型损失生成，模型无关。</li>
 <li><strong>可迁移亮点</strong>: (i) 弧长等距取参考点可推广到任意多目标评测（如多样性-新颖性-相关性）；(ii) 用频次与上界之差估计替换次数、均匀采样 <span class="arithmatex">\(p\)</span> 点的近似策略，可迁移到其他需构造经验前沿的离线基准。</li>
 <li><strong>审稿级局限批判</strong>: (i) PF 生成需在测试集上做大量替换与重排，虽离线复用，但在百万级物品库上的可扩展性未充分验证；(ii) 度量兼容性依赖 PF 斜率非零/非未定义，HR/MRR 及 QF/FSat 在部分数据集上失效，限制了度量组合的通用性；(iii) 仅覆盖个体物品公平与 set-based 度量，group fairness、rank-based 公平度量与随机排序策略未纳入。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

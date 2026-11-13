@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>线上链路四步闭环：上游召回/粗排候选集 <span class="arithmatex">\(\mathcal{V}\)</span> 先经混合模型打分得原始分 <span class="arithmatex">\(y'_v\)</span>；价值对齐模块用全局均值参数 <span class="arithmatex">\(\pi\)</span> 将其映射为锚定空间中的期望值 <span class="arithmatex">\(y_v\)</span>；随后每个业务计划 <span class="arithmatex">\(p\)</span> 独立计算增益 <span class="arithmatex">\(s_{p,v}\)</span>；最后线性聚合得最终排序分 <span class="arithmatex">\(r_v\)</span> 并截断曝光。近线/离线侧持续缓存 <span class="arithmatex">\(y'_v, y_v, s_{p,v}\)</span> 三级分布，聚合成 ROI 看板反哺参数更新，形成"执行—反馈—迭代"闭环。</p>
+<p>线上链路四步闭环：上游召回/粗排候选集 <span class="arithmatex">\(\mathcal{V}\)</span>先经混合模型打分得原始分<span class="arithmatex">\(y'_v\)</span>；价值对齐模块用全局均值参数<span class="arithmatex">\(\pi\)</span>将其映射为锚定空间中的期望值<span class="arithmatex">\(y_v\)</span>；随后每个业务计划<span class="arithmatex">\(p\)</span>独立计算增益<span class="arithmatex">\(s_{p,v}\)</span>；最后线性聚合得最终排序分<span class="arithmatex">\(r_v\)</span>并截断曝光。近线/离线侧持续缓存<span class="arithmatex">\(y'_v, y_v, s_{p,v}\)</span> 三级分布，聚合成 ROI 看板反哺参数更新，形成"执行—反馈—迭代"闭环。</p>
 <pre class="mermaid"><code>flowchart TD
     A["候选集 V + 混合模型原始分 y'"] --&gt; B["价值对齐: y = y'·μ_anchor/μ_score"]
     B --&gt; C["独立 Boosting: s_p = 1_p(v)(w_p·y + b_p)"]
@@ -4235,15 +4246,15 @@
 <li>
 <p><strong>后验价值对齐 (Value Alignment)</strong>：原始分 <span class="arithmatex">\(y'\)</span> 无业务语义，直接加权不可控。用全局均值比做保序线性校准：
 $<span class="arithmatex">\(y_v = F(y'_v \mid \pi) = y'_v \cdot \frac{\mu_{anchor}}{\mu_{score}}\)</span>$
-其中 <span class="arithmatex">\(\mu_{score}\)</span>、<span class="arithmatex">\(\mu_{anchor}\)</span> 分别为原始混合分与锚定指标（有效完播率）的全局均值。因是正比例缩放，<strong>不改变排序</strong>，却把分数变成"预期有效完播概率"，使后续权重 <span class="arithmatex">\(w_p\)</span> 具备"每单位权重换多少完播"的物理直觉。</p>
+其中 <span class="arithmatex">\(\mu_{score}\)</span>、<span class="arithmatex">\(\mu_{anchor}\)</span>分别为原始混合分与锚定指标（有效完播率）的全局均值。因是正比例缩放，<strong>不改变排序</strong>，却把分数变成"预期有效完播概率"，使后续权重<span class="arithmatex">\(w_p\)</span> 具备"每单位权重换多少完播"的物理直觉。</p>
 </li>
 <li>
 <p><strong>独立线性 Boosting 与可加归因</strong>：原系统多计划权重累乘/累加导致耦合。Uniboost 为每个计划单独算增益并线性求和：
 $<span class="arithmatex">\(s_{p,v} = \mathbb{1}_p(v)\,(w_p \cdot y_v + b_p), \qquad r_v = y_v + \sum_{p \in S_{plan}} s_{p,v}\)</span>$
-关键性质是<strong>可加性</strong>：<span class="arithmatex">\(r_v\)</span> 可精确分解为基值 + 各计划贡献，从而支持逐计划成本/收益核算。该范式兼容旧机制——令 <span class="arithmatex">\(w_{ad}=0\)</span>、<span class="arithmatex">\(b_{ad}\)</span> 取 PID 控制器输出即退化为原广告保量；令 <span class="arithmatex">\(w_{cs}\neq 0, b_{cs}=0\)</span> 即退化为传统冷启动 Boost。</p>
+关键性质是<strong>可加性</strong>：<span class="arithmatex">\(r_v\)</span>可精确分解为基值 + 各计划贡献，从而支持逐计划成本/收益核算。该范式兼容旧机制——令<span class="arithmatex">\(w_{ad}=0\)</span>、<span class="arithmatex">\(b_{ad}\)</span>取 PID 控制器输出即退化为原广告保量；令<span class="arithmatex">\(w_{cs}\neq 0, b_{cs}=0\)</span> 即退化为传统冷启动 Boost。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：本文为工业系统论文，<strong>无离线训练损失与负采样设计</strong>——<span class="arithmatex">\(w_p, b_p\)</span> 为人工/数据驱动调节的超参，对齐参数 <span class="arithmatex">\(\pi\)</span> 由近线统计更新。推理开销极低：仅一次标量乘除 + 每计划一次仿射变换 + 线性求和，毫秒级完成，可无缝嵌入现有 Blending 服务。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：本文为工业系统论文，<strong>无离线训练损失与负采样设计</strong>——<span class="arithmatex">\(w_p, b_p\)</span>为人工/数据驱动调节的超参，对齐参数<span class="arithmatex">\(\pi\)</span> 由近线统计更新。推理开销极低：仅一次标量乘除 + 每计划一次仿射变换 + 线性求和，毫秒级完成，可无缝嵌入现有 Blending 服务。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4339,12 +4350,18 @@ $<span class="arithmatex">\(s_{p,v} = \mathbb{1}_p(v)\,(w_p \cdot y_v + b_p), \q
 <li><strong>归因能力直接转化为收益</strong>：ROI 看板识别出 Plan-A 为低效计划，移除后 Duration 从 +0.65% 跃升至 +3.49%、Valued Score 从 +2.54% 升至 +4.13%，证明可加归因不仅是可解释性工具，更是可执行的优化杠杆。</li>
 <li><strong>锚定指标选择有据</strong>：Buy/Interaction/Slide 因极度稀疏且随分数剧烈波动而不适用；Duration 在长尾高分段预测误差显著放大；唯有 Effective Completion 在各分数区间分布均匀、校准误差低且稳定，是内容推荐最稳健的对齐锚点。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较广告域价值对齐工作（目标单一为收入），本文首次解决内容推荐<strong>多面目标下的锚点选择</strong>问题；相较传统 PID 保量与 Boost 加权，本文把"碎片化加权机制"统一为单一仿射范式且保持向后兼容；相较非线性融合重排，本文坚持线性求和以换取严格可加性归因。</li>
 <li><strong>可迁移亮点</strong>: ①"保序均值比校准"是极轻量的分数语义化技巧，可迁移到任何需要把模型分解释为业务期望值的场景；②"独立增益 + 线性聚合"的归因范式可复用到多目标融合与预算分配系统。</li>
 <li><strong>审稿级局限批判</strong>: ①仅有线上 A/B，缺乏公开数据集与离线可复现实验，学术可比性弱；②对齐参数依赖全局均值，分布漂移剧烈时（如大促）可能失准，论文未给出漂移检测与自适应更新策略；③<span class="arithmatex">\(w_p, b_p\)</span> 仍靠人工调节，未形式化为带约束的优化问题。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4232,7 +4243,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>论文的分析闭环为：先定义闭候选重排器（输出仅为检索集 <span class="arithmatex">\(C_u\)</span> 子列表 <span class="arithmatex">\(W_\pi\)</span> 的置换，其余候选按检索序追加于下），再用定理 1 给出其上界，再用 <span class="arithmatex">\(\eta\)</span> 度量重排器对自身天花板的利用比例，最后以五维压力测试证伪"重排优化可破天花板"的假设，并落地为 RAEP 四组件协议（召回诊断分级 / RA-NDCG / <span class="arithmatex">\(\eta\)</span> / 自适应 K）。</p>
+<p>论文的分析闭环为：先定义闭候选重排器（输出仅为检索集 <span class="arithmatex">\(C_u\)</span>子列表<span class="arithmatex">\(W_\pi\)</span>的置换，其余候选按检索序追加于下），再用定理 1 给出其上界，再用<span class="arithmatex">\(\eta\)</span>度量重排器对自身天花板的利用比例，最后以五维压力测试证伪"重排优化可破天花板"的假设，并落地为 RAEP 四组件协议（召回诊断分级 / RA-NDCG /<span class="arithmatex">\(\eta\)</span> / 自适应 K）。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户画像 X_u + 全库 I"] --&gt; B["检索器 R：K=100 候选 C_u&lt;br/&gt;Recall@100 = 2–19%"]
     B --&gt; C["重排窗口 W_π ⊆ C_u&lt;br/&gt;|W_π| ∈ {30, 100}"]
@@ -4242,17 +4253,17 @@
     D -.-&gt; G["η = NDCG@10 / Recall@|W_π| ≤ 16%"]</code></pre>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>定理 1：召回天花板（Recall Ceiling）</strong>：针对"重排器能力"与"候选集质量"被混为一谈的痛点，作者对任意形如 <span class="arithmatex">\(M@k(\sigma,Y_u)=\sum_{i\ge1} a_i b_i / Z(Y_u)\)</span>（<span class="arithmatex">\(a_i\ge0\)</span> 为增益、<span class="arithmatex">\(b_1\ge b_2\ge\cdots\ge0\)</span> 为位置折扣）的 top-k 指标，用重排不等式证明最优置换必为"把 <span class="arithmatex">\(W_\pi\cap Y_u\)</span> 全部前置"的 Oracle 置换，故</li>
+<li><strong>定理 1：召回天花板（Recall Ceiling）</strong>：针对"重排器能力"与"候选集质量"被混为一谈的痛点，作者对任意形如 <span class="arithmatex">\(M@k(\sigma,Y_u)=\sum_{i\ge1} a_i b_i / Z(Y_u)\)</span>（<span class="arithmatex">\(a_i\ge0\)</span>为增益、<span class="arithmatex">\(b_1\ge b_2\ge\cdots\ge0\)</span>为位置折扣）的 top-k 指标，用重排不等式证明最优置换必为"把<span class="arithmatex">\(W_\pi\cap Y_u\)</span> 全部前置"的 Oracle 置换，故</li>
 </ol>
 <div class="arithmatex">\[\mathbb{E}_u\big[M@k(\pi(C_u),Y_u)\big] \le \mathbb{E}_u\big[M^*@k(W_\pi,Y_u)\big].\]</div>
-<p>其价值在于<strong>一个证明覆盖 NDCG/Hit/Recall/MAP/RBP/ERR</strong>，无需逐指标分析；且上界由 <span class="arithmatex">\(|W_\pi|\)</span>（重排器实际看到的窗口）而非检索预算 <span class="arithmatex">\(K\)</span> 决定——这是本文相对"检索决定重排"这一朴素直觉的关键增量。</p>
+<p>其价值在于<strong>一个证明覆盖 NDCG/Hit/Recall/MAP/RBP/ERR</strong>，无需逐指标分析；且上界由 <span class="arithmatex">\(|W_\pi|\)</span>（重排器实际看到的窗口）而非检索预算<span class="arithmatex">\(K\)</span> 决定——这是本文相对"检索决定重排"这一朴素直觉的关键增量。</p>
 <ol>
-<li><strong>两个特化推论与 <span class="arithmatex">\(\eta\)</span> 利用率</strong>：LOO 单正例下退化为 <span class="arithmatex">\(\mathbb{E}[\mathrm{NDCG}@k] \le \mathrm{Recall}@|W_\pi|\)</span>（因 <span class="arithmatex">\(\mathbb{E}[\mathrm{NDCG}|R_u{=}1]\le1\)</span>）；多正例下退化为恢复集 IDCG 比 <span class="arithmatex">\(\mathbb{E}[\mathrm{IDCG}_k(|W_\pi\cap Y_u|)/\mathrm{IDCG}_k(|Y_u|)]\)</span>。据此定义</li>
+<li><strong>两个特化推论与 <span class="arithmatex">\(\eta\)</span>利用率</strong>：LOO 单正例下退化为<span class="arithmatex">\(\mathbb{E}[\mathrm{NDCG}@k] \le \mathrm{Recall}@|W_\pi|\)</span>（因<span class="arithmatex">\(\mathbb{E}[\mathrm{NDCG}|R_u{=}1]\le1\)</span>）；多正例下退化为恢复集 IDCG 比<span class="arithmatex">\(\mathbb{E}[\mathrm{IDCG}_k(|W_\pi\cap Y_u|)/\mathrm{IDCG}_k(|Y_u|)]\)</span>。据此定义</li>
 </ol>
 <div class="arithmatex">\[\eta_\pi=\frac{\mathbb{E}_{u:r_u&gt;0}[\mathrm{NDCG}@k(\pi)]}{\mathbb{E}_{u:r_u&gt;0}[\mathrm{NDCG}^*@k(W_\pi,Y_u)]},\]</div>
 <p>即重排器榨取了自身可达空间的多少。<strong>必须用各自窗口作分母</strong>：列表式 LLM 只看 top-30，若误用 Recall@100 作分母会把 <span class="arithmatex">\(\eta\)</span> 低估 2.6–2.8×（Beauty 上 Recall@30=3.21% vs Recall@100=8.23%）。</p>
 <ol>
-<li><strong>训练目标、负采样与推理效率</strong>：本文无自研损失函数；监督重排器（LambdaMART/RankNet/MLP）以 CF embedding 为特征、在<strong>与评测用户不相交的 250 用户训练池</strong>上训练（这是对前版数据泄漏的自我更正）。LoRA 配置为 LLaMA-3.2-3B-Instruct、<span class="arithmatex">\(r{=}16/\alpha{=}32\)</span> QLoRA、作用于 <span class="arithmatex">\(\{q,k,v,o\}\)</span> proj、pointwise 二分类头、3 epoch。推理成本方面：DeepSeek-V4 开启 thinking 后耗时 200–500 s/用户（vs 无思考 &lt;1 s），成本约 37×（$4.75 vs $0.13 / 500 用户），而效果反而显著更差。</li>
+<li><strong>训练目标、负采样与推理效率</strong>：本文无自研损失函数；监督重排器（LambdaMART/RankNet/MLP）以 CF embedding 为特征、在<strong>与评测用户不相交的 250 用户训练池</strong>上训练（这是对前版数据泄漏的自我更正）。LoRA 配置为 LLaMA-3.2-3B-Instruct、<span class="arithmatex">\(r{=}16/\alpha{=}32\)</span>QLoRA、作用于<span class="arithmatex">\(\{q,k,v,o\}\)</span>proj、pointwise 二分类头、3 epoch。推理成本方面：DeepSeek-V4 开启 thinking 后耗时 200–500 s/用户（vs 无思考 &lt;1 s），成本约 37×（<span class="arithmatex">\(4.75 vs\)</span>0.13 / 500 用户），而效果反而显著更差。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4319,7 +4330,7 @@
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p><strong>表 A：Oracle vs. 真实检索的 NDCG@10 鸿沟</strong>（Gemma3-4B, <span class="arithmatex">\(K{=}100\)</span>, <span class="arithmatex">\(n{=}500\)</span>）</p>
+<p><strong>表 A：Oracle vs. 真实检索的 NDCG@10 鸿沟</strong>（Gemma3-4B, <span class="arithmatex">\(K{=}100\)</span>,<span class="arithmatex">\(n{=}500\)</span>）</p>
 <table>
 <thead>
 <tr>
@@ -4586,7 +4597,7 @@
 <tr>
 <td style="text-align: left;">学习式级联</td>
 <td style="text-align: left;">LambdaMART 12 特征</td>
-<td style="text-align: left;">Beauty +57% (<span class="arithmatex">\(p{=}.26\)</span>, <span class="arithmatex">\(\eta{=}9.7\)</span>%)，Movies −44%</td>
+<td style="text-align: left;">Beauty +57% (<span class="arithmatex">\(p{=}.26\)</span>,<span class="arithmatex">\(\eta{=}9.7\)</span>%)，Movies −44%</td>
 <td style="text-align: left;">特征重要性由 CF 类信号主导</td>
 </tr>
 <tr>
@@ -4600,15 +4611,21 @@
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
 <li><strong>Oracle 协议的系统性高估是量级性的，而非边际性的</strong>：三个主数据集上 Oracle 报出 .086–.104 的 NDCG@10，真实检索下坍缩至 .005–.007，差距 92.4–94.9%；且该差距在 NDCG/Hit/MAP 上一致为 76–96%，说明这不是指标选择问题。Beauty 上 8% 召回意味着 <strong>92% 的用户候选集中根本没有任何相关物品</strong>，对这些用户所有重排器的 NDCG 恒为 0。</li>
-<li><strong>双重失败：天花板低 + 利用率更低</strong>：Beauty 上 <span class="arithmatex">\(\eta\)</span> 在 9 个 LLM 中仅 4.9%–15.7%，在 3 个全窗口监督重排器与 LoRA 微调模型中仅 7.0%–10.4%，<strong>无一超过 16%</strong>。这意味着即便把召回从 8.23% 提到 12.33%（LightGCN-Tuned），重排器能兑现的增量仍被 <span class="arithmatex">\(\eta\)</span> 二次压缩——投资于提示/规模/训练信号，本质是在投资一个经验上极小的 <span class="arithmatex">\(\eta\)</span>。</li>
-<li><strong>"给 LLM 更多结构化信号"的收益机制是服从而非增益</strong>：分数感知提示把 Beauty 差距从 −36.7% 收窄到 −15.3%，但同时 Kendall <span class="arithmatex">\(\tau\)</span> 从 .881 升至 .946；在评测用户上调参的 LLM+CF 凸融合最优解为 <span class="arithmatex">\(\lambda{=}0.7\)</span>–<span class="arithmatex">\(0.8\)</span>（CF 主导），最终<strong>恰好恢复 CF 本身</strong>（Beauty .0051）。这直接证伪了"LLM 欠缺 CF 分数信息"这一常见辩护。</li>
+<li><strong>双重失败：天花板低 + 利用率更低</strong>：Beauty 上 <span class="arithmatex">\(\eta\)</span>在 9 个 LLM 中仅 4.9%–15.7%，在 3 个全窗口监督重排器与 LoRA 微调模型中仅 7.0%–10.4%，<strong>无一超过 16%</strong>。这意味着即便把召回从 8.23% 提到 12.33%（LightGCN-Tuned），重排器能兑现的增量仍被<span class="arithmatex">\(\eta\)</span>二次压缩——投资于提示/规模/训练信号，本质是在投资一个经验上极小的<span class="arithmatex">\(\eta\)</span>。</li>
+<li><strong>"给 LLM 更多结构化信号"的收益机制是服从而非增益</strong>：分数感知提示把 Beauty 差距从 −36.7% 收窄到 −15.3%，但同时 Kendall <span class="arithmatex">\(\tau\)</span>从 .881 升至 .946；在评测用户上调参的 LLM+CF 凸融合最优解为<span class="arithmatex">\(\lambda{=}0.7\)</span>–<span class="arithmatex">\(0.8\)</span>（CF 主导），最终<strong>恰好恢复 CF 本身</strong>（Beauty .0051）。这直接证伪了"LLM 欠缺 CF 分数信息"这一常见辩护。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相对 LLMRank [11]（同时报告两种 regime 但未测召回、未建立联系，<span class="arithmatex">\(K{=}20\)</span>、目录仅 3,706/16,859）与 EXP3RT [16]（20 个 CF 候选、小目录），本文的增量是<strong>显式上界 + 实测鸿沟 + 部署级操作点</strong>（<span class="arithmatex">\(K{=}100\)</span>、<span class="arithmatex">\(|\mathcal{I}|\)</span> 达 53,709）。作者亦明确声明 TALLRec（单物品二分类、报 AUC）、GPT4Rec（生成查询后全库 BM25 检索）、RankGPT（段落检索而非推荐）<strong>不属于</strong>其批判范围——这种协议审计的严谨度在同类批判性论文中少见。</li>
-<li><strong>可迁移亮点</strong>: ① <strong><span class="arithmatex">\(\eta\)</span> 利用率指标</strong>可移植到任何"召回-精排"级联诊断，只需把分母换成重排器自身窗口的 Oracle 上界；② <strong>RAEP 四组件</strong>（CRITICAL/LOW/MODERATE/ADEQUATE 分级 + RA-NDCG + <span class="arithmatex">\(\eta\)</span> + 自适应 K）可直接作为 LLM4Rec 论文的评测 checklist；③ 数据泄漏自查方法（重叠/不相交半集/独立干净池三协议复现）值得所有监督重排工作借鉴。</li>
-<li><strong>审稿级局限批判</strong>: ① <strong>统计功效不足</strong>：<span class="arithmatex">\(n{=}500\)</span> 下 92–97% 用户 NDCG 并列于 0，有效非零样本仅 15–40，作者自承无法检测 <span class="arithmatex">\(d&lt;0.10\)</span> 的效应，因此"无显著提升"部分等价于"无证据"，而非"证明无效"；② <strong>regime 外推风险</strong>：所测召回仅 2–19%，生产系统若召回 ≥30%（RAEP 的 ADEQUATE 档）则天花板显著放松，本文结论未必成立，作者对此有明确免责但削弱了实践指导力；③ <strong>Electronics 为 ASIN-only 空对照</strong>，其 LLM 结果（<span class="arithmatex">\(\tau{=}1.000\)</span>）不构成语义重排证据，却被计入"三数据集均无提升"的总结论，略微放大了结论的覆盖面；④ 密度-召回回归仅 <span class="arithmatex">\(R^2{=}0.39\)</span>（<span class="arithmatex">\(n{=}8\)</span>），属描述性观察而非可预测模型。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐（定理本身不惊人，但 <span class="arithmatex">\(\eta\)</span> 与协议审计的组合有真正的方法论价值）| 实验扎实度 ⭐⭐⭐⭐⭐（五维压力测试 + 自我更正数据泄漏 + 全量代码/JSON 开源，$1.24 API 成本可完全复现）| 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐（对 LLM4Rec 社区是一记必要的冷水，但受限于低召回 regime）</li>
+<li><strong>可迁移亮点</strong>: ① <strong><span class="arithmatex">\(\eta\)</span>利用率指标</strong>可移植到任何"召回-精排"级联诊断，只需把分母换成重排器自身窗口的 Oracle 上界；② <strong>RAEP 四组件</strong>（CRITICAL/LOW/MODERATE/ADEQUATE 分级 + RA-NDCG +<span class="arithmatex">\(\eta\)</span> + 自适应 K）可直接作为 LLM4Rec 论文的评测 checklist；③ 数据泄漏自查方法（重叠/不相交半集/独立干净池三协议复现）值得所有监督重排工作借鉴。</li>
+<li><strong>审稿级局限批判</strong>: ① <strong>统计功效不足</strong>：<span class="arithmatex">\(n{=}500\)</span>下 92–97% 用户 NDCG 并列于 0，有效非零样本仅 15–40，作者自承无法检测<span class="arithmatex">\(d&lt;0.10\)</span>的效应，因此"无显著提升"部分等价于"无证据"，而非"证明无效"；② <strong>regime 外推风险</strong>：所测召回仅 2–19%，生产系统若召回 ≥30%（RAEP 的 ADEQUATE 档）则天花板显著放松，本文结论未必成立，作者对此有明确免责但削弱了实践指导力；③ <strong>Electronics 为 ASIN-only 空对照</strong>，其 LLM 结果（<span class="arithmatex">\(\tau{=}1.000\)</span>）不构成语义重排证据，却被计入"三数据集均无提升"的总结论，略微放大了结论的覆盖面；④ 密度-召回回归仅<span class="arithmatex">\(R^2{=}0.39\)</span>（<span class="arithmatex">\(n{=}8\)</span>），属描述性观察而非可预测模型。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （定理本身不惊人，但 <span class="arithmatex">\(\eta\)</span>与协议审计的组合有真正的方法论价值）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （五维压力测试 + 自我更正数据泄漏 + 全量代码/JSON 开源，$1.24 API 成本可完全复现）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （对 LLM4Rec 社区是一记必要的冷水，但受限于低召回 regime）</li>
 </ul>
 
 

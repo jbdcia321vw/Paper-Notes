@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>第一阶段构建教师 <span class="arithmatex">\(M_t\)</span>：以 Qwen3-8B 为底座，先在 700 万多任务领域语料（query 理解、service 理解、双向生成、pointwise/pairwise/setwise 相关性共 7 类任务）上做 CPT 注入平台知识；再在 3.4 万条人工标注推理链上 SFT 激发推理格式；最后用五维奖励模型 + GRPO 做偏好优化，产出可靠推理路径。该教师为 268 万搜索日志对自动打标（标签 + 推理链）。第二阶段训练 6 层中文 BERT 学生 <span class="arithmatex">\(M_s\)</span>：通过 CRSD 将"标准输入"与"推理增强输入"两种配置构成师生对，用批内对比对齐 + 双路分类损失联合优化，推理时仅需标准输入。</p>
+<p>第一阶段构建教师 <span class="arithmatex">\(M_t\)</span>：以 Qwen3-8B 为底座，先在 700 万多任务领域语料（query 理解、service 理解、双向生成、pointwise/pairwise/setwise 相关性共 7 类任务）上做 CPT 注入平台知识；再在 3.4 万条人工标注推理链上 SFT 激发推理格式；最后用五维奖励模型 + GRPO 做偏好优化，产出可靠推理路径。该教师为 268 万搜索日志对自动打标（标签 + 推理链）。第二阶段训练 6 层中文 BERT 学生<span class="arithmatex">\(M_s\)</span>：通过 CRSD 将"标准输入"与"推理增强输入"两种配置构成师生对，用批内对比对齐 + 双路分类损失联合优化，推理时仅需标准输入。</p>
 <pre class="mermaid"><code>flowchart TD
     A["700万多任务领域语料"] --&gt; B["CPT: 领域知识注入"]
     B --&gt; C["SFT: 3.4万人工推理链"]
@@ -4238,7 +4249,7 @@ $<span class="arithmatex">\(R_{\text{final}} = \alpha \cdot R_{\text{thinking}} 
 其中 <span class="arithmatex">\(R_{\text{thinking}}\)</span> 为前四维均值。奖励模型与专家一致率达 89.77%，稠密信号迫使策略不仅答对、还要"按对的方式想"。</p>
 </li>
 <li>
-<p><strong>对比推理自蒸馏 (CRSD)</strong>：跨架构对齐的痛点在于外部句向量编码器与 BERT 语义空间错位，监督是"间接"的。CRSD 改为<strong>同模型自对齐</strong>：教师配置输入 <code>&lt;query, service, reason&gt;</code> 得 <span class="arithmatex">\(\text{cls}^r_i\)</span>，学生配置输入 <code>&lt;query, service&gt;</code> 得 <span class="arithmatex">\(\text{cls}_i\)</span>，批内以同样本为正对、跨样本为负对做 InfoNCE：
+<p><strong>对比推理自蒸馏 (CRSD)</strong>：跨架构对齐的痛点在于外部句向量编码器与 BERT 语义空间错位，监督是"间接"的。CRSD 改为<strong>同模型自对齐</strong>：教师配置输入 <code>&lt;query, service, reason&gt;</code> 得 <span class="arithmatex">\(\text{cls}^r_i\)</span>，学生配置输入 <code>&lt;query, service&gt;</code> 得<span class="arithmatex">\(\text{cls}_i\)</span>，批内以同样本为正对、跨样本为负对做 InfoNCE：
 $<span class="arithmatex">\(\mathcal{L}_{\text{align}} = -\sum_{i=1}^{N}\log\frac{\exp(\text{sim}(\text{cls}_i,\text{cls}^r_i)/\tau)}{\sum_{j=1}^{N}\exp(\text{sim}(\text{cls}_i,\text{cls}^r_j)/\tau)}\)</span>$
 直觉：强迫标准输入下的表征"靠近自己看过推理链时的表征、远离他人的表征"，从而把推理逻辑压入参数而非依赖显式文本。</p>
 </li>
@@ -4434,12 +4445,18 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{align}} = -\sum_{i=1}^{N}\log\fra
 <li><strong>稠密过程奖励优于稀疏结果奖励</strong>：加权 GRPO 相比仅标签奖励再涨 Macro F1 0.7101→0.7174，验证"答对且想对"的奖励设计确实抑制了 reward hacking。</li>
 <li><strong>推理链的语义内容而非长度是增益来源</strong>：去掉推理路径后性能回落到基线（0.6947），喂随机推理链甚至低于基线（0.6918），证明 CRSD 的收益来自真实逻辑对齐而非输入变长或结构伪影；最终学生保留教师 98.6% 的 Macro F1，线上坏案例率下降 30.5 个百分点。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 Agrawal 等用外部句向量编码器对齐推理路径的做法，CRSD 消除了跨模型语义空间错位，且不依赖额外编码器；相比 Shang 等在 Walmart 的 LLM 蒸馏实践，本文额外解决了教师本身的领域适配问题；相比 DisRanker 的 pointwise+margin-MSE 蒸馏，本文迁移的是"过程"而非仅分数分布。</li>
 <li><strong>可迁移亮点</strong>: ① "同模型双输入配置"是绕开异构架构对齐的通用技巧，可迁移到任何"富输入训练、贫输入推理"的场景（如多模态缺失、长上下文压缩）；② 五维奖励分解 + 加权 GRPO 可直接复用于其他需要可解释中间过程的判别任务。</li>
 <li><strong>审稿级局限批判</strong>: ① 全部实验基于美团私有数据，缺乏公开基准复现，教师三步流程（700 万 CPT + 人工标注 + RL）成本高昂，中小团队难以复制；② 超参 <span class="arithmatex">\(\gamma,\delta\)</span> 固定为 0.01 未做敏感性分析，且三分类标签分布严重不均衡（相关类占 72.1%），Macro F1 提升幅度有限（相对基线约 +1.9%），泛化到多级细粒度相关性尚待验证。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

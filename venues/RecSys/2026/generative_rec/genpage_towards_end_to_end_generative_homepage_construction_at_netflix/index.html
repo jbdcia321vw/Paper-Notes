@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4365,12 +4376,18 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{WBC}}=-\sum_{t} w_t\big[y_t\log\s
 <li><strong>上下文丰富度 &gt; 模型容量</strong>：容量扩 7.5× 仅降 loss 1.3%，而 prompt 丰富化累计降 6.9%，单次优质上下文增补即可超过全部容量扩展——当前瓶颈在信息与表征而非参数。</li>
 <li><strong>RL 意外提升多样性</strong>：多样性并非 RL 目标，但训练中页面实体两两嵌入距离显著上升，说明策略在整体优化页面而非逐 token 短视优化；同时线上观察到曝光实体结构（新老片、剧/影比例）漂移，作者归因于个性化更精准导致曝光效率提升。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 TIGER 等生成式检索（扁平 item 列表、语义 ID 自回归），GenPage 生成的是含行结构的二维页面并处理工业约束；相较 DCN/MMoE 类多级精排栈，它以单模型端到端替代级联并降低延迟；相较传统页面级重排，它把整页构建统一进生成范式。</li>
 <li><strong>可迁移亮点</strong>: ① 领域 tokenizer 使"业务规则→token 掩码"直接映射，约束解码实现极简；② fallback token 随机替换训练，让内容嵌入独立可用，是通用冷启动技巧。</li>
 <li><strong>审稿级局限批判</strong>: ① RL 离线评估与策略优化共用同一 reward model，评估循环论证，线上尚未验证；② 长上下文仍依赖手工摘要，且线上仅验证 WBC 变体、模型仅 200M，扩展性与 RL 收益待证。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

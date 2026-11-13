@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,17 +4220,17 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/guanqun-yang/DualSpectralCF">https://github.com/guanqun-yang/DualSpectralCF</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>真实平台普遍采集 1 星差评、hate-button、用户不信任、极低完播率等<strong>显式负反馈</strong>，但利用它的符号感知推荐器（SiReN、SIGformer、NFARec 等）全部依赖梯度训练，代价高昂；而免训练的谱协同过滤（GF-CF、Turbo-CF、ChebyCF）虽便宜却只用正交互。本文提出 DualSpectralCF，在任意形如 <span class="arithmatex">\(\hat{\mathbf{r}}_u = F(\mathbf{M})\mathbf{r}_u\)</span> 的谱骨干上替换两处：带符号输入信号 <span class="arithmatex">\(\mathbf{r}_u^{\pm}\)</span> 与带符号物品算子 <span class="arithmatex">\(\mathbf{M}^{\pm}\)</span>，仅新增两个标量超参 <span class="arithmatex">\((\gamma,\kappa)\)</span>，零梯度训练。在 5 个符号感知基准、Full-Ranking 协议下，三个骨干实例全部不劣于原骨干，R@20 最高提升 <strong>+32.6%</strong>，且比 SIGformer 快 <strong>7.7–155.3×</strong>。</p>
+<p>真实平台普遍采集 1 星差评、hate-button、用户不信任、极低完播率等<strong>显式负反馈</strong>，但利用它的符号感知推荐器（SiReN、SIGformer、NFARec 等）全部依赖梯度训练，代价高昂；而免训练的谱协同过滤（GF-CF、Turbo-CF、ChebyCF）虽便宜却只用正交互。本文提出 DualSpectralCF，在任意形如 <span class="arithmatex">\(\hat{\mathbf{r}}_u = F(\mathbf{M})\mathbf{r}_u\)</span>的谱骨干上替换两处：带符号输入信号<span class="arithmatex">\(\mathbf{r}_u^{\pm}\)</span>与带符号物品算子<span class="arithmatex">\(\mathbf{M}^{\pm}\)</span>，仅新增两个标量超参<span class="arithmatex">\((\gamma,\kappa)\)</span>，零梯度训练。在 5 个符号感知基准、Full-Ranking 协议下，三个骨干实例全部不劣于原骨干，R@20 最高提升 <strong>+32.6%</strong>，且比 SIGformer 快 <strong>7.7–155.3×</strong>。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 图协同过滤把交互矩阵视为二部图做多跳传播；其中一支"免训练谱方法"把用户交互行当作物品相似图上的信号，经低通滤波（理想低通 / 多项式 / Chebyshev 逼近）直接闭式打分，精度可比 GCN 类模型而成本极低。</li>
 <li><strong>前人局限</strong>: ① 谱免训练家族（GF-CF、Turbo-CF、PolyCF、ChebyCF、BSPM、EASE）<strong>只处理正交互</strong>，"缺失边"无法区分"没看过"与"明确讨厌"；② 符号感知家族（SiReN、PANE-GNN、NFARec、SIGformer、DFGNN、LSGRec、GegenNet）虽精度更高，但<strong>全部梯度训练</strong>，比闭式谱方法贵一到两个数量级。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 打分方程 <span class="arithmatex">\(\hat{\mathbf{r}}_u = F(\mathbf{M})\mathbf{r}_u\)</span> 中"输入 <span class="arithmatex">\(\mathbf{r}_u\)</span>"与"算子 <span class="arithmatex">\(\mathbf{M}\)</span>"是两个正交插槽，负反馈可以分别从这两处注入而不破坏闭式结构；更关键的是，<strong>点击本身揭示了主题注意力</strong>——给恐怖片打 1 星的用户仍暴露了恐怖片偏好，故负反馈不应作为"反向证据"而应作为"弱正证据"。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 打分方程 <span class="arithmatex">\(\hat{\mathbf{r}}_u = F(\mathbf{M})\mathbf{r}_u\)</span>中"输入<span class="arithmatex">\(\mathbf{r}_u\)</span>"与"算子<span class="arithmatex">\(\mathbf{M}\)</span>"是两个正交插槽，负反馈可以分别从这两处注入而不破坏闭式结构；更关键的是，<strong>点击本身揭示了主题注意力</strong>——给恐怖片打 1 星的用户仍暴露了恐怖片偏好，故负反馈不应作为"反向证据"而应作为"弱正证据"。</li>
 <li><strong>本文切入点</strong>: 用两个标量超参把负反馈塞进谱骨干的两个插槽，填补"符号感知 × 免训练"这一空白格（图 1(c)）。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>统一抽象：令 <span class="arithmatex">\(\tilde{\mathbf{R}} = \mathbf{D}_U^{-1/2}\mathbf{R}\mathbf{D}_I^{-1/2}\)</span>，物品相似度 <span class="arithmatex">\(\hat{\mathbf{P}} = \tilde{\mathbf{R}}^\top\tilde{\mathbf{R}}\)</span>，拉普拉斯 <span class="arithmatex">\(\mathbf{L}^* = \mathbf{I} - \hat{\mathbf{P}}\)</span>。所有骨干写作 <span class="arithmatex">\(\hat{\mathbf{r}}_u = F(\mathbf{M};\mathbf{h}_p)\mathbf{r}_u\)</span>，三者仅 <span class="arithmatex">\(F\)</span> 不同：GF-CF 为 <span class="arithmatex">\(\hat{\mathbf{P}} + \alpha H_I(\mathbf{L}^*;\eta)\)</span>；Turbo-CF 为 <span class="arithmatex">\(\sum_k a_k \hat{\mathbf{P}}^{\circ s_k}\)</span>；ChebyCF 为 <span class="arithmatex">\(\mathbf{D}_I^{\beta}(H_C(\mathbf{L}^*;\phi) + \alpha H_I(\mathbf{L}^*;\eta))\mathbf{D}_I^{-\beta}\)</span>。DualSpectralCF 把 <span class="arithmatex">\(\mathbf{r}_u \to \mathbf{r}_u^{\pm}\)</span>、<span class="arithmatex">\(\mathbf{M} \to \mathbf{M}^{\pm}\)</span> 后原样复用 <span class="arithmatex">\(F\)</span>，全程无梯度、无学习嵌入，复杂度继承骨干的 <span class="arithmatex">\(O(K\cdot \mathrm{nnz}(\mathbf{R}))\)</span>。</p>
+<p>统一抽象：令 <span class="arithmatex">\(\tilde{\mathbf{R}} = \mathbf{D}_U^{-1/2}\mathbf{R}\mathbf{D}_I^{-1/2}\)</span>，物品相似度<span class="arithmatex">\(\hat{\mathbf{P}} = \tilde{\mathbf{R}}^\top\tilde{\mathbf{R}}\)</span>，拉普拉斯<span class="arithmatex">\(\mathbf{L}^* = \mathbf{I} - \hat{\mathbf{P}}\)</span>。所有骨干写作<span class="arithmatex">\(\hat{\mathbf{r}}_u = F(\mathbf{M};\mathbf{h}_p)\mathbf{r}_u\)</span>，三者仅<span class="arithmatex">\(F\)</span>不同：GF-CF 为<span class="arithmatex">\(\hat{\mathbf{P}} + \alpha H_I(\mathbf{L}^*;\eta)\)</span>；Turbo-CF 为<span class="arithmatex">\(\sum_k a_k \hat{\mathbf{P}}^{\circ s_k}\)</span>；ChebyCF 为<span class="arithmatex">\(\mathbf{D}_I^{\beta}(H_C(\mathbf{L}^*;\phi) + \alpha H_I(\mathbf{L}^*;\eta))\mathbf{D}_I^{-\beta}\)</span>。DualSpectralCF 把<span class="arithmatex">\(\mathbf{r}_u \to \mathbf{r}_u^{\pm}\)</span>、<span class="arithmatex">\(\mathbf{M} \to \mathbf{M}^{\pm}\)</span>后原样复用<span class="arithmatex">\(F\)</span>，全程无梯度、无学习嵌入，复杂度继承骨干的<span class="arithmatex">\(O(K\cdot \mathrm{nnz}(\mathbf{R}))\)</span>。</p>
 <pre class="mermaid"><code>flowchart TD
     A["正交互 R+ / 负交互 R-"] --&gt; B["组件A: 带符号输入 r±u (+1 / -γ)"]
     A --&gt; C["组件B: 带符号算子 M± = I - R+ᵀR+ + κR-ᵀR-"]
@@ -4234,15 +4245,15 @@
 <li>
 <p><strong>组件 A：带符号输入信号（负反馈作为弱正证据）</strong>：痛点是把负反馈当"反向证据"（<span class="arithmatex">\(\gamma&gt;0\)</span>）会让低通滤波把负分扩散到相似物品、误伤同主题推荐。本文改为
 $<span class="arithmatex">\(\mathbf{r}_u^{\pm}[i] = \begin{cases} +1 &amp; (u,i)\in\mathcal{E}^+ \\ -\gamma &amp; (u,i)\in\mathcal{E}^- \\ 0 &amp; \text{otherwise}\end{cases}\)</span>$
-当 <span class="arithmatex">\(\gamma&lt;0\)</span> 时被讨厌物品以 <span class="arithmatex">\(-\gamma&gt;0\)</span>（但小于 <span class="arithmatex">\(+1\)</span>）的<strong>小正权重</strong>进入信号，滤波仍把推荐质量推向谱相似物品，只是力度更弱。物理直觉：点击=主题兴趣，评分=体验好坏，二者应解耦。消融显示 15 个 (骨干, 数据集) 组合中最优 <span class="arithmatex">\(\gamma\)</span> <strong>恒在 <span class="arithmatex">\(\{-0.5,-0.25,0\}\)</span>，从不为正</strong>。</p>
+当 <span class="arithmatex">\(\gamma&lt;0\)</span>时被讨厌物品以<span class="arithmatex">\(-\gamma&gt;0\)</span>（但小于<span class="arithmatex">\(+1\)</span>）的<strong>小正权重</strong>进入信号，滤波仍把推荐质量推向谱相似物品，只是力度更弱。物理直觉：点击=主题兴趣，评分=体验好坏，二者应解耦。消融显示 15 个 (骨干, 数据集) 组合中最优<span class="arithmatex">\(\gamma\)</span><strong>恒在<span class="arithmatex">\(\{-0.5,-0.25,0\}\)</span>，从不为正</strong>。</p>
 </li>
 <li>
 <p><strong>组件 B：带符号物品算子（like-together 与 dislike-together 融合）</strong>：痛点是无符号 <span class="arithmatex">\(\mathbf{L}^*\)</span> 只编码"共同喜欢"，无法惩罚"共同讨厌"的物品对。本文定义
 $<span class="arithmatex">\(\mathbf{L}^{\pm} = \mathbf{I} - \tilde{\mathbf{R}}^{+\top}\tilde{\mathbf{R}}^{+} + \kappa\,\tilde{\mathbf{R}}^{-\top}\tilde{\mathbf{R}}^{-},\qquad \hat{\mathbf{P}}^{\pm} = \tilde{\mathbf{R}}^{+\top}\tilde{\mathbf{R}}^{+} + \kappa\,\tilde{\mathbf{R}}^{-\top}\tilde{\mathbf{R}}^{-}\)</span>$
-约束 <span class="arithmatex">\(\kappa\ge 0\)</span> 使 <span class="arithmatex">\(\kappa\tilde{\mathbf{R}}^{-\top}\tilde{\mathbf{R}}^{-}\)</span> 半正定，<span class="arithmatex">\(\mathbf{L}^\pm\)</span> 特征值落在 <span class="arithmatex">\([0,2]\)</span>，低通滤波保持良态。<span class="arithmatex">\(\kappa\)</span> 只需很小（ChebyCF 上 5 个数据集最优均为 <span class="arithmatex">\(\kappa=0.1\)</span>），因为负物品图噪声远大于正图，大扰动反而伤谱。</p>
+约束 <span class="arithmatex">\(\kappa\ge 0\)</span>使<span class="arithmatex">\(\kappa\tilde{\mathbf{R}}^{-\top}\tilde{\mathbf{R}}^{-}\)</span>半正定，<span class="arithmatex">\(\mathbf{L}^\pm\)</span>特征值落在<span class="arithmatex">\([0,2]\)</span>，低通滤波保持良态。<span class="arithmatex">\(\kappa\)</span>只需很小（ChebyCF 上 5 个数据集最优均为<span class="arithmatex">\(\kappa=0.1\)</span>），因为负物品图噪声远大于正图，大扰动反而伤谱。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：<strong>无损失函数、无负采样、无梯度</strong>——这是本文最核心的"反范式"卖点。超参搜索仅在 <span class="arithmatex">\(\gamma\in\{-0.5,-0.25,0,0.25\}\)</span>、<span class="arithmatex">\(\kappa\in\{0,0.1,0.5,1.0\}\)</span> 的粗网格上进行，且骨干原生超参先在无符号矩阵上按原论文设置调好再叠加 <span class="arithmatex">\((\gamma,\kappa)\)</span>。推理侧 <span class="arithmatex">\(\mathbf{r}_u^\pm\)</span> 至多多出 <span class="arithmatex">\(\mathrm{nnz}(\mathbf{r}_u^+)+\mathrm{nnz}(\mathbf{r}_u^-)\)</span> 个非零元，<span class="arithmatex">\(\mathbf{M}^\pm\)</span> 与无符号算子共享稀疏模式，多项式骨干无需特征分解。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：<strong>无损失函数、无负采样、无梯度</strong>——这是本文最核心的"反范式"卖点。超参搜索仅在 <span class="arithmatex">\(\gamma\in\{-0.5,-0.25,0,0.25\}\)</span>、<span class="arithmatex">\(\kappa\in\{0,0.1,0.5,1.0\}\)</span>的粗网格上进行，且骨干原生超参先在无符号矩阵上按原论文设置调好再叠加<span class="arithmatex">\((\gamma,\kappa)\)</span>。推理侧<span class="arithmatex">\(\mathbf{r}_u^\pm\)</span>至多多出<span class="arithmatex">\(\mathrm{nnz}(\mathbf{r}_u^+)+\mathrm{nnz}(\mathbf{r}_u^-)\)</span>个非零元，<span class="arithmatex">\(\mathbf{M}^\pm\)</span> 与无符号算子共享稀疏模式，多项式骨干无需特征分解。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4306,7 +4317,7 @@ $<span class="arithmatex">\(\mathbf{L}^{\pm} = \mathbf{I} - \tilde{\mathbf{R}}^{
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 沿用 SIGformer 的划分，训练/测试按用户切分；测试时<strong>训练中已观测的正负边均从候选中屏蔽</strong>，避免符号信息泄漏。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 无偏 <strong>Full-Ranking</strong>（每个测试用户对全部未在训练中出现的物品排序），指标 Recall@20。</li>
-<li><strong>对比基线与超参设置</strong>: 无符号谱基线 Turbo-CF、GF-CF、BSPM（bug-fixed）、ChebyCF；学习型图基线 LightGCN；学习型符号基线 SIGformer。骨干原生超参（Chebyshev 阶数、Turbo 相似度指数与多项式度、GF 的 <span class="arithmatex">\(\alpha/\eta\)</span>）先在正交互矩阵上按原论文调优，再叠加 <span class="arithmatex">\((\gamma,\kappa)\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: 无符号谱基线 Turbo-CF、GF-CF、BSPM（bug-fixed）、ChebyCF；学习型图基线 LightGCN；学习型符号基线 SIGformer。骨干原生超参（Chebyshev 阶数、Turbo 相似度指数与多项式度、GF 的 <span class="arithmatex">\(\alpha/\eta\)</span>）先在正交互矩阵上按原论文调优，再叠加<span class="arithmatex">\((\gamma,\kappa)\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4410,7 +4421,7 @@ $<span class="arithmatex">\(\mathbf{L}^{\pm} = \mathbf{I} - \tilde{\mathbf{R}}^{
 <th style="text-align: center;">K-Rand</th>
 <th style="text-align: center;">K-Rec</th>
 <th style="text-align: center;">最优 <span class="arithmatex">\(\gamma\)</span></th>
-<th style="text-align: center;">最优 <span class="arithmatex">\(\kappa\)</span></th>
+<th style="text-align: center;">最优<span class="arithmatex">\(\kappa\)</span></th>
 </tr>
 </thead>
 <tbody>
@@ -4449,16 +4460,22 @@ $<span class="arithmatex">\(\mathbf{L}^{\pm} = \mathbf{I} - \tilde{\mathbf{R}}^{
 <p>冷启动分桶（1–5 个训练物品，DS-Cheby vs ChebyCF）：Epi. <strong>+29.2%</strong>、A-Music +7.0%、A-CDs +5.8%、K-Rand +3.5%、K-Rec +2.2%。</p>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong><span class="arithmatex">\(\gamma\)</span> 恒非正是骨干无关的普适性质，而非调参偶然</strong>：15 个 (骨干, 数据集) 单元中最优 <span class="arithmatex">\(\gamma\)</span> 全部落在 <span class="arithmatex">\(\{-0.5,-0.25,0\}\)</span>，无一为正。这直接证伪了"负反馈=反向证据"的直觉，支持"点击揭示主题注意力"的解释——负反馈应作为<strong>弱正信号</strong>注入低通滤波。</li>
+<li><strong><span class="arithmatex">\(\gamma\)</span>恒非正是骨干无关的普适性质，而非调参偶然</strong>：15 个 (骨干, 数据集) 单元中最优<span class="arithmatex">\(\gamma\)</span>全部落在<span class="arithmatex">\(\{-0.5,-0.25,0\}\)</span>，无一为正。这直接证伪了"负反馈=反向证据"的直觉，支持"点击揭示主题注意力"的解释——负反馈应作为<strong>弱正信号</strong>注入低通滤波。</li>
 <li><strong>骨干越简单，符号信息增益越大</strong>：Turbo-CF 中位提升 +10.3%，远高于 ChebyCF 的 +4.5% 与 GF-CF 的 +3.4%；GF-CF 甚至在 5 个数据集上最优 <span class="arithmatex">\(\kappa=0\)</span>（增益全部来自组件 A）。说明复杂滤波器已从正交互中榨取了大部分谱信息，留给负反馈的"信息余量"更小。</li>
 <li><strong>符号感知的收益与用户活跃度强负相关</strong>：冷启动桶（1–5 物品）Epinions 上 +29.2%，但随正历史增长收益递减，在最活跃用户（≥100 物品）上 KuaiRec 出现 <strong>-11.1%</strong> 的显著负增益。单一全局 <span class="arithmatex">\(\gamma\)</span> 对兴趣跨主题的活跃用户过度惩罚，这是本文最诚实的失效边界。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 <strong>ChebyCF/GF-CF/Turbo-CF</strong> 的本质区别是"输入与算子带符号"，其余算子完全复用，因此增益可归因、可迁移；与 <strong>SIGformer</strong> 的区别是彻底放弃梯度与 Transformer，用 70.7%–90.7% 的精度换取 7.7–155.3× 加速；与 <strong>BSPM</strong> 的区别是后者做 blurring-sharpening 但仍只用正交互，本文在其旁边补上符号维度。</li>
-<li><strong>可迁移亮点</strong>: ① "负反馈作为弱正权重（<span class="arithmatex">\(-\gamma\)</span>，<span class="arithmatex">\(0&lt;-\gamma&lt;1\)</span>）"这一 trick 可直接搬到任何以交互行作为输入的线性/谱召回器（如 EASE、PSGE）；② "<span class="arithmatex">\(\kappa\ge 0\)</span> 保证半正定、特征值落在 <span class="arithmatex">\([0,2]\)</span>"的良态约束思路，可推广到任何往图算子中注入额外相似度矩阵的场景。</li>
-<li><strong>审稿级局限批判</strong>: ① <strong>全局 <span class="arithmatex">\(\gamma\)</span> 是硬伤</strong>——活跃用户上 -11.1% 的负增益说明需要 per-user 自适应 <span class="arithmatex">\(\gamma\)</span>，但自适应本身可能引入调参成本，侵蚀"仅两个标量超参"的卖点；② <strong>精度天花板明显</strong>，与 SIGformer 仍有 10.2%–41.4% 的差距，且 <span class="arithmatex">\(\kappa\)</span> 在 GF-CF 上恒为 0 意味着组件 B 并非普适有效，其"双组件"叙事的普适性被自身实验部分削弱；③ 实验仅在 5 个中小规模基准上做离线 Full-Ranking，缺少工业级千万级物品的延迟实测。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>可迁移亮点</strong>: ① "负反馈作为弱正权重（<span class="arithmatex">\(-\gamma\)</span>，<span class="arithmatex">\(0&lt;-\gamma&lt;1\)</span>）"这一 trick 可直接搬到任何以交互行作为输入的线性/谱召回器（如 EASE、PSGE）；② "<span class="arithmatex">\(\kappa\ge 0\)</span>保证半正定、特征值落在<span class="arithmatex">\([0,2]\)</span>"的良态约束思路，可推广到任何往图算子中注入额外相似度矩阵的场景。</li>
+<li><strong>审稿级局限批判</strong>: ① <strong>全局 <span class="arithmatex">\(\gamma\)</span>是硬伤</strong>——活跃用户上 -11.1% 的负增益说明需要 per-user 自适应<span class="arithmatex">\(\gamma\)</span>，但自适应本身可能引入调参成本，侵蚀"仅两个标量超参"的卖点；② <strong>精度天花板明显</strong>，与 SIGformer 仍有 10.2%–41.4% 的差距，且<span class="arithmatex">\(\kappa\)</span> 在 GF-CF 上恒为 0 意味着组件 B 并非普适有效，其"双组件"叙事的普适性被自身实验部分削弱；③ 实验仅在 5 个中小规模基准上做离线 Full-Ranking，缺少工业级千万级物品的延迟实测。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

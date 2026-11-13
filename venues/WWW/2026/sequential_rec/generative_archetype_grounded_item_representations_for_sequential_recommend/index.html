@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>离线阶段：对每个物品，将元数据（名称/品牌/日期/特性/价格/评分/描述）填入固定 prompt，调用 LLM 生成原型文本 <span class="arithmatex">\(A_i\)</span>；在同一次自回归前向中，prefill 阶段隐状态 <span class="arithmatex">\(\mathbf{H}^{\text{prefill}}_i\)</span> 与 decoding 阶段隐状态 <span class="arithmatex">\(\mathbf{H}^{\text{decoding}}_i\)</span> 分别沿 token 维均值池化，各经 PCA 保留 95% 方差后拼接为 <span class="arithmatex">\(\mathbf{E}_i\)</span>，冻结后由可训练 MLP 投影器 <span class="arithmatex">\(p_\theta\)</span> 映射到推荐隐空间得 <span class="arithmatex">\(e_i\)</span>。在线阶段：<span class="arithmatex">\(e_i\)</span> 直接替换骨干的 ID 嵌入表，序列建模与点积打分完全不变，LLM 调用全部离线缓存。</p>
+<p>离线阶段：对每个物品，将元数据（名称/品牌/日期/特性/价格/评分/描述）填入固定 prompt，调用 LLM 生成原型文本 <span class="arithmatex">\(A_i\)</span>；在同一次自回归前向中，prefill 阶段隐状态<span class="arithmatex">\(\mathbf{H}^{\text{prefill}}_i\)</span>与 decoding 阶段隐状态<span class="arithmatex">\(\mathbf{H}^{\text{decoding}}_i\)</span>分别沿 token 维均值池化，各经 PCA 保留 95% 方差后拼接为<span class="arithmatex">\(\mathbf{E}_i\)</span>，冻结后由可训练 MLP 投影器<span class="arithmatex">\(p_\theta\)</span>映射到推荐隐空间得<span class="arithmatex">\(e_i\)</span>。在线阶段：<span class="arithmatex">\(e_i\)</span> 直接替换骨干的 ID 嵌入表，序列建模与点积打分完全不变，LLM 调用全部离线缓存。</p>
 <pre class="mermaid"><code>flowchart TD
     A["物品元数据 → Prompt"] --&gt; B["LLM 生成原型文本"]
     B --&gt; C["Prefill 隐状态 + Decoding 隐状态"]
@@ -4235,16 +4246,16 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>双视角原型嵌入（Prefill + Decoding 拼接）</strong>：痛点是把 LLM 当静态编码器只取一次池化，丢失"人群推断"这一生成侧信息。做法是在<strong>同一次前向</strong>里分别池化 prefill 与 decoding 隐状态：<span class="arithmatex">\(\mathbf{E}^{\text{prefill}}_i=\frac{1}{n_p}\sum_j \mathbf{H}^{\text{prefill}}_{i,[j,:]}\)</span>，<span class="arithmatex">\(\mathbf{E}^{\text{decoding}}_i=\frac{1}{n_d}\sum_j \mathbf{H}^{\text{decoding}}_{i,[j,:]}\)</span>，再 <span class="arithmatex">\(\mathbf{E}_i=\text{Concat}(\hat{\mathbf{E}}^{\text{prefill}}_i,\hat{\mathbf{E}}^{\text{decoding}}_i)\)</span>。直觉：前者编码"物品是什么"，后者编码"谁会买"，t-SNE 显示二者天然分离、互补（图 2），且单次前向即得两份嵌入，无额外 LLM 调用。</p>
+<p><strong>双视角原型嵌入（Prefill + Decoding 拼接）</strong>：痛点是把 LLM 当静态编码器只取一次池化，丢失"人群推断"这一生成侧信息。做法是在<strong>同一次前向</strong>里分别池化 prefill 与 decoding 隐状态：<span class="arithmatex">\(\mathbf{E}^{\text{prefill}}_i=\frac{1}{n_p}\sum_j \mathbf{H}^{\text{prefill}}_{i,[j,:]}\)</span>，<span class="arithmatex">\(\mathbf{E}^{\text{decoding}}_i=\frac{1}{n_d}\sum_j \mathbf{H}^{\text{decoding}}_{i,[j,:]}\)</span>，再<span class="arithmatex">\(\mathbf{E}_i=\text{Concat}(\hat{\mathbf{E}}^{\text{prefill}}_i,\hat{\mathbf{E}}^{\text{decoding}}_i)\)</span>。直觉：前者编码"物品是什么"，后者编码"谁会买"，t-SNE 显示二者天然分离、互补（图 2），且单次前向即得两份嵌入，无额外 LLM 调用。</p>
 </li>
 <li>
-<p><strong>关联分数调制的行为校准（Behavioral Calibration）</strong>：痛点是标准 uniformity 目标假设所有物品应被等力推开，与真实偏好结构冲突。本文先由共现计数定义对数归一化关联分数 <span class="arithmatex">\(S(i,j)=\log(1+C(i,j))/\log(1+C(i,j)_{\max})\)</span>，再构造指数衰减调节子 <span class="arithmatex">\(w(i,j)=\exp(-\gamma S(i,j))\)</span>，将其乘入高斯核：</p>
+<p><strong>关联分数调制的行为校准（Behavioral Calibration）</strong>：痛点是标准 uniformity 目标假设所有物品应被等力推开，与真实偏好结构冲突。本文先由共现计数定义对数归一化关联分数 <span class="arithmatex">\(S(i,j)=\log(1+C(i,j))/\log(1+C(i,j)_{\max})\)</span>，再构造指数衰减调节子<span class="arithmatex">\(w(i,j)=\exp(-\gamma S(i,j))\)</span>，将其乘入高斯核：</p>
 </li>
 </ol>
 <div class="arithmatex">\[K_t(i,j)=w(i,j)\exp(-t\|e_i-e_j\|_2^2)=\exp\big(-\gamma S(i,j)+\beta e_i^\top e_j\big),\quad \beta=2t\]</div>
-<p>损失为 <span class="arithmatex">\(\mathcal{L}_{\text{cal}}=\mathbb{E}_{(e_i,e_j)\sim p_{\text{data}}}[K_t(i,j)]\)</span>。梯度 <span class="arithmatex">\(\frac{\partial \mathcal{L}_{\text{cal}}}{\partial e_i}=\frac{\beta}{|\mathcal{B}|}\sum_j w(i,j)\exp(\beta e_i^\top e_j)e_j\)</span> 表明：共现越强的物品对排斥力被压得越小，共现弱的对被推得更远——用"差异化排斥"隐式实现行为校准，且改写后直接对齐推荐系统惯用的内积相似度。</p>
+<p>损失为 <span class="arithmatex">\(\mathcal{L}_{\text{cal}}=\mathbb{E}_{(e_i,e_j)\sim p_{\text{data}}}[K_t(i,j)]\)</span>。梯度<span class="arithmatex">\(\frac{\partial \mathcal{L}_{\text{cal}}}{\partial e_i}=\frac{\beta}{|\mathcal{B}|}\sum_j w(i,j)\exp(\beta e_i^\top e_j)e_j\)</span> 表明：共现越强的物品对排斥力被压得越小，共现弱的对被推得更远——用"差异化排斥"隐式实现行为校准，且改写后直接对齐推荐系统惯用的内积相似度。</p>
 <ol>
-<li><strong>训练目标、负采样与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{\text{rank}}+\alpha\mathcal{L}_{\text{cal}}\)</span>，其中 <span class="arithmatex">\(\mathcal{L}_{\text{rank}}\)</span> 为逐位置 BPR 式 pairwise 损失（正样本为下一真实交互，负样本为<strong>采样负例</strong>，非全库）。物品嵌入离线预计算并缓存，推理阶段无 LLM 调用；可训练参数 5.95M（SASRec 为 5.72M），推理 GFLOPs 0.22，与 SASRec 持平。</li>
+<li><strong>训练目标、负采样与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{\text{rank}}+\alpha\mathcal{L}_{\text{cal}}\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{\text{rank}}\)</span> 为逐位置 BPR 式 pairwise 损失（正样本为下一真实交互，负样本为<strong>采样负例</strong>，非全库）。物品嵌入离线预计算并缓存，推理阶段无 LLM 调用；可训练参数 5.95M（SASRec 为 5.72M），推理 GFLOPs 0.22，与 SASRec 持平。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4502,12 +4513,18 @@
 <li><strong>语义与行为缺一不可，且二者非冗余</strong>：单独去掉 prefill 或 decoding 嵌入在全部 6 个配置下均掉点，证明"物品是什么"与"谁会买"提供正交信息；这与图 2 中两类嵌入在 t-SNE 上天然分离的观察一致。</li>
 <li><strong>长尾表征塌缩被显著缓解，但热门组存在跷跷板效应</strong>：图 5 显示 SASRec 的 bottom-20% 物品嵌入高度聚集，GenAIR 明显分散；矩阵熵度量下 GenAIR 在多数分组信息量更高，但在 top-20% 热门组其熵低于 SASRec——与 CITIES 的 see-saw 现象同源，说明语义增强对热门物品的边际价值有限。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 LLMEmb（微调 LLM 做推荐友好化，26.99M 可训练参数），GenAIR 冻结 LLM 仅训 5.95M 投影器，参数少 4.5 倍且推理 GFLOPs 从 3.34（LLM-ESR）降到 0.22；相比 RLMRec（把语义嵌入当辅助对齐目标、常弱于骨干基线），GenAIR 直接把语义嵌入<strong>替换</strong> ID 嵌入表，语义成为主表征而非旁路监督；相比 AlphaFuse（在语义零空间内优化 ID 嵌入），GenAIR 反向——以语义为主、行为校准为辅。</li>
 <li><strong>可迁移亮点</strong>: ① "同一次前向取 prefill+decoding 双隐状态"是零成本获取"事实+推断"双视角表征的通用技巧，可迁移到任何 LLM 特征抽取场景；② 用共现统计构造 <span class="arithmatex">\(w(i,j)=\exp(-\gamma S(i,j))\)</span> 调制对比学习排斥力，可无缝替换 SGL/SimGCL 中的均匀温度核，用于图对比推荐。</li>
 <li><strong>审稿级局限批判</strong>: ① 原型生成质量完全依赖 LLM 对元数据的常识推理，元数据字段缺失（如 Fashion 之外的品类）时鲁棒性未验证，且 prompt 模板单一、未做敏感性分析；② 行为校准的共现统计 <span class="arithmatex">\(C(i,j)\)</span> 在全局日志上计算，对时序漂移与曝光偏差无任何校正，热门物品对被系统性压低排斥力，可能放大流行度偏置（与 top-20% 组熵下降互为印证）；③ 主实验仅报告 HR@10/NDCG@10，缺少更低截断（@5）与冷启动分桶的细粒度验证。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4245,13 +4256,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>滑动窗口 + 两阶段数据释放（防泄漏的核心机制）</strong>：固定切分点只能测一次"未来"，且结果方差大。RecNextEval 将时间线切成 <span class="arithmatex">\(|W|\)</span> 个窗口，窗口 <span class="arithmatex">\(w\)</span> 内模型仅能访问 <span class="arithmatex">\(t &lt; w\)</span> 的数据；预测请求数按用户在该窗口的真实交互数动态生成（图 1 中 <span class="arithmatex">\(u_1\)</span> 得 2 次请求、<span class="arithmatex">\(u_2\)</span> 仅 1 次、<span class="arithmatex">\(u_1\)</span> 在 4 月无交互则零请求）。直觉上，这把"离线评估"改造成了对生产流量模式的逐窗复现，泄漏在接口层面被物理阻断。</p>
+<p><strong>滑动窗口 + 两阶段数据释放（防泄漏的核心机制）</strong>：固定切分点只能测一次"未来"，且结果方差大。RecNextEval 将时间线切成 <span class="arithmatex">\(|W|\)</span>个窗口，窗口<span class="arithmatex">\(w\)</span>内模型仅能访问<span class="arithmatex">\(t &lt; w\)</span>的数据；预测请求数按用户在该窗口的真实交互数动态生成（图 1 中<span class="arithmatex">\(u_1\)</span>得 2 次请求、<span class="arithmatex">\(u_2\)</span>仅 1 次、<span class="arithmatex">\(u_1\)</span> 在 4 月无交互则零请求）。直觉上，这把"离线评估"改造成了对生产流量模式的逐窗复现，泄漏在接口层面被物理阻断。</p>
 </li>
 <li>
-<p><strong>未知用户/物品的可配置评估模式</strong>：冷启动是生产常态但离线评估常被回避。平台提供开关：关闭时，窗口内首次出现的用户 <span class="arithmatex">\(u_3\)</span> 不接收预测请求，其交互在结果发布阶段才进入训练集（此后不再是未知用户）；开启时则对 <span class="arithmatex">\(u_3'\)</span> 强制冷启动预测。未知物品同理可排除，使评估仅在已曝光物品集上进行。这一设计让研究者能显式量化冷启动惩罚，而非被平均指标掩盖。</p>
+<p><strong>未知用户/物品的可配置评估模式</strong>：冷启动是生产常态但离线评估常被回避。平台提供开关：关闭时，窗口内首次出现的用户 <span class="arithmatex">\(u_3\)</span>不接收预测请求，其交互在结果发布阶段才进入训练集（此后不再是未知用户）；开启时则对<span class="arithmatex">\(u_3'\)</span> 强制冷启动预测。未知物品同理可排除，使评估仅在已曝光物品集上进行。这一设计让研究者能显式量化冷启动惩罚，而非被平均指标掩盖。</p>
 </li>
 <li>
-<p><strong>Macro/Micro 双平均聚合与增量训练接口</strong>：单窗口指标不足以概括全时间线表现。设用户 <span class="arithmatex">\(u\)</span> 在窗口 <span class="arithmatex">\(w\)</span> 的命中率为 <span class="arithmatex">\(HR^w_u\)</span>，则窗口级 <span class="arithmatex">\(HR^w=\frac{1}{|U_w|}\sum_{u\in U_w}HR^w_u\)</span>；macro 为 <span class="arithmatex">\(\frac{1}{|W|}\sum_{w}HR^w\)</span>（各窗口等权），micro 为 <span class="arithmatex">\(\frac{\sum_w\sum_{u}HR^w_u}{\sum_w|U_w|}\)</span>（各用户等权）。二者差异直接反映"活跃窗口 vs. 稀疏窗口"的贡献失衡。模型侧仅需实现 <code>register_model / get_training_data / fit / get_unlabeled_data / predict / submit_prediction</code> 六个接口，无损失函数与负采样约束（平台不干预模型内部训练策略）。</p>
+<p><strong>Macro/Micro 双平均聚合与增量训练接口</strong>：单窗口指标不足以概括全时间线表现。设用户 <span class="arithmatex">\(u\)</span>在窗口<span class="arithmatex">\(w\)</span>的命中率为<span class="arithmatex">\(HR^w_u\)</span>，则窗口级<span class="arithmatex">\(HR^w=\frac{1}{|U_w|}\sum_{u\in U_w}HR^w_u\)</span>；macro 为<span class="arithmatex">\(\frac{1}{|W|}\sum_{w}HR^w\)</span>（各窗口等权），micro 为<span class="arithmatex">\(\frac{\sum_w\sum_{u}HR^w_u}{\sum_w|U_w|}\)</span>（各用户等权）。二者差异直接反映"活跃窗口 vs. 稀疏窗口"的贡献失衡。模型侧仅需实现 <code>register_model / get_training_data / fit / get_unlabeled_data / predict / submit_prediction</code> 六个接口，无损失函数与负采样约束（平台不干预模型内部训练策略）。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4282,7 +4293,7 @@
 </table>
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: <strong>全局时间戳切分 + 滑动窗口</strong>。初始切分点 <span class="arithmatex">\(t=875156710\)</span>（1997-09-25 03:05:10），其后划为 7 个时间窗；每窗内严格"先预测、后释放真值与剩余交互"，杜绝未来信息穿越。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 平台按用户请求返回 Top-<span class="arithmatex">\(k\)</span> 列表，指标为 HitRate@<span class="arithmatex">\(k\)</span> 与 NDCG@<span class="arithmatex">\(k\)</span>；未交互物品是否计入候选由 unknown-item 开关控制（演示中开启未知用户与未知物品评估）。<strong>注意：本文未规定统一的负采样比例或全库排序协议</strong>，候选集构造交由模型侧 <code>predict()</code> 自行决定，这是该框架在可比性上的一个开放缺口。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 平台按用户请求返回 Top-<span class="arithmatex">\(k\)</span>列表，指标为 HitRate@<span class="arithmatex">\(k\)</span>与 NDCG@<span class="arithmatex">\(k\)</span>；未交互物品是否计入候选由 unknown-item 开关控制（演示中开启未知用户与未知物品评估）。<strong>注意：本文未规定统一的负采样比例或全库排序协议</strong>，候选集构造交由模型侧 <code>predict()</code> 自行决定，这是该框架在可比性上的一个开放缺口。</li>
 <li><strong>对比基线与超参设置</strong>: 演示三个内置样例模型——ItemKNNIncremental、RecentPopularity、DecayPopularity；未设 embedding 维度等超参对比，亦无显著性检验（Demo 性质）。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4322,12 +4333,18 @@
 <li><strong>流行度基线在时序设定下依然强劲</strong>：DecayPopularity 整体领先或持平于 ItemKNNIncremental，呼应近期关于"时序感知下流行度基线被低估"的批评，提示新模型必须以时序协议重新对标。</li>
 <li><strong>macro/micro 口径会改变模型排序</strong>：由于各窗口活跃用户数 <span class="arithmatex">\(|U_w|\)</span> 不等，micro 平均被高活跃窗口主导，与 macro 结论存在偏差；报告结果时必须双口径并列，否则结论可被聚合方式"操纵"。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 RecBole/Elliot 等"模型库+静态指标"，本文把评估重心移到时间维度；相较 RecPack、DaisyRec 2.0 的固定时间戳切分，本文以多窗口滑动 + 增量学习接口消除了"单切分点依赖"；相较 [13] 提出的 Timeline 方案，本文贡献在于<strong>可运行的参考实现 + 六接口规范 + Web UI</strong>，把协议落地为工程标准。</li>
 <li><strong>可迁移亮点</strong>: ① "预测前扣留、预测后释放"的两阶段 API 契约可直接移植到任何需要防泄漏的离线回测系统；② macro/micro 双口径报告应成为时序评估的默认规范。</li>
 <li><strong>审稿级局限批判</strong>: ① <strong>候选集与负采样协议未统一</strong>，不同模型可自选候选空间，跨模型可比性存疑；② 增量学习 + 逐窗重训带来显著算力开销（作者自认），且演示仅覆盖 MovieLens-100K 与三个轻量基线，缺乏深度学习模型与大规模数据验证；③ 未提供统计显著性检验与窗口长度/初始切分点的敏感性分析。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

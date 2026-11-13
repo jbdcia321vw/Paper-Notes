@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 <li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>大规模推荐系统受"内存墙"制约：用户历史中每条物品的稠密内容嵌入（如 <span class="arithmatex">\(L{=}200\)</span>、<span class="arithmatex">\(d{=}256\)</span> 即每样本 200KB FP32）在训练日志存储与在线 join 时成为吞吐瓶颈。本文提出<strong>双用途语义ID</strong>：RQ-VAE 量化的离散 token 既作为可学习嵌入表的协同身份（记忆），又通过轻量 Semantic Decoder (SiDec) 在模型图内<strong>在线重建</strong>内容嵌入（泛化），从而以 <span class="arithmatex">\(K\times\log_2 V\)</span> bit 替代 <span class="arithmatex">\(d\times 32\)</span> bit（50–100× 压缩）。离线固定步数训练下检索 HitRate@100 达 0.2910（超原始稠密嵌入 Arm 1 的 0.2844），吞吐 14.53 vs 12.07 steps/s（+20.4%）；线上 Watchpage 排序 Satisfied Engagement +0.80%。</p>
+<p>大规模推荐系统受"内存墙"制约：用户历史中每条物品的稠密内容嵌入（如 <span class="arithmatex">\(L{=}200\)</span>、<span class="arithmatex">\(d{=}256\)</span>即每样本 200KB FP32）在训练日志存储与在线 join 时成为吞吐瓶颈。本文提出<strong>双用途语义ID</strong>：RQ-VAE 量化的离散 token 既作为可学习嵌入表的协同身份（记忆），又通过轻量 Semantic Decoder (SiDec) 在模型图内<strong>在线重建</strong>内容嵌入（泛化），从而以<span class="arithmatex">\(K\times\log_2 V\)</span>bit 替代<span class="arithmatex">\(d\times 32\)</span> bit（50–100× 压缩）。离线固定步数训练下检索 HitRate@100 达 0.2910（超原始稠密嵌入 Arm 1 的 0.2844），吞吐 14.53 vs 12.07 steps/s（+20.4%）；线上 Watchpage 排序 Satisfied Engagement +0.80%。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 现代推荐模型依赖海量稠密浮点嵌入表表示用户、物品与高维连续特征；生成式检索虽已用离散 token 替代原子物品 ID，但高维上下文（内容嵌入、历史参与密度）仍以稠密格式流转。</li>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>物品 <span class="arithmatex">\(i\)</span> 的高维内容嵌入 <span class="arithmatex">\(e_i\in\mathbb{R}^d\)</span>（多模态 LLM 产出）经 RQ-VAE 层次量化压缩为 <span class="arithmatex">\(K\)</span> 个离散 token <span class="arithmatex">\(S_i=[t_{i,1},\dots,t_{i,K}]\)</span>，<span class="arithmatex">\(t_{i,k}\in\{1,\dots,V\}\)</span>。模型内该序列走两条并行支路：<strong>(a) 协同身份支路</strong>将 token 视为类别特征查表学习（Unigram / Overlapping Bigram / Nested N-gram / SPM 四种策略）；<strong>(b) SiDec 支路</strong>先做静态码本查表求和 <span class="arithmatex">\(\phi(S_i)\)</span>，再经轻量 MLP/浅层 Transformer 解码器 <span class="arithmatex">\(f_\theta\)</span> 在线重建 <span class="arithmatex">\(\hat e_i\)</span>。重建嵌入与候选解码嵌入一同送入序列处理器（Transformer 相对注意力 / Mean Pooling）做上下文聚合，最终输出排序分或自回归 next-item 预测。训练日志中稠密向量被 <span class="arithmatex">\(K\)</span> 个整数 token 取代，join 操作被码本查表替代。</p>
+<p>物品 <span class="arithmatex">\(i\)</span>的高维内容嵌入<span class="arithmatex">\(e_i\in\mathbb{R}^d\)</span>（多模态 LLM 产出）经 RQ-VAE 层次量化压缩为<span class="arithmatex">\(K\)</span>个离散 token<span class="arithmatex">\(S_i=[t_{i,1},\dots,t_{i,K}]\)</span>，<span class="arithmatex">\(t_{i,k}\in\{1,\dots,V\}\)</span>。模型内该序列走两条并行支路：<strong>(a) 协同身份支路</strong>将 token 视为类别特征查表学习（Unigram / Overlapping Bigram / Nested N-gram / SPM 四种策略）；<strong>(b) SiDec 支路</strong>先做静态码本查表求和<span class="arithmatex">\(\phi(S_i)\)</span>，再经轻量 MLP/浅层 Transformer 解码器<span class="arithmatex">\(f_\theta\)</span>在线重建<span class="arithmatex">\(\hat e_i\)</span>。重建嵌入与候选解码嵌入一同送入序列处理器（Transformer 相对注意力 / Mean Pooling）做上下文聚合，最终输出排序分或自回归 next-item 预测。训练日志中稠密向量被<span class="arithmatex">\(K\)</span> 个整数 token 取代，join 操作被码本查表替代。</p>
 <pre class="mermaid"><code>flowchart TD
     A["内容嵌入 e_i (多模态LLM)"] --&gt; B["RQ-VAE 层次量化 → S_i=[t_1..t_K]"]
     B --&gt; C["协同身份支路: N-gram/SPM 嵌入表"]
@@ -4243,13 +4254,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>双用途语义ID（Dual-purpose SID）</strong>：痛点在于 ID 与内容特征长期割裂、稠密内容嵌入 I/O 昂贵。核心是把 <span class="arithmatex">\(S_i\)</span> 同时喂给两条支路，重建式为 <span class="arithmatex">\(\hat e_i = f_\theta(\phi(S_i))\)</span>，其中 <span class="arithmatex">\(\phi\)</span> 为冻结码本查表求和。直觉：协同支路负责"记忆"物品级偏好，SiDec 支路提供与流行度无关的"纯内容"信号，二者互补覆盖冷启动物品。</p>
+<p><strong>双用途语义ID（Dual-purpose SID）</strong>：痛点在于 ID 与内容特征长期割裂、稠密内容嵌入 I/O 昂贵。核心是把 <span class="arithmatex">\(S_i\)</span>同时喂给两条支路，重建式为<span class="arithmatex">\(\hat e_i = f_\theta(\phi(S_i))\)</span>，其中<span class="arithmatex">\(\phi\)</span> 为冻结码本查表求和。直觉：协同支路负责"记忆"物品级偏好，SiDec 支路提供与流行度无关的"纯内容"信号，二者互补覆盖冷启动物品。</p>
 </li>
 <li>
-<p><strong>四种协同身份嵌入策略与容量权衡</strong>：Unigram <span class="arithmatex">\(\mathbf{x}^{uni}_i=\text{Agg}(\{\text{Emb}_k(t_{i,k})\})\)</span> 内存最省但丢失层级依赖；Overlapping Bigram 用滑窗捕获跨子簇语义邻域、对量化噪声更鲁棒；Nested N-gram <span class="arithmatex">\(\mathbf{x}^{nest}_i=\text{Agg}(\{\text{Emb}_{1:k}(t_{i,1..k})\})\)</span> 显式建模前缀层级，共享前缀使长尾物品可借用父簇行为，但嵌入表更大（<span class="arithmatex">\(k&gt;2\)</span> 时用随机哈希限表）；SPM 按经验分布自适应组合。实践中排序侧偏好 Nested/SPM，召回侧偏好 Unigram/Bigram 以保 I/O 效率。</p>
+<p><strong>四种协同身份嵌入策略与容量权衡</strong>：Unigram <span class="arithmatex">\(\mathbf{x}^{uni}_i=\text{Agg}(\{\text{Emb}_k(t_{i,k})\})\)</span>内存最省但丢失层级依赖；Overlapping Bigram 用滑窗捕获跨子簇语义邻域、对量化噪声更鲁棒；Nested N-gram<span class="arithmatex">\(\mathbf{x}^{nest}_i=\text{Agg}(\{\text{Emb}_{1:k}(t_{i,1..k})\})\)</span>显式建模前缀层级，共享前缀使长尾物品可借用父簇行为，但嵌入表更大（<span class="arithmatex">\(k&gt;2\)</span> 时用随机哈希限表）；SPM 按经验分布自适应组合。实践中排序侧偏好 Nested/SPM，召回侧偏好 Unigram/Bigram 以保 I/O 效率。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：量化阶段最小化重建 MSE <span class="arithmatex">\(\mathcal{L}_{rec}=\sum_{i}\|e_i-f_\theta(\phi(S_i))\|^2\)</span>；推荐主模型训练时冻结解码器（或以极小学习率微调），保证 <span class="arithmatex">\(\hat e_i\)</span> 为稳定、与流行度解耦的内容信号。检索侧为全库 softmax 交叉熵（无显式负采样描述），排序侧为 CTR 多任务损失。推理时 token 已在基线服务中缓存，在线重建开销"不超过增加一个普通稀疏嵌入特征"，且稀疏参数量低数个量级。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：量化阶段最小化重建 MSE <span class="arithmatex">\(\mathcal{L}_{rec}=\sum_{i}\|e_i-f_\theta(\phi(S_i))\|^2\)</span>；推荐主模型训练时冻结解码器（或以极小学习率微调），保证<span class="arithmatex">\(\hat e_i\)</span> 为稳定、与流行度解耦的内容信号。检索侧为全库 softmax 交叉熵（无显式负采样描述），排序侧为 CTR 多任务损失。推理时 token 已在基线服务中缓存，在线重建开销"不超过增加一个普通稀疏嵌入特征"，且稀疏参数量低数个量级。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4274,7 +4285,7 @@
 <td style="text-align: center;">未披露</td>
 <td style="text-align: center;">十亿级样本</td>
 <td style="text-align: center;">未披露</td>
-<td style="text-align: left;">超长观看历史（<span class="arithmatex">\(L\)</span> 可达 <span class="arithmatex">\(10^4\)</span>），Watchpage/Homepage 双场景</td>
+<td style="text-align: left;">超长观看历史（<span class="arithmatex">\(L\)</span>可达<span class="arithmatex">\(10^4\)</span>），Watchpage/Homepage 双场景</td>
 </tr>
 </tbody>
 </table>
@@ -4403,12 +4414,18 @@
 <li><strong>离散化解锁"扩容红利"</strong>：Arm 4 在增加 Transformer 参数后仍保持 14.53 steps/s（较 Arm 1 +20.4%），并取得最低 Loss 2.681 与最高 HitRate 0.2910——稠密嵌入路径下这种"深度+精度"同步扩张因 I/O 受限而不可行。</li>
 <li><strong>增益主要来自历史序列而非候选</strong>：消融中去掉 Watch History 重建（−0.03%）与去掉 Candidate 重建（−0.04%）量级相当但历史侧承载更多视频、更充分兑现 I/O 收益；而移除 Cross-Attention 的 −0.08% 表明 SiDec 需与内容学习架构深度耦合才能释放全部潜力，单独解码器贡献仅 −0.01%。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 TIGER 类工作仅把语义ID 当离散标识 token，本文额外挖掘其作为"内容压缩通道"的第二用途；相较 SIDE 的三值码字 + n-gram 哈希，本文沿用社区原生 RQ-VAE 码本潜空间做高保真重建而非从零投影；相较 HiSAC 的静态码本 + Soft-Routing 压缩用户兴趣代理，SiDec 是应用无关的通用输入特征且解码器可端到端任务对齐。</li>
 <li><strong>可迁移亮点</strong>: ① 把"训练日志中的稠密特征列"整体替换为整数 token 列，是任何超长序列推荐系统都可直接套用的 I/O 优化手段；② 冻结解码器以保证重建信号与流行度解耦，可作为冷启动特征工程的标准做法。</li>
 <li><strong>审稿级局限批判</strong>: ① 离线数据集与统计完全未披露，五臂对照缺乏多数据集复现性，HitRate 差异（0.2870 vs 0.2844）幅度较小且无显著性检验；② 线上增益为 0.06%–0.80% 量级，虽称统计显著但缺少置信区间与长期留存观察；码本漂移需全量重训下游模型的问题仅列为未来工作。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

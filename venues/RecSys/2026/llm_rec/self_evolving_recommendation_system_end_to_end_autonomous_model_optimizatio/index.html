@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4222,7 +4233,7 @@
 <p>工业级 RL 推荐模型的优化器、网络架构与奖励函数设计长期依赖人工试错，传统 AutoML 只能在固定搜索空间内调数值超参，无法"发明"新结构或新奖励逻辑。本文在 YouTube 视频排序模型上部署双智能体自演化系统：离线 Agent（快循环）以 Gemini 2.5 Pro 扮演专家 MLE，基于共享 Experiment Journal 生成代码级 delta 并用离线代理指标打分；在线 Agent（慢循环）按北极星业务指标对候选排序并管理 A/B 实验生命周期。线上 A/B 显示多项发现带来统计显著提升（如奖励多目标合成 +0.05% YouTube 级 / +0.17% 表面级），实验吞吐从 Θ(1–10)/周 提升至 Θ(100)/周，且 64%/73% 的自动上线优于过去半年人工上线。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>主流范式</strong>: 现代推荐系统被建模为 RL 问题，下层用 SGD 最小化可微代理损失 <span class="arithmatex">\(\mathcal{L}_{proxy}\)</span> 训练排序模型 <span class="arithmatex">\(Q_\theta(s,a)\)</span>，上层则需人工寻找最优系统配置 <span class="arithmatex">\(\Phi\)</span>（优化器、架构、奖励定义）以最大化不可微、延迟数天至数周的北极星指标 <span class="arithmatex">\(\mathcal{M}\)</span>。</li>
+<li><strong>主流范式</strong>: 现代推荐系统被建模为 RL 问题，下层用 SGD 最小化可微代理损失 <span class="arithmatex">\(\mathcal{L}_{proxy}\)</span>训练排序模型<span class="arithmatex">\(Q_\theta(s,a)\)</span>，上层则需人工寻找最优系统配置<span class="arithmatex">\(\Phi\)</span>（优化器、架构、奖励定义）以最大化不可微、延迟数天至数周的北极星指标<span class="arithmatex">\(\mathcal{M}\)</span>。</li>
 <li><strong>前人局限</strong>: ① 传统 HPO/NAS（Vizier、DARTS、进化搜索）只能在预定义算子菜单内选择或重组，缺乏"读懂代码、假设某用户切片服务不足、再写出修复逻辑"的语义推理能力；② 奖励工程需在 Θ(100) 个信号组合中搜索，人工常在次优区域耗费数月，且代理损失与真实满意度之间存在对齐鸿沟。</li>
 <li><strong>核心洞察 (Key Insight)</strong>: 成熟系统中收益最高的不是数值调参，而是<strong>结构与语义变异</strong>（新拓扑、新奖励逻辑）；而 LLM 智能体恰好具备在非结构化上下文上推理并直接编辑源码的能力，可把"自动调参"升级为"自主科学发现"。</li>
 <li><strong>本文切入点</strong>: 将发现过程解耦为高频离线提名（廉价代理信号）与低频在线验证（昂贵延迟业务指标）两个同步推理环，用共享实验日志把两者闭环。</li>
@@ -4243,13 +4254,13 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>双层优化的问题形式化（把"研发"写成可优化的上层目标）</strong>：痛点是把在线指标直接当损失不可行（稀疏、延迟、有噪）。作者显式写成 <span class="arithmatex">\(\Phi^*=\arg\max_{\Phi}\mathcal{M}(\theta^*(\Phi))\ \text{s.t.}\ G(\Phi)\le C\)</span>，其中 <span class="arithmatex">\(\theta^*(\Phi)=\arg\min_\theta \mathcal{L}_{proxy}(\mathcal{D};\theta,\Phi)\)</span>。直觉：下层保证模型在给定配置下被充分训练，上层只搜索配置空间，从而把"人肉科研"转化为一个有约束的黑箱搜索问题，且约束 <span class="arithmatex">\(G\)</span> 显式控制训练成本。</p>
+<p><strong>双层优化的问题形式化（把"研发"写成可优化的上层目标）</strong>：痛点是把在线指标直接当损失不可行（稀疏、延迟、有噪）。作者显式写成 <span class="arithmatex">\(\Phi^*=\arg\max_{\Phi}\mathcal{M}(\theta^*(\Phi))\ \text{s.t.}\ G(\Phi)\le C\)</span>，其中<span class="arithmatex">\(\theta^*(\Phi)=\arg\min_\theta \mathcal{L}_{proxy}(\mathcal{D};\theta,\Phi)\)</span>。直觉：下层保证模型在给定配置下被充分训练，上层只搜索配置空间，从而把"人肉科研"转化为一个有约束的黑箱搜索问题，且约束<span class="arithmatex">\(G\)</span> 显式控制训练成本。</p>
 </li>
 <li>
 <p><strong>专家人格拆分 + Delta 式代码生成（解决长上下文幻觉与上下文预算）</strong>：单一全知人格在约 400k token 时开始幻觉，且要求输出完整配置文件会漏参数、出语法错。作者按组件拆成 Optimizer / Architecture / Reward 三个人格，每个只改 Θ(10) 行、聚焦 Θ(1000) 行模型定义中的局部；输出统一为 <code>{explanation, delta}</code> 二元组。因为 delta 紧凑，单条 prompt 可挂载 Θ(100) 条历史记录作为上下文（AlphaEvolve 类方法因整文件过大必须激进裁剪历史），这是迭代发现质量的关键。</p>
 </li>
 <li>
-<p><strong>奖励人格的"免损失"评分与训练目标</strong>：修改奖励会改变优化景观，跨奖励比较 <span class="arithmatex">\(\mathcal{L}_{proxy}\)</span> 无意义（"仅点击"奖励的损失天然低于"点击+满意度"）。因此奖励人格先用 <code>run_sql_query</code> 在用户日志上做开放式分析（如发现"被分享视频的观看时长更高"），再用 <code>compute_eval</code> 计算与长观看、留存、复访的相关性作为替代分数。总训练目标仍是下层 <span class="arithmatex">\(\min_\theta \mathcal{L}_{proxy}\)</span>，但 <span class="arithmatex">\(\mathcal{L}_{proxy}\)</span> 的标签逻辑本身成为被搜索对象；推理侧零额外开销（上线的是演化后的普通 DNN 排序模型，LLM 只在研发环内消耗 token，半年约 $20,000）。</p>
+<p><strong>奖励人格的"免损失"评分与训练目标</strong>：修改奖励会改变优化景观，跨奖励比较 <span class="arithmatex">\(\mathcal{L}_{proxy}\)</span>无意义（"仅点击"奖励的损失天然低于"点击+满意度"）。因此奖励人格先用 <code>run_sql_query</code> 在用户日志上做开放式分析（如发现"被分享视频的观看时长更高"），再用 <code>compute_eval</code> 计算与长观看、留存、复访的相关性作为替代分数。总训练目标仍是下层<span class="arithmatex">\(\min_\theta \mathcal{L}_{proxy}\)</span>，但<span class="arithmatex">\(\mathcal{L}_{proxy}\)</span>的标签逻辑本身成为被搜索对象；推理侧零额外开销（上线的是演化后的普通 DNN 排序模型，LLM 只在研发环内消耗 token，半年约$20,000）。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4424,12 +4435,18 @@
 <li><strong>上下文质量比模型规模更"可操作"</strong>：去掉全部历史（opt_no_context）损失飙至 +1.05，按时间乱序（opt_no_sort）退化到 +0.06，而仅换小模型（opt_flash）为 +0.85；完整按损失排序历史（−0.84）显著优于 top-5（−0.72）与 top-1（+0.11），证明"全量+有序"的实验日志是迭代发现的第一性资源。</li>
 <li><strong>发现可跨表面迁移，且结构变异收益随表面而异</strong>：同一双智能体架构在异构 schema 的第二表面首轮即产出有效假设，Wide &amp; Deep 结构带来 +1.10% 表面级提升（远大于主表面的 +0.14%），说明框架优化的是"发现过程"而非记忆特定数据集；同时训练效率优化（4×/2×）对 YouTube 级指标不显著甚至微负，提示系统效率与业务收益需分开度量。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 Vizier/DARTS 等 HPO/NAS，本文突破固定算子菜单，可写出搜索空间外的新代码；相比 AlphaEvolve / AI Scientist / MLE-STAR，本文面向的是有噪声反馈、严格安全护栏、需真实 A/B 的工业生产生态，而非静态学术基准；相比 Eureka 类 LLM 奖励设计，本文面对的是无明确 oracle、反馈延迟以天/周计且稀疏的推荐场景，必须靠离线代理+在线慢循环双重把关。</li>
 <li><strong>可迁移亮点</strong>: ① <strong>Delta 式生成 + 紧凑上下文</strong>：让智能体只输出相对生产文件的差异，既降幻觉又使单 prompt 可携带上百条历史，可直接迁移到任何代码演化型 Agent；② <strong>按组件拆分专家人格</strong>：把千行级模型定义切成 Θ(10) 行局部编辑任务，是控制长上下文幻觉的通用工程手段。</li>
 <li><strong>审稿级局限批判</strong>: ① 评估完全绑定 YouTube 内部生产环境，无公开数据集与可复现代码，指标增益量级（0.0x%–1%）虽显著但外部无法独立验证，且缺少与 AutoML 基线在同一协议下的受控对比；② 系统对 prompt 工程高度敏感（需显式要求"平衡探索/利用/创新"以防坍缩为微调学习率、需 warm start 注入前一日最优 K 条），超参（唤醒频率、top-K、历史长度）缺乏敏感性分析，LLM token 成本与延迟在更大规模下的可扩展性亦未讨论。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

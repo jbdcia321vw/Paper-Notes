@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将异构模板-索引组合视为多视图，用类别隐变量变分整合互补知识，三数据集全库排序显著超越生成式基线。">
+        <meta name="description" content="[SIGIR 2026][生成式推荐] 将模板-索引组合视为隐变量视图，用可学习先验做变分集成，Full-Ranking 下 H@10 最高提升约 26%。">
       
       
       
@@ -108,20 +108,18 @@
 
 
 
-<meta name="keywords" content="SIGIR 2026, 生成式推荐与离散语义ID, 端到端生成式, 变分推断, 多视图集成, RQ-VAE语义ID" />
+<meta name="keywords" content="SIGIR 2026, 生成式推荐, 生成式端到端, 变分多视图集成, 语义ID与协同ID" />
 
 
 <meta property="article:tag" content="SIGIR 2026" />
 
-<meta property="article:tag" content="生成式推荐与离散语义ID" />
+<meta property="article:tag" content="生成式推荐" />
 
-<meta property="article:tag" content="端到端生成式" />
+<meta property="article:tag" content="生成式端到端" />
 
-<meta property="article:tag" content="变分推断" />
+<meta property="article:tag" content="变分多视图集成" />
 
-<meta property="article:tag" content="多视图集成" />
-
-<meta property="article:tag" content="RQ-VAE语义ID" />
+<meta property="article:tag" content="语义ID与协同ID" />
 
 
 
@@ -131,10 +129,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/mviger_multi_view_variational_integration_of_complementary_knowledge_for_ge/" />
 <meta property="og:title" content="[Paper Note] MVIGER: Multi-View Variational Integration of Complementary Knowledge for Generative Recommender" />
-<meta property="og:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将异构模板-索引组合视为多视图，用类别隐变量变分整合互补知识，三数据集全库排序显著超越生成式基线。" />
+<meta property="og:description" content="[SIGIR 2026][生成式推荐] 将模板-索引组合视为隐变量视图，用可学习先验做变分集成，Full-Ranking 下 H@10 最高提升约 26%。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] MVIGER: Multi-View Variational Integration of Complementary Knowledge for Generative Recommender" />
-<meta name="twitter:description" content="[SIGIR 2026][生成式推荐与离散语义ID] 将异构模板-索引组合视为多视图，用类别隐变量变分整合互补知识，三数据集全库排序显著超越生成式基线。" />
+<meta name="twitter:description" content="[SIGIR 2026][生成式推荐] 将模板-索引组合视为隐变量视图，用可学习先验做变分集成，Full-Ranking 下 H@10 最高提升约 26%。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +158,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] MVIGER: Multi-View Variational Integration of Complementary Knowledge for Generative Recommender",
   "headline": "[Paper Note] MVIGER: Multi-View Variational Integration of Complementary Knowledge for Generative Recommender",
-  "description": "[SIGIR 2026][\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID] \u5c06\u5f02\u6784\u6a21\u677f-\u7d22\u5f15\u7ec4\u5408\u89c6\u4e3a\u591a\u89c6\u56fe\uff0c\u7528\u7c7b\u522b\u9690\u53d8\u91cf\u53d8\u5206\u6574\u5408\u4e92\u8865\u77e5\u8bc6\uff0c\u4e09\u6570\u636e\u96c6\u5168\u5e93\u6392\u5e8f\u663e\u8457\u8d85\u8d8a\u751f\u6210\u5f0f\u57fa\u7ebf\u3002",
+  "description": "[SIGIR 2026][\u751f\u6210\u5f0f\u63a8\u8350] \u5c06\u6a21\u677f-\u7d22\u5f15\u7ec4\u5408\u89c6\u4e3a\u9690\u53d8\u91cf\u89c6\u56fe\uff0c\u7528\u53ef\u5b66\u4e60\u5148\u9a8c\u505a\u53d8\u5206\u96c6\u6210\uff0cFull-Ranking \u4e0b H@10 \u6700\u9ad8\u63d0\u5347\u7ea6 26%\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/mviger_multi_view_variational_integration_of_complementary_knowledge_for_ge/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/generative_rec/mviger_multi_view_variational_integration_of_complementary_knowledge_for_ge/",
   "inLanguage": "zh-CN",
@@ -168,18 +166,17 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR 2026, \u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID, \u7aef\u5230\u7aef\u751f\u6210\u5f0f, \u53d8\u5206\u63a8\u65ad, \u591a\u89c6\u56fe\u96c6\u6210, RQ-VAE\u8bed\u4e49ID",
+  "keywords": "SIGIR 2026, \u751f\u6210\u5f0f\u63a8\u8350, \u751f\u6210\u5f0f\u7aef\u5230\u7aef, \u53d8\u5206\u591a\u89c6\u56fe\u96c6\u6210, \u8bed\u4e49ID\u4e0e\u534f\u540cID",
   "about": [
     { "@type": "Thing", "name": "SIGIR 2026" },
-    { "@type": "Thing", "name": "\u751f\u6210\u5f0f\u63a8\u8350\u4e0e\u79bb\u6563\u8bed\u4e49ID" },
-    { "@type": "Thing", "name": "\u7aef\u5230\u7aef\u751f\u6210\u5f0f" },
-    { "@type": "Thing", "name": "\u53d8\u5206\u63a8\u65ad" },
-    { "@type": "Thing", "name": "\u591a\u89c6\u56fe\u96c6\u6210" },
-    { "@type": "Thing", "name": "RQ-VAE\u8bed\u4e49ID" }
+    { "@type": "Thing", "name": "\u751f\u6210\u5f0f\u63a8\u8350" },
+    { "@type": "Thing", "name": "\u751f\u6210\u5f0f\u7aef\u5230\u7aef" },
+    { "@type": "Thing", "name": "\u53d8\u5206\u591a\u89c6\u56fe\u96c6\u6210" },
+    { "@type": "Thing", "name": "\u8bed\u4e49ID\u4e0e\u534f\u540cID" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3994,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4008,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4016,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4039,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4069,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4092,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4100,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4116,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4181,9 +4156,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][生成式推荐与离散语义ID] 将异构模板-索引组合视为多视图，用类别隐变量变分整合互补知识，三数据集全库排序显著超越生成式基线。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][生成式推荐] 将模板-索引组合视为隐变量视图，用可学习先验做变分集成，Full-Ranking 下 H@10 最高提升约 26%。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 生成式推荐与离散语义ID · 端到端生成式 · 变分推断 · 多视图集成 · RQ-VAE语义ID</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 生成式推荐 · 生成式端到端 · 变分多视图集成 · 语义ID与协同ID</p>
   
 </aside>
   
@@ -4204,35 +4179,28 @@
       
       
       
-        <span class="md-tag">生成式推荐与离散语义ID</span>
+        <span class="md-tag">生成式推荐</span>
       
     
       
       
       
       
-        <span class="md-tag">端到端生成式</span>
+        <span class="md-tag">生成式端到端</span>
       
     
       
       
       
       
-        <span class="md-tag">变分推断</span>
+        <span class="md-tag">变分多视图集成</span>
       
     
       
       
       
       
-        <span class="md-tag">多视图集成</span>
-      
-    
-      
-      
-      
-      
-        <span class="md-tag">RQ-VAE语义ID</span>
+        <span class="md-tag">语义ID与协同ID</span>
       
     
   </nav>
@@ -4242,199 +4210,296 @@
   
 
 
-<h1 id="mviger-multi-view-variational-integration-of-complementary-knowledge-for-generative-recommender">MVIGER: Multi-View Variational Integration of Complementary Knowledge for Generative Recommender (面向生成式推荐的多视图变分互补知识整合)</h1>
+<h1 id="mviger-multi-view-variational-integration-of-complementary-knowledge-for-generative-recommender">MVIGER: Multi-View Variational Integration of Complementary Knowledge for Generative Recommender (面向生成式推荐器的互补知识多视图变分集成)</h1>
 <ul>
-<li><strong>会议/期刊</strong>: SIGIR 2026 (第49届国际ACM SIGIR会议，Melbourne, Australia)</li>
-<li><strong>推荐链路定位</strong>: 端到端生成式 (End-to-End Generative) — 基于 LM 的生成式检索 (Generative Retrieval) 直接解码下一物品索引 token</li>
-<li><strong>研究方向</strong>: 生成式推荐与离散语义ID (主) / 序列与会话推荐 (次)</li>
+<li><strong>会议/期刊</strong>: SIGIR 2026 (Proceedings of the 49th International ACM SIGIR Conference)</li>
+<li><strong>作者与机构</strong>: Tongyoung Kim, Soojin Yoon, SeongKu Kang, Jinyoung Yeo, Dongha Lee（延世大学、高丽大学）</li>
+<li><strong>推荐链路定位</strong>: 端到端生成式（生成式检索 / Next-Item 预测）</li>
+<li><strong>研究方向</strong>: 生成式推荐与离散语义 ID / 序列推荐</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2408.08686v4">https://arxiv.org/abs/2408.08686v4</a></li>
-<li><strong>开源代码</strong>: <a href="https://github.com/gusye1234/LightGCN-PyTorch">https://github.com/gusye1234/LightGCN-PyTorch</a> （注：该链接为论文正文脚注中引用的 LightGCN 协同过滤编码器实现，<strong>并非 MVIGER 本方法的官方开源仓库</strong>；MVIGER 自身代码暂未开源）</li>
+<li><strong>开源代码</strong>: 暂未开源（文中仅引用 LightGCN 官方实现）</li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对 LM 生成式推荐中"同一用户历史因 prompt 模板与物品索引类型不同而产生不一致预测"的痛点，MVIGER 将异构"模板-索引"组合视为多视图，用带可学习先验的类别隐变量建模视图选择，通过变分 EM 式解耦训练整合互补知识。在 Amazon Beauty/Sports/Yelp 三数据集上，全库排序 (Full-Ranking) 下 NDCG@10 相对最强生成式基线提升约 6%–12%，并支持单视图高效推理与多视图聚合的灵活权衡。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>生成式推荐器对同一用户历史，仅因<strong>提示模板</strong>或<strong>物品索引类型</strong>（协同 CeID / 语义 SeID）变化就会给出不一致的 Top-k 预测，而作者量化发现这些差异中蕴含大量互补知识（跨索引 CHR 平均 48.7%–76.9%）。MVIGER 把"模板-索引组合"建模为类别隐变量视图，用可学习先验 <span class="arithmatex">\(p_\psi(z|H(u))\)</span> 做变分集成，推理时既可单视图选择也可多视图聚合。在 Beauty/Sports/Yelp 三数据集、5-core + Leave-One-Out + <strong>Full-Ranking</strong> 协议下，H@10 相对最强基线 EAGER 提升约 5.0%（Beauty 0.0836→0.0878）、相对 EAGER-LLM 提升约 4.0%（Sports 0.0569→0.0592），Yelp 上 H@10 达 0.0591（EAGER 仅 0.0453）。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 生成式检索 (Generative Retrieval) 已成为序列推荐的新范式——以 P5、M6Rec 为代表，将用户交互历史转为自然语言 prompt，由 LM 自回归解码物品标识符 (item identifier)。为注入物品知识，主流做法是构建<strong>层次化物品索引</strong>：语义索引 (SeID，来自标题/描述/类目) 或协同索引 (CeID，来自共现矩阵/CF 嵌入)，再经 RQ-VAE 离散化为多 token 码字 (TIGER、P5-IDs、LC-Rec、LETTER、EAGER 等)。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>输出不一致性</strong>：同一用户历史，仅改变 prompt 模板措辞或索引类型，模型 top-k 预测即发生显著漂移（图 1 所示），难以提供稳定推荐。</li>
-<li><strong>单一信息源偏置</strong>：多数方法仅用文本语义或仅用协同信息构建索引；LETTER 用对比学习把语义与协同"对齐融合"为单一 token，EAGER 用双流解码器整合两类 token，但均<strong>未把异构信息源当作可自适应选择的互补视图</strong>。</li>
-<li><strong>互补性未被系统利用</strong>：作者量化分析发现不同视图捕获的知识高度互补，但缺乏统一概率框架来整合。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 简单的索引拼接或双流架构只能覆盖固定两种信息源，无法扩展到"多模板 × 多索引"的任意组合；且不同视图的可靠性随用户而异，需要<strong>用户条件化的自适应选择</strong>而非静态融合。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者用 P5 微调做初步分析，量化两类互补性：</li>
-<li><strong>模板间互补 (PER, Pairwise Exclusive-hit Ratio)</strong>：同一索引类型下，仅改变 prompt 模板即可造成最高约 5% 的 Hit@10 差异（图 2）。</li>
-<li><strong>索引间互补 (CHR, Complementary Hit Ratio)</strong>：CeID 与 SeID 之间的平均互补命中率在 Amazon Beauty/Sports/Yelp 上分别达 48.70%/55.64%/66.90% 与 50.81%/56.81%/76.93%（表 1），即超过 48% 的正确命中无法被另一索引类型覆盖。</li>
+<li><strong>主流范式</strong>: TIGER/P5-IDs/EAGER 等生成式检索把物品离散化为层级索引 token（RQ-VAE 语义 ID 或协同 ID），用 LM 自回归解码目标物品索引。</li>
+<li><strong>前人局限</strong>: ① 单一索引只编码一种信息源（文本语义或协同共现），单视图偏好建模不完整；② 简单拼接索引（P5 的 CID+SemID）会因连续生成层级 token 破坏解码上下文，性能甚至崩塌（Beauty H@5 仅 0.0355）；③ EAGER 双解码器虽分离两流，但仅支持两种固定信息源，且无法刻画"哪个视图对该用户更重要"。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 作者用 PER/CHR 量化发现——同一索引下不同模板的独占命中差异可达 5%，跨索引类型的互补命中率 CHR 平均超 48%（Yelp 达 76.9%），说明模板与索引诱导的是<strong>互补而非冗余</strong>的偏好知识。</li>
+<li><strong>本文切入点</strong>: 把每个"模板 × 索引"组合视为一个用户条件视图，用类别隐变量 + 可学习先验统一建模视图选择与聚合。</li>
 </ul>
-<p>由此提出：把"模板-索引组合"建模为<strong>类别隐变量</strong>，用变分推断统一整合。</p>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2408.08686v4/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2408.08686v4/figure_2.png" /><figcaption>图 2</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2408.08686v4/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>用户集 <span class="arithmatex">\(\mathcal{U}\)</span>、物品集 <span class="arithmatex">\(\mathcal{I}\)</span>；用户 <span class="arithmatex">\(u\)</span> 的交互历史 <span class="arithmatex">\(H(u)=[i_1^u, i_2^u, \dots, i_L^u]\)</span>，<span class="arithmatex">\(L=|H(u)|\)</span>，目标为预测下一物品 <span class="arithmatex">\(i_{L+1}^u\)</span>。</li>
-<li>模板集 <span class="arithmatex">\(\mathcal{T}\)</span>（采用 P5 原文的 10 个模板，词汇与序列顺序各异）；<span class="arithmatex">\(P_t\)</span> 为使用模板 <span class="arithmatex">\(t\)</span> 时输出 top-k 列表中命中的测试交互集合。</li>
-<li>物品索引：每个物品构造两类层次化索引——<strong>CeID</strong>（协同索引，来自 LightGCN 交互嵌入）与 <strong>SeID</strong>（语义索引，来自 Sentence-T5 编码的元数据句子）。两类嵌入维度均设为 <strong>768</strong>，经 <strong>RQ-VAE</strong> 离散化为多 token 码字序列。</li>
-<li>视图 (view) = (模板 <span class="arithmatex">\(t\)</span>, 索引类型) 的组合；模型输入为"索引序列 + 模板指令"的 prompt，输出为下一物品索引 token 的自回归解码。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>三阶段流水线（图 3）：</p>
-<ol>
-<li><strong>异构物品索引生成</strong>：LightGCN 得协同嵌入、Sentence-T5 得语义嵌入 → RQ-VAE 分层量化 → CeID / SeID 码字序列。</li>
-<li><strong>多视图训练</strong>：对每个用户构造 <span class="arithmatex">\(n\)</span> 个视图（多模板 × 多索引），每个视图独立送入共享 LM 推荐器；引入类别隐变量 <span class="arithmatex">\(z\)</span> 表示"选择哪个视图"，学习似然网络与先验网络。</li>
-<li><strong>多视图推理</strong>：用用户条件化先验 <span class="arithmatex">\(\pi(z|H(u))\)</span> 做<strong>单视图选择</strong>（取最可能视图，快）或<strong>多视图聚合</strong>（按先验加权融合各视图排序，准）。</li>
-</ol>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>MVIGER 分三步闭环：先由 LightGCN 协同嵌入与 Sentence-T5 语义嵌入分别经 RQ-VAE 量化，生成两套层级索引 CeID/SeID（含碰撞消解）；再对每个用户构造视图集 <span class="arithmatex">\(Z(u)=\{(t,m,H(u))\}\)</span>，用 T5 似然网络对每个视图算<span class="arithmatex">\(p_\theta(y^*|z)\)</span>、用单层线性先验网络算<span class="arithmatex">\(p_\psi(z|H(u))\)</span>，以闭式最优后验做变分 EM 式解耦训练；推理时目标未知，改用先验做单视图 argmax 选择或多视图加权聚合。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 用户交互历史 H(u) + 物品元数据"] --&gt; B1["协同嵌入: LightGCN (d=768)"]
-    A --&gt; B2["语义嵌入: Sentence-T5 (d=768)"]
-    B1 --&gt; C1["RQ-VAE 分层量化 → CeID 码字序列"]
-    B2 --&gt; C2["RQ-VAE 分层量化 → SeID 码字序列"]
-    C1 --&gt; D["多视图构造: 模板 T × 索引 {CeID,SeID}"]
-    C2 --&gt; D
-    D --&gt; E["共享 LM 推荐器 (P5) 逐视图解码"]
-    E --&gt; F["类别隐变量 z: 似然网络 + 先验网络 π(z|H(u))"]
-    F --&gt; G["推理: 单视图选择 / 多视图先验加权聚合"]
-    G --&gt; H["最终排序列表"]</code></pre>
+    A["用户交互历史 H(u)"] --&gt; B["异构索引生成: LightGCN协同嵌入 / Sentence-T5语义嵌入 → RQ-VAE量化 → CeID / SeID"]
+    B --&gt; C["多视图构造: 模板T × 索引M"]
+    C --&gt; D["似然网络 p_θ(y|z) + 先验网络 p_ψ(z|H(u))"]
+    D --&gt; E["闭式后验 q* 解耦训练"]
+    E --&gt; F["推理: 单视图选择 z* 或多视图先验加权聚合"]</code></pre>
 <figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2408.08686v4/figure_3.png" /><figcaption>图 3</figcaption>
+  <img alt="图3：MVIGER框架概览。对于每个用户，首先基于用户的交互历史构建异构物品索引（例如CeID和SeID），从而得到带有模板的多个潜在视图。然后，MVIGER通过在这些潜在视图上的变分先验分布联合训练序列推荐器，捕捉它们对每个用户的相对重要性，并指导来自不同提示模板和索引组合的信息整合。在推理时，学习到的先验自适应地从候选视图中选择或聚合信息，整合" src="../../../../../assets/papers/2408.08686v4/figure_3.png" /><figcaption>图3：MVIGER框架概览。对于每个用户，首先基于用户的交互历史构建异构物品索引（例如CeID和SeID），从而得到带有模板的多个潜在视图。然后，MVIGER通过在这些潜在视图上的变分先验分布联合训练序列推荐器，捕捉它们对每个用户的相对重要性，并指导来自不同提示模板和索引组合的信息整合。在推理时，学习到的先验自适应地从候选视图中选择或聚合信息，整合</figcaption>
 </figure>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) 异构索引的 RQ-VAE 分层量化</strong>：对嵌入 <span class="arithmatex">\(\mathbf{e}\in\mathbb{R}^{768}\)</span>，RQ-VAE 逐层残差量化：第 <span class="arithmatex">\(r\)</span> 层取残差 <span class="arithmatex">\(\mathbf{r}_{r-1}\)</span>，在码本 <span class="arithmatex">\(\mathcal{C}_r\)</span> 中找最近码字 <span class="arithmatex">\(c_{r}=\arg\min_{c\in\mathcal{C}_r}\|\mathbf{r}_{r-1}-c\|_2^2\)</span>，更新 <span class="arithmatex">\(\mathbf{r}_r=\mathbf{r}_{r-1}-c_r\)</span>。最终物品索引为码字序列 <span class="arithmatex">\((c_1,\dots,c_K)\)</span>，如 CeID 为 <span class="arithmatex">\((k,2,1)\)</span>、SeID 为 <span class="arithmatex">\((2,1,1)\)</span>。物理直觉：协同码本编码"共现相似"，语义码本编码"内容相似"，二者归纳偏置不同，天然互补。</p>
-<p><strong>(2) 类别隐变量变分整合</strong>：设视图索引 <span class="arithmatex">\(z\in\{1,\dots,n\}\)</span> 为类别隐变量。生成过程为 <span class="arithmatex">\(p(z|H(u))\)</span> 选视图、再由该视图的 LM 生成目标物品。训练目标为最大化对数似然 <span class="arithmatex">\(\log p(i_{L+1}^u|H(u))=\log\sum_{z}p(z|H(u))\,p(i_{L+1}^u|H(u),z)\)</span>。引入变分后验 <span class="arithmatex">\(q(z)\)</span>，优化 ELBO：
-$<span class="arithmatex">\(\mathcal{L}=\mathbb{E}_{q(z)}\big[\log p(i_{L+1}^u|H(u),z)\big]-\mathrm{KL}\big(q(z)\,\|\,p(z|H(u))\big).\)</span>$
-关键设计：训练时后验 <span class="arithmatex">\(q(z)\)</span> 可<strong>闭式求解</strong>（视为最优后验），从而把似然网络（各视图 LM）与先验网络（<span class="arithmatex">\(\pi(z|H(u))\)</span>）<strong>解耦更新</strong>，形成变分 EM 式交替优化——E 步固定先验求最优后验，M 步固定后验更新似然与先验。物理直觉：让每个视图先"各显其能"拟合数据，再让先验网络学会"看用户历史判断哪个视图更靠谱"。</p>
-<p><strong>(3) 灵活推理</strong>：推理时用先验 <span class="arithmatex">\(\pi(z|H(u))\)</span> 加权。<strong>单视图</strong>：<span class="arithmatex">\(\hat z=\arg\max_z \pi(z|H(u))\)</span>，仅解码一个视图，延迟最低；<strong>多视图聚合</strong>：<span class="arithmatex">\(\text{score}(i)=\sum_z \pi(z|H(u))\,p(i|H(u),z)\)</span>，融合互补排序，精度更高。由此在效率与精度间自适应权衡。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 上述 ELBO，含重构似然项（各视图 LM 的交叉熵生成损失）与 KL 正则项（后验与用户条件先验的 KL 散度）。原文未报告显式温度系数 <span class="arithmatex">\(\tau\)</span>（生成式交叉熵无对比温度）。</li>
-<li><strong>训练负采样策略</strong>: <strong>免负采样</strong>——生成式检索以自回归 token 交叉熵训练，不做显式负例采样（区别于双塔/图模型的 BPR/InfoNCE）。</li>
-<li><strong>时间与空间复杂度</strong>: 离线需 LightGCN 训练 + Sentence-T5 编码 + RQ-VAE 量化（一次性预处理）；训练阶段每用户需对 <span class="arithmatex">\(n\)</span> 个视图分别前向，成本约为单视图的 <span class="arithmatex">\(n\)</span> 倍（<span class="arithmatex">\(n\)</span> = 模板数 × 索引类型数）；推理阶段单视图模式仅一次 LM 解码（与基线相当），多视图聚合需 <span class="arithmatex">\(n\)</span> 次解码 + 先验加权。原文未报告具体 ms/request 延迟与峰值显存数值。</li>
-</ul>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>异构索引与碰撞消解</strong>：痛点在于单一信息源归纳偏置过窄。RQ-VAE 逐层残差量化 <span class="arithmatex">\(\boldsymbol{c}_k=\arg\min_{w}\|\boldsymbol{r}_{k-1}-\boldsymbol{e}^{(k)}_w\|_2^2,\ \boldsymbol{r}_k=\boldsymbol{r}_{k-1}-\boldsymbol{e}^{(k)}_{\boldsymbol{c}_k}\)</span>，得到粗到细的层级码<span class="arithmatex">\((c_1,\dots,c_K)\)</span>；对码字碰撞在末层追加唯一 token（未碰撞补 0）保证 ID 唯一。直觉：协同码刻画共现行为、语义码刻画元数据属性，二者天然互补。</p>
+</li>
+<li>
+<p><strong>视图隐变量与闭式最优后验</strong>：把边际似然写成 <span class="arithmatex">\(p(y^*|H(u))=\sum_{z}p_\theta(y^*|z)p_\psi(z|H(u))\)</span>，对 ELBO 用拉格朗日乘子求导得闭式后验
+$<span class="arithmatex">\(q^*(z|H(u),y^*)=\frac{p_\theta(y^*|z)p_\psi(z|H(u))}{\sum_{z'}p_\theta(y^*|z')p_\psi(z'|H(u))}.\)</span>$
+关键工程决策是对 <span class="arithmatex">\(q^*\)</span> 施加 stop-gradient 视为固定分布，从而似然网络与先验网络<strong>解耦更新</strong>（变分 EM 风格），避免后验与先验互相追逐的不稳定。直觉：后验本质是"似然×先验"的贝叶斯重加权，天然实现按用户上下文分配视图权重。</p>
+</li>
+<li>
+<p><strong>训练目标与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}_{\text{ELBO}}=\mathbb{E}_{q^*}[\log p_\theta(y^*|z)]-\mathrm{KL}(q^*\|p_\psi(z|H(u)))\)</span>，似然侧用预训练 T5-small 最大化期望对数似然，先验侧最小化与最优后验的 KL。无需负采样（生成式全库 beam search，beam=20）。推理复杂度<span class="arithmatex">\(O(B\times|\mathcal{I}|\times|\mathcal{T}|)\)</span>，先验估计仅约 0.01 s/用户；<span class="arithmatex">\(|\mathcal{I}|=2,|\mathcal{T}|=10\)</span> 时 0.40 s/用户，相对双索引基线 EAGER 的额外开销主要来自多模板而非先验本身。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 采用三个真实数据集 Amazon Beauty、Amazon Sports、Yelp（表 2）。原文正文未逐项列出 #Users/#Items/#Interactions 具体数值，仅给出统计表；过滤规则（是否 5-core）正文未明确说明，需以表 2 为准。</li>
+<li><strong>数据集与预处理</strong>（均 5-core 过滤，最大序列长 20）：</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Amazon Beauty</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: left;">标题/品牌/类目/描述/属性 (SeID) + 交互 (CeID)</td>
-</tr>
-<tr>
-<td style="text-align: left;">Amazon Sports</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: left;">同上</td>
-</tr>
-<tr>
-<td style="text-align: left;">Yelp</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: center;">原文表 2 报告</td>
-<td style="text-align: left;">同上</td>
-</tr>
-</tbody>
-</table>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2408.08686v4/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
-<ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 采用序列推荐标准的<strong>留一法 (Leave-One-Out)</strong> 风格划分（最后一项为测试、倒数第二项为验证，其余训练），与 P5/TIGER 系列一致；LightGCN 仅在训练数据上优化以<strong>防止数据泄露</strong>（原文明确强调）。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: <strong>Full-Ranking（全库未交互物品排序）</strong>，由生成式解码产生 top-k 列表，非采样负例排序。</li>
-<li><strong>评价指标与显著性检验</strong>: 报告 Hit@k / NDCG@k（主表以 NDCG@10 等为主，具体 k 见原文表 3）；嵌入维度 <span class="arithmatex">\(d=768\)</span> 对齐；表 3 中带 <span class="arithmatex">\(\ast\)</span> 标记表示与最强基线的<strong>配对 t 检验 <span class="arithmatex">\(p&lt;0.01\)</span></strong> 显著。</li>
-</ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
-<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>表 3 报告全部基线与本文方法在三个数据集上的推荐精度（最佳加粗、次优下划线，<span class="arithmatex">\(\ast\)</span> 表示 <span class="arithmatex">\(p&lt;0.01\)</span> 显著）。原文正文未在摘要/引言中给出逐格数值，具体数字以表 3 为准；据摘要与结论，MVIGER 在三个数据集上<strong>一致超越所有生成式推荐基线</strong>。</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">传统/协同过滤基线</th>
-<th style="text-align: center;">序列/图/生成式最强基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;">#Users</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">#Interactions</th>
+<th style="text-align: center;">稀疏度</th>
+<th style="text-align: left;">场景说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">Amazon Beauty</td>
-<td style="text-align: left;">NDCG@10 等</td>
-<td style="text-align: center;">见表 3</td>
-<td style="text-align: center;">见表 3 (EAGER/TIGER 等)</td>
-<td style="text-align: center;"><strong>见表 3</strong></td>
-<td style="text-align: center;">显著优于最强基线 (<span class="arithmatex">\(p&lt;0.01\)</span>)</td>
+<td style="text-align: center;">22,363</td>
+<td style="text-align: center;">12,101</td>
+<td style="text-align: center;">198,502</td>
+<td style="text-align: center;">99.93%</td>
+<td style="text-align: left;">美妆产品评论</td>
 </tr>
 <tr>
 <td style="text-align: left;">Amazon Sports</td>
-<td style="text-align: left;">NDCG@10 等</td>
-<td style="text-align: center;">见表 3</td>
-<td style="text-align: center;">见表 3</td>
-<td style="text-align: center;"><strong>见表 3</strong></td>
-<td style="text-align: center;">显著优于最强基线 (<span class="arithmatex">\(p&lt;0.01\)</span>)</td>
+<td style="text-align: center;">25,598</td>
+<td style="text-align: center;">18,357</td>
+<td style="text-align: center;">296,337</td>
+<td style="text-align: center;">99.95%</td>
+<td style="text-align: left;">运动户外产品</td>
 </tr>
 <tr>
 <td style="text-align: left;">Yelp</td>
-<td style="text-align: left;">NDCG@10 等</td>
-<td style="text-align: center;">见表 3</td>
-<td style="text-align: center;">见表 3</td>
-<td style="text-align: center;"><strong>见表 3</strong></td>
-<td style="text-align: center;">显著优于最强基线 (<span class="arithmatex">\(p&lt;0.01\)</span>)</td>
+<td style="text-align: center;">30,431</td>
+<td style="text-align: center;">20,033</td>
+<td style="text-align: center;">316,354</td>
+<td style="text-align: center;">99.95%</td>
+<td style="text-align: left;">本地商户点评</td>
 </tr>
 </tbody>
 </table>
-<figure class="paper-figure">
-  <img alt="表 3" src="../../../../../assets/papers/2408.08686v4/table_3.png" /><figcaption>表 3</figcaption>
-</figure>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文包含消融与探索性分析（摘要与贡献部分明确提及 "ablation studies, and exploratory analysis"），用于验证多视图变分整合各组件（先验网络、后验闭式解、多视图聚合）的贡献。<strong>具体消融数值原文正文未在给定文本中逐项列出</strong>，需以原文消融表为准；作者强调多视图整合相较任一单视图均带来增益，且单视图选择与多视图聚合两种推理策略各有精度/效率优势。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
 <ul>
-<li><strong>分桶表现</strong>: 原文给定文本未报告按交互频次/长尾物品的分桶实验，<strong>原文未报告</strong>。</li>
-<li><strong>关键超参数敏感度</strong>: 涉及视图数 <span class="arithmatex">\(n\)</span>（模板数 × 索引类型数）、RQ-VAE 码本层数 <span class="arithmatex">\(K\)</span> 与码本大小、嵌入维度 <span class="arithmatex">\(d=768\)</span>；给定文本未给出逐项敏感度曲线，<strong>原文未报告</strong>具体趋势数值。</li>
-<li><strong>线上 A/B 测试结果</strong>: <strong>原文仅包含离线实验</strong>，无工业线上 A/B 结果。</li>
+<li><strong>数据划分与防穿越</strong>: <code>Leave-One-Out</code>——每用户倒数第二项作验证、最后一项作测试，其余训练；RQ-VAE 与 LightGCN 仅在训练集上拟合以防泄漏。</li>
+<li><strong>排名评测协议</strong>: 无偏 <code>Full-Ranking</code>（全物品集排序，非采样），指标 H@5/N@5/H@10/N@10，beam size=20。</li>
+<li><strong>对比基线与超参</strong>: 三类基线——协同过滤 LightGCN；序列模型 GRU4Rec/Bert4Rec/SASRec/S³-Rec；生成式 P5-IDs（CID/SemID/IID 及拼接）、TIGER、LC-Rec、EAGER、EAGER-LLM。RQ-VAE 码本 256、码长 3、隐维 32；T5-small 主干；3 随机种子均值，配对 t 检验 <span class="arithmatex">\(p&lt;0.01\)</span>。</li>
 </ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">方法</th>
+<th style="text-align: center;">Beauty H@5</th>
+<th style="text-align: center;">Beauty H@10</th>
+<th style="text-align: center;">Beauty N@10</th>
+<th style="text-align: center;">Sports H@5</th>
+<th style="text-align: center;">Sports H@10</th>
+<th style="text-align: center;">Yelp H@5</th>
+<th style="text-align: center;">Yelp H@10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">SASRec</td>
+<td style="text-align: center;">0.0387</td>
+<td style="text-align: center;">0.0605</td>
+<td style="text-align: center;">0.0318</td>
+<td style="text-align: center;">0.0233</td>
+<td style="text-align: center;">0.0350</td>
+<td style="text-align: center;">0.0162</td>
+<td style="text-align: center;">0.0274</td>
+</tr>
+<tr>
+<td style="text-align: left;">S³-Rec</td>
+<td style="text-align: center;">0.0387</td>
+<td style="text-align: center;">0.0647</td>
+<td style="text-align: center;">0.0327</td>
+<td style="text-align: center;">0.0251</td>
+<td style="text-align: center;">0.0385</td>
+<td style="text-align: center;">0.0201</td>
+<td style="text-align: center;">0.0341</td>
+</tr>
+<tr>
+<td style="text-align: left;">TIGER</td>
+<td style="text-align: center;">0.0454</td>
+<td style="text-align: center;">0.0648</td>
+<td style="text-align: center;">0.0384</td>
+<td style="text-align: center;">0.0264</td>
+<td style="text-align: center;">0.0400</td>
+<td style="text-align: center;">0.0212</td>
+<td style="text-align: center;">0.0367</td>
+</tr>
+<tr>
+<td style="text-align: left;">P5 (CID+IID)</td>
+<td style="text-align: center;">0.0512</td>
+<td style="text-align: center;">0.0732</td>
+<td style="text-align: center;">0.0427</td>
+<td style="text-align: center;">0.0321</td>
+<td style="text-align: center;">0.0456</td>
+<td style="text-align: center;">0.0287</td>
+<td style="text-align: center;">0.0468</td>
+</tr>
+<tr>
+<td style="text-align: left;">LC-Rec</td>
+<td style="text-align: center;">0.0443</td>
+<td style="text-align: center;">0.0610</td>
+<td style="text-align: center;">0.0331</td>
+<td style="text-align: center;">0.0304</td>
+<td style="text-align: center;">0.0451</td>
+<td style="text-align: center;">0.0230</td>
+<td style="text-align: center;">0.0359</td>
+</tr>
+<tr>
+<td style="text-align: left;">EAGER</td>
+<td style="text-align: center;"><strong>0.0618</strong></td>
+<td style="text-align: center;">0.0836</td>
+<td style="text-align: center;"><strong>0.0525</strong></td>
+<td style="text-align: center;">0.0281</td>
+<td style="text-align: center;">0.0441</td>
+<td style="text-align: center;">0.0265</td>
+<td style="text-align: center;">0.0453</td>
+</tr>
+<tr>
+<td style="text-align: left;">EAGER-LLM</td>
+<td style="text-align: center;">0.0548</td>
+<td style="text-align: center;">0.0830</td>
+<td style="text-align: center;">0.0459</td>
+<td style="text-align: center;"><strong>0.0373</strong></td>
+<td style="text-align: center;"><strong>0.0569</strong></td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">–</td>
+</tr>
+<tr>
+<td style="text-align: left;">MVIGER(<span class="arithmatex">\(z^*\)</span>)</td>
+<td style="text-align: center;">0.0560</td>
+<td style="text-align: center;">0.0831</td>
+<td style="text-align: center;">0.0469</td>
+<td style="text-align: center;">0.0358</td>
+<td style="text-align: center;">0.0533</td>
+<td style="text-align: center;">0.0349</td>
+<td style="text-align: center;">0.0536</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>MVIGER</strong></td>
+<td style="text-align: center;">0.0608</td>
+<td style="text-align: center;"><strong>0.0878</strong></td>
+<td style="text-align: center;">0.0510</td>
+<td style="text-align: center;">0.0392</td>
+<td style="text-align: center;">0.0592</td>
+<td style="text-align: center;"><strong>0.0370</strong></td>
+<td style="text-align: center;"><strong>0.0591</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Improv. (vs 最强基线)</td>
+<td style="text-align: center;">−1.6%</td>
+<td style="text-align: center;"><strong>+5.0%</strong></td>
+<td style="text-align: center;">−2.9%</td>
+<td style="text-align: center;"><strong>+5.1%</strong></td>
+<td style="text-align: center;"><strong>+4.0%</strong></td>
+<td style="text-align: center;"><strong>+39.6%</strong></td>
+<td style="text-align: center;"><strong>+30.5%</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">设置</th>
+<th style="text-align: center;">Beauty H@5</th>
+<th style="text-align: center;">Beauty H@10</th>
+<th style="text-align: center;">Sports H@10</th>
+<th style="text-align: center;">Yelp H@10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">CeID-only</td>
+<td style="text-align: center;">0.0484</td>
+<td style="text-align: center;">0.0732</td>
+<td style="text-align: center;">0.0482</td>
+<td style="text-align: center;">0.0491</td>
+</tr>
+<tr>
+<td style="text-align: left;">SeID-only</td>
+<td style="text-align: center;">0.0505</td>
+<td style="text-align: center;">0.0750</td>
+<td style="text-align: center;">0.0483</td>
+<td style="text-align: center;">0.0368</td>
+</tr>
+<tr>
+<td style="text-align: left;">MVIGER(<span class="arithmatex">\(z^*\)</span>) 单视图选择</td>
+<td style="text-align: center;">0.0560</td>
+<td style="text-align: center;">0.0831</td>
+<td style="text-align: center;">0.0533</td>
+<td style="text-align: center;">0.0536</td>
+</tr>
+<tr>
+<td style="text-align: left;">Self-Consistency 多数投票</td>
+<td style="text-align: center;">0.0565</td>
+<td style="text-align: center;">0.0832</td>
+<td style="text-align: center;">0.0528</td>
+<td style="text-align: center;">0.0538</td>
+</tr>
+<tr>
+<td style="text-align: left;">Uniform prior 等权平均</td>
+<td style="text-align: center;">0.0576</td>
+<td style="text-align: center;">0.0831</td>
+<td style="text-align: center;">0.0538</td>
+<td style="text-align: center;">0.0557</td>
+</tr>
+<tr>
+<td style="text-align: left;">MVIGER ($</td>
+<td style="text-align: center;">\mathcal{T}</td>
+<td style="text-align: center;">=2$)</td>
+<td style="text-align: center;">0.0599</td>
+<td style="text-align: center;">0.0857</td>
+</tr>
+<tr>
+<td style="text-align: left;">MVIGER ($</td>
+<td style="text-align: center;">\mathcal{T}</td>
+<td style="text-align: center;">=10$)</td>
+<td style="text-align: center;"><strong>0.0608</strong></td>
+<td style="text-align: center;"><strong>0.0878</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>异构索引互补是主要增益来源</strong>：单索引 CeID/SeID 在 Beauty H@10 仅 0.0732/0.0750，而仅做单视图先验选择即升至 0.0831（+10.8%），说明先验网络已能按用户上下文挑出更合适的知识源，无需多视图聚合。</li>
+<li><strong>先验加权优于启发式聚合</strong>：Uniform prior 在 Yelp H@10 为 0.0557，MVIGER 达 0.0591（+6.1%），证明用户条件化的概率权重比等权/多数投票更能区分视图信息量；且模板数从 2 增至 10 时性能单调上升（Beauty H@10 0.0857→0.0878），呈现"测试时扩展"特性。</li>
+<li><strong>先验捕获了冷启动-富交互的索引偏好分化</strong>：图 4 可视化显示富交互用户先验偏向协同 CeID、冷启动用户偏向语义 SeID，而模板维度无明显用户聚类——说明模板主要提供多样化推理轨迹，索引才承载用户级偏好信号。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>问题洞察扎实</strong>：用 PER/CHR 两个量化指标实证"模板与索引的互补性"，把工程直觉上升为可度量的科学问题，方法论可迁移到任何多 prompt/多表征的生成式系统。</li>
-<li><strong>概率框架优雅</strong>：类别隐变量 + 闭式后验 + 变分 EM 解耦，使"多视图整合"从启发式拼接升级为有理论保证的推断，且天然支持单/多视图推理的精度-效率权衡。</li>
-<li><strong>即插即用</strong>：框架与具体 LM 骨干解耦，可套用到 TIGER、LC-Rec 等任意生成式推荐器。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议细节披露不足</strong>：数据集过滤规则（是否 5-core）、精确划分比例、主表逐格数值在给定文本中未完整呈现，复现门槛偏高；且<strong>官方代码未开源</strong>（脚注链接仅为 LightGCN 编码器），复现性存疑。</li>
-<li><strong>训练成本放大</strong>：每用户需对 <span class="arithmatex">\(n\)</span> 个视图分别前向，训练开销随模板×索引组合线性增长；多视图聚合推理需 <span class="arithmatex">\(n\)</span> 次解码，在线延迟压力大，原文未报告 ms/request 与显存。</li>
-<li><strong>视图数量与组合的扩展性</strong>：实验仅覆盖 10 模板 × 2 索引，若扩展到更多异构信息源（多模态、知识图谱），先验网络与后验闭式解的稳定性未验证。</li>
-<li><strong>缺乏线上验证与长尾分析</strong>：无 A/B、无稀疏度分桶，工业落地价值待证。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 P5-IDs 的索引拼接（破坏解码上下文，Beauty H@5 崩至 0.0355）与 EAGER 的固定双流 log-prob 重排（无法刻画视图相对贡献），MVIGER 用概率隐变量统一了"选哪个视图"与"如何融合"，且不绑定具体索引设计（替换为 CID+SemID 仍得 H@10 0.0818）。</li>
+<li><strong>可迁移亮点</strong>: ① 闭式最优后验 + stop-gradient 的解耦变分 EM 训练，可低成本套用到任何"多提示/多表征"集成场景；② 用先验 argmax 做单视图推理即可获得大部分增益，为线上延迟敏感场景提供降级路径。</li>
+<li><strong>审稿级局限批判</strong>: ① 仅验证 T5-small 主干，缺少 decoder-only/LLM 规模扩展实验，与 EAGER-LLM 的比较存在主干不对等；② 多模板推理成本随 <span class="arithmatex">\(|\mathcal{T}|\)</span>近线性增长（<span class="arithmatex">\(|\mathcal{I}|=2,|\mathcal{T}|=10\)</span> 时 0.40 s/用户），且模板集合为预定义 P5 模板而非可学习优化，视图多样性上限受人为设计约束。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （将多视图变分整合引入生成式推荐，问题建模新颖，但变分 EM 本身非全新）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （Full-Ranking + 配对 t 检验规范，但数据集统计/消融数值披露不全，无线上与长尾分析）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （动机量化清晰、ELBO 与算法 1 表述完整，部分超参与复杂度细节缺失）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （框架通用、支持单视图高效推理，但训练/聚合成本高且代码未开源，落地需额外工程）</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （将模板-索引组合形式化为类别隐变量视图，闭式后验解耦训练优雅，但变分框架本身非全新）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （三数据集 Full-Ranking + 显著性检验 + 索引替换/推理时延/超参敏感性分析齐全，缺 LLM 主干扩展）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （ELBO 拉格朗日推导与算法伪代码清晰，RQ-VAE 部分为标准引用）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （单视图降级路径实用，但多模板推理开销与代码未开源削弱直接部署性）</li>
 </ul>
 
 

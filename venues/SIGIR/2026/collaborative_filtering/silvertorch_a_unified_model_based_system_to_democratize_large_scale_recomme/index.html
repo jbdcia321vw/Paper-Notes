@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="[SIGIR 2026][协同过滤与双塔召回] 将 ANN 检索与特征过滤下沉为 PyTorch 模型层，GPU Bloom 索引 + Int8 融合核，吞吐提升 23.7×、成本效率 13.35×。">
+        <meta name="description" content="[SIGIR 2026][协同过滤与双塔召回] 将 ANN 检索与特征过滤下沉为 PyTorch 模型层，GPU Bloom Index 与 Int8 融合 ANN 协同设计，吞吐提升 23.7×、成本效率提升 13.35×。">
       
       
       
@@ -108,20 +108,20 @@
 
 
 
-<meta name="keywords" content="SIGIR, 协同过滤与双塔召回, 召回, GPU ANN 索引, Bloom 特征过滤, 模型化服务" />
+<meta name="keywords" content="SIGIR 2026, 协同过滤与双塔召回, 召回, GPU 向量检索, Bloom Index 特征过滤, 模型化服务架构" />
 
 
-<meta property="article:tag" content="SIGIR" />
+<meta property="article:tag" content="SIGIR 2026" />
 
 <meta property="article:tag" content="协同过滤与双塔召回" />
 
 <meta property="article:tag" content="召回" />
 
-<meta property="article:tag" content="GPU ANN 索引" />
+<meta property="article:tag" content="GPU 向量检索" />
 
-<meta property="article:tag" content="Bloom 特征过滤" />
+<meta property="article:tag" content="Bloom Index 特征过滤" />
 
-<meta property="article:tag" content="模型化服务" />
+<meta property="article:tag" content="模型化服务架构" />
 
 
 
@@ -131,10 +131,10 @@
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/collaborative_filtering/silvertorch_a_unified_model_based_system_to_democratize_large_scale_recomme/" />
 <meta property="og:title" content="[Paper Note] SilverTorch: A Unified Model-based System to Democratize Large-Scale Recommendation on GPUs" />
-<meta property="og:description" content="[SIGIR 2026][协同过滤与双塔召回] 将 ANN 检索与特征过滤下沉为 PyTorch 模型层，GPU Bloom 索引 + Int8 融合核，吞吐提升 23.7×、成本效率 13.35×。" />
+<meta property="og:description" content="[SIGIR 2026][协同过滤与双塔召回] 将 ANN 检索与特征过滤下沉为 PyTorch 模型层，GPU Bloom Index 与 Int8 融合 ANN 协同设计，吞吐提升 23.7×、成本效率提升 13.35×。" />
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="[Paper Note] SilverTorch: A Unified Model-based System to Democratize Large-Scale Recommendation on GPUs" />
-<meta name="twitter:description" content="[SIGIR 2026][协同过滤与双塔召回] 将 ANN 检索与特征过滤下沉为 PyTorch 模型层，GPU Bloom 索引 + Int8 融合核，吞吐提升 23.7×、成本效率 13.35×。" />
+<meta name="twitter:description" content="[SIGIR 2026][协同过滤与双塔召回] 将 ANN 检索与特征过滤下沉为 PyTorch 模型层，GPU Bloom Index 与 Int8 融合 ANN 协同设计，吞吐提升 23.7×、成本效率提升 13.35×。" />
 
 
 <!-- JSON-LD: Organization (site-wide entity; referenced by @id elsewhere) -->
@@ -160,7 +160,7 @@
   "@type": "ScholarlyArticle",
   "name": "[Paper Note] SilverTorch: A Unified Model-based System to Democratize Large-Scale Recommendation on GPUs",
   "headline": "[Paper Note] SilverTorch: A Unified Model-based System to Democratize Large-Scale Recommendation on GPUs",
-  "description": "[SIGIR 2026][\u534f\u540c\u8fc7\u6ee4\u4e0e\u53cc\u5854\u53ec\u56de] \u5c06 ANN \u68c0\u7d22\u4e0e\u7279\u5f81\u8fc7\u6ee4\u4e0b\u6c89\u4e3a PyTorch \u6a21\u578b\u5c42\uff0cGPU Bloom \u7d22\u5f15 + Int8 \u878d\u5408\u6838\uff0c\u541e\u5410\u63d0\u5347 23.7\u00d7\u3001\u6210\u672c\u6548\u7387 13.35\u00d7\u3002",
+  "description": "[SIGIR 2026][\u534f\u540c\u8fc7\u6ee4\u4e0e\u53cc\u5854\u53ec\u56de] \u5c06 ANN \u68c0\u7d22\u4e0e\u7279\u5f81\u8fc7\u6ee4\u4e0b\u6c89\u4e3a PyTorch \u6a21\u578b\u5c42\uff0cGPU Bloom Index \u4e0e Int8 \u878d\u5408 ANN \u534f\u540c\u8bbe\u8ba1\uff0c\u541e\u5410\u63d0\u5347 23.7\u00d7\u3001\u6210\u672c\u6548\u7387\u63d0\u5347 13.35\u00d7\u3002",
   "url": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/collaborative_filtering/silvertorch_a_unified_model_based_system_to_democratize_large_scale_recomme/",
   "mainEntityOfPage": "https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/2026/collaborative_filtering/silvertorch_a_unified_model_based_system_to_democratize_large_scale_recomme/",
   "inLanguage": "zh-CN",
@@ -168,18 +168,18 @@
   "learningResourceType": "AI paper note",
   "genre": "论文解读",
   
-  "keywords": "SIGIR, \u534f\u540c\u8fc7\u6ee4\u4e0e\u53cc\u5854\u53ec\u56de, \u53ec\u56de, GPU ANN \u7d22\u5f15, Bloom \u7279\u5f81\u8fc7\u6ee4, \u6a21\u578b\u5316\u670d\u52a1",
+  "keywords": "SIGIR 2026, \u534f\u540c\u8fc7\u6ee4\u4e0e\u53cc\u5854\u53ec\u56de, \u53ec\u56de, GPU \u5411\u91cf\u68c0\u7d22, Bloom Index \u7279\u5f81\u8fc7\u6ee4, \u6a21\u578b\u5316\u670d\u52a1\u67b6\u6784",
   "about": [
-    { "@type": "Thing", "name": "SIGIR" },
+    { "@type": "Thing", "name": "SIGIR 2026" },
     { "@type": "Thing", "name": "\u534f\u540c\u8fc7\u6ee4\u4e0e\u53cc\u5854\u53ec\u56de" },
     { "@type": "Thing", "name": "\u53ec\u56de" },
-    { "@type": "Thing", "name": "GPU ANN \u7d22\u5f15" },
-    { "@type": "Thing", "name": "Bloom \u7279\u5f81\u8fc7\u6ee4" },
-    { "@type": "Thing", "name": "\u6a21\u578b\u5316\u670d\u52a1" }
+    { "@type": "Thing", "name": "GPU \u5411\u91cf\u68c0\u7d22" },
+    { "@type": "Thing", "name": "Bloom Index \u7279\u5f81\u8fc7\u6ee4" },
+    { "@type": "Thing", "name": "\u6a21\u578b\u5316\u670d\u52a1\u67b6\u6784" }
   ],
   
-  "datePublished": "2026-11-12",
-  "dateModified": "2026-11-12",
+  "datePublished": "2026-11-13",
+  "dateModified": "2026-11-13",
   "author": { "@id": "https://papernotes.org/#organization" },
   "publisher": { "@id": "https://papernotes.org/#organization" }
 }
@@ -3997,10 +3997,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#tldr-1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR (核心速览)
+        TL;DR (1分钟核心速览)
       
     </span>
   </a>
@@ -4011,7 +4011,7 @@
   <a href="#background-motivation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Background &amp; Motivation (背景与动机)
+        Background &amp; Motivation (背景与核心矛盾)
       
     </span>
   </a>
@@ -4019,22 +4019,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#problem-formulation-method" class="md-nav__link">
+  <a href="#method" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Problem Formulation &amp; Method (问题定义与方法架构)
+        Method (核心方法设计)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Problem Formulation &amp; Method (问题定义与方法架构)">
+    <nav class="md-nav" aria-label="Method (核心方法设计)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-notations-input-representations" class="md-nav__link">
+  <a href="#1-overall-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. 符号定义与输入表征 (Notations &amp; Input Representations)
+        1. 整体框架 (Overall Architecture)
       
     </span>
   </a>
@@ -4042,32 +4042,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-overall-architecture" class="md-nav__link">
+  <a href="#2-key-designs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 整体流水线 (Overall Architecture)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-key-designs-formulations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-optimization-negative-sampling-complexity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)
+        2. 关键设计拆解 (Key Designs)
       
     </span>
   </a>
@@ -4094,12 +4072,12 @@
   <a href="#key-experimental-results" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Experimental Results (核心实验结果)
+        Key Experimental Results (实验关键数据)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Key Experimental Results (核心实验结果)">
+    <nav class="md-nav" aria-label="Key Experimental Results (实验关键数据)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4117,7 +4095,7 @@
   <a href="#2-ablation-study" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. 消融实验与控制变量分析 (Ablation Study)
+        2. 消融实验 (Ablation Study)
       
     </span>
   </a>
@@ -4125,10 +4103,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-sparsity-buckets-hyperparameters" class="md-nav__link">
+  <a href="#3-key-findings" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)
+        3. 关键实验发现 (Key Findings)
       
     </span>
   </a>
@@ -4141,10 +4119,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-critiques" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
       
     </span>
   </a>
@@ -4181,9 +4159,9 @@
   
   
 <aside class="paper-seo-summary" aria-label="论文摘要">
-  <p class="paper-seo-summary__desc">[SIGIR 2026][协同过滤与双塔召回] 将 ANN 检索与特征过滤下沉为 PyTorch 模型层，GPU Bloom 索引 + Int8 融合核，吞吐提升 23.7×、成本效率 13.35×。</p>
+  <p class="paper-seo-summary__desc">[SIGIR 2026][协同过滤与双塔召回] 将 ANN 检索与特征过滤下沉为 PyTorch 模型层，GPU Bloom Index 与 Int8 融合 ANN 协同设计，吞吐提升 23.7×、成本效率提升 13.35×。</p>
   
-  <p class="paper-seo-summary__tags">标签：SIGIR · 协同过滤与双塔召回 · 召回 · GPU ANN 索引 · Bloom 特征过滤 · 模型化服务</p>
+  <p class="paper-seo-summary__tags">标签：SIGIR 2026 · 协同过滤与双塔召回 · 召回 · GPU 向量检索 · Bloom Index 特征过滤 · 模型化服务架构</p>
   
 </aside>
   
@@ -4197,7 +4175,7 @@
       
       
       
-        <span class="md-tag">SIGIR</span>
+        <span class="md-tag">SIGIR 2026</span>
       
     
       
@@ -4218,21 +4196,21 @@
       
       
       
-        <span class="md-tag">GPU ANN 索引</span>
+        <span class="md-tag">GPU 向量检索</span>
       
     
       
       
       
       
-        <span class="md-tag">Bloom 特征过滤</span>
+        <span class="md-tag">Bloom Index 特征过滤</span>
       
     
       
       
       
       
-        <span class="md-tag">模型化服务</span>
+        <span class="md-tag">模型化服务架构</span>
       
     
   </nav>
@@ -4244,185 +4222,281 @@
 
 <h1 id="silvertorch-a-unified-model-based-system-to-democratize-large-scale-recommendation-on-gpus-silvertorch-gpu">SilverTorch: A Unified Model-based System to Democratize Large-Scale Recommendation on GPUs (SilverTorch：统一模型化系统，让大规模 GPU 推荐普惠化)</h1>
 <ul>
-<li><strong>会议/期刊</strong>: SIGIR 2026 (Melbourne, VIC, Australia)</li>
-<li><strong>推荐链路定位</strong>: 召回 (Retrieval) — 双塔召回 + ANN 检索 + 特征过滤 + 召回阶段轻量重排 (OverArch)</li>
-<li><strong>研究方向</strong>: 协同过滤与双塔召回 / 去偏公平、可信隐私与工业架构</li>
+<li><strong>会议/期刊</strong>: SIGIR 2026</li>
+<li><strong>作者与机构</strong>: Bi Xue, Hong Wu, Lei Chen, Chao Yang 等（Meta Platforms）</li>
+<li><strong>推荐链路定位</strong>: 召回（Retrieval / 粗排前置）</li>
+<li><strong>研究方向</strong>: 协同过滤与双塔召回 / 工业级全链路架构</li>
 <li><strong>论文原文</strong>: <a href="https://arxiv.org/abs/2511.14881v5">https://arxiv.org/abs/2511.14881v5</a></li>
-<li><strong>开源代码</strong>: 暂未开源（原文与预提取均未发现公开代码仓库）</li>
+<li><strong>开源代码</strong>: <a href="https://github.com/rapidsai/raft">https://github.com/rapidsai/raft</a>（底层 ANN 算子依赖 RAFT）</li>
 </ul>
-<h2 id="tldr">TL;DR (核心速览)</h2>
-<p>针对工业级 DLRM 召回阶段"ANN 索引服务 + 特征过滤服务"分离部署带来的开发割裂、版本不一致与 CPU 成本线性膨胀问题，SilverTorch 把 ANN 检索与特征过滤全部下沉为 PyTorch 模型层：提出 GPU 上的 Bloom Index 做特征过滤、融合 Int8 IVF ANN 核做近邻检索，并二者协同设计以省显存、省计算；再借模型化优势加入 OverArch 打分层与 Value Model 多任务聚合。在 1000 万与 8000 万物品的工业数据集上，吞吐最高提升 23.7×，成本效率提升 13.35×，召回率提升超 5.6%。</p>
-<h2 id="background-motivation">Background &amp; Motivation (背景与动机)</h2>
+<h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
+<p>工业级 DLRM 召回长期依赖 CPU 上的独立 ANN 索引服务与倒排过滤服务，导致版本不一致、跨服务数据搬运开销大、且无法支撑学习型相似度与多任务召回。SilverTorch 把 ANN 检索与特征过滤全部改写为 PyTorch 模型层：提出 GPU 上的 Bloom Index 做特征过滤、Int8 融合 IVF 算子做近邻检索，并将二者协同设计（Probe-then-Filter）。在 80M/10M 工业候选池、200ms P99 约束下，端到端吞吐较 CPU 基线提升 23.7×，成本效率提升 13.35×，同时通过 OverArch 打分层带来 E-Task Recall@20 相对提升 28.2%。</p>
+<h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
-<li><strong>领域背景与主流范式</strong>: 现代推荐系统采用多阶段架构，召回阶段把"给定用户向量找相关物品"形式化为向量空间中的 ANN 检索问题，主流实现依赖 Faiss / RAFT / Milvus 等独立索引库或向量数据库；同时用倒排索引做特征过滤（语言、地区、资格等用户约束）。用户/物品特征分稠密（数值）与稀疏（类别）两类，交互层因服务效率通常简化为点积。</li>
-<li><strong>现有方法局限 (Limitations of Prior Work)</strong>:</li>
-<li><strong>开发割裂 (Authoring Divergency)</strong>：模型在 PyTorch/TensorFlow 中开发，而 KNN 索引与特征过滤需跳出框架、对接独立系统栈（表 1 显示 Elasticsearch、内部 System A 仅 CPU；Faiss、Milvus 虽支持 GPU 但 top-k 与 nprobe 受限，Faiss nprobe≤2048、Milvus topk≤1024）。</li>
-<li><strong>版本不一致 (Versioning Inconsistency)</strong>：用户塔上线仅需数分钟，而物品 KNN 索引构建需 4 小时以上，二者版本对齐在故障下极难保证——2022 年一次错误版本切换导致线上指标下跌 30%。</li>
-<li><strong>成本线性膨胀</strong>：CPU 方案靠加机器横向扩展，成本随候选池线性增长，且各组件重复实现版本管理、调度、批处理逻辑，缺乏协同优化机会。</li>
-<li><strong>核心挑战 (Key Challenge)</strong>: 召回模型架构正变复杂（学习式相似度替代点积、Transformer 建模原始交互序列），需要一次返回上万候选送入交互层，而现有 GPU ANN 库仅支持有限 top-k/probe 且难定制；同时"没有任何已有工作在 GPU 上研究特征过滤"。</li>
-<li><strong>核心洞察与切入点 (Key Insight)</strong>: 作者观察到推荐场景的两个先验特性——(i) 查询结构（过滤逻辑表达式）在发布时已知，可预先优化数据布局；(ii) 推荐物品的每物品特征值基数远小于文本检索的高基数词表。因此倒排索引的稀疏性优势在推荐中失效、且其链表结构天然串行不适合 GPU；转而采用<strong>前向索引 + Bloom 过滤器位运算</strong>，把过滤变成规整的位矩阵运算，天然适配 GPU 并行，并可与 ANN 检索协同设计。</li>
+<li><strong>主流范式</strong>: 两塔模型 + 独立 ANN 索引服务（Faiss/Milvus）+ 倒排索引过滤服务，客户端编排多次请求并合并中间结果。</li>
+<li><strong>前人局限一（版本不一致）</strong>: 用户塔发布仅需分钟级，而物品侧 KNN 索引重建需 4 小时以上，二者版本错配在 2022 年曾造成线上指标 30% 下跌。</li>
+<li><strong>前人局限二（协同设计缺失）</strong>: 各组件独立实现 versioning/scheduling/batching，冗余逻辑割裂优化；且 Faiss-GPU 限制 top-k≤2048、probes≤2048，无法支撑现代召回模型动辄 <span class="arithmatex">\(O(10^4)\)</span> 的候选下推。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 推荐场景的特征过滤基数远低于文本检索（每物品仅数个特征值），倒排索引的稀疏性红利消失；而查询结构在发布期已知，可用前向索引/位运算实现无状态并行评估。</li>
+<li><strong>本文切入点</strong>: 把索引与过滤变成模型参数张量，让检索退化为一次前向算子执行，从而获得 GPU 并行与跨组件协同设计的机会。</li>
 </ul>
-<h2 id="problem-formulation-method">Problem Formulation &amp; Method (问题定义与方法架构)</h2>
-<h3 id="1-notations-input-representations">1. 符号定义与输入表征 (Notations &amp; Input Representations)</h3>
-<ul>
-<li>物品集合 <span class="arithmatex">\(V=\{V_i=[f_1,f_2,\dots,f_t]\}\)</span>，每个物品表示为特征列表；过滤查询 <span class="arithmatex">\(Q=[f_1,f_2,\dots,f_t]\)</span>。</li>
-<li>过滤目标：<span class="arithmatex">\(R=\{V_i\in V \mid Q\cap V_i == Q\}\)</span>，即物品须满足查询的全部特征约束。</li>
-<li>用户侧输入：User Tower 输出的用户嵌入 <code>user_emb</code> 及用户属性（<code>user_country</code>、<code>user_lang1/2</code> 等）；物品侧：发布期由 Item Tower 计算的物品嵌入与静态特征。</li>
-<li>输出：召回结果 <span class="arithmatex">\(O(1{,}000)\)</span> 个物品 ID，送入下游精排。</li>
-</ul>
-<h3 id="2-overall-architecture">2. 整体流水线 (Overall Architecture)</h3>
-<p>发布流程：加载训练模型 → Embedding Evaluator 用 GPU 计算物品嵌入 → ANN Index Builder 将嵌入量化为 Int8 并用 KMeans++ 在 GPU 上聚类 → Bloom Index 构建特征过滤签名 → User Tower / OverArch / Value Model 量化为 BFloat16 → Model Composer 组装为单一 SilverTorch 模型 → Model Optimizer 将 eager 模式编译为图并 lowering/scripting，产出纯 C++ runtime（predictor）可服务的模型快照（含全部权重张量与索引张量）。GPU 化使发布从数天缩短到 1 小时。</p>
-<p>在线服务：predictor 仅执行一次前向计算——User Tower 算用户嵌入 → Bloom Index 层过滤无关物品生成 mask 张量 → 用户嵌入与 mask 送入 ANN 层得 <span class="arithmatex">\(O(10{,}000)\)</span> 个候选 → OverArch 层从嵌入缓存取物品嵌入、计算打分并由 Value Model 跨多任务聚合 → 返回 <span class="arithmatex">\(O(1{,}000)\)</span> 个 ID。</p>
-<figure class="paper-figure">
-  <img alt="图 1" src="../../../../../assets/papers/2511.14881v5/figure_1.png" /><figcaption>图 1</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 2" src="../../../../../assets/papers/2511.14881v5/figure_2.png" /><figcaption>图 2</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="图 3" src="../../../../../assets/papers/2511.14881v5/figure_3.png" /><figcaption>图 3</figcaption>
-</figure>
+<h2 id="method">Method (核心方法设计)</h2>
+<h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
+<p>发布阶段：物品塔在 GPU 上算出物品 embedding，ANN 构建器做 Int8 量化与 KMeans++ 聚类，Bloom 构建器生成位签名，二者与用户塔、OverArch、Value Model 一并编译为含权重张量与索引张量的模型快照，由纯 C++ predictor 加载。在线阶段：单次请求进入 predictor，用户塔产出 user embedding，Bloom Index 层生成 1-bit/物品掩码，ANN 层返回 <span class="arithmatex">\(O(10^4)\)</span>候选，OverArch 从 GPU embedding cache 取物品向量重排，Value Model 聚合多任务分数，最终输出<span class="arithmatex">\(O(10^3)\)</span> 物品给精排。</p>
 <pre class="mermaid"><code>flowchart TD
-    A["输入层: 用户特征 + 过滤查询 (user_emb, country, lang)"] --&gt; B["User Tower: 计算用户嵌入"]
-    B --&gt; C["Bloom Index 层: 位运算特征过滤, 生成 mask 张量"]
-    C --&gt; D["融合 Int8 ANN 层 (IVF): 返回 O(10,000) 候选"]
-    D --&gt; E["OverArch 打分层: 从 GPU 嵌入缓存取物品嵌入, 学习式相似度重排"]
-    E --&gt; F["Value Model: 多任务分数聚合为单一价值分"]
-    F --&gt; G["输出 O(1,000) 物品 ID → 下游精排"]</code></pre>
-<h3 id="3-key-designs-formulations">3. 核心模块设计与数学原理 (Key Designs &amp; Formulations)</h3>
-<p><strong>(1) Bloom Index：把特征过滤变成位矩阵运算</strong></p>
-<p>为每个物品构建 <span class="arithmatex">\(M\)</span> 位 Bloom 过滤器 <span class="arithmatex">\(VB_i\)</span>：对每个特征用 <span class="arithmatex">\(k\)</span> 个哈希函数计算 <span class="arithmatex">\(hash_i(feature) \bmod N\)</span> 并置位；查询同样生成 <span class="arithmatex">\(M\)</span> 位 <span class="arithmatex">\(QB\)</span>。过滤条件转化为：</p>
-<div class="arithmatex">\[R=\{V_i\in V \mid QB \ \&amp; \ VB_i == QB\}\]</div>
-<p>朴素实现有两个缺陷：每线程一次只处理一个物品；<span class="arithmatex">\(QB\)</span> 中为 0 的位对应物品也被无谓评估。优化方式是<strong>只检查 <span class="arithmatex">\(QB\)</span> 中为 1 的位</strong>，并把位矩阵转置，使多物品可同时匹配、消除布尔运算所需的位掩码——对 <span class="arithmatex">\(QB\)</span> 置 1 的行做按位与，出现 0 即不匹配、全 1 即匹配。相比前向索引（用 int64 存特征值、偏移查找造成不规则非连续访存、显存占用大），Bloom Index 用紧凑签名字节显著降低显存、保证连续访存、消除 warp divergence。这是<strong>首个在 GPU 上做特征过滤、也是首次将 Bloom 过滤器用于推荐系统</strong>的工作（思想受文本检索的 Bitfunnel 启发，但 Bitfunnel 是 CPU 方案且非为推荐设计）。</p>
-<figure class="paper-figure">
-  <img alt="图 4" src="../../../../../assets/papers/2511.14881v5/figure_4.png" /><figcaption>图 4</figcaption>
-</figure>
-<p><strong>(2) 融合 Int8 ANN 核 + 与过滤协同设计</strong></p>
-<p>ANN 层基于 IVF 算法：先探测查询附近的若干簇，再在簇内算 top-k 并合并为全局 top-k。物品嵌入量化为 Int8 以节省算力（为 OverArch 预排更多物品腾出预算）。关键协同点：Bloom 过滤产生的 mask 张量直接进入 ANN 层，在簇探测/距离计算阶段即剔除不满足约束的物品，从而<strong>同时降低显存占用并消除无效计算</strong>——这是分离式服务架构无法获得的协同优化机会。</p>
-<p><strong>(3) OverArch 打分层与 Value Model 多任务召回</strong></p>
-<p>ANN 返回的候选由 OverArch（一个神经网络）基于点积之外的用户-物品交互重新打分，实现"学习式相似度"；物品嵌入在发布期预计算并缓存进 GPU 显存（in-model cache lookup，去除对缓存服务的依赖）。Value Model 作为模型预测（点赞、分享、评论）与业务目标之间的翻译层，将多任务分数聚合成反映候选物品期望价值的单一复合分。二者使召回阶段能预排更多物品、提升召回-精排的模型一致性。</p>
-<h3 id="4-optimization-negative-sampling-complexity">4. 训练目标、负采样与推理复杂度 (Optimization, Negative Sampling &amp; Complexity)</h3>
-<ul>
-<li><strong>损失函数</strong>: 原文为系统论文，未报告具体训练损失公式、温度系数 <span class="arithmatex">\(\tau\)</span> 或各分项权重（原文未报告）。</li>
-<li><strong>训练负采样策略</strong>: 原文未报告（本文聚焦服务系统，训练沿用既有双塔/召回模型训练流程）。</li>
-<li><strong>时间与空间复杂度</strong>:</li>
-<li>离线发布：GPU 计算物品嵌入 + KMeans++ 聚类，将模型快照构建时间从<strong>数天缩短到 1 小时</strong>；对比服务化方案中用户塔上线数分钟、物品 KNN 索引构建 4 小时以上。</li>
-<li>在线推理：单次前向执行，无独立服务间通信与中间结果搬运；ANN 支持一次返回上万候选（远超 Faiss/Milvus 的 top-k 限制），无需 Beam Search。</li>
-<li>显存：Bloom 签名替代 int64 前向索引显著降低显存；Int8 量化进一步压缩 ANN 索引；OverArch 物品嵌入常驻 GPU 缓存。</li>
-</ul>
+    A["请求: 用户特征 + 过滤查询"] --&gt; B["User Tower (BF16)"]
+    B --&gt; C["Bloom Index 层: 位签名过滤"]
+    C --&gt; D["Int8 融合 IVF ANN 层"]
+    D --&gt; E["OverArch 打分层 (MoL)"]
+    E --&gt; F["Value Model 多任务聚合"]
+    F --&gt; G["Top-1000 物品 ID"]</code></pre>
+<h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
+<ol>
+<li>
+<p><strong>GPU Bloom Index（把过滤变成位矩阵与运算）</strong>：倒排索引的链表结构在 GPU 上 warp 发散且内存不连续。本文为每个物品构造 <span class="arithmatex">\(M\)</span>位签名<span class="arithmatex">\(VB_i\)</span>，查询构造<span class="arithmatex">\(QB\)</span>，匹配条件改写为<span class="arithmatex">\(R=\{V_i \in V \mid QB \,\&amp;\, VB_i = QB\}\)</span>。关键优化是<strong>转置位矩阵</strong>：只遍历<span class="arithmatex">\(QB\)</span> 中为 1 的行，用一条 <code>and.b64</code> 指令同时处理 64 个物品，结果用一个 Int64 存储，彻底消除逐物品布尔存储与 warp 发散。1024 位配置下假阳率仅 0.067%，内存 5GB，比精确倒排（19.8GB）小 4.21×。</p>
+</li>
+<li>
+<p><strong>Int8 融合 ANN 算子（消除 gather 临时张量）</strong>：IVF 三步中"索引选择"会物化大临时张量。本文提出 fused index-matmul，让每个 warp 处理连续物品 tile，直接从 embedding table 流式读取并与批量查询做点积，避免中间张量构造；发布期按全局 min/max 做 Int8 量化，乘加单指令完成，显存减半。释放出的显存反过来供养 OverArch 对更多候选打分。</p>
+</li>
+<li>
+<p><strong>Probe-then-Filter 协同设计与训练/推理开销</strong>：标准流水线先全库 Bloom 过滤再 ANN，但未被 probe 的簇内物品过滤纯属浪费。由于两个谓词是合取关系，交换顺序不改变结果集，故先选 <span class="arithmatex">\(n_p\)</span> 个簇、仅对簇内物品算 Bloom 掩码，再在单 kernel 内完成过滤+打分。81M 物品/9000 簇、256 probes 时仅处理 2.3M 物品（2.8%），过滤计算与 scratch 显存均降 30×。总损失沿用两塔 BPR/交叉熵训练（论文未改训练目标），负采样沿用工业 in-batch 策略；推理侧无额外服务调用，P99 稳定在约 15ms。</p>
+</li>
+</ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集统计与预处理</strong>: 原文使用两个工业级数据集，分别含 <strong>1000 万</strong>与 <strong>8000 万</strong>物品。原文未报告用户数、交互数、稀疏度及 5-core 等过滤规则（原文未报告）。</li>
+<li><strong>数据集与预处理</strong>: 生产采样候选池，embedding 维度 <span class="arithmatex">\(d=128\)</span>，A100-40G；用户塔用 HSTU，OverArch 用 Mixture of Logits。</li>
 </ul>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">数据集 (Dataset)</th>
-<th style="text-align: center;">用户数 (#Users)</th>
-<th style="text-align: center;">物品数 (#Items)</th>
-<th style="text-align: center;">交互数 (#Interactions)</th>
-<th style="text-align: center;">稀疏度/密度 (Sparsity)</th>
-<th style="text-align: left;">模态/辅助特征说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">工业数据集 A</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">10M</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">物品特征 + 用户属性过滤条件</td>
-</tr>
-<tr>
-<td style="text-align: left;">工业数据集 B</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">80M</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: center;">原文未报告</td>
-<td style="text-align: left;">同上</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>数据划分方式 (Splitting Strategy)</strong>: 原文未报告（系统评测以吞吐、成本与召回率为核心，未描述 LOO / Ratio / 时间切分细节）。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 原文未报告 Full-Ranking 或 Sampled Ranking 的具体协议；召回质量以 recall 指标衡量（OverArch + 多任务召回带来 &gt;5.6% 召回提升）。</li>
-<li><strong>评价指标与显著性检验</strong>: 吞吐（throughput，最高 23.7×）、成本效率（cost-efficiency，13.35×）、召回率（recall，&gt;5.6%）。原文未报告配对显著性检验或多随机种子方差。</li>
-</ul>
-<h2 id="key-experimental-results">Key Experimental Results (核心实验结果)</h2>
-<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
-<p>原文主实验以系统级吞吐与成本效率对比为主，最强基线为 SOTA 服务化方案（CPU 索引/过滤服务及 GPU ANN 库）。核心结论：<strong>吞吐最高提升 23.7×</strong>，<strong>成本效率较 CPU 方案提升 13.35×</strong>，同时因可服务更复杂模型而<strong>召回率提升超 5.6%</strong>。原文未以 Recall@K / NDCG@K 表格形式报告逐数据集数值（原文未报告）。</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;">数据集</th>
-<th style="text-align: left;">指标</th>
-<th style="text-align: center;">传统/协同过滤基线</th>
-<th style="text-align: center;">序列/图/多模态最强基线</th>
-<th style="text-align: center;">本文方法 (Ours)</th>
-<th style="text-align: center;">相对提升 (Improv.)</th>
+<th style="text-align: center;">#Items</th>
+<th style="text-align: center;">索引分片</th>
+<th style="text-align: center;">显存构成</th>
+<th style="text-align: left;">场景说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">工业数据集 (10M/80M 物品)</td>
-<td style="text-align: left;">吞吐 (Throughput)</td>
-<td style="text-align: center;">SOTA 服务化方案</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;"><strong>SilverTorch</strong></td>
-<td style="text-align: center;">最高 +23.7×</td>
+<td style="text-align: left;">80M</td>
+<td style="text-align: center;">80,000,000</td>
+<td style="text-align: center;">2 GPU</td>
+<td style="text-align: center;">Bloom 5GB + ANN 5GB + Emb Cache 10GB(FP16) + OverArch 12GB</td>
+<td style="text-align: left;">主生产规模，多任务 12 头</td>
 </tr>
 <tr>
-<td style="text-align: left;">工业数据集 (10M/80M 物品)</td>
-<td style="text-align: left;">成本效率 (Cost-efficiency)</td>
-<td style="text-align: center;">CPU-based 方案</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;"><strong>SilverTorch</strong></td>
-<td style="text-align: center;">+13.35×</td>
+<td style="text-align: left;">10M</td>
+<td style="text-align: center;">10,000,000</td>
+<td style="text-align: center;">1 GPU</td>
+<td style="text-align: center;">同上按比例缩减</td>
+<td style="text-align: left;">单卡不切分对照</td>
 </tr>
 <tr>
-<td style="text-align: left;">工业数据集 (10M/80M 物品)</td>
-<td style="text-align: left;">召回率 (Recall)</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;"><strong>SilverTorch (OverArch + Value Model)</strong></td>
-<td style="text-align: center;">&gt;+5.6%</td>
+<td style="text-align: left;">20M (ANN 微基准)</td>
+<td style="text-align: center;">20,000,000</td>
+<td style="text-align: center;">1 GPU</td>
+<td style="text-align: center;">128 维 float/Int8</td>
+<td style="text-align: left;">ANN 延迟-召回曲线</td>
 </tr>
 </tbody>
 </table>
-<figure class="paper-figure">
-  <img alt="表 1" src="../../../../../assets/papers/2511.14881v5/table_1.png" /><figcaption>表 1</figcaption>
-</figure>
-<figure class="paper-figure">
-  <img alt="表 2" src="../../../../../assets/papers/2511.14881v5/table_2.png" /><figcaption>表 2</figcaption>
-</figure>
-<h3 id="2-ablation-study">2. 消融实验与控制变量分析 (Ablation Study)</h3>
-<p>原文以系统组件对比替代传统模型消融：Bloom Index 相对前向索引消除 warp divergence、降低显存并保证连续访存；Int8 量化 + 融合 ANN 核相对独立 ANN 服务消除通信与数据搬运；ANN 与过滤协同设计进一步省显存、省计算。原文未报告逐模块移除的召回率下降幅度表格，也未说明是否严格控制参数量对齐（原文未报告）。</p>
-<h3 id="3-sparsity-buckets-hyperparameters">3. 稀疏度/冷启动分桶与超参敏感度 (Sparsity Buckets &amp; Hyperparameters)</h3>
 <ul>
-<li><strong>用户/物品交互频次分桶表现</strong>: 原文未报告长尾/冷启动分桶实验。</li>
-<li><strong>关键超参数敏感度</strong>: 原文未报告 Bloom 位数 <span class="arithmatex">\(M\)</span>、哈希函数数 <span class="arithmatex">\(k\)</span>、IVF 簇数/nprobe 的敏感度曲线。</li>
-<li><strong>线上 A/B 测试结果 (Online A/B Test)</strong>: SilverTorch 已<strong>大规模部署</strong>，线上服务数百个模型、支撑多种应用；原文提及 2022 年服务化方案因版本切换错误导致线上指标下跌 30%（作为动机论据），但未报告 SilverTorch 自身的线上 CTR/CVR/GMV/留存 A/B 收益数值（原文未报告）。</li>
+<li><strong>数据划分与防穿越</strong>: 离线回放 5,000 条真实生产请求，非随机划分；召回评估以真实用户-物品交互行为为 ground truth。</li>
+<li><strong>排名评测协议</strong>: 端到端以 <strong>最大吞吐 QPS（200ms P99 约束下逐步加压至饱和）</strong> 为主指标；召回侧报告 Recall@20/100/200/500/1000，属全库候选池下的 Top-K 召回（非采样排序）。</li>
+<li><strong>对比基线与超参设置</strong>: Baseline-CPU（Faiss-CPU IVF + 内部倒排，2+4 分片）、Baseline-GPU（Faiss-GPU + GPU 前向索引，多种分片）、SilverTorch-Retrieval（FilterThenProbe / ProbeThenFilter）、SilverTorch-OverArch；ANN 微基准对比 Faiss-CPU/GPU IVFFlat 与 HNSW；每组实验重复 5 次取均值，top-k 固定 1024、生产 probes=24。</li>
 </ul>
-<h2 id="highlights-limitations-critiques">Highlights, Limitations &amp; Critiques (亮点、局限与审稿级批判)</h2>
+<h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
+<h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
+<p>端到端吞吐与成本（80M 数据集，probes=24，top-k=1024）：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">方法</th>
+<th style="text-align: center;">QPS</th>
+<th style="text-align: center;">TCO/小时</th>
+<th style="text-align: center;">TCO/1000 请求</th>
+<th style="text-align: center;">成本效率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Baseline-CPU</td>
+<td style="text-align: center;">51</td>
+<td style="text-align: center;">$28.92</td>
+<td style="text-align: center;">$0.158</td>
+<td style="text-align: center;">1×</td>
+</tr>
+<tr>
+<td style="text-align: left;">Baseline-GPU (Faiss2-Forward4)</td>
+<td style="text-align: center;">186</td>
+<td style="text-align: center;">$30.29</td>
+<td style="text-align: center;">$0.0452</td>
+<td style="text-align: center;">3.48×</td>
+</tr>
+<tr>
+<td style="text-align: left;">Baseline-GPU (Faiss2-Forward6)</td>
+<td style="text-align: center;">340</td>
+<td style="text-align: center;">$33.27</td>
+<td style="text-align: center;">$0.0272</td>
+<td style="text-align: center;">5.8×</td>
+</tr>
+<tr>
+<td style="text-align: left;">SilverTorch-Retrieval</td>
+<td style="text-align: center;"><strong>1210</strong></td>
+<td style="text-align: center;">$33.27</td>
+<td style="text-align: center;"><strong>$0.0077</strong></td>
+<td style="text-align: center;"><strong>20.9×</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">SilverTorch-OverArch</td>
+<td style="text-align: center;">771</td>
+<td style="text-align: center;">$33.27</td>
+<td style="text-align: center;">$0.0121</td>
+<td style="text-align: center;"><strong>13.35×</strong></td>
+</tr>
+</tbody>
+</table>
+<p>召回对比（probes=32）：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">任务</th>
+<th style="text-align: left;">方法</th>
+<th style="text-align: center;">R@20</th>
+<th style="text-align: center;">R@100</th>
+<th style="text-align: center;">R@200</th>
+<th style="text-align: center;">R@500</th>
+<th style="text-align: center;">R@1000</th>
+<th style="text-align: center;">QPS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">E-Task</td>
+<td style="text-align: left;">Baseline</td>
+<td style="text-align: center;">0.0824</td>
+<td style="text-align: center;">0.1918</td>
+<td style="text-align: center;">0.2913</td>
+<td style="text-align: center;">0.4295</td>
+<td style="text-align: center;">0.4413</td>
+<td style="text-align: center;">51</td>
+</tr>
+<tr>
+<td style="text-align: left;">E-Task</td>
+<td style="text-align: left;">SilverTorch</td>
+<td style="text-align: center;">0.0716</td>
+<td style="text-align: center;">0.2031</td>
+<td style="text-align: center;">0.2892</td>
+<td style="text-align: center;">0.4237</td>
+<td style="text-align: center;">0.4465</td>
+<td style="text-align: center;">1210</td>
+</tr>
+<tr>
+<td style="text-align: left;">E-Task</td>
+<td style="text-align: left;">+OverArch (Low Bits)</td>
+<td style="text-align: center;">0.0851</td>
+<td style="text-align: center;"><strong>0.2539 (+25.04%)</strong></td>
+<td style="text-align: center;">0.3202</td>
+<td style="text-align: center;">0.4430</td>
+<td style="text-align: center;">0.4489</td>
+<td style="text-align: center;">768</td>
+</tr>
+<tr>
+<td style="text-align: left;">E-Task</td>
+<td style="text-align: left;">+OverArch</td>
+<td style="text-align: center;"><strong>0.0918 (+28.2%)</strong></td>
+<td style="text-align: center;">0.2419</td>
+<td style="text-align: center;"><strong>0.3315 (+14.6%)</strong></td>
+<td style="text-align: center;"><strong>0.4476 (+5.6%)</strong></td>
+<td style="text-align: center;"><strong>0.4573 (+2.4%)</strong></td>
+<td style="text-align: center;">771</td>
+</tr>
+<tr>
+<td style="text-align: left;">C-Task</td>
+<td style="text-align: left;">Baseline</td>
+<td style="text-align: center;">0.0964</td>
+<td style="text-align: center;">0.2522</td>
+<td style="text-align: center;">0.3551</td>
+<td style="text-align: center;">0.4971</td>
+<td style="text-align: center;">0.5162</td>
+<td style="text-align: center;">51</td>
+</tr>
+<tr>
+<td style="text-align: left;">C-Task</td>
+<td style="text-align: left;">+OverArch</td>
+<td style="text-align: center;">0.0971 (+0.6%)</td>
+<td style="text-align: center;"><strong>0.2573 (+1.7%)</strong></td>
+<td style="text-align: center;"><strong>0.3601 (+2.3%)</strong></td>
+<td style="text-align: center;">0.5074</td>
+<td style="text-align: center;"><strong>0.5256 (+1.12%)</strong></td>
+<td style="text-align: center;">771</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-ablation-study">2. 消融实验 (Ablation Study)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">配置</th>
+<th style="text-align: left;">关键指标</th>
+<th style="text-align: left;">变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">FilterThenProbe（全库先过滤）</td>
+<td style="text-align: left;">80M QPS</td>
+<td style="text-align: left;">基准</td>
+</tr>
+<tr>
+<td style="text-align: left;">ProbeThenFilter（协同设计）</td>
+<td style="text-align: left;">80M QPS</td>
+<td style="text-align: left;"><strong>+17%~25%</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">ANN+Bloom 分离执行</td>
+<td style="text-align: left;">延迟 1.55ms / scratch 35.6MB</td>
+<td style="text-align: left;">基准</td>
+</tr>
+<tr>
+<td style="text-align: left;">ANN+Bloom 协同（probe=32）</td>
+<td style="text-align: left;">延迟 <strong>0.72ms</strong> / scratch <strong>18.2MB</strong></td>
+<td style="text-align: left;"><strong>1.79×–2.15× 加速</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Bloom 1024 bit</td>
+<td style="text-align: left;">假阳率 0.067% / 5GB</td>
+<td style="text-align: left;">基准</td>
+</tr>
+<tr>
+<td style="text-align: left;">Bloom 768 bit</td>
+<td style="text-align: left;">假阳率 3.89% / 3.84GB</td>
+<td style="text-align: left;">端到端召回<strong>不降反略升</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Bloom 4096 bit</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">显存 OOM</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
+<ol>
+<li><strong>协同设计是吞吐主增益之一</strong>：Probe-then-Filter 相比 Filter-then-Probe 在 80M 上带来 17%–25% QPS 提升，根因是 scratch 显存从 35.6MB 降至 18.2MB，在显存受限场景下允许更大 batch，而非计算量本身。</li>
+<li><strong>Int8 量化的精度损失被 OverArch 完全"赚回"</strong>：SilverTorch-INT8 在 top-k=2048 时延迟比 Faiss-GPU 低 2.2×–14.7×，但召回上限约 0.92；然而释放的算力用于 OverArch 后，E-Task Recall@20 从 0.0716 升至 0.0918（+28.2%），说明"粗检索+强重排"优于"精检索+点积"。</li>
+<li><strong>Bloom 假阳率对端到端召回几乎无害</strong>：位宽从 1024 降到 768 使假阳率从 0.00173% 飙至 3.89%，端到端召回却未下降甚至略升——因为过滤是训练外的后验守卫，假阳物品仍可被后续精排剔除，这为显存预算提供了可观的弹性空间。</li>
+</ol>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>核心亮点与可迁移性</strong>:</li>
-<li><strong>"索引即模型层"范式</strong>极具迁移性：把 ANN 检索、特征过滤、打分重排统一为 PyTorch 张量算子，天然获得版本一致性、端到端可微调与协同优化空间，可推广到搜索、广告召回及多模态向量检索。</li>
-<li><strong>Bloom Index</strong> 利用"查询结构预知 + 低特征基数"两个推荐特有先验，把过滤转为位矩阵运算，是 GPU 特征过滤的首创，工程价值高。</li>
-<li><strong>OverArch + Value Model</strong> 让召回阶段承担轻量重排与多目标任务聚合，提升召回-精排一致性，是"召回即粗排"趋势的工业级落地样本。</li>
-<li><strong>局限性与审稿视角批判 (Critical Limitations)</strong>:</li>
-<li><strong>评估协议披露不足</strong>：作为 SIGIR 系统论文，未报告数据划分、正样本定义、Full-Ranking/Sampled Ranking 协议与显著性检验，召回提升 &gt;5.6% 缺乏统计严谨性支撑，复现门槛高。</li>
-<li><strong>基线公平性存疑</strong>：吞吐 23.7× 与成本 13.35× 的对比基线为 CPU 服务化方案与受限 GPU 库，未与同代 GPU 向量数据库（如 CAGRA 最新版）在同等硬件预算下做端到端对比。</li>
-<li><strong>Bloom 假阳性风险未量化</strong>：Bloom 过滤器存在假阳性，可能放行不满足约束的物品进入 ANN 与 OverArch，原文未报告假阳性率及其对下游业务指标的影响。</li>
-<li><strong>超参与敏感度缺失</strong>：<span class="arithmatex">\(M\)</span>、<span class="arithmatex">\(k\)</span>、簇数等关键参数无敏感度分析，迁移到其他业务时的调参成本未知。</li>
-<li><strong>无开源代码</strong>：工业内部系统（System A、predictor runtime）不可复现，削弱学术复现价值。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 LiNR（同样做 GPU 模型化召回，但无协同索引、无 GPU 过滤方案、未讨论成本），SilverTorch 补齐了过滤侧并给出 TCO 账本；相比 Faiss-GPU/Milvus/CAGRA，突破了 top-k≤2048、probes≤2048 的硬限制，支持 <span class="arithmatex">\(O(10^4)\)</span> 候选下推；相比 Bitfunnel（CPU 文本检索的 Bloom 签名），本文针对推荐场景低基数特征重新设计了转置位矩阵并行方案。</li>
+<li><strong>可迁移亮点</strong>: (1) 把"过滤谓词与 ANN 谓词合取可交换"这一性质用于算子重排，任何"先粗筛后精算"的级联检索都可复用；(2) 用 1-bit 掩码替代 PyTorch 原生 8-bit bool 传递过滤结果，节省 8× 带宽，是低成本高回报的工程技巧。</li>
+<li><strong>审稿级局限批判</strong>: (1) 召回评估仅在两个内部生产任务上报告，缺少公开数据集（如 MovieLens/Amazon）与开源基线复现，可复现性受限；(2) 强依赖 A100-40G 显存预算，Bloom 4096 bit 即 OOM，且 fresh index 流式更新仅给出设计概念、细节留待未来工作，物品新鲜度这一召回核心需求尚未闭环验证。</li>
 </ul>
 <h2 id="rating">Rating (四维评分)</h2>
 <ul>
-<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐（GPU Bloom 特征过滤为首创，模型化协同设计思路新颖；但 ANN/IVF/Int8 量化本身为成熟技术组合）</li>
-<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐（工业规模数据与真实部署有说服力，但评估协议、统计检验与消融细节披露不足）</li>
-<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐（系统架构与 Bloom 公式表述清晰，流程图完整；训练损失与超参细节缺失）</li>
-<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐（已服务数百线上模型，成本效率 13.35×，落地价值极高；但闭源降低复现性）</li>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （Bloom Index 转置位矩阵与 Probe-then-Filter 协同设计思路清晰，但本质是系统级算子重写而非新学习范式）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （80M/10M 双规模 + 端到端 QPS/延迟/TCO/召回四维评估完整，但缺公开数据集与开源基线复现）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （查询形式化与算法伪代码严谨，复杂度与显存账本清晰；部分公式偏工程描述、缺理论界）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （已在 Meta 线上服务数百模型，23.7× 吞吐与 13.35× 成本效率有真实 TCO 支撑，工程迁移价值极高）</li>
 </ul>
 
 

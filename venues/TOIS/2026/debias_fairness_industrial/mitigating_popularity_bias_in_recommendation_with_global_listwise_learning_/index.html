@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4225,12 +4236,12 @@
 <li><strong>主流范式</strong>: 因果推断视角下的 IPS 重加权是流行度去偏的主流范式，代表作 Rel-MF（逐点无偏）、UBPR（逐对无偏）、DICE/MACR（因果解耦）、CPR（跨交互构造无偏对）、TTEN（推理期嵌入归一化）。</li>
 <li><strong>前人局限一（局部无偏）</strong>: 逐点/逐对损失只校正单个交互或物品对的相对偏好，无法捕捉用户对全物品集的全局偏好分布；叠加 IPS 后长尾权重高度偏斜，模型易过度聚焦少数物品。</li>
 <li><strong>前人局限二（倾向失准）</strong>: 真实倾向不可观测，现有方法用 <span class="arithmatex">\(\hat\theta_{ui}=(p_i/\max_j p_j)^\beta\)</span> 近似，系统性低估尾部物品曝光概率（真实曝光还受社交、探索行为影响），使 IPS 估计器产生显著经验偏差。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 多项似然在 softmax 概率单纯形约束下天然形成"固定概率预算下的物品竞争"，等价于列表级损失；且其负样本项 <span class="arithmatex">\(\delta^{(0)}_{ui}=0\)</span>，可规避 IPS 中 <span class="arithmatex">\(1-y_{ui}/\theta_{ui}&lt;0\)</span> 带来的大方差与数值不稳定。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 多项似然在 softmax 概率单纯形约束下天然形成"固定概率预算下的物品竞争"，等价于列表级损失；且其负样本项 <span class="arithmatex">\(\delta^{(0)}_{ui}=0\)</span>，可规避 IPS 中<span class="arithmatex">\(1-y_{ui}/\theta_{ui}&lt;0\)</span> 带来的大方差与数值不稳定。</li>
 <li><strong>本文切入点</strong>: 把 IPS 从"局部校正"升级为"全局列表级校正"，并用集合级先验平滑倾向估计、用累积学习调度去偏强度。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>模型以任意推荐骨干（MF/LightGCN）输出打分 <span class="arithmatex">\(\hat{\mathbf{r}}_u\)</span>，经 softmax 得预测相关分布 <span class="arithmatex">\(\tilde{\mathbf{r}}_u\)</span>；训练目标为 IPS 加权的多项负对数似然（Mult-IPS），其中倾向权重由"个体倾向 + 集合模型"线性插值得到（BiW），插值系数 <span class="arithmatex">\(\alpha\)</span> 随训练轮次按幂律从 1 衰减至 0（PBiW），实现先学表征、后强去偏的渐进闭环。推理阶段无额外参数与采样开销，直接按打分全库排序。</p>
+<p>模型以任意推荐骨干（MF/LightGCN）输出打分 <span class="arithmatex">\(\hat{\mathbf{r}}_u\)</span>，经 softmax 得预测相关分布<span class="arithmatex">\(\tilde{\mathbf{r}}_u\)</span>；训练目标为 IPS 加权的多项负对数似然（Mult-IPS），其中倾向权重由"个体倾向 + 集合模型"线性插值得到（BiW），插值系数<span class="arithmatex">\(\alpha\)</span> 随训练轮次按幂律从 1 衰减至 0（PBiW），实现先学表征、后强去偏的渐进闭环。推理阶段无额外参数与采样开销，直接按打分全库排序。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户-物品交互 + 物品流行度统计"] --&gt; B["骨干打分 r̂_u → softmax 得 r̃_u"]
     A --&gt; C["倾向估计 θ̂_ui + 集合模型 C*"]
@@ -4242,15 +4253,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>Mult-IPS：列表级全局无偏估计器</strong>：痛点在于逐点/逐对目标只做局部校正。将局部损失取为多项负对数似然 <span class="arithmatex">\(\delta^{(r_{ui})}_{ui}=-r_{ui}\log\tilde r_{ui}\)</span>（故 <span class="arithmatex">\(\delta^{(0)}=0\)</span>），代入 IPS 框架得
+<p><strong>Mult-IPS：列表级全局无偏估计器</strong>：痛点在于逐点/逐对目标只做局部校正。将局部损失取为多项负对数似然 <span class="arithmatex">\(\delta^{(r_{ui})}_{ui}=-r_{ui}\log\tilde r_{ui}\)</span>（故<span class="arithmatex">\(\delta^{(0)}=0\)</span>），代入 IPS 框架得
 $<span class="arithmatex">\(\mathcal{L}_{\text{Mult-IPS}}=-\frac{1}{|\mathcal{U}|}\sum_{u}\sum_{i}\frac{y_{ui}}{\hat\theta_{ui}}\log\tilde r_{ui},\quad \tilde r_{ui}=\text{softmax}(\hat r_u)_i\)</span>$
 softmax 的概率预算约束迫使物品间竞争，天然编码全局排序信息；同时消除负项，训练更稳定。命题 3.1 证明其对多项理想损失无偏。</p>
 </li>
 <li>
-<p><strong>Bi-Weighting：带理论保证的倾向平滑</strong>：痛点在于流行度倾向低估尾部曝光。借鉴 Jelinek-Mercer 平滑，令 <span class="arithmatex">\(\hat\theta^{\text{BiW}}_{ui}=(1-\alpha)\hat\theta_{ui}+\alpha C\)</span>。引理 3.4 给出经验偏差上界 <span class="arithmatex">\(\Delta\le\frac{\delta\sqrt{|\mathcal{I}|}}{m\sqrt{|\mathcal{U}|}}\sqrt{\sum_{u,i}(\hat\theta^{\text{BiW}}_{ui}-\theta_{ui})^2}\)</span>，对其最小化并由大数定律得<strong>最优集合模型</strong> <span class="arithmatex">\(C^*=\frac{1}{|\mathcal{I}|}\sum_{j}\hat\theta_{uj}\)</span>（即平均倾向）。直觉：软性全局抬升尾部、压制头部，优于硬阈值截断（Mult-CIPS 仅作用于阈值以下子集）。</p>
+<p><strong>Bi-Weighting：带理论保证的倾向平滑</strong>：痛点在于流行度倾向低估尾部曝光。借鉴 Jelinek-Mercer 平滑，令 <span class="arithmatex">\(\hat\theta^{\text{BiW}}_{ui}=(1-\alpha)\hat\theta_{ui}+\alpha C\)</span>。引理 3.4 给出经验偏差上界<span class="arithmatex">\(\Delta\le\frac{\delta\sqrt{|\mathcal{I}|}}{m\sqrt{|\mathcal{U}|}}\sqrt{\sum_{u,i}(\hat\theta^{\text{BiW}}_{ui}-\theta_{ui})^2}\)</span>，对其最小化并由大数定律得<strong>最优集合模型</strong><span class="arithmatex">\(C^*=\frac{1}{|\mathcal{I}|}\sum_{j}\hat\theta_{uj}\)</span>（即平均倾向）。直觉：软性全局抬升尾部、压制头部，优于硬阈值截断（Mult-CIPS 仅作用于阈值以下子集）。</p>
 </li>
 <li>
-<p><strong>PBiW 渐进调度与训练目标</strong>：痛点在于训练早期激进重加权会破坏表征学习。令 <span class="arithmatex">\(\alpha=1-(T/T_{\max})^\eta\)</span>，早期 <span class="arithmatex">\(\alpha\to1\)</span> 近似均匀权重（纯表征学习），后期 <span class="arithmatex">\(\alpha\to0\)</span> 退化为标准 Mult-IPS（强去偏）。总损失即式 (22) 的 Mult-BiW 估计器；<strong>免负采样</strong>（全物品 softmax），倾向权重由流行度预计算、仅 <span class="arithmatex">\(O(|\mathcal{I}|)\)</span> 存储，每轮复杂度 <span class="arithmatex">\(O(|\mathcal{U}||\mathcal{I}|d)\)</span>，可借 GPU 稠密矩阵乘 + softmax 高效实现。</p>
+<p><strong>PBiW 渐进调度与训练目标</strong>：痛点在于训练早期激进重加权会破坏表征学习。令 <span class="arithmatex">\(\alpha=1-(T/T_{\max})^\eta\)</span>，早期<span class="arithmatex">\(\alpha\to1\)</span>近似均匀权重（纯表征学习），后期<span class="arithmatex">\(\alpha\to0\)</span>退化为标准 Mult-IPS（强去偏）。总损失即式 (22) 的 Mult-BiW 估计器；<strong>免负采样</strong>（全物品 softmax），倾向权重由流行度预计算、仅<span class="arithmatex">\(O(|\mathcal{I}|)\)</span>存储，每轮复杂度<span class="arithmatex">\(O(|\mathcal{U}||\mathcal{I}|d)\)</span>，可借 GPU 稠密矩阵乘 + softmax 高效实现。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4322,7 +4333,7 @@ softmax 的概率预算约束迫使物品间竞争，天然编码全局排序信
 <ul>
 <li><strong>数据划分与防穿越</strong>: 比例划分 <code>70%/10%/20%</code>；关键设计是<strong>平衡测试集</strong>——测试/验证集按物品均匀分布构造（模拟均匀随机曝光策略），训练集保留长尾偏斜，从而"偏斜训练、无偏评估"。</li>
 <li><strong>排名评测协议</strong>: 无偏 <code>Full-Ranking</code>——对每个用户，训练与验证中未交互的全部物品作为候选全库排序；指标 Recall@10/20、NDCG@10/20，5 次随机初始化取均值，双样本 t 检验 <span class="arithmatex">\(p&lt;0.01\)</span>。</li>
-<li><strong>对比基线与超参</strong>: 基线含 Expo-MF、Rel-MF、UBPR、DICE、MACR、CPR、TTEN 及本文变体 Mult-IPS/Mult-CIPS；统一 MF 骨干，<span class="arithmatex">\(d=64\)</span>，Adam，batch=256，学习率 <span class="arithmatex">\(\{1e\text{-}3,\dots,1e\text{-}4\}\)</span>，<span class="arithmatex">\(\alpha\in\{0,0.1,\dots,1\}\)</span>，<span class="arithmatex">\(\eta\in\{0.5,1,2\}\)</span>。</li>
+<li><strong>对比基线与超参</strong>: 基线含 Expo-MF、Rel-MF、UBPR、DICE、MACR、CPR、TTEN 及本文变体 Mult-IPS/Mult-CIPS；统一 MF 骨干，<span class="arithmatex">\(d=64\)</span>，Adam，batch=256，学习率<span class="arithmatex">\(\{1e\text{-}3,\dots,1e\text{-}4\}\)</span>，<span class="arithmatex">\(\alpha\in\{0,0.1,\dots,1\}\)</span>，<span class="arithmatex">\(\eta\in\{0.5,1,2\}\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4485,12 +4496,18 @@ softmax 的概率预算约束迫使物品间竞争，天然编码全局排序信
 <li><strong>平滑优于截断，渐进优于固定</strong>：CIPS 仅在阈值以下尾部生效，FBiW 全局软调整带来 Amazon R@10 从 0.0738→0.0775；PBiW 进一步在 FBiW 最优 α 之上再涨至 0.0807，说明"先表征后去偏"的调度本身贡献独立增益。</li>
 <li><strong>去偏以头部微降换尾部大增</strong>：分物品组分析显示 Mult-BiW 在头部组精度小幅下降、尾部组显著提升，整体净增益；top-10 列表物品频率与训练流行度的 Pearson 相关系数最低（曲线最平），且 η 需与骨干匹配——MF 偏好小 η（早去偏），LightGCN 因多层图卷积表征学习更难，需大 η 延后强去偏。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 Rel-MF/UBPR 的逐点/逐对局部无偏，本文首次将 IPS 与多项列表级似然结合，直接优化全局偏好分布；相较 DICE/MACR 的因果解耦（仅建模物品对相对流行度差或需多任务结构），本文是模型无关的损失层插件；相较 CPR 的跨交互构造无偏对，本文免负采样且训练时长更短。</li>
 <li><strong>可迁移亮点</strong>: ①"集合模型平滑倾向"可迁移到任何 IPS/DR 框架（如曝光去偏、延迟反馈），且最优解为平均倾向、实现零成本；②渐进调度 <span class="arithmatex">\(\alpha=1-(T/T_{\max})^\eta\)</span> 可复用于类别不平衡重加权、对比学习温度调度等场景。</li>
 <li><strong>审稿级局限批判</strong>: ①全物品 softmax 使每轮复杂度随 <span class="arithmatex">\(|\mathcal{I}|\)</span> 线性增长，超大规模工业物品库（千万级）需依赖 sampled softmax 近似，理论无偏性将受损；②平衡测试集为人工构造，与真实线上曝光分布存在 gap，且未报告线上 A/B；③隐式反馈下无法直接套用 Doubly Robust，倾向估计仍仅依赖流行度统计，未引入曝光日志等辅助信号。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4239,7 +4250,7 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>验证选模遗憾 (Selection Regret)</strong>：痛点是"换种子后选出的配置是否变差"无法用单一指标刻画。做法是对每个选择种子 <span class="arithmatex">\(s\)</span> 选出验证最优配置，再在评估种子 <span class="arithmatex">\(s'\)</span> 上计算相对最优观测配置的遗憾，并区分 Val→Val 与 Val→Test 两条链路：
+<p><strong>验证选模遗憾 (Selection Regret)</strong>：痛点是"换种子后选出的配置是否变差"无法用单一指标刻画。做法是对每个选择种子 <span class="arithmatex">\(s\)</span>选出验证最优配置，再在评估种子<span class="arithmatex">\(s'\)</span> 上计算相对最优观测配置的遗憾，并区分 Val→Val 与 Val→Test 两条链路：
 $<span class="arithmatex">\(\text{Regret}_{s,s'}(\%) = \frac{\text{Perf}^{\text{best}}_{s'} - \text{Perf}^{\text{sel}(s)}_{s'}}{\text{Perf}^{\text{best}}_{s'}} \times 100\)</span>$
 直觉：Val→Val 高说明选模本身不稳，Val→Val 为零而 Val→Test 非零则说明"选模稳定但验证信号不迁移"（BPR on Amazon 即此典型）。</p>
 </li>
@@ -4395,12 +4406,18 @@ $<span class="arithmatex">\(AO@k = \frac{1}{k}\sum_{i=1}^{k}\frac{|R_1@i \cap R_
 <li><strong>验证-测试迁移是独立失效源</strong>：BPR on Amazon 出现 Val→Val 遗憾为零、Val→Test 遗憾非零的分离现象，证明即使选模在种子间完全一致，验证排序不迁移到测试也会让基于验证的选择不可靠——这无法被"多跑几个种子取均值"修复。</li>
 <li><strong>聚合指标相同 ≠ 用户曝光相同</strong>：BPR on Amazon 跨种子 Top-k 列表近乎不相交，而 Steam 上高度一致；且所有设定下 AO@k 恒高于 Jaccard@k，说明种子主要扰动排名尾部，头部相对稳健，但一致性始终 &lt;1，重复实验并非 list-invariant。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 Dacrema 等对基线调参与实现细节的复现批判、以及采样评估/数据划分偏差研究，本文的独特之处是<strong>在划分与超参完全冻结下单独隔离训练种子</strong>，并把"种子方差"从统计问题升级为"选模决策风险"问题；与常规多随机种子取均值报告的做法相比，本文指出均值化无法解决验证-测试迁移失效。</li>
 <li><strong>可迁移亮点</strong>: ①"Regret 矩阵（选择种子 × 评估种子）"可直接搬进任何论文的附录，作为选模稳健性体检；②AO@k + Jaccard@k 双指标可作为"同分不同单"的标准诊断工具，尤其适合曝光公平性审计。</li>
 <li><strong>审稿级局限批判</strong>: ①种子被当作整条训练轨迹的单一随机源，<strong>无法归因</strong>到初始化/批序/dropout/负采样中的具体机制，因而无法给出"该固定哪个随机源"的可操作建议；②仅覆盖 4 个模型、3 个数据集与 10 个种子，且只报告 accuracy 类指标，未涉及多样性、公平性与在线 A/B，工业场景的外推性有限；③4 页短文，超参网格相对克制，结论对更大网格下的"接近平局"密度可能偏乐观。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,17 +4230,17 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/ejbito/InvariRank">https://github.com/ejbito/InvariRank</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>推荐候选本质是无序集合，但 decoder-only LLM 重排器对候选序列化顺序敏感。本文不再只看最终列表变化，而是把同一候选集在 <span class="arithmatex">\(M\)</span> 个置换下的排序视为一个<strong>诱导偏好系统</strong>，提出成对偏好不稳定度 PPI、全局偏好不一致度 GPI、列表输出一致性 LOC 三层度量。在 MovieLens-32M / Amazon Books、3 个 LLM、<span class="arithmatex">\(K\in\{15,25,50\}\)</span> 上发现：三层度量高度同向，却与 HR@5 及边际位置曝光偏置<strong>系统性背离</strong>——STELLA<span class="arithmatex">\(_{LW}\)</span> 的 HR@5 最高但 PPI/GPI 最差、LOC 低于 0.13。</p>
+<p>推荐候选本质是无序集合，但 decoder-only LLM 重排器对候选序列化顺序敏感。本文不再只看最终列表变化，而是把同一候选集在 <span class="arithmatex">\(M\)</span>个置换下的排序视为一个<strong>诱导偏好系统</strong>，提出成对偏好不稳定度 PPI、全局偏好不一致度 GPI、列表输出一致性 LOC 三层度量。在 MovieLens-32M / Amazon Books、3 个 LLM、<span class="arithmatex">\(K\in\{15,25,50\}\)</span>上发现：三层度量高度同向，却与 HR@5 及边际位置曝光偏置<strong>系统性背离</strong>——STELLA<span class="arithmatex">\(_{LW}\)</span> 的 HR@5 最高但 PPI/GPI 最差、LOC 低于 0.13。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 两阶段流水线中 LightGCN 等一阶段召回 top-<span class="arithmatex">\(K\)</span> 候选，LLM 以自然语言 prompt 做列表级联合打分重排；位置偏置缓解手段包括置换聚合 (Bootstrapping/Borda)、顺序选择 (SGS)、校准修正 (STELLA)。</li>
 <li><strong>前人局限</strong>: ① 现有评测只看<strong>最终列表一致性</strong>或<strong>边际曝光曲线</strong>，无法刻画"排序函数本身是否有效"；② 缓解方法以 HR/nDCG 或曝光均衡为目标，隐含假设"相关性提升 ⇒ 排序更可靠"，但该假设从未在偏好结构层面被检验。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 每个置换下的排序都隐含一组成对偏好 <span class="arithmatex">\(c_i \succ_t c_j\)</span>；若重排器是合法的排序函数，则跨置换聚合出的偏好系统 <span class="arithmatex">\(Q\)</span> 应能被<strong>单一全局排序</strong>解释。位置偏置的真正危害是让 <span class="arithmatex">\(Q\)</span> 自相矛盾，而非仅仅让 top 位置曝光不均。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 每个置换下的排序都隐含一组成对偏好 <span class="arithmatex">\(c_i \succ_t c_j\)</span>；若重排器是合法的排序函数，则跨置换聚合出的偏好系统<span class="arithmatex">\(Q\)</span>应能被<strong>单一全局排序</strong>解释。位置偏置的真正危害是让<span class="arithmatex">\(Q\)</span> 自相矛盾，而非仅仅让 top 位置曝光不均。</li>
 <li><strong>本文切入点</strong>: 把"置换不变性"从输出层指标升级为<strong>偏好系统有效性</strong>问题，用局部 (PPI)、全局 (GPI)、输出 (LOC) 三级度量 + 边际曝光 <span class="arithmatex">\(E_k(p)\)</span> 做正交诊断。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>给定用户上下文 <span class="arithmatex">\(H\)</span> 与无序候选集 <span class="arithmatex">\(C=\{c_1,\dots,c_K\}\)</span>，采样 <span class="arithmatex">\(M=20\)</span> 个置换 <span class="arithmatex">\(\pi_t\)</span>，每个置换下用候选标记 token 的 log-probability 做确定性解码得到排序 <span class="arithmatex">\(R_t\)</span>，构成排序族 <span class="arithmatex">\(\mathcal{R}(H,C)=\{R_1,\dots,R_M\}\)</span>。由排序族聚合出成对偏好矩阵 <span class="arithmatex">\(q(i,j)=\frac{1}{M}\sum_t \mathbb{I}[c_i\succ_t c_j]\)</span>，即诱导偏好系统 <span class="arithmatex">\(Q\)</span>。随后在 <span class="arithmatex">\(Q\)</span> 与 <span class="arithmatex">\(\mathcal{R}\)</span> 上分别计算 PPI（局部稳定性）、GPI（全局可解释性）、LOC（输出一致性），并与边际曝光 <span class="arithmatex">\(E_k(p)\)</span>、HR@5/nDCG@5 做交叉对照，形成"有效性 vs. 一致性 vs. 曝光"三维诊断。</p>
+<p>给定用户上下文 <span class="arithmatex">\(H\)</span>与无序候选集<span class="arithmatex">\(C=\{c_1,\dots,c_K\}\)</span>，采样<span class="arithmatex">\(M=20\)</span>个置换<span class="arithmatex">\(\pi_t\)</span>，每个置换下用候选标记 token 的 log-probability 做确定性解码得到排序<span class="arithmatex">\(R_t\)</span>，构成排序族<span class="arithmatex">\(\mathcal{R}(H,C)=\{R_1,\dots,R_M\}\)</span>。由排序族聚合出成对偏好矩阵<span class="arithmatex">\(q(i,j)=\frac{1}{M}\sum_t \mathbb{I}[c_i\succ_t c_j]\)</span>，即诱导偏好系统<span class="arithmatex">\(Q\)</span>。随后在<span class="arithmatex">\(Q\)</span>与<span class="arithmatex">\(\mathcal{R}\)</span>上分别计算 PPI（局部稳定性）、GPI（全局可解释性）、LOC（输出一致性），并与边际曝光<span class="arithmatex">\(E_k(p)\)</span>、HR@5/nDCG@5 做交叉对照，形成"有效性 vs. 一致性 vs. 曝光"三维诊断。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户上下文 H + 候选集 C (无序)"] --&gt; B["采样 M=20 个候选置换 π_t"]
     B --&gt; C["LLM 标记 token log-prob 确定性解码 → 排序 R_t"]
@@ -4241,15 +4252,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>PPI：位置桶条件化的成对偏好极差</strong>：直接按有序位置对条件化过于稀疏（<span class="arithmatex">\(K(K-1)\)</span> 个位置对仅 <span class="arithmatex">\(M\)</span> 次采样），故将位置粗化为 head/middle/tail 桶 <span class="arithmatex">\(\mathcal{B}\)</span>。对候选对 <span class="arithmatex">\((c_i,c_j)\)</span> 计算桶条件偏好概率 <span class="arithmatex">\(q(i,j\mid b_i,b_j)\)</span>，取其在所有被观测桶对上的极差：
+<p><strong>PPI：位置桶条件化的成对偏好极差</strong>：直接按有序位置对条件化过于稀疏（<span class="arithmatex">\(K(K-1)\)</span>个位置对仅<span class="arithmatex">\(M\)</span>次采样），故将位置粗化为 head/middle/tail 桶<span class="arithmatex">\(\mathcal{B}\)</span>。对候选对<span class="arithmatex">\((c_i,c_j)\)</span>计算桶条件偏好概率<span class="arithmatex">\(q(i,j\mid b_i,b_j)\)</span>，取其在所有被观测桶对上的极差：
 $<span class="arithmatex">\(\mathrm{PPI}(i,j)=\max_{b_i,b_j\in\mathcal{B}} q(i,j\mid b_i,b_j)-\min_{b_i,b_j\in\mathcal{B}} q(i,j\mid b_i,b_j)\)</span>$
 直觉：若偏好与输入位置无关，则同一候选对在不同位置区域应给出相同胜负概率，极差趋零；该量直接度量"局部偏好是否被序列化位置劫持"。</p>
 </li>
 <li>
-<p><strong>GPI：加权 Kemeny 全局可解释性</strong>：PPI 低不代表 <span class="arithmatex">\(Q\)</span> 能被单一排序解释（可能存在循环偏好）。定义排序 <span class="arithmatex">\(\sigma\)</span> 与 <span class="arithmatex">\(Q\)</span> 的违背质量 <span class="arithmatex">\(D(\sigma)=\sum_{i&lt;j}\big(\mathbb{I}[\sigma(i)&lt;\sigma(j)](1-q(i,j))+\mathbb{I}[\sigma(j)&lt;\sigma(i)]q(i,j)\big)\)</span>，取 <span class="arithmatex">\(\sigma^*=\arg\min_\sigma D(\sigma)\)</span>，则 <span class="arithmatex">\(\mathrm{GPI}=\binom{K}{2}^{-1}D(\hat\sigma)\)</span>。精确 Kemeny 需遍历全排列，故以聚合胜分 <span class="arithmatex">\(s_i=\sum_{j\neq i}q(i,j)\)</span> 降序初始化，再做最优成对交换的局部搜索至收敛。直觉：GPI 是"偏好系统距离任一全序的最小距离"，刻画全局一致性而非局部稳定。</p>
+<p><strong>GPI：加权 Kemeny 全局可解释性</strong>：PPI 低不代表 <span class="arithmatex">\(Q\)</span>能被单一排序解释（可能存在循环偏好）。定义排序<span class="arithmatex">\(\sigma\)</span>与<span class="arithmatex">\(Q\)</span>的违背质量<span class="arithmatex">\(D(\sigma)=\sum_{i&lt;j}\big(\mathbb{I}[\sigma(i)&lt;\sigma(j)](1-q(i,j))+\mathbb{I}[\sigma(j)&lt;\sigma(i)]q(i,j)\big)\)</span>，取<span class="arithmatex">\(\sigma^*=\arg\min_\sigma D(\sigma)\)</span>，则<span class="arithmatex">\(\mathrm{GPI}=\binom{K}{2}^{-1}D(\hat\sigma)\)</span>。精确 Kemeny 需遍历全排列，故以聚合胜分<span class="arithmatex">\(s_i=\sum_{j\neq i}q(i,j)\)</span> 降序初始化，再做最优成对交换的局部搜索至收敛。直觉：GPI 是"偏好系统距离任一全序的最小距离"，刻画全局一致性而非局部稳定。</p>
 </li>
 <li>
-<p><strong>LOC 与训练/推理开销</strong>：LOC 用排序族内平均 Kendall's <span class="arithmatex">\(\tau\)</span> 直接度量可观测输出的一致性，与 PPI/GPI 互补（前者在偏好系统上，后者在输出上）。本文为<strong>诊断性评测框架</strong>，无训练损失、无负采样；推理开销差异显著：Zero-shot 1 次前向、Bootstrapping 3 次、SGS 需 <span class="arithmatex">\(K\)</span> 次顺序前向（<span class="arithmatex">\(K=25\)</span> 即 25 次）、STELLA<span class="arithmatex">\(_{LW}\)</span> 最多 10 次带早停前向 + 一次性校准（150 个探测候选集 × 每位置 5 次重复）。</p>
+<p><strong>LOC 与训练/推理开销</strong>：LOC 用排序族内平均 Kendall's <span class="arithmatex">\(\tau\)</span>直接度量可观测输出的一致性，与 PPI/GPI 互补（前者在偏好系统上，后者在输出上）。本文为<strong>诊断性评测框架</strong>，无训练损失、无负采样；推理开销差异显著：Zero-shot 1 次前向、Bootstrapping 3 次、SGS 需<span class="arithmatex">\(K\)</span>次顺序前向（<span class="arithmatex">\(K=25\)</span>即 25 次）、STELLA<span class="arithmatex">\(_{LW}\)</span> 最多 10 次带早停前向 + 一次性校准（150 个探测候选集 × 每位置 5 次重复）。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4282,7 +4293,7 @@ $<span class="arithmatex">\(\mathrm{PPI}(i,j)=\max_{b_i,b_j\in\mathcal{B}} q(i,j
 </table>
 <ul>
 <li><strong>数据划分与防穿越</strong>: 全局时间戳切分（chronological split），用户历史仅取评测时点之前的交互，避免未来信息泄漏。</li>
-<li><strong>排名评测协议</strong>: 两阶段流水线下的 <strong>Sampled Ranking</strong>（每 query 候选集为 LightGCN top-<span class="arithmatex">\(K\)</span>，非全库 Full-Ranking）；一致性评测对每 query 采样 <span class="arithmatex">\(M=20\)</span> 个候选置换，排序由候选标记 token 的 log-prob 确定性解码获得，排除解码随机性与格式解析失败干扰。</li>
+<li><strong>排名评测协议</strong>: 两阶段流水线下的 <strong>Sampled Ranking</strong>（每 query 候选集为 LightGCN top-<span class="arithmatex">\(K\)</span>，非全库 Full-Ranking）；一致性评测对每 query 采样<span class="arithmatex">\(M=20\)</span> 个候选置换，排序由候选标记 token 的 log-prob 确定性解码获得，排除解码随机性与格式解析失败干扰。</li>
 <li><strong>对比基线与超参</strong>: Zero-shot 列表重排 vs. Bootstrapping (Borda, 3 次洗牌)、SGS (顺序选择)、STELLA<span class="arithmatex">\(_{LW}\)</span> (列表版校准 + 贝叶斯后验更新，最多 10 次更新带早停)；模型为 Llama-3.2-3B-Instruct、Mistral-7B-Instruct-v0.3、Qwen2.5-7B-Instruct，统一 prompt 模板。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4503,14 +4514,20 @@ $<span class="arithmatex">\(\mathrm{PPI}(i,j)=\max_{b_i,b_j\in\mathcal{B}} q(i,j
 <ol>
 <li><strong>有效性 ≠ 一致性</strong>：STELLA<span class="arithmatex">\(_{LW}\)</span> 在 6 个模型-数据集组合中 HR@5 全部最高（如 Llama-3B/ML 0.5922 vs. Zero-shot 0.5560），但 PPI/GPI 全部最差（0.8331/0.3648 vs. 0.4775/0.1149），LOC 全部低于 0.13——相关性提升与偏好结构稳定性可完全反向。</li>
 <li><strong>曝光均衡 ≠ 置换一致</strong>：STELLA<span class="arithmatex">\(_{LW}\)</span> 在 MovieLens-32M 上给出最平坦的 top-5 曝光曲线，却同时拥有最高 PPI/GPI 与最低 LOC，说明"压平边际曝光"不足以恢复排序函数有效性；SGS 则同时改善曝光与三层一致性，证明二者可同向但非等价。</li>
-<li><strong>三层度量高度同向、与有效性背离</strong>：PPI、GPI、LOC 在全部 6 个组合与 3 种 <span class="arithmatex">\(K\)</span> 下方法排序完全一致（SGS &lt; Bootstrapping &lt; Zero-shot &lt; STELLA<span class="arithmatex">\(_{LW}\)</span> 的稳定性序），表明候选顺序敏感性在局部、全局、输出三层被一致捕获；而 HR@5 的最优方法随设置漂移（SGS/STELLA<span class="arithmatex">\(_{LW}\)</span>/Bootstrapping 各占部分最优），单一有效性指标无法替代一致性诊断。</li>
+<li><strong>三层度量高度同向、与有效性背离</strong>：PPI、GPI、LOC 在全部 6 个组合与 3 种 <span class="arithmatex">\(K\)</span>下方法排序完全一致（SGS &lt; Bootstrapping &lt; Zero-shot &lt; STELLA<span class="arithmatex">\(_{LW}\)</span>的稳定性序），表明候选顺序敏感性在局部、全局、输出三层被一致捕获；而 HR@5 的最优方法随设置漂移（SGS/STELLA<span class="arithmatex">\(_{LW}\)</span>/Bootstrapping 各占部分最优），单一有效性指标无法替代一致性诊断。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 Bootstrapping [13]、SGS [2]、STELLA [17] 等<strong>缓解方法</strong>不同，本文不提出新重排器，而是提出诊断框架；相较以往只看最终列表一致性（如 Kendall <span class="arithmatex">\(\tau\)</span> 单指标）或边际曝光曲线，本文首次把置换下的排序提升为"诱导偏好系统"，用 Kemeny 违背质量刻画全局可解释性，从而能识别"输出看似稳定但偏好系统自相矛盾"的隐性失效。</li>
 <li><strong>可迁移亮点</strong>: ① PPI 的"位置桶条件偏好极差"可直接迁移到任何对输入顺序敏感的生成式/列表式模型（如生成式检索的语义 ID 序列、多模态列表打分）；② GPI 的加权 Kemeny + 胜分初始化局部搜索是评估任意打分器"是否诱导全序"的轻量工具，可嵌入离线评测流水线作为上线前门禁。</li>
-<li><strong>审稿级局限批判</strong>: ① 仅两个数据集、三个 3B–7B 指令模型、<span class="arithmatex">\(M=20\)</span> 置换，统计功效有限，且未覆盖微调式 order-robust 重排器（如 [3,4]），结论外推性待验证；② 候选集来自 LightGCN top-<span class="arithmatex">\(K\)</span> 的 Sampled Ranking，未做 Full-Ranking，且 PPI 的位置桶粗化与 GPI 的局部搜索近似均引入超参/近似误差，缺少对桶划分与 <span class="arithmatex">\(M\)</span> 的敏感性分析；③ 未给出可操作的训练侧正则（如置换一致性损失）来直接优化 PPI/GPI，诊断与干预之间仍缺闭环。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 仅两个数据集、三个 3B–7B 指令模型、<span class="arithmatex">\(M=20\)</span>置换，统计功效有限，且未覆盖微调式 order-robust 重排器（如 [3,4]），结论外推性待验证；② 候选集来自 LightGCN top-<span class="arithmatex">\(K\)</span>的 Sampled Ranking，未做 Full-Ranking，且 PPI 的位置桶粗化与 GPI 的局部搜索近似均引入超参/近似误差，缺少对桶划分与<span class="arithmatex">\(M\)</span> 的敏感性分析；③ 未给出可操作的训练侧正则（如置换一致性损失）来直接优化 PPI/GPI，诊断与干预之间仍缺闭环。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

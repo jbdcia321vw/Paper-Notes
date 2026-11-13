@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,17 +4230,17 @@
 <li><strong>开源代码</strong>: 暂未开源</li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>推荐系统离线评估长期把 SNIPS（自归一化 IPS）当作"免调参默认方差缩减工具"，但其乘性控制变量是否最优从未被证明。本文给出定论：SNIPS 渐近等价于把加性基线固定为真实策略值 <span class="arithmatex">\(V(\pi)\)</span> 的 <span class="arithmatex">\(\beta\)</span>-IPS，而该基线一般并非最优；由此证明最优加性基线估计量 <span class="arithmatex">\(\beta^\star\)</span>-IPS 在 MSE 上渐近严格支配 SNIPS，并给出精确方差差 <span class="arithmatex">\(\Delta=\frac{1}{n\sigma_w^2}(V(\pi)\sigma_w^2-\sigma_{w,wr})^2\ge 0\)</span>。结论进一步推广到 Item-Position Model 下的排序评估 <span class="arithmatex">\(\beta^\star_{\perp\perp}\)</span>-IPM，在每个排名位置上都支配 SNIPM。</p>
+<p>推荐系统离线评估长期把 SNIPS（自归一化 IPS）当作"免调参默认方差缩减工具"，但其乘性控制变量是否最优从未被证明。本文给出定论：SNIPS 渐近等价于把加性基线固定为真实策略值 <span class="arithmatex">\(V(\pi)\)</span>的<span class="arithmatex">\(\beta\)</span>-IPS，而该基线一般并非最优；由此证明最优加性基线估计量<span class="arithmatex">\(\beta^\star\)</span>-IPS 在 MSE 上渐近严格支配 SNIPS，并给出精确方差差<span class="arithmatex">\(\Delta=\frac{1}{n\sigma_w^2}(V(\pi)\sigma_w^2-\sigma_{w,wr})^2\ge 0\)</span>。结论进一步推广到 Item-Position Model 下的排序评估<span class="arithmatex">\(\beta^\star_{\perp\perp}\)</span>-IPM，在每个排名位置上都支配 SNIPM。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 工业 OPE 以 IPS（Horvitz–Thompson，无偏但高方差）为基石，SNIPS（Hájek 比率估计）凭"免调参 + 乘性控制变量"成为实践默认；排序场景则由 London 等人的 SNIPM 逐位置套用 SNIPS。</li>
-<li><strong>前人局限</strong>: ① Joachims 等人已指出优化 SNIPS 目标等价于带特定加性基线的 IPS，Gupta 等人的 <span class="arithmatex">\(\beta\)</span>-IPS 进一步给出最优基线 <span class="arithmatex">\(\beta^\star\)</span> 并在实验中更优，但<strong>缺乏与 SNIPS 的严格理论比较</strong>；② 社区因此仍将 SNIPS 视为安全默认，无法判断何时应切换到基线修正。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 对 <span class="arithmatex">\(\hat V_{\text{SNIPS}}=\bar X/\bar W\)</span> 做一阶展开，可精确写成 <span class="arithmatex">\(\hat V_{\beta\text{-IPS}}(V)+\bar X\cdot\frac{1-\bar W}{\bar W}\)</span>——即 SNIPS 本质是"基线锁死为 <span class="arithmatex">\(V(\pi)\)</span>"的加性估计量，而 <span class="arithmatex">\(V(\pi)\)</span> 只在特殊分布下才等于方差最小基线 <span class="arithmatex">\(\beta^\star=\sigma_{w,wr}/\sigma_w^2\)</span>。</li>
-<li><strong>本文切入点</strong>: 用余项 <span class="arithmatex">\(O(n^{-2})\)</span> 的精细概率界把 SNIPS 与 <span class="arithmatex">\(\beta\)</span>-IPS 的 MSE 差拆成"主导 <span class="arithmatex">\(O(n^{-1})\)</span> 方差项 + 可忽略余项"，从而把"哪个更好"化归为纯方差比较。</li>
+<li><strong>前人局限</strong>: ① Joachims 等人已指出优化 SNIPS 目标等价于带特定加性基线的 IPS，Gupta 等人的 <span class="arithmatex">\(\beta\)</span>-IPS 进一步给出最优基线<span class="arithmatex">\(\beta^\star\)</span> 并在实验中更优，但<strong>缺乏与 SNIPS 的严格理论比较</strong>；② 社区因此仍将 SNIPS 视为安全默认，无法判断何时应切换到基线修正。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 对 <span class="arithmatex">\(\hat V_{\text{SNIPS}}=\bar X/\bar W\)</span>做一阶展开，可精确写成<span class="arithmatex">\(\hat V_{\beta\text{-IPS}}(V)+\bar X\cdot\frac{1-\bar W}{\bar W}\)</span>——即 SNIPS 本质是"基线锁死为<span class="arithmatex">\(V(\pi)\)</span>"的加性估计量，而<span class="arithmatex">\(V(\pi)\)</span>只在特殊分布下才等于方差最小基线<span class="arithmatex">\(\beta^\star=\sigma_{w,wr}/\sigma_w^2\)</span>。</li>
+<li><strong>本文切入点</strong>: 用余项 <span class="arithmatex">\(O(n^{-2})\)</span>的精细概率界把 SNIPS 与<span class="arithmatex">\(\beta\)</span>-IPS 的 MSE 差拆成"主导<span class="arithmatex">\(O(n^{-1})\)</span> 方差项 + 可忽略余项"，从而把"哪个更好"化归为纯方差比较。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>论文是纯理论工作，无神经网络结构。逻辑闭环为：先建立 SNIPS 与加性基线估计量的<strong>精确代数恒等式</strong>（式 7），再用 Hoeffding + Rosenthal 矩不等式把余项压到 <span class="arithmatex">\(O(n^{-2})\)</span>，使 MSE 比较退化为方差比较；随后用 Delta 方法写出 SNIPS 的渐近方差，与 <span class="arithmatex">\(\beta^\star\)</span>-IPS 的精确方差相减得到闭式 gap；最后把同一论证逐位置施加于 IPM 排序估计量，得到位置级支配性。实践层面只需在日志数据上估计一个标量 <span class="arithmatex">\(\hat\beta^\star\)</span>（或 <span class="arithmatex">\(k\)</span>-fold 交叉拟合以恢复严格无偏），即可替换现有 SNIPS 管线。</p>
+<p>论文是纯理论工作，无神经网络结构。逻辑闭环为：先建立 SNIPS 与加性基线估计量的<strong>精确代数恒等式</strong>（式 7），再用 Hoeffding + Rosenthal 矩不等式把余项压到 <span class="arithmatex">\(O(n^{-2})\)</span>，使 MSE 比较退化为方差比较；随后用 Delta 方法写出 SNIPS 的渐近方差，与<span class="arithmatex">\(\beta^\star\)</span>-IPS 的精确方差相减得到闭式 gap；最后把同一论证逐位置施加于 IPM 排序估计量，得到位置级支配性。实践层面只需在日志数据上估计一个标量<span class="arithmatex">\(\hat\beta^\star\)</span>（或<span class="arithmatex">\(k\)</span>-fold 交叉拟合以恢复严格无偏），即可替换现有 SNIPS 管线。</p>
 <pre class="mermaid"><code>flowchart TD
     A["日志数据 D ~ pi_0: (x,a,r)"] --&gt; B["计算重要性权重 w = pi/pi_0"]
     B --&gt; C["估计最优加性基线 beta* = Cov(w,wr)/Var(w)"]
@@ -4241,20 +4252,20 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>SNIPS 的加性重写与余项控制（Theorem 3.1）</strong>：痛点是 SNIPS 是非线性比率，无法直接与线性估计量比方差。作者令 <span class="arithmatex">\(L_n=\bar X-V\bar W\)</span>，得到恒等式 <span class="arithmatex">\(\hat V_{\text{SNIPS}}-\hat V_{\beta\text{-IPS}}(V)=L_n\frac{1-\bar W}{\bar W}\triangleq R_n\)</span>；在事件 <span class="arithmatex">\(\mathcal{E}=\{\bar W\ge 1/2\}\)</span>（其补集概率 <span class="arithmatex">\(\le\exp(-n/2W^2)\)</span> 指数衰减）上界住 <span class="arithmatex">\(|R_n|\)</span>，再用 <span class="arithmatex">\(U_i=w_i(r_i-V)\)</span>、<span class="arithmatex">\(T_i=w_i-1\)</span> 的四阶矩 + Cauchy–Schwarz 得 <span class="arithmatex">\(\mathbb{E}[R_n^2]=O(n^{-2})\)</span>，交叉项 <span class="arithmatex">\(\mathbb{E}[L_n^2(1-\bar W)]\)</span> 因零均值仅剩 <span class="arithmatex">\(n\)</span> 个对角项亦为 <span class="arithmatex">\(O(n^{-2})\)</span>。直觉：SNIPS 与"基线取真值"的加性估计量只差一个二阶小量，故二者渐近同分布，胜负完全由基线选得好不好决定。</p>
+<p><strong>SNIPS 的加性重写与余项控制（Theorem 3.1）</strong>：痛点是 SNIPS 是非线性比率，无法直接与线性估计量比方差。作者令 <span class="arithmatex">\(L_n=\bar X-V\bar W\)</span>，得到恒等式<span class="arithmatex">\(\hat V_{\text{SNIPS}}-\hat V_{\beta\text{-IPS}}(V)=L_n\frac{1-\bar W}{\bar W}\triangleq R_n\)</span>；在事件<span class="arithmatex">\(\mathcal{E}=\{\bar W\ge 1/2\}\)</span>（其补集概率<span class="arithmatex">\(\le\exp(-n/2W^2)\)</span>指数衰减）上界住<span class="arithmatex">\(|R_n|\)</span>，再用<span class="arithmatex">\(U_i=w_i(r_i-V)\)</span>、<span class="arithmatex">\(T_i=w_i-1\)</span>的四阶矩 + Cauchy–Schwarz 得<span class="arithmatex">\(\mathbb{E}[R_n^2]=O(n^{-2})\)</span>，交叉项<span class="arithmatex">\(\mathbb{E}[L_n^2(1-\bar W)]\)</span>因零均值仅剩<span class="arithmatex">\(n\)</span>个对角项亦为<span class="arithmatex">\(O(n^{-2})\)</span>。直觉：SNIPS 与"基线取真值"的加性估计量只差一个二阶小量，故二者渐近同分布，胜负完全由基线选得好不好决定。</p>
 </li>
 <li>
-<p><strong>精确方差差与最优基线（Proposition 3.2）</strong>：<span class="arithmatex">\(\mathrm{Var}(\hat V_{\beta\text{-IPS}})=\frac{1}{n}(\sigma_{wr}^2-2\beta\sigma_{w,wr}+\beta^2\sigma_w^2)\)</span> 是关于 <span class="arithmatex">\(\beta\)</span> 的二次型，极小点 <span class="arithmatex">\(\beta^\star=\sigma_{w,wr}/\sigma_w^2\)</span>；SNIPS 的 Delta 方法渐近方差恰是把 <span class="arithmatex">\(\beta\)</span> 换成 <span class="arithmatex">\(V(\pi)\)</span> 的同一二次型。相减得
+<p><strong>精确方差差与最优基线（Proposition 3.2）</strong>：<span class="arithmatex">\(\mathrm{Var}(\hat V_{\beta\text{-IPS}})=\frac{1}{n}(\sigma_{wr}^2-2\beta\sigma_{w,wr}+\beta^2\sigma_w^2)\)</span>是关于<span class="arithmatex">\(\beta\)</span>的二次型，极小点<span class="arithmatex">\(\beta^\star=\sigma_{w,wr}/\sigma_w^2\)</span>；SNIPS 的 Delta 方法渐近方差恰是把<span class="arithmatex">\(\beta\)</span>换成<span class="arithmatex">\(V(\pi)\)</span> 的同一二次型。相减得
 $<span class="arithmatex">\(\Delta=\mathrm{AVar}(\hat V_{\text{SNIPS}})-\mathrm{Var}(\hat V_{\beta^\star\text{-IPS}})=\frac{1}{n\sigma_w^2}\big(V(\pi)\sigma_w^2-\sigma_{w,wr}\big)^2\ge 0,\)</span>$
-等号仅当 <span class="arithmatex">\(V(\pi)=\beta^\star\)</span>。物理直觉：<span class="arithmatex">\(\Delta\)</span> 是"真值到最优基线的马氏距离"，策略失配越大（<span class="arithmatex">\(\sigma_w^2\)</span> 大、<span class="arithmatex">\(w\)</span> 与 <span class="arithmatex">\(wr\)</span> 协方差偏离），收益越大——正是方差缩减最被需要的场景。</p>
+等号仅当 <span class="arithmatex">\(V(\pi)=\beta^\star\)</span>。物理直觉：<span class="arithmatex">\(\Delta\)</span>是"真值到最优基线的马氏距离"，策略失配越大（<span class="arithmatex">\(\sigma_w^2\)</span>大、<span class="arithmatex">\(w\)</span>与<span class="arithmatex">\(wr\)</span> 协方差偏离），收益越大——正是方差缩减最被需要的场景。</p>
 </li>
 <li>
-<p><strong>排序扩展 <span class="arithmatex">\(\beta^\star_{\perp\perp}\)</span>-IPM（Theorem 3.3）与训练/推理开销</strong>：SNIPM 是 <span class="arithmatex">\(k\)</span> 个位置级 SNIPS 之和，直接对 <span class="arithmatex">\(\boldsymbol\beta\)</span> 联合优化需建模位置间依赖（仅 factored policy 下有全局解）。作者采用忽略位置相关的稳健近似 <span class="arithmatex">\(\beta^\star_{\perp\perp,j}=\frac{\mathbb{E}[w_j^2r_j]-\mathbb{E}[w_jr_j]}{\mathbb{E}[w_j^2]-1}\)</span>，逐位置套用 Theorem 3.1 即得每个位置的 MSE 支配性。估计开销为一次 <span class="arithmatex">\(O(|\mathcal{D}|)\)</span> 的矩统计（无需梯度训练、无超参）；若需严格有限样本无偏，用 <span class="arithmatex">\(k\)</span>-fold 交叉拟合，代价仅为方差估计有效样本量轻微下降。注意插入经验 <span class="arithmatex">\(\hat\beta^\star\)</span> 会引入与 SNIPS 同阶的 <span class="arithmatex">\(O(n^{-1})\)</span> 偏差，故渐近 MSE 收敛率不变、仅方差常数更优。</p>
+<p><strong>排序扩展 <span class="arithmatex">\(\beta^\star_{\perp\perp}\)</span>-IPM（Theorem 3.3）与训练/推理开销</strong>：SNIPM 是<span class="arithmatex">\(k\)</span>个位置级 SNIPS 之和，直接对<span class="arithmatex">\(\boldsymbol\beta\)</span>联合优化需建模位置间依赖（仅 factored policy 下有全局解）。作者采用忽略位置相关的稳健近似<span class="arithmatex">\(\beta^\star_{\perp\perp,j}=\frac{\mathbb{E}[w_j^2r_j]-\mathbb{E}[w_jr_j]}{\mathbb{E}[w_j^2]-1}\)</span>，逐位置套用 Theorem 3.1 即得每个位置的 MSE 支配性。估计开销为一次<span class="arithmatex">\(O(|\mathcal{D}|)\)</span>的矩统计（无需梯度训练、无超参）；若需严格有限样本无偏，用<span class="arithmatex">\(k\)</span>-fold 交叉拟合，代价仅为方差估计有效样本量轻微下降。注意插入经验<span class="arithmatex">\(\hat\beta^\star\)</span>会引入与 SNIPS 同阶的<span class="arithmatex">\(O(n^{-1})\)</span> 偏差，故渐近 MSE 收敛率不变、仅方差常数更优。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
-<li><strong>数据集与预处理</strong>: 本文为<strong>纯理论论文，不含自建实验</strong>（正文 5 页，无数据集统计表、无主实验表）。实证证据以引用形式给出：Gupta 等人 [6] 的 <span class="arithmatex">\(\beta\)</span>-IPS 实验与 Jeunen &amp; Ustimenko [14] 的成对比较实验均报告 <span class="arithmatex">\(\beta^\star\)</span>-IPS 优于 SNIPS，与本文理论一致。</li>
+<li><strong>数据集与预处理</strong>: 本文为<strong>纯理论论文，不含自建实验</strong>（正文 5 页，无数据集统计表、无主实验表）。实证证据以引用形式给出：Gupta 等人 [6] 的 <span class="arithmatex">\(\beta\)</span>-IPS 实验与 Jeunen &amp; Ustimenko [14] 的成对比较实验均报告<span class="arithmatex">\(\beta^\star\)</span>-IPS 优于 SNIPS，与本文理论一致。</li>
 </ul>
 <table>
 <thead>
@@ -4279,9 +4290,9 @@ $<span class="arithmatex">\(\Delta=\mathrm{AVar}(\hat V_{\text{SNIPS}})-\mathrm{
 </tbody>
 </table>
 <ul>
-<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 不适用；理论假设日志 <span class="arithmatex">\(\mathcal{D}=\{(x_i,a_i,r_i)\}_{i=1}^n\)</span> 为 i.i.d. 采样于日志策略 <span class="arithmatex">\(\pi_0\)</span>，无时间切分讨论。</li>
-<li><strong>排名评测协议 (Ranking Protocol)</strong>: 不适用；评估对象是估计量的 MSE / 渐近方差，而非排序指标。理论前提为有界奖励 <span class="arithmatex">\(|r_i|\le R\)</span>、有界权重 <span class="arithmatex">\(0\le w_i\le W\)</span>、<span class="arithmatex">\(\mathbb{E}[w_i]=1\)</span> 且 <span class="arithmatex">\(\mathbb{E}[w_i^2]&lt;\infty\)</span>。</li>
-<li><strong>对比基线与超参设置</strong>: 对比对象为 IPS、SNIPS、<span class="arithmatex">\(\beta\)</span>-IPS（基线固定为 <span class="arithmatex">\(V\)</span>）、<span class="arithmatex">\(\beta^\star\)</span>-IPS，以及排序侧的 SNIPM 与 <span class="arithmatex">\(\beta^\star_{\perp\perp}\)</span>-IPM；无 Embedding 维度、无显著性检验，全部结论为渐近（<span class="arithmatex">\(n\to\infty\)</span>）意义下的解析结论。</li>
+<li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 不适用；理论假设日志 <span class="arithmatex">\(\mathcal{D}=\{(x_i,a_i,r_i)\}_{i=1}^n\)</span>为 i.i.d. 采样于日志策略<span class="arithmatex">\(\pi_0\)</span>，无时间切分讨论。</li>
+<li><strong>排名评测协议 (Ranking Protocol)</strong>: 不适用；评估对象是估计量的 MSE / 渐近方差，而非排序指标。理论前提为有界奖励 <span class="arithmatex">\(|r_i|\le R\)</span>、有界权重<span class="arithmatex">\(0\le w_i\le W\)</span>、<span class="arithmatex">\(\mathbb{E}[w_i]=1\)</span>且<span class="arithmatex">\(\mathbb{E}[w_i^2]&lt;\infty\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: 对比对象为 IPS、SNIPS、<span class="arithmatex">\(\beta\)</span>-IPS（基线固定为<span class="arithmatex">\(V\)</span>）、<span class="arithmatex">\(\beta^\star\)</span>-IPS，以及排序侧的 SNIPM 与<span class="arithmatex">\(\beta^\star_{\perp\perp}\)</span>-IPM；无 Embedding 维度、无显著性检验，全部结论为渐近（<span class="arithmatex">\(n\to\infty\)</span>）意义下的解析结论。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4311,14 +4322,14 @@ $<span class="arithmatex">\(\Delta=\mathrm{AVar}(\hat V_{\text{SNIPS}})-\mathrm{
 <tr>
 <td style="text-align: left;"><span class="arithmatex">\(\beta\)</span>-IPS（<span class="arithmatex">\(\beta=V\)</span>）</td>
 <td style="text-align: center;"><span class="arithmatex">\(0\)</span></td>
-<td style="text-align: center;">与 SNIPS 同阶，差 <span class="arithmatex">\(O(n^{-2})\)</span></td>
+<td style="text-align: center;">与 SNIPS 同阶，差<span class="arithmatex">\(O(n^{-2})\)</span></td>
 <td style="text-align: left;">渐近等价（Thm 3.1 恒等式）</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong><span class="arithmatex">\(\beta^\star\)</span>-IPS</strong></td>
-<td style="text-align: center;"><span class="arithmatex">\(O(n^{-1})\)</span>（插入 <span class="arithmatex">\(\hat\beta^\star\)</span>）</td>
+<td style="text-align: center;"><span class="arithmatex">\(O(n^{-1})\)</span>（插入<span class="arithmatex">\(\hat\beta^\star\)</span>）</td>
 <td style="text-align: center;"><span class="arithmatex">\(\frac{1}{n}\big(\sigma_{wr}^2-\sigma_{w,wr}^2/\sigma_w^2\big)\)</span></td>
-<td style="text-align: left;"><strong><span class="arithmatex">\(\le\)</span> SNIPS <span class="arithmatex">\(+O(n^{-2})\)</span>，<span class="arithmatex">\(\beta^\star\neq V\)</span> 时严格更优</strong></td>
+<td style="text-align: left;"><strong><span class="arithmatex">\(\le\)</span>SNIPS<span class="arithmatex">\(+O(n^{-2})\)</span>，<span class="arithmatex">\(\beta^\star\neq V\)</span> 时严格更优</strong></td>
 </tr>
 <tr>
 <td style="text-align: left;">SNIPM</td>
@@ -4328,7 +4339,7 @@ $<span class="arithmatex">\(\Delta=\mathrm{AVar}(\hat V_{\text{SNIPS}})-\mathrm{
 </tr>
 <tr>
 <td style="text-align: left;"><strong><span class="arithmatex">\(\beta^\star_{\perp\perp}\)</span>-IPM</strong></td>
-<td style="text-align: center;">逐位置 <span class="arithmatex">\(O(n^{-1})\)</span></td>
+<td style="text-align: center;">逐位置<span class="arithmatex">\(O(n^{-1})\)</span></td>
 <td style="text-align: center;">各位置最优基线方差之和</td>
 <td style="text-align: left;"><strong>每个位置均支配 SNIPM</strong></td>
 </tr>
@@ -4346,7 +4357,7 @@ $<span class="arithmatex">\(\Delta=\mathrm{AVar}(\hat V_{\text{SNIPS}})-\mathrm{
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><span class="arithmatex">\(\beta^\star=V(\pi)\)</span>（如 <span class="arithmatex">\(\sigma_{w,wr}=V\sigma_w^2\)</span>）</td>
+<td style="text-align: left;"><span class="arithmatex">\(\beta^\star=V(\pi)\)</span>（如<span class="arithmatex">\(\sigma_{w,wr}=V\sigma_w^2\)</span>）</td>
 <td style="text-align: center;"><span class="arithmatex">\(\Delta=0\)</span></td>
 <td style="text-align: left;">两者等价，SNIPS 无损</td>
 </tr>
@@ -4356,13 +4367,13 @@ $<span class="arithmatex">\(\Delta=\mathrm{AVar}(\hat V_{\text{SNIPS}})-\mathrm{
 <td style="text-align: left;">差异可忽略</td>
 </tr>
 <tr>
-<td style="text-align: left;">策略失配加剧（<span class="arithmatex">\(\sigma_w^2\)</span> 增大）</td>
-<td style="text-align: center;"><span class="arithmatex">\(\Delta\)</span> 增大</td>
+<td style="text-align: left;">策略失配加剧（<span class="arithmatex">\(\sigma_w^2\)</span>增大）</td>
+<td style="text-align: center;"><span class="arithmatex">\(\Delta\)</span>增大</td>
 <td style="text-align: left;"><span class="arithmatex">\(\beta^\star\)</span>-IPS 优势显著</td>
 </tr>
 <tr>
 <td style="text-align: left;">极小样本 <span class="arithmatex">\(n\)</span></td>
-<td style="text-align: center;">余项 <span class="arithmatex">\(O(n^{-2})\)</span> 相对抬升</td>
+<td style="text-align: center;">余项<span class="arithmatex">\(O(n^{-2})\)</span> 相对抬升</td>
 <td style="text-align: left;">SNIPS 仍是稳定默认</td>
 </tr>
 <tr>
@@ -4374,16 +4385,22 @@ $<span class="arithmatex">\(\Delta=\mathrm{AVar}(\hat V_{\text{SNIPS}})-\mathrm{
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>SNIPS 的"免调参"是伪优势</strong>：由式 (7) 的精确恒等式，SNIPS 与 <span class="arithmatex">\(\beta=V\)</span> 的加性估计量之差仅为 <span class="arithmatex">\(O(n^{-2})\)</span> 余项，说明其方差缩减能力完全等价于"猜基线等于真值"——而真值恰恰是待估量，这一选择在 <span class="arithmatex">\(\beta^\star\neq V\)</span> 时系统性次优。</li>
-<li><strong>收益与策略失配正相关</strong>：<span class="arithmatex">\(\Delta=\frac{1}{n\sigma_w^2}(V\sigma_w^2-\sigma_{w,wr})^2\)</span> 表明当 <span class="arithmatex">\(\pi\)</span> 与 <span class="arithmatex">\(\pi_0\)</span> 差异大（<span class="arithmatex">\(\sigma_w^2\)</span> 大）时 gap 显著放大，即工业上"新策略与线上策略差异大"的典型 OPE 场景正是 <span class="arithmatex">\(\beta^\star\)</span>-IPS 收益最大的场景。</li>
+<li><strong>SNIPS 的"免调参"是伪优势</strong>：由式 (7) 的精确恒等式，SNIPS 与 <span class="arithmatex">\(\beta=V\)</span>的加性估计量之差仅为<span class="arithmatex">\(O(n^{-2})\)</span>余项，说明其方差缩减能力完全等价于"猜基线等于真值"——而真值恰恰是待估量，这一选择在<span class="arithmatex">\(\beta^\star\neq V\)</span> 时系统性次优。</li>
+<li><strong>收益与策略失配正相关</strong>：<span class="arithmatex">\(\Delta=\frac{1}{n\sigma_w^2}(V\sigma_w^2-\sigma_{w,wr})^2\)</span>表明当<span class="arithmatex">\(\pi\)</span>与<span class="arithmatex">\(\pi_0\)</span>差异大（<span class="arithmatex">\(\sigma_w^2\)</span>大）时 gap 显著放大，即工业上"新策略与线上策略差异大"的典型 OPE 场景正是<span class="arithmatex">\(\beta^\star\)</span>-IPS 收益最大的场景。</li>
 <li><strong>排序场景可零成本迁移</strong>：<span class="arithmatex">\(\beta^\star_{\perp\perp}\)</span>-IPM 只需逐位置估计一个标量，即在每个排名位置严格支配 SNIPM，说明现有 SNIPM 评估管线可在不改架构的前提下直接替换，且无需引入 factored policy 等强假设。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比 Swaminathan &amp; Joachims 的 SNIPS（乘性控制变量、免调参但无最优性保证）与 London 等人的 SNIPM（排序版 SNIPS），本文首次给出与加性基线族的<strong>严格渐近支配证明</strong>；相比 Gupta 等人的 <span class="arithmatex">\(\beta\)</span>-IPS（仅实证更优、缺理论），本文补齐了理论缺口并给出闭式方差差；相比 Vlassis 等人的 slate 控制变量（依赖 factored policy 与 slate 级奖励），本文覆盖一般排序策略与位置级奖励，假设更弱。</li>
 <li><strong>可迁移亮点</strong>: ① 把"比率估计量一阶展开 + 余项矩界"这套论证模板迁移到任何自归一化指标（如归一化折扣累积增益的离线估计、CVR 延迟反馈下的比率型指标）；② 逐位置独立估计基线 <span class="arithmatex">\(\beta^\star_{\perp\perp,j}\)</span> 的思路可直接用于重排/列表级 OPE 的方差缩减，工程实现仅需一遍日志扫描。</li>
-<li><strong>审稿级局限批判</strong>: ① 全部结论为<strong>渐近结论</strong>，未给出有限样本下的显式非渐近界与"多大 <span class="arithmatex">\(n\)</span> 才够"的判据，小样本下 SNIPS 仍可能更稳；② 排序扩展采用 <span class="arithmatex">\(\perp\perp\)</span> 独立近似，明确放弃位置间依赖，全局最优 <span class="arithmatex">\(\boldsymbol\beta^\star\)</span> 未解；③ 插入经验 <span class="arithmatex">\(\hat\beta^\star\)</span> 引入 <span class="arithmatex">\(O(n^{-1})\)</span> 偏差，严格无偏需交叉拟合，而交叉拟合会缩减方差估计的有效样本；④ 无自建实验，实证支撑完全依赖引用文献，缺少在真实推荐日志上的端到端复现。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 全部结论为<strong>渐近结论</strong>，未给出有限样本下的显式非渐近界与"多大 <span class="arithmatex">\(n\)</span>才够"的判据，小样本下 SNIPS 仍可能更稳；② 排序扩展采用<span class="arithmatex">\(\perp\perp\)</span>独立近似，明确放弃位置间依赖，全局最优<span class="arithmatex">\(\boldsymbol\beta^\star\)</span>未解；③ 插入经验<span class="arithmatex">\(\hat\beta^\star\)</span>引入<span class="arithmatex">\(O(n^{-1})\)</span> 偏差，严格无偏需交叉拟合，而交叉拟合会缩减方差估计的有效样本；④ 无自建实验，实证支撑完全依赖引用文献，缺少在真实推荐日志上的端到端复现。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

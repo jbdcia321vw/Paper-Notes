@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4219,7 +4230,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>对用户 <span class="arithmatex">\(u\)</span> 的复购候选集 <span class="arithmatex">\(\mathcal{I}_u=\bigcup_l B_l\)</span> 中每个物品 <span class="arithmatex">\(i\)</span>，在滚动 <span class="arithmatex">\(T\)</span> 天窗口上构造二值购买指示向量 <span class="arithmatex">\(h_i\in\{0,1\}^T\)</span>；共享多尺度 Conv1d 在五个核尺度上提取节奏特征并投影为节奏嵌入 <span class="arithmatex">\(c_i\)</span>；与可学习物品嵌入 <span class="arithmatex">\(e_i\)</span> 拼接后送入两层 ISAB 得到集合编码 <span class="arithmatex">\(z_i\)</span>；最终两层 MLP 输出标量复购分 <span class="arithmatex">\(s_i\)</span> 排序。全流程无用户级参数，支持批量推理。</p>
+<p>对用户 <span class="arithmatex">\(u\)</span>的复购候选集<span class="arithmatex">\(\mathcal{I}_u=\bigcup_l B_l\)</span>中每个物品<span class="arithmatex">\(i\)</span>，在滚动<span class="arithmatex">\(T\)</span>天窗口上构造二值购买指示向量<span class="arithmatex">\(h_i\in\{0,1\}^T\)</span>；共享多尺度 Conv1d 在五个核尺度上提取节奏特征并投影为节奏嵌入<span class="arithmatex">\(c_i\)</span>；与可学习物品嵌入<span class="arithmatex">\(e_i\)</span>拼接后送入两层 ISAB 得到集合编码<span class="arithmatex">\(z_i\)</span>；最终两层 MLP 输出标量复购分<span class="arithmatex">\(s_i\)</span> 排序。全流程无用户级参数，支持批量推理。</p>
 <pre class="mermaid"><code>flowchart TD
     A["物品购买历史 → T 天二值日历信号 h_i"] --&gt; B["共享多尺度 Conv1d (w=7/14/28/91/182) + FC → c_i"]
     B --&gt; C["拼接物品嵌入 x_i = [c_i ‖ e_i]"]
@@ -4230,11 +4241,11 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>日历时间二值信号 + 共享多尺度时序卷积</strong>：痛点是用篮索引编码时间会丢失真实间隔。CASE 令 <span class="arithmatex">\(h_{i,t}=\mathbb{1}[i \text{ 在日 } t \text{ 被购买}]\)</span>，用五个非重叠步长（stride <span class="arithmatex">\(=w\)</span>）的 Conv1d 并行卷积，各尺度 <span class="arithmatex">\(\lfloor T/w\rfloor\)</span> 个激活拼接后经两层 FC+ReLU 得 <span class="arithmatex">\(c_i\in\mathbb{R}^{d_c}\)</span>。物理直觉：小核捕捉周级补货重复、大核捕捉季节性与慢变趋势，且<strong>群体共享权重</strong>使稀疏用户也能借他人节奏泛化——这正是其在 TaFeng/DC 稀疏场景增益最大的原因。</li>
-<li><strong>诱导集合注意力 (ISAB) 建模跨物品依赖</strong>：复购候选天然是无序集合，全自注意力 <span class="arithmatex">\(O(n^2)\)</span> 在候选集大时不可扩展。ISAB 引入 <span class="arithmatex">\(K\)</span> 个可学习诱导点，先让诱导点 attend 物品集、再让物品 attend 回诱导点，将复杂度降至 <span class="arithmatex">\(O(nK)\)</span>；两层、<span class="arithmatex">\(K=32\)</span>、<span class="arithmatex">\(H=4\)</span> 头输出 <span class="arithmatex">\(z_i\in\mathbb{R}^{d_h}\)</span>。直觉：诱导点充当"共购模式原型"的低秩瓶颈，以极小代价捕获互补品/替代品的集合级共现。</li>
+<li><strong>日历时间二值信号 + 共享多尺度时序卷积</strong>：痛点是用篮索引编码时间会丢失真实间隔。CASE 令 <span class="arithmatex">\(h_{i,t}=\mathbb{1}[i \text{ 在日 } t \text{ 被购买}]\)</span>，用五个非重叠步长（stride<span class="arithmatex">\(=w\)</span>）的 Conv1d 并行卷积，各尺度<span class="arithmatex">\(\lfloor T/w\rfloor\)</span>个激活拼接后经两层 FC+ReLU 得<span class="arithmatex">\(c_i\in\mathbb{R}^{d_c}\)</span>。物理直觉：小核捕捉周级补货重复、大核捕捉季节性与慢变趋势，且<strong>群体共享权重</strong>使稀疏用户也能借他人节奏泛化——这正是其在 TaFeng/DC 稀疏场景增益最大的原因。</li>
+<li><strong>诱导集合注意力 (ISAB) 建模跨物品依赖</strong>：复购候选天然是无序集合，全自注意力 <span class="arithmatex">\(O(n^2)\)</span>在候选集大时不可扩展。ISAB 引入<span class="arithmatex">\(K\)</span>个可学习诱导点，先让诱导点 attend 物品集、再让物品 attend 回诱导点，将复杂度降至<span class="arithmatex">\(O(nK)\)</span>；两层、<span class="arithmatex">\(K=32\)</span>、<span class="arithmatex">\(H=4\)</span>头输出<span class="arithmatex">\(z_i\in\mathbb{R}^{d_h}\)</span>。直觉：诱导点充当"共购模式原型"的低秩瓶颈，以极小代价捕获互补品/替代品的集合级共现。</li>
 <li><strong>训练目标、负采样与推理效率</strong>：损失为候选集内二分类交叉熵
 $<span class="arithmatex">\(\mathcal{L}=-\sum_{i\in B_{l+1}\cap\mathcal{I}_u}\log \sigma(s_i)-\sum_{i\in \mathcal{I}_u\setminus B_{l+1}}\log(1-\sigma(s_i)),\)</span>$
-即<strong>免负采样</strong>——负例直接取用户历史中未复购的物品（in-history negatives），与推理候选空间严格一致。推理复杂度 <span class="arithmatex">\(O(n(T+K))\)</span>，与用户总量 <span class="arithmatex">\(|\mathcal{U}|\)</span> 无关；<span class="arithmatex">\(d_e=d_c=128\)</span>、<span class="arithmatex">\(d_h=256\)</span>，Adam <span class="arithmatex">\(10^{-3}\)</span>、30 epoch、batch 64。</li>
+即<strong>免负采样</strong>——负例直接取用户历史中未复购的物品（in-history negatives），与推理候选空间严格一致。推理复杂度 <span class="arithmatex">\(O(n(T+K))\)</span>，与用户总量<span class="arithmatex">\(|\mathcal{U}|\)</span>无关；<span class="arithmatex">\(d_e=d_c=128\)</span>、<span class="arithmatex">\(d_h=256\)</span>，Adam<span class="arithmatex">\(10^{-3}\)</span>、30 epoch、batch 64。</li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
 <ul>
@@ -4288,7 +4299,7 @@ $<span class="arithmatex">\(\mathcal{L}=-\sum_{i\in B_{l+1}\cap\mathcal{I}_u}\lo
 </table>
 <ul>
 <li><strong>数据划分与防穿越</strong>: 用户级 train–test 划分 + <code>Leave-One-Out</code>，每用户最后一篮为目标篮；TaFeng/Proprietary 保留真实日历时间戳，Instacart/DC 无时间戳，用订单间隔（days-since-prior-order）重建相对日期以构造 <span class="arithmatex">\(T\)</span> 天二值表示。</li>
-<li><strong>排名评测协议</strong>: 候选<strong>严格限制在用户历史购买过的物品</strong> <span class="arithmatex">\(\mathcal{I}_u\)</span> 内（in-history 全排序，非全库），报告 Precision/Recall/NDCG@{1,3,5,10}；显著性用配对 <span class="arithmatex">\(t\)</span> 检验（<span class="arithmatex">\(\alpha=0.05\)</span>）。</li>
+<li><strong>排名评测协议</strong>: 候选<strong>严格限制在用户历史购买过的物品</strong> <span class="arithmatex">\(\mathcal{I}_u\)</span>内（in-history 全排序，非全库），报告 Precision/Recall/NDCG@{1,3,5,10}；显著性用配对<span class="arithmatex">\(t\)</span>检验（<span class="arithmatex">\(\alpha=0.05\)</span>）。</li>
 <li><strong>对比基线与超参</strong>: PersonalTop（频次）、TIFUKNN（时间衰减 KNN）、DNNTSP（共现图 GNN+篮序注意力）、BERT4NBR（篮序双向自注意力）、PIETSP（时间步集合均值池化）；基线统一同套优化配置训练 30 epoch 取验证最优。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
@@ -4538,12 +4549,18 @@ $<span class="arithmatex">\(\mathcal{L}=-\sum_{i\in B_{l+1}\cap\mathcal{I}_u}\lo
 <li><strong>物品嵌入近乎冗余，是生产可扩展性的关键红利</strong>：去掉 <span class="arithmatex">\(e_i\)</span> 仅使 P@1 降 1.6%（0.5478→0.5390），说明日历节奏本身已承载主要判别信号，可大幅降低对大规模高频刷新 embedding 表的依赖。</li>
 <li><strong>集合编码有效但注意力增益温和</strong>：去掉集合编码器 P@1 降至 0.5232（−4.5%）；与排列等变均值池化 PermEqMean（0.5414）相比，ISAB 仅再提升 1.2%，说明收益主要来自"集合级聚合"这一范式而非注意力本身，但 ISAB 在 <span class="arithmatex">\(O(nK)\)</span> 下仍优于全注意力的可扩展性。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 TIFUKNN 的本质区别是<strong>抛弃用户级 KNN 检索</strong>，改为群体共享的时序滤波器，推理从 <span class="arithmatex">\(O(|\mathcal{U}|d)\)</span> 降至 <span class="arithmatex">\(O(n(T+K))\)</span>（19s vs 318s）；与 PIETSP 的区别在于后者只做时间步集合的排列等变均值池化，缺少物品级多尺度节奏抽取，故在稀疏的 TaFeng 上被拉开 15.6% 的 P@1 差距；与 DNNTSP/BERT4NBR 的区别是彻底放弃篮序索引，改用真实日历时间轴。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 TIFUKNN 的本质区别是<strong>抛弃用户级 KNN 检索</strong>，改为群体共享的时序滤波器，推理从 <span class="arithmatex">\(O(|\mathcal{U}|d)\)</span>降至<span class="arithmatex">\(O(n(T+K))\)</span>（19s vs 318s）；与 PIETSP 的区别在于后者只做时间步集合的排列等变均值池化，缺少物品级多尺度节奏抽取，故在稀疏的 TaFeng 上被拉开 15.6% 的 P@1 差距；与 DNNTSP/BERT4NBR 的区别是彻底放弃篮序索引，改用真实日历时间轴。</li>
 <li><strong>可迁移亮点</strong>: ① "二值日历信号 + 多尺度非重叠卷积"是一种极轻量的周期模式编码器，可直接迁移到复购间隔预测、订阅续费、周期性内容推送等任务；② "共享权重 + 无用户参数"的设计思路对任何需要控制 embedding 表规模的大规模工业系统都有参考价值。</li>
 <li><strong>审稿级局限批判</strong>: ① 候选集被限制在用户历史购买物品内，未评估新品/跨类目推荐的召回能力，任务定义偏窄；② 固定五档卷积核与固定时间窗 <span class="arithmatex">\(T\)</span> 对非平稳节奏（跨渠道购买、生活规律突变）鲁棒性未验证，且论文自承线上 A/B 测试尚未完成，工业收益仍属离线口径；③ 在 Instacart 上 P@1 实际略低于 TIFUKNN（0.5478 vs 0.5489），"全面领先"的表述在富历史场景下需谨慎解读。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

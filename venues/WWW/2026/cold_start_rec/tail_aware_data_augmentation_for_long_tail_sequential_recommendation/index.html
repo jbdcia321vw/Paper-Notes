@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4222,7 +4233,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>TADA 分三阶段闭环：<strong>(a) 候选集构建</strong>——在训练前用线性物品-物品模型一次性解出相似度矩阵 <span class="arithmatex">\(\hat{M}_S\)</span>，并结合一阶共现关系为每个物品构造候选集 <span class="arithmatex">\(c_v\)</span>；<strong>(b) 尾部感知算子</strong>——按序列长度自适应选择 T-Substitute（把头部物品替换为相关尾部候选）或 T-Insert（在尾部物品前插入相关候选并复制扩展原序列），增强序列与原序列在<strong>编码器输出表征层</strong>做 Mixup；<strong>(c) 交叉增强</strong>——按尾部物品占比 <span class="arithmatex">\(\beta\)</span> 将 batch 内序列分为"头部偏好/尾部偏好"两组，组内 shuffle 后再次 Mixup，正负样本同步混合。训练采用两阶段策略：第一阶段仅用原始数据 BCE 预热嵌入，第二阶段叠加三项损失联合优化。</p>
+<p>TADA 分三阶段闭环：<strong>(a) 候选集构建</strong>——在训练前用线性物品-物品模型一次性解出相似度矩阵 <span class="arithmatex">\(\hat{M}_S\)</span>，并结合一阶共现关系为每个物品构造候选集<span class="arithmatex">\(c_v\)</span>；<strong>(b) 尾部感知算子</strong>——按序列长度自适应选择 T-Substitute（把头部物品替换为相关尾部候选）或 T-Insert（在尾部物品前插入相关候选并复制扩展原序列），增强序列与原序列在<strong>编码器输出表征层</strong>做 Mixup；<strong>(c) 交叉增强</strong>——按尾部物品占比<span class="arithmatex">\(\beta\)</span> 将 batch 内序列分为"头部偏好/尾部偏好"两组，组内 shuffle 后再次 Mixup，正负样本同步混合。训练采用两阶段策略：第一阶段仅用原始数据 BCE 预热嵌入，第二阶段叠加三项损失联合优化。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户交互序列 s_u"] --&gt; B["线性物品相似度 + 一阶共现 候选集 c_v"]
     B --&gt; C["T-Substitute / T-Insert 按长度自适应选择"]
@@ -4237,13 +4248,13 @@
 <li>
 <p><strong>线性物品相似度候选集（替代 <span class="arithmatex">\(O(|V|^2)\)</span> 余弦检索）</strong>：痛点在于传统增强每次筛选都要在线算余弦相似度，复杂度高且对冷门物品共现刻画弱。TADA 预解岭回归式：
 $<span class="arithmatex">\(\hat{M}_S=\arg\min_{M_S}\|M_D-M_D M_S\|_F^2+\lambda\|M_S\|_F^2,\ \text{s.t.}\ \mathrm{diag}(M_S)\le\xi\)</span>$
-闭式解 <span class="arithmatex">\(\hat{M}_S=I-P\cdot\mathrm{diagMat}(\gamma)\)</span>，<span class="arithmatex">\(P=(M_D^\top M_D+\lambda M_D)^{-1}\)</span>。线性模型对低流行度物品的共现更敏感，且训练前一次算完，增强阶段零相似度开销。再并上一阶共现集 <span class="arithmatex">\(c_v=c^r_v\cup c^c_v\)</span>（头部物品取前后邻、尾部物品取前驱），补足位置信息。</p>
+闭式解 <span class="arithmatex">\(\hat{M}_S=I-P\cdot\mathrm{diagMat}(\gamma)\)</span>，<span class="arithmatex">\(P=(M_D^\top M_D+\lambda M_D)^{-1}\)</span>。线性模型对低流行度物品的共现更敏感，且训练前一次算完，增强阶段零相似度开销。再并上一阶共现集<span class="arithmatex">\(c_v=c^r_v\cup c^c_v\)</span>（头部物品取前后邻、尾部物品取前驱），补足位置信息。</p>
 </li>
 <li>
-<p><strong>T-Substitute / T-Insert 双算子 + 长度自适应调度</strong>：传统算子随机选位置选物品，打不到尾部。T-Substitute 以概率 <span class="arithmatex">\(p\)</span> 选中序列中<strong>头部物品</strong>并替换为候选集中的相关项；T-Insert 以概率 <span class="arithmatex">\(p\)</span> 选中<strong>尾部物品</strong>并在其前插入候选，同时复制该位置物品扩展原序列保证等长（式 10）。关键细节：<span class="arithmatex">\(p\sim\mathrm{Uniform}(a,b)\)</span> 而非固定值，提供更多样增强样本；算子选择按 <span class="arithmatex">\(p_{insert}=1-|s_u|/N\)</span> 分配，短序列（尾部用户）更倾向插入以快速提频。</p>
+<p><strong>T-Substitute / T-Insert 双算子 + 长度自适应调度</strong>：传统算子随机选位置选物品，打不到尾部。T-Substitute 以概率 <span class="arithmatex">\(p\)</span>选中序列中<strong>头部物品</strong>并替换为候选集中的相关项；T-Insert 以概率<span class="arithmatex">\(p\)</span>选中<strong>尾部物品</strong>并在其前插入候选，同时复制该位置物品扩展原序列保证等长（式 10）。关键细节：<span class="arithmatex">\(p\sim\mathrm{Uniform}(a,b)\)</span>而非固定值，提供更多样增强样本；算子选择按<span class="arithmatex">\(p_{insert}=1-|s_u|/N\)</span> 分配，短序列（尾部用户）更倾向插入以快速提频。</p>
 </li>
 <li>
-<p><strong>表征层 Mixup 与尾部感知交叉增强 + 训练目标</strong>：增强序列不直接当新样本，而是与原始序列编码输出混合 <span class="arithmatex">\(H^a_u=\lambda H_u+(1-\lambda)H'_u\)</span>，<span class="arithmatex">\(\lambda\sim\mathrm{Beta}(\alpha,\alpha)\)</span>，保留偏好语义、提升样本新颖性。交叉增强进一步按尾部占比 <span class="arithmatex">\(\beta\)</span> 分组后组内 shuffle 混合（式 13），正负物品嵌入同步混合，使模型差异化学习头/尾序列。总损失：
+<p><strong>表征层 Mixup 与尾部感知交叉增强 + 训练目标</strong>：增强序列不直接当新样本，而是与原始序列编码输出混合 <span class="arithmatex">\(H^a_u=\lambda H_u+(1-\lambda)H'_u\)</span>，<span class="arithmatex">\(\lambda\sim\mathrm{Beta}(\alpha,\alpha)\)</span>，保留偏好语义、提升样本新颖性。交叉增强进一步按尾部占比<span class="arithmatex">\(\beta\)</span> 分组后组内 shuffle 混合（式 13），正负物品嵌入同步混合，使模型差异化学习头/尾序列。总损失：
 $<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{main}+\mathcal{L}_{operator}+\mathcal{L}_{cross}\)</span>$
 三项均为 BCE，<strong>不设额外损失权重</strong>（增强样本与原始样本等权）。负采样沿用标准 SR 的 1 正 1 负 BCE 设定；推理阶段无任何额外参数与算子开销，模型无关（RNN/Transformer/MLP 均可挂载）。</p>
 </li>
@@ -4431,14 +4442,20 @@ $<span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{main}+\mathcal{L}_{operator
 <ol>
 <li><strong>交叉增强是最大贡献项</strong>：移除后 Overall H@10 从 0.0279 跌至 0.0213（-23.7%），Tail Item 从 0.0095 跌至 0.0067（-29.5%），说明跨尾部用户序列的组内 Mixup 提供了单序列增强无法覆盖的协同信号。</li>
 <li><strong>两个候选集分工明确</strong>：移除共现集对 Tail User 伤害（0.0306→0.0268）大于移除相似度集（→0.0303），而相似度集主要支撑 Tail Item，验证"相似度管物品、共现管用户"的设计直觉。</li>
-<li><strong>跷跷板被打破</strong>：对比 LOAM 在 Beauty 上 Tail Item H@10 0.0380 但 Overall 仅 0.0489（低于 SASRec 0.0605），TADA 在 Tail Item 达 0.0409 的同时 Overall 升至 0.0732，实现头尾双赢；超参上 <span class="arithmatex">\(a\)</span> 过小或 <span class="arithmatex">\(b\)</span> 过大均掉点，最优区间 <span class="arithmatex">\(a\in\{0.2,0.3\}, b\in\{0.5,0.7,0.8\}\)</span>，<span class="arithmatex">\(\alpha\)</span> 最优落在 <span class="arithmatex">\(\{0.3,0.4,0.5\}\)</span>。</li>
+<li><strong>跷跷板被打破</strong>：对比 LOAM 在 Beauty 上 Tail Item H@10 0.0380 但 Overall 仅 0.0489（低于 SASRec 0.0605），TADA 在 Tail Item 达 0.0409 的同时 Overall 升至 0.0732，实现头尾双赢；超参上 <span class="arithmatex">\(a\)</span>过小或<span class="arithmatex">\(b\)</span>过大均掉点，最优区间<span class="arithmatex">\(a\in\{0.2,0.3\}, b\in\{0.5,0.7,0.8\}\)</span>，<span class="arithmatex">\(\alpha\)</span>最优落在<span class="arithmatex">\(\{0.3,0.4,0.5\}\)</span>。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 CITIES/MELT 的<strong>表征迁移</strong>不同，TADA 在<strong>数据层</strong>直接提升尾部交互频次，从根上缓解嵌入欠收敛；与 CMRSI/RepPad 的<strong>随机启发式增强</strong>不同，TADA 的算子定向作用于头部替换/尾部插入，且用线性模型预构建候选集把在线相似度开销降为零；与 ASReP/DiffASR 的<strong>生成式增强</strong>不同，TADA 模型无关、无额外可学习参数。</li>
 <li><strong>可迁移亮点</strong>: ① "预解线性相似度矩阵 + 训练前固化候选集"可迁移到任何需要在线相似度检索的增强/对比学习框架，省去 <span class="arithmatex">\(O(|V|^2)\)</span> 开销；② "按序列长度自适应分配插入/替换概率"是低成本缓解短序列稀疏的通用 trick。</li>
 <li><strong>审稿级局限批判</strong>: ① 交叉增强依赖 batch 内尾部偏好序列的数量，batch 较小时（或尾部极稀疏场景）组内样本不足，增益可能不稳定；② 两阶段训练与多组超参（<span class="arithmatex">\(\alpha,a,b,\beta,K\)</span>）增加调参成本，且论文未报告训练时长/显存开销的定量对比；③ 仅在 Amazon 三数据集、item-ID-only 设定下验证，未涉及多模态或 LLM 增强场景。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

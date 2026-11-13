@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4243,7 +4254,7 @@
 </figure>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>探索加权损失（Exploration-Weighted Loss）</strong>：痛点在于均匀损失下"下一商户≈历史已购商户"，模型靠复购即可拿高分，表征对发现毫无信息量。做法是对目标商户是否在用户历史中出现施加权重 <span class="arithmatex">\(w_{t,n}=0.9\)</span>（新商户）/ <span class="arithmatex">\(0.1\)</span>（复购），并对预测视野加权 <span class="arithmatex">\(\alpha_1=1,\ \alpha_{n\ge2}=0.5\)</span>（固定不调）：</li>
+<li><strong>探索加权损失（Exploration-Weighted Loss）</strong>：痛点在于均匀损失下"下一商户≈历史已购商户"，模型靠复购即可拿高分，表征对发现毫无信息量。做法是对目标商户是否在用户历史中出现施加权重 <span class="arithmatex">\(w_{t,n}=0.9\)</span>（新商户）/<span class="arithmatex">\(0.1\)</span>（复购），并对预测视野加权<span class="arithmatex">\(\alpha_1=1,\ \alpha_{n\ge2}=0.5\)</span>（固定不调）：</li>
 </ol>
 <div class="arithmatex">\[\mathcal{L}=-\sum_{t}\sum_{n=1}^{N}\alpha_n w_{t,n}\log\frac{e^{s_{y_{t,n}}}}{e^{s_{y_{t,n}}}+\sum_{j\in\mathcal{N}}e^{s_j}},\quad s_j=h_t^\top e_j\]</div>
 <p>直觉：把梯度预算从"必然发生的复购"挪到"探索决策边界"，使表征编码"想尝试什么"而非"又会买什么"。</p>
@@ -4441,12 +4452,18 @@
 <li><strong>难负例是内在指标的最大单项增益（R@10 +14.3%）</strong>，而去重序列使 R@10 崩 67.5%，证实复购项承载了绝大部分下一项信号；因此"保留复购但降权"优于"删除复购"。</li>
 <li><strong>冻结嵌入已吃掉模型内序列模块的大部分收益</strong>：DIN 在嵌入之上仅再加 +0.03%；Search 面上 DIN 单独使用增益为 +0.00%，而嵌入单独即 +0.57%——低成本离线复用优于每面重建序列编码器。另：全 softmax 虽降困惑度 26%/14%，但转化 recall 持平，故生产保留采样 softmax。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 SASRec/BERT4Rec 相比，本文不把序列模型当推荐器，而当作<strong>表征生产器</strong>；与 PinnerFormer 相比，目标从"长期全动作稠密预测"改为"短视野 + 探索加权 + 设计型难负例"，更贴合复购主导域；与 PinFM 相比，放弃候选条件化大模型与交叉注意力耦合，换取"一次预训练、冻结、双面共享"的极低服务成本。</li>
 <li><strong>可迁移亮点</strong>: ① "新 vs. 复购"权重比 <span class="arithmatex">\(w\)</span> 作为单一旋钮，可把任意生成式表征的梯度预算定向拨向长尾/探索目标；② 用<strong>下游 AUC 增量阶梯</strong>而非内在 recall 来选表征超参，避免内在指标误导（本文最实用的方法论）。</li>
 <li><strong>审稿级局限批判</strong>: ① 内在结果均为<strong>单次运行点估计</strong>，无方差/显著性，且候选集限 120K 而非全库排序，结论稳健性存疑；② 线上收益来自<strong>捆绑重训</strong>，作者明确承认不可单独归因于嵌入，缺少隔离消融；③ 每日刷新冻结嵌入无法捕捉会话内实时意图，且论文未报告嵌入推理与存储的延迟/成本数据。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

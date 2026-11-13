@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>每个区域节点先用本地 LightGCN 得到用户/物品协同 embedding，经<strong>双流 RQ-VAE</strong>（用户流与物品流独立）做两级量化：第 0 级在联邦码本 <span class="arithmatex">\(\mathcal{C}^{U}_{fed}\)</span> 中检索，第 1 级在本地码本 <span class="arithmatex">\(\mathcal{C}^{U}_{local}\)</span> 中检索残差，两级码字相加得量化向量并解码重构。联邦阶段仅上传经 LDP 加噪的联邦码本，服务器按索引对齐聚合后广播；客户端先做 <span class="arithmatex">\(E_{adapt}\)</span> 轮本地码本对齐再继续本地训练。收敛后冻结码本，对全量协同 embedding 做一次前向量化生成 token 对 <span class="arithmatex">\((id_{fed}, id_{local})\)</span>，作为两个新增离散特征域拼入原始 CTR 特征送入 DNN/DeepFM/DCN。</p>
+<p>每个区域节点先用本地 LightGCN 得到用户/物品协同 embedding，经<strong>双流 RQ-VAE</strong>（用户流与物品流独立）做两级量化：第 0 级在联邦码本 <span class="arithmatex">\(\mathcal{C}^{U}_{fed}\)</span>中检索，第 1 级在本地码本<span class="arithmatex">\(\mathcal{C}^{U}_{local}\)</span>中检索残差，两级码字相加得量化向量并解码重构。联邦阶段仅上传经 LDP 加噪的联邦码本，服务器按索引对齐聚合后广播；客户端先做<span class="arithmatex">\(E_{adapt}\)</span>轮本地码本对齐再继续本地训练。收敛后冻结码本，对全量协同 embedding 做一次前向量化生成 token 对<span class="arithmatex">\((id_{fed}, id_{local})\)</span>，作为两个新增离散特征域拼入原始 CTR 特征送入 DNN/DeepFM/DCN。</p>
 <pre class="mermaid"><code>flowchart TD
     A["本地交互 → LightGCN 协同 embedding"] --&gt; B["RQ-VAE 双层量化&lt;br/&gt;L0: 联邦码本 / L1: 本地码本"]
     B --&gt; C["LDP 加噪上传联邦码本"]
@@ -4253,7 +4264,7 @@ $<span class="arithmatex">\(\mathcal{L}_{al}=-\log\frac{e^{\mathrm{sim}(\mathbf{
 该 in-batch 对比式锚定防止量化后语义漂移与 mode collapse，是双层结构能稳定训练的关键。</p>
 </li>
 <li>
-<p><strong>训练目标、聚合等价性与推理开销</strong>：本地总损失 <span class="arithmatex">\(\mathcal{L}_{total}=\mathcal{L}_{rec}+\lambda(\mathcal{L}_{code}+\mathcal{L}_{al})\)</span>，其中 <span class="arithmatex">\(\mathcal{L}_{rec}\)</span> 为重构 embedding 内积的 BCE，<span class="arithmatex">\(\lambda=1\)</span>。<strong>免负采样</strong>（重构式训练）。理论侧给出 Theorem 1：因量化损失对码字的梯度满足 <span class="arithmatex">\(\nabla_{\mathbf{c}_j}\mathcal{L}_{global}=\sum_k \nabla_{\mathbf{c}_j}\mathcal{L}^k_{local}\)</span>，索引对齐的码本平均<strong>等价于在全体数据并集上更新码本</strong>——这是「码本可聚合」的合法性根基。推理阶段码本冻结，token 生成仅需一次前向量化，CTR 侧只多两个 embedding 查表，开销可忽略。</p>
+<p><strong>训练目标、聚合等价性与推理开销</strong>：本地总损失 <span class="arithmatex">\(\mathcal{L}_{total}=\mathcal{L}_{rec}+\lambda(\mathcal{L}_{code}+\mathcal{L}_{al})\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{rec}\)</span>为重构 embedding 内积的 BCE，<span class="arithmatex">\(\lambda=1\)</span>。<strong>免负采样</strong>（重构式训练）。理论侧给出 Theorem 1：因量化损失对码字的梯度满足<span class="arithmatex">\(\nabla_{\mathbf{c}_j}\mathcal{L}_{global}=\sum_k \nabla_{\mathbf{c}_j}\mathcal{L}^k_{local}\)</span>，索引对齐的码本平均<strong>等价于在全体数据并集上更新码本</strong>——这是「码本可聚合」的合法性根基。推理阶段码本冻结，token 生成仅需一次前向量化，CTR 侧只多两个 embedding 查表，开销可忽略。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4301,7 +4312,7 @@ $<span class="arithmatex">\(\mathcal{L}_{al}=-\log\frac{e^{\mathrm{sim}(\mathbf{
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: CF 预训练用 <code>Leave-One-Out</code>；CTR 任务按 <code>8:1:1</code> 比例划分训练/验证/测试。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 采用 CTR 场景标准的 <strong>AUC</strong>（非 Full-Ranking 召回评测），原文以 AUC 提升 &gt;0.1% 视为显著，并做双样本 t 检验（<span class="arithmatex">\(p\le0.05\)</span>）。</li>
-<li><strong>对比基线与超参设置</strong>: 三类基线——单市场 Local（DNN/DeepFM/DCN）、FL 方法（FedAvg/FedPer/FedProx/pFedPara）、集中式 MMR（MAML/FOREC/MA）。Embedding 维度 <span class="arithmatex">\(d=16\)</span>，MLP 隐层 <span class="arithmatex">\([512,256,128]\)</span>，Adam，学习率 <span class="arithmatex">\(\{1e\text{-}5\sim5e\text{-}3\}\)</span> 网格搜索，LDP 噪声 <span class="arithmatex">\(\mathrm{Laplace}(0,0.001)\)</span>，码本大小 <span class="arithmatex">\(T=256\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: 三类基线——单市场 Local（DNN/DeepFM/DCN）、FL 方法（FedAvg/FedPer/FedProx/pFedPara）、集中式 MMR（MAML/FOREC/MA）。Embedding 维度 <span class="arithmatex">\(d=16\)</span>，MLP 隐层<span class="arithmatex">\([512,256,128]\)</span>，Adam，学习率<span class="arithmatex">\(\{1e\text{-}5\sim5e\text{-}3\}\)</span>网格搜索，LDP 噪声<span class="arithmatex">\(\mathrm{Laplace}(0,0.001)\)</span>，码本大小<span class="arithmatex">\(T=256\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4442,14 +4453,20 @@ $<span class="arithmatex">\(\mathcal{L}_{al}=-\log\frac{e^{\mathrm{sim}(\mathbf{
 <ol>
 <li><strong>负迁移被实证且被 FedMM 逆转</strong>：4-Market 下 FedAvg(DNN) 0.8964 比 Local 0.9022 低 0.58 个点，说明稠密参数聚合在强异构下有害；FedMM 反而比 Local 高 0.48 个点，证明「以协同信号作补充特征」而非「以全局模型替代本地模型」是正确姿势。</li>
 <li><strong>全局层与本地层缺一不可，且全局层贡献更大</strong>：4-Market DNN 上移除本地码本掉 0.31 点、移除全局码本掉 0.41 点，而随机码本掉 0.89 点——说明增益来自<strong>学到的语义原型</strong>而非 RQ-VAE 结构本身带来的正则化。</li>
-<li><strong>隐私-效用与通信双优</strong>：噪声尺度 <span class="arithmatex">\(b\)</span> 从 0.001 增至 0.5 时 AUC 仅温和下降，仍保持竞争力；码本大小 <span class="arithmatex">\(T\)</span> 在 256 处达峰、512 时因码本坍缩/过拟合回落；每轮传输参数量较模型共享式 FL 低 <strong>20× 以上</strong>，且与骨干深度宽度完全解耦。</li>
+<li><strong>隐私-效用与通信双优</strong>：噪声尺度 <span class="arithmatex">\(b\)</span>从 0.001 增至 0.5 时 AUC 仅温和下降，仍保持竞争力；码本大小<span class="arithmatex">\(T\)</span> 在 256 处达峰、512 时因码本坍缩/过拟合回落；每轮传输参数量较模型共享式 FL 低 <strong>20× 以上</strong>，且与骨干深度宽度完全解耦。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 FOREC/MA 等集中式 MMR 的本质区别是<strong>不触碰原始数据</strong>，却达到甚至超过其性能；与 FedPer/pFedPara 等个性化 FL 的区别是<strong>交换语义原型而非模型参数</strong>，从根本上绕开 ID 空间不相交导致的对齐失败；与 CAT-SR 的区别是<strong>支持 K 市场同时联邦</strong>，无需「富源市场 + 成对蒸馏」假设。</li>
 <li><strong>可迁移亮点</strong>: ① 「码本即通信介质」可迁移到跨 App/跨业务线的隐私合规联合建模；② 双层码本 + 语义锚定损失的组合，可直接复用到生成式推荐的 semantic ID 构造中，作为跨域共享码本的正则手段。</li>
 <li><strong>审稿级局限批判</strong>: ① 评测仅用 AUC，缺少 GAUC/业务指标与 Full-Ranking 召回视角，且 3-Market 上未稳定超越 FOREC，收益幅度（0.1% 量级）对工业噪声较敏感；② 依赖 LightGCN 预训练 embedding 质量，冷启动市场（如 jp 仅 5k 用户）的码本利用率与坍缩风险未做分市场分析；③ LDP 仅用固定 Laplace 噪声，未给出形式化 <span class="arithmatex">\((\epsilon,\delta)\)</span> 隐私预算核算。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

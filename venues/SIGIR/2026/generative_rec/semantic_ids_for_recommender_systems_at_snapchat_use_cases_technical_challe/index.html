@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4229,7 +4240,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>流程为：多模态原始特征（文本/图像/音频/转录）经各自预训练编码器映射为嵌入，<strong>求和融合</strong>为统一表征 <span class="arithmatex">\(h_i\)</span> 后送入 RQ-VAE 编码器；残差量化逐层取最近 centroid 得到 <span class="arithmatex">\(L\)</span> 位 SID 码；解码端以各层 centroid 之和重建。下游有两条使用路径：(a) SID 作为<strong>类别型辅助特征</strong>拼入精排/召回模型；(b) SID 替换行为序列中的原子 ID，训练自回归序列推荐器直接<strong>生成</strong>未来物品的 SID 序列，再经桶内消歧映射回具体 item。</p>
+<p>流程为：多模态原始特征（文本/图像/音频/转录）经各自预训练编码器映射为嵌入，<strong>求和融合</strong>为统一表征 <span class="arithmatex">\(h_i\)</span>后送入 RQ-VAE 编码器；残差量化逐层取最近 centroid 得到<span class="arithmatex">\(L\)</span> 位 SID 码；解码端以各层 centroid 之和重建。下游有两条使用路径：(a) SID 作为<strong>类别型辅助特征</strong>拼入精排/召回模型；(b) SID 替换行为序列中的原子 ID，训练自回归序列推荐器直接<strong>生成</strong>未来物品的 SID 序列，再经桶内消歧映射回具体 item。</p>
 <pre class="mermaid"><code>flowchart TD
     A["多模态特征: 文本/图像/音频/转录"] --&gt; B["预训练编码器 + 求和融合 h_i"]
     B --&gt; C["RQ-VAE 残差量化 (STE 全码本反传)"]
@@ -4304,7 +4315,7 @@ $<span class="arithmatex">\(\hat{h}_i=\mathrm{Dec}\Big(\textstyle\sum_{l}\big(\m
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 内部数据按工业标准时间切分（历史行为→未来交互），Amazon Beauty 沿用 TIGER 的 <code>Leave-One-Out</code> 设定。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 生成式检索采用 <code>Full-Ranking</code> 式 Recall@5/10 与 NDCG@5/10（Beauty 上 Recall@10）；精排侧报告 AUC 相对提升，<strong>0.01% AUC 增益即视为显著</strong>。</li>
-<li><strong>对比基线与超参设置</strong>: 精排对比"无 SID 辅助特征"的基线；GR 对比不同序列长度（120/240/480）与不同码本形状（<span class="arithmatex">\(1024^3\)</span> 至 <span class="arithmatex">\(64^3\)</span>）；线上以 A/B 实验的业务指标为准。</li>
+<li><strong>对比基线与超参设置</strong>: 精排对比"无 SID 辅助特征"的基线；GR 对比不同序列长度（120/240/480）与不同码本形状（<span class="arithmatex">\(1024^3\)</span>至<span class="arithmatex">\(64^3\)</span>）；线上以 A/B 实验的业务指标为准。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4519,12 +4530,18 @@ $<span class="arithmatex">\(\hat{h}_i=\mathrm{Dec}\Big(\textstyle\sum_{l}\big(\m
 <li><strong>唯一率并非越高越好，存在 ~70% 饱和点</strong>：Beauty 上唯一率从 65.4% 升至 70.6% 时 Recall@10 由 5.8 升至 6.0，但继续升至 92.95% 后 Recall 反而回落至 6.1（<span class="arithmatex">\(512^3\)</span> 的 91.79% 取得最优 6.2）。唯一率应作为"防坍缩 sanity check"，而非质量金标准。</li>
 <li><strong>解码策略的收益量级远超模型侧微调</strong>：同为 Top-10 SID × 100 item，随机映射仅 +0.13% 播放，相关性引导映射跃升至 +0.57% 播放与 +4.39% 分享；而广度优先（Top-100 × 10）完全中性。碰撞消歧是 SID 检索落地的真正瓶颈。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相较 TIGER/Rajput et al. 仅在学术数据上验证 RQ-VAE SID，本文首次给出跨五类场景的工业级证据；相较 RQ-Kmeans 系（如 Snap 前作 GRID）不可微，本文坚持 RQ-VAE 路线以支持多模态融合与 STE 改造；相较通用冷启动元学习方法，SID 以"语义前缀共享"零样本地为新物品生成可训练嵌入。</li>
 <li><strong>可迁移亮点</strong>: ① STE 全码本反传可直接插入任何 VQ/RQ tokenizer 训练管线，几乎零额外成本；② "深度优先于广度"的取回预算分配原则可迁移至任何生成式检索/语义 ID 召回系统。</li>
 <li><strong>审稿级局限批判</strong>: ① 内部数据规模、稀疏度与基线绝对数值全部未披露，离线 AUC 提升 0.028%–0.035% 的量级难以判断统计稳健性；② 桶内消歧依赖人工设计的领域启发式（观看时长、新鲜度），缺乏可学习消歧模块，跨场景迁移需重新调参；③ 唯一率与下游性能的饱和阈值（~70%）仅在 Beauty 单一数据集上观测，普适性存疑。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

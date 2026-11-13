@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4209,17 +4220,17 @@
 <li><strong>开源代码</strong>: <a href="https://github.com/MSoumm/coherence-measures">https://github.com/MSoumm/coherence-measures</a></li>
 </ul>
 <h2 id="tldr-1">TL;DR (1分钟核心速览)</h2>
-<p>推荐系统性能在不同用户间差异巨大，但成因缺乏解释。本文提出两个信息论度量：Mean Surprise <span class="arithmatex">\(S(u)\)</span>（用户偏离热门物品的程度，关联流行度偏差）与 Mean Conditional Surprise <span class="arithmatex">\(CS(u)\)</span>（用户交互内部的共现一致性，域无关）。在 7 种算法 × 9 个数据集上，通过 Logistic 回归与 SIMEX 去噪证明二者是性能的强预测因子：复杂模型的增益几乎全部集中在"高一致"用户，而所有算法在"低一致"用户上普遍失效。据此提出分层评测、行为对齐分析与用户分群专用建模三种应用，Netflix 上专用模型以更少数据在一致用户段取得 Recall@20 提升（如 EASE 53.0→56.0）。</p>
+<p>推荐系统性能在不同用户间差异巨大，但成因缺乏解释。本文提出两个信息论度量：Mean Surprise <span class="arithmatex">\(S(u)\)</span>（用户偏离热门物品的程度，关联流行度偏差）与 Mean Conditional Surprise<span class="arithmatex">\(CS(u)\)</span>（用户交互内部的共现一致性，域无关）。在 7 种算法 × 9 个数据集上，通过 Logistic 回归与 SIMEX 去噪证明二者是性能的强预测因子：复杂模型的增益几乎全部集中在"高一致"用户，而所有算法在"低一致"用户上普遍失效。据此提出分层评测、行为对齐分析与用户分群专用建模三种应用，Netflix 上专用模型以更少数据在一致用户段取得 Recall@20 提升（如 EASE 53.0→56.0）。</p>
 <h2 id="background-motivation">Background &amp; Motivation (背景与核心矛盾)</h2>
 <ul>
 <li><strong>主流范式</strong>: 协同过滤评测长期依赖聚合指标（Recall@K / NDCG），近年虽有多样性、新颖性、满意度等列表级指标，但均刻画"推荐输出"而非"输入用户画像"本身。</li>
 <li><strong>前人局限</strong>: (1) 现有"灰羊用户"识别依赖用户间相似度聚类或密度方法，对画像密度敏感且需数据集特定超参，跨域泛化差；(2) 模型相关的 surprise 方法（如 Unexp-DIN）绑定特定架构的预测分布，无法解释"为何某类用户对所有模型都难"。</li>
-<li><strong>核心洞察 (Key Insight)</strong>: 若把物品概率定义为全体用户中的出现频率 <span class="arithmatex">\(p_i^*\)</span> 与二阶共现 <span class="arithmatex">\(p_{i|j}^*\)</span>，则用户画像的"意外度"与"内部一致性"可在<strong>不依赖任何模型</strong>的前提下被量化；且 <span class="arithmatex">\(CS(u)\)</span> 的分布在电影、电商、旅游等 9 个数据集上高度稳定，具备域无关性。</li>
+<li><strong>核心洞察 (Key Insight)</strong>: 若把物品概率定义为全体用户中的出现频率 <span class="arithmatex">\(p_i^*\)</span>与二阶共现<span class="arithmatex">\(p_{i|j}^*\)</span>，则用户画像的"意外度"与"内部一致性"可在<strong>不依赖任何模型</strong>的前提下被量化；且<span class="arithmatex">\(CS(u)\)</span> 的分布在电影、电商、旅游等 9 个数据集上高度稳定，具备域无关性。</li>
 <li><strong>本文切入点</strong>: 用归一化到用户自身物品集上的平均交叉熵（而非全库 <span class="arithmatex">\(m\)</span> 维求和）构造稳定估计量，并以理论界证明其是理想交叉熵的良态重缩放。</li>
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>框架分三层：<strong>度量层</strong>从二值交互矩阵 <span class="arithmatex">\(X\in\{0,1\}^{n\times m}\)</span> 估计一阶/二阶物品频率，计算每个用户的 <span class="arithmatex">\(S(u)\)</span> 与 <span class="arithmatex">\(CS(u)\)</span>；<strong>验证层</strong>以 Logistic 回归（含乘积交互项与 SIMEX 测量误差校正）将 Recall@20 二值结果对度量做回归，用平均边际效应 (AME) 与 McFadden <span class="arithmatex">\(R^2\)</span> 量化解释力；<strong>应用层</strong>基于度量做分层评测、输入-输出一致性保持度分析与用户分群专用模型训练。</p>
+<p>框架分三层：<strong>度量层</strong>从二值交互矩阵 <span class="arithmatex">\(X\in\{0,1\}^{n\times m}\)</span>估计一阶/二阶物品频率，计算每个用户的<span class="arithmatex">\(S(u)\)</span>与<span class="arithmatex">\(CS(u)\)</span>；<strong>验证层</strong>以 Logistic 回归（含乘积交互项与 SIMEX 测量误差校正）将 Recall@20 二值结果对度量做回归，用平均边际效应 (AME) 与 McFadden<span class="arithmatex">\(R^2\)</span> 量化解释力；<strong>应用层</strong>基于度量做分层评测、输入-输出一致性保持度分析与用户分群专用模型训练。</p>
 <pre class="mermaid"><code>flowchart TD
     A["二值交互矩阵 X"] --&gt; B["一阶频率 p_i* 与二阶共现 p_i|j*"]
     B --&gt; C["S(u) 与 CS(u) 用户度量"]
@@ -4233,15 +4244,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>Mean Surprise 与 Mean Conditional Surprise（归一化估计量）</strong>：朴素定义 <span class="arithmatex">\(\tilde S(u)=-\frac{1}{m}\sum_i \log(p_i^*)x_{ui}\)</span> 在全库维度上求和，导致新增任何物品都单调增大度量，违背直觉且随 <span class="arithmatex">\(|u|\)</span> 漂移。本文改为仅在用户已消费物品上归一化：
+<p><strong>Mean Surprise 与 Mean Conditional Surprise（归一化估计量）</strong>：朴素定义 <span class="arithmatex">\(\tilde S(u)=-\frac{1}{m}\sum_i \log(p_i^*)x_{ui}\)</span>在全库维度上求和，导致新增任何物品都单调增大度量，违背直觉且随<span class="arithmatex">\(|u|\)</span> 漂移。本文改为仅在用户已消费物品上归一化：
 $<span class="arithmatex">\(S(u)=-\frac{1}{|u|}\sum_{i\in u}\log p_i^*,\qquad CS(u)=-\frac{1}{|u|^2}\sum_{i\in u}\sum_{j\in u}\log p_{i|j}^*\)</span>$
 直觉：加入一个高频常见物品时度量可下降，符合"意外度"语义；且对不同活跃度用户可比。附录证明 <span class="arithmatex">\(CS(u)=PS(u)-S(u)\)</span>，即二阶度量自动扣除一阶流行度效应，二者近似正交。</p>
 </li>
 <li>
-<p><strong>理论稳定性保证（Proposition 3.1 / 3.2）</strong>：稀疏二值数据下朴素交叉熵估计方差极大。作者证明所提估计量与理想交叉熵 <span class="arithmatex">\(S^*(u)\)</span> 的比值被 <span class="arithmatex">\(\mathbb{E}[m/|u|]\)</span> 类因子上下夹住，并在 <span class="arithmatex">\(|u|\sim\text{Poisson}(\lambda)\)</span> 假设下给出 <span class="arithmatex">\(\mathbb{E}_{X\ge1}[1/X]\le 2\mathbb{E}_{X\ge1}[X]\)</span> 的紧界（经验常数 1.37）。这解释了为何该度量在冷启动用户上仍可用——附录 SNR 分析显示 Netflix 上 <span class="arithmatex">\(|u|=5\)</span> 用户的信噪比达 14.36。</p>
+<p><strong>理论稳定性保证（Proposition 3.1 / 3.2）</strong>：稀疏二值数据下朴素交叉熵估计方差极大。作者证明所提估计量与理想交叉熵 <span class="arithmatex">\(S^*(u)\)</span>的比值被<span class="arithmatex">\(\mathbb{E}[m/|u|]\)</span>类因子上下夹住，并在<span class="arithmatex">\(|u|\sim\text{Poisson}(\lambda)\)</span>假设下给出<span class="arithmatex">\(\mathbb{E}_{X\ge1}[1/X]\le 2\mathbb{E}_{X\ge1}[X]\)</span>的紧界（经验常数 1.37）。这解释了为何该度量在冷启动用户上仍可用——附录 SNR 分析显示 Netflix 上<span class="arithmatex">\(|u|=5\)</span> 用户的信噪比达 14.36。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：本文不训练新推荐模型，度量计算为一次性 <span class="arithmatex">\(O(\sum_u |u|^2)\)</span> 统计，可在离线管道中预计算并缓存；回归分析使用 SIMEX 对 <span class="arithmatex">\(\log p_i\)</span>、<span class="arithmatex">\(\log p_{i|j}\)</span> 的估计方差做模拟外推，消除测量误差导致的系数衰减。专用模型实验沿用各基线原训练流程（Optuna 50 轮调参，最大化验证集 Recall@20）。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：本文不训练新推荐模型，度量计算为一次性 <span class="arithmatex">\(O(\sum_u |u|^2)\)</span>统计，可在离线管道中预计算并缓存；回归分析使用 SIMEX 对<span class="arithmatex">\(\log p_i\)</span>、<span class="arithmatex">\(\log p_{i|j}\)</span> 的估计方差做模拟外推，消除测量误差导致的系数衰减。专用模型实验沿用各基线原训练流程（Optuna 50 轮调参，最大化验证集 Recall@20）。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4419,7 +4430,7 @@ $<span class="arithmatex">\(S(u)=-\frac{1}{|u|}\sum_{i\in u}\log p_i^*,\qquad CS
 </tbody>
 </table>
 <p>（原文以图 7 呈现，EASE 在几乎所有数据集最优；WMF 次优，但在最大规模数据集上 RecVAE 因数据量优势反超；UserKNN 在 Netflix 上因 1.4TB 内存饱和未跑。）</p>
-<p><strong>分层评测核心结果（图 1）</strong>：按标准化 <span class="arithmatex">\(CS(u)\)</span> 分桶后，所有算法的 Recall@20 随 <span class="arithmatex">\(CS(u)\)</span> 升高单调下降并收敛至同一低水平；算法间差距仅在低 <span class="arithmatex">\(CS(u)\)</span>（一致用户）区间显著。</p>
+<p><strong>分层评测核心结果（图 1）</strong>：按标准化 <span class="arithmatex">\(CS(u)\)</span>分桶后，所有算法的 Recall@20 随<span class="arithmatex">\(CS(u)\)</span>升高单调下降并收敛至同一低水平；算法间差距仅在低<span class="arithmatex">\(CS(u)\)</span>（一致用户）区间显著。</p>
 <p><strong>用户分群专用模型（Netflix，一致用户最低十分位，表 7）</strong>：</p>
 <table>
 <thead>
@@ -4482,14 +4493,14 @@ $<span class="arithmatex">\(S(u)=-\frac{1}{|u|}\sum_{i\in u}\log p_i^*,\qquad CS
 <td style="text-align: left;">一致性是主导负向因子</td>
 </tr>
 <tr>
-<td style="text-align: left;"><span class="arithmatex">\(S(u)\times CS(u)\)</span> 全交互</td>
+<td style="text-align: left;"><span class="arithmatex">\(S(u)\times CS(u)\)</span>全交互</td>
 <td style="text-align: center;"><span class="arithmatex">\(R^2\)</span>=0.34</td>
 <td style="text-align: center;"><span class="arithmatex">\(R^2\)</span>=0.35</td>
 <td style="text-align: left;">AIC 最优模型</td>
 </tr>
 <tr>
 <td style="text-align: left;">朴素 <span class="arithmatex">\(\tilde S,\widetilde{CS}\)</span>（未归一化）</td>
-<td style="text-align: center;">随 <span class="arithmatex">\(\lvert u\rvert\)</span> 二次漂移</td>
+<td style="text-align: center;">随<span class="arithmatex">\(\lvert u\rvert\)</span> 二次漂移</td>
 <td style="text-align: center;">同左</td>
 <td style="text-align: left;">图 3 显示不可比</td>
 </tr>
@@ -4497,16 +4508,22 @@ $<span class="arithmatex">\(S(u)=-\frac{1}{|u|}\sum_{i\in u}\log p_i^*,\qquad CS
 </table>
 <h3 id="3-key-findings">3. 关键实验发现 (Key Findings)</h3>
 <ol>
-<li><strong>增益集中于一致用户</strong>：图 1 显示 <span class="arithmatex">\(CS(u)\)</span> 最高的分桶中所有 7 种算法 Recall@20 收敛到近乎相同的低值，说明聚合指标下的"模型进步"实质是对低 <span class="arithmatex">\(CS(u)\)</span> 用户的改善；对高 <span class="arithmatex">\(CS(u)\)</span> 用户，算法选择几乎无关紧要。</li>
-<li><strong>一致性是比流行度更强的难度信号</strong>：表 5 中 <span class="arithmatex">\(CS(u)\)</span> 的 AME 在多数数据集达 -13 至 -26 个百分点（如 EASE 在 A. Toys 上 -26），而 <span class="arithmatex">\(S(u)\)</span> 仅 -3 至 -20，且 <span class="arithmatex">\(S(u)\)</span> 在电影域几乎不显著——说明模型对"小众口味"已有一定适应，但对"内部不自洽"束手无策。</li>
+<li><strong>增益集中于一致用户</strong>：图 1 显示 <span class="arithmatex">\(CS(u)\)</span>最高的分桶中所有 7 种算法 Recall@20 收敛到近乎相同的低值，说明聚合指标下的"模型进步"实质是对低<span class="arithmatex">\(CS(u)\)</span>用户的改善；对高<span class="arithmatex">\(CS(u)\)</span> 用户，算法选择几乎无关紧要。</li>
+<li><strong>一致性是比流行度更强的难度信号</strong>：表 5 中 <span class="arithmatex">\(CS(u)\)</span>的 AME 在多数数据集达 -13 至 -26 个百分点（如 EASE 在 A. Toys 上 -26），而<span class="arithmatex">\(S(u)\)</span>仅 -3 至 -20，且<span class="arithmatex">\(S(u)\)</span> 在电影域几乎不显著——说明模型对"小众口味"已有一定适应，但对"内部不自洽"束手无策。</li>
 <li><strong>数据质量可胜数据规模</strong>：Netflix 上仅用最低十分位 <span class="arithmatex">\(CS(u)\)</span> 的一致用户训练，EASE 在目标段从 53.0 提升至 56.0、LightGCN 从 33.8 提升至 39.3，尽管训练数据大幅减少——表明不一致用户引入的噪声对一致用户建模的损害超过数据量收益。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 相比灰羊用户识别（Ghazanfar 聚类、Gras 分布法），本文度量无需聚类与数据集特定超参，且具理论界保证；相比 Unexp-DIN 等模型相关 surprise，本文度量完全 model-agnostic，刻画输入数据内在属性；相比 Elliot / ReChorus 等评测框架聚焦准确率指标，本文补充了"用户画像难度"这一评测维度。</li>
-<li><strong>可迁移亮点</strong>: (1) 分层评测可直接嵌入 A/B 实验报告，按 <span class="arithmatex">\(CS(u)\)</span> 分桶暴露聚合指标掩盖的失效模式；(2) "一致性保持度"（输入与推荐集 <span class="arithmatex">\(CS\)</span> 的 Pearson 相关）可作为多样性/长尾场景的补充指标，表 6 显示多数模型对 <span class="arithmatex">\(S(u)\)</span> 保持良好（均值 0.2–0.6）但对 <span class="arithmatex">\(CS(u)\)</span> 保持弱（均值 0.03–0.43）。</li>
-<li><strong>审稿级局限批判</strong>: (1) 仅覆盖二值隐式反馈与 7 种基础 CF 模型，未验证显式评分、会话数据及 LLM-based 推荐器；(2) 专用模型实验仅为 Netflix 单数据集的概念验证，提升幅度温和（1.8–5.5 点），且未给出在线部署的延迟与分群路由成本分析；(3) <span class="arithmatex">\(CS(u)\)</span> 计算为 <span class="arithmatex">\(O(|u|^2)\)</span>，对超活跃用户需采样近似。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+<li><strong>可迁移亮点</strong>: (1) 分层评测可直接嵌入 A/B 实验报告，按 <span class="arithmatex">\(CS(u)\)</span>分桶暴露聚合指标掩盖的失效模式；(2) "一致性保持度"（输入与推荐集<span class="arithmatex">\(CS\)</span>的 Pearson 相关）可作为多样性/长尾场景的补充指标，表 6 显示多数模型对<span class="arithmatex">\(S(u)\)</span>保持良好（均值 0.2–0.6）但对<span class="arithmatex">\(CS(u)\)</span> 保持弱（均值 0.03–0.43）。</li>
+<li><strong>审稿级局限批判</strong>: (1) 仅覆盖二值隐式反馈与 7 种基础 CF 模型，未验证显式评分、会话数据及 LLM-based 推荐器；(2) 专用模型实验仅为 Netflix 单数据集的概念验证，提升幅度温和（1.8–5.5 点），且未给出在线部署的延迟与分群路由成本分析；(3) <span class="arithmatex">\(CS(u)\)</span>计算为<span class="arithmatex">\(O(|u|^2)\)</span>，对超活跃用户需采样近似。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

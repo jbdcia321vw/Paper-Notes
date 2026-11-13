@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4232,15 +4243,15 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>结构化分段注意力掩码 (Structured Segment Mask)</strong>：标准因果注意力下 <span class="arithmatex">\(s_i = f_\theta(H, c_i, c_{&lt;i}, p_i)\)</span>，前序候选 <span class="arithmatex">\(c_{&lt;i}\)</span> 会污染当前候选表示。本文定义段掩码 <span class="arithmatex">\(M^{\text{seg}}_{t,u} = \mathbb{I}[(t,u)\in (T_H\times T_H)\cup\bigcup_i (T_i\times T_i)\cup\bigcup_i(T_i\times T_H)]\)</span>，并与因果掩码取交 <span class="arithmatex">\(M = M^{\text{causal}} \wedge M^{\text{seg}}\)</span>，使 <span class="arithmatex">\(s_i = g_\theta(H, c_i)\)</span> 仅依赖上下文与自身。直觉：候选间干扰是顺序敏感的主因，隔离后分数与排列解耦。</p>
+<p><strong>结构化分段注意力掩码 (Structured Segment Mask)</strong>：标准因果注意力下 <span class="arithmatex">\(s_i = f_\theta(H, c_i, c_{&lt;i}, p_i)\)</span>，前序候选<span class="arithmatex">\(c_{&lt;i}\)</span>会污染当前候选表示。本文定义段掩码<span class="arithmatex">\(M^{\text{seg}}_{t,u} = \mathbb{I}[(t,u)\in (T_H\times T_H)\cup\bigcup_i (T_i\times T_i)\cup\bigcup_i(T_i\times T_H)]\)</span>，并与因果掩码取交<span class="arithmatex">\(M = M^{\text{causal}} \wedge M^{\text{seg}}\)</span>，使<span class="arithmatex">\(s_i = g_\theta(H, c_i)\)</span> 仅依赖上下文与自身。直觉：候选间干扰是顺序敏感的主因，隔离后分数与排列解耦。</p>
 </li>
 <li>
-<p><strong>共享位置框架 (Shared Positional Framing)</strong>：即便注意力隔离，RoPE 下候选位置 <span class="arithmatex">\(p_i\)</span> 仍随排列变化。本文将共享上下文占位 <span class="arithmatex">\(1,\dots,|T_H|\)</span>，每个候选段统一分配 <span class="arithmatex">\(|T_H|+1,\dots,|T_H|+|T_i|\)</span>，与索引 <span class="arithmatex">\(i\)</span> 无关，从而对任意排列 <span class="arithmatex">\(\pi\)</span> 有 <span class="arithmatex">\(p_{\pi(u)} - p_{\pi(t)} = p(u) - p(t)\)</span>。直觉：每个候选都在"同一把尺子"下与上下文对齐，位置诱导的分数扰动被抵消。</p>
+<p><strong>共享位置框架 (Shared Positional Framing)</strong>：即便注意力隔离，RoPE 下候选位置 <span class="arithmatex">\(p_i\)</span>仍随排列变化。本文将共享上下文占位<span class="arithmatex">\(1,\dots,|T_H|\)</span>，每个候选段统一分配<span class="arithmatex">\(|T_H|+1,\dots,|T_H|+|T_i|\)</span>，与索引<span class="arithmatex">\(i\)</span>无关，从而对任意排列<span class="arithmatex">\(\pi\)</span>有<span class="arithmatex">\(p_{\pi(u)} - p_{\pi(t)} = p(u) - p(t)\)</span>。直觉：每个候选都在"同一把尺子"下与上下文对齐，位置诱导的分数扰动被抵消。</p>
 </li>
 <li>
 <p><strong>训练目标与推理效率</strong>：采用 LambdaRank 式成对 logistic 损失，按交换两候选引起的 nDCG 变化加权：
 $<span class="arithmatex">\(\ell_{ij} = |\Delta\text{nDCG}_{ij}| \cdot \log\left(1+\exp(-\sigma(s_i - s_j))\right)\)</span>$
-对全部偏好对取平均。前向虽条件独立，损失仍通过成对比较耦合候选，保留列表级监督。推理仅需<strong>一次前向</strong>，相比排列集成类方法省去 <span class="arithmatex">\(O(N!)\)</span> 或 <span class="arithmatex">\(O(N)\)</span> 次重复调用；无需负采样，候选池由 LightGCN 一阶段检索给定。</p>
+对全部偏好对取平均。前向虽条件独立，损失仍通过成对比较耦合候选，保留列表级监督。推理仅需<strong>一次前向</strong>，相比排列集成类方法省去 <span class="arithmatex">\(O(N!)\)</span>或<span class="arithmatex">\(O(N)\)</span> 次重复调用；无需负采样，候选池由 LightGCN 一阶段检索给定。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4408,12 +4419,18 @@ $<span class="arithmatex">\(\ell_{ij} = |\Delta\text{nDCG}_{ij}| \cdot \log\left
 <li><strong>两组件互补、叠加近完美</strong>：Full 版 τ=0.9883、ρ=0.9984、T@5=0.9906，较 Attn 单件再提升约 0.07/0.016/0.08，且 nDCG 几乎无损（0.7298→0.7260），证明位置框架负责"收尾"残余偏移。</li>
 <li><strong>单次前向即超越多次前向的鲁棒性基线</strong>：Bootstrapping 与 SGS 需多轮调用，τ 最高仅 0.7705/0.8081；STELLA 后验校准 τ 低至 0.0111–0.1176（其设计目标是纠偏而非保序）。InvariRank 一次前向即达 τ≈0.98，且 Top-5 曝光随输入位置近乎均匀（图 2），彻底抹平位置偏差。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 ALRO 的本质区别在于 ALRO 用生成式训练目标"软性"逼近不变性且不面向两阶段重排；与 Bootstrapping/SGS 相比，本文把不变性从推理期聚合搬到架构内部，单次前向即得；与 STELLA 相比，后者是打分后的后验校准，无法保证偏好序一致。</li>
 <li><strong>可迁移亮点</strong>: ① 分段掩码 + 共享位置框架的组合可直接移植到任何"上下文 + 多候选"的 decoder-only 打分场景（如 RAG 多文档重排、多商品对比问答）；② "前向条件独立、损失列表耦合"的解耦范式，为需要单次高效推理的列表级任务提供通用模板。</li>
 <li><strong>审稿级局限批判</strong>: ① 候选隔离丢弃了跨候选比较信号，细粒度偏好建模受限，nDCG 系统性低于 LFT（ML-32M 上 0.8166 vs 0.8486），且候选集越大信息损失可能越显著；② 评测仅限固定 <span class="arithmatex">\(K=25\)</span> 与两个推荐数据集，未验证更大候选集、其他排序任务（IR/RAG）及工业级延迟表现，数据集统计信息亦披露不足。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

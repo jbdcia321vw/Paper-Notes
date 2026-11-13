@@ -4116,10 +4116,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4220,7 +4231,7 @@
 </ul>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>ContRec 分两阶段训练。第一阶段用自监督重建训练 σ-VAE Tokenizer，把用户/物品的基础嵌入（SentenceBERT 文本向量 + LightGCN 协同向量）编码为 K 个连续 token <span class="arithmatex">\(\{z_1,\dots,z_K\}\)</span>，与物品标题的离散词一起拼进 prompt，用 <code>⟨z_start⟩/⟨z_end⟩</code> 界定连续段。第二阶段冻结分词器，Llama-3.2-1B-Instruct 以混合输入做用户建模，自回归输出偏好推理文本；其隐状态聚合为条件向量 <span class="arithmatex">\(c_i\)</span>，驱动条件 DDPM 生成目标物品的连续表示 <span class="arithmatex">\(\hat{y}_i\)</span>。推理时对 <span class="arithmatex">\(\hat{y}_i\)</span> 与物品表示算余弦相似度，并用 LLM 预测的品牌/类目做布尔加权，一次前向完成 Top-K 检索。</p>
+<p>ContRec 分两阶段训练。第一阶段用自监督重建训练 σ-VAE Tokenizer，把用户/物品的基础嵌入（SentenceBERT 文本向量 + LightGCN 协同向量）编码为 K 个连续 token <span class="arithmatex">\(\{z_1,\dots,z_K\}\)</span>，与物品标题的离散词一起拼进 prompt，用 <code>⟨z_start⟩/⟨z_end⟩</code> 界定连续段。第二阶段冻结分词器，Llama-3.2-1B-Instruct 以混合输入做用户建模，自回归输出偏好推理文本；其隐状态聚合为条件向量<span class="arithmatex">\(c_i\)</span>，驱动条件 DDPM 生成目标物品的连续表示<span class="arithmatex">\(\hat{y}_i\)</span>。推理时对<span class="arithmatex">\(\hat{y}_i\)</span> 与物品表示算余弦相似度，并用 LLM 预测的品牌/类目做布尔加权，一次前向完成 Top-K 检索。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户/物品基础嵌入&lt;br/&gt;文本+协同"] --&gt; B["σ-VAE Tokenizer&lt;br/&gt;K路编码+掩码+高斯核"]
     B --&gt; C["混合Prompt&lt;br/&gt;离散标题+连续Token"]
@@ -4244,7 +4255,7 @@ $<span class="arithmatex">\(\mathcal{L}_{disp}=\log \mathbb{E}_{i,b}\left[\exp\l
 其中 <span class="arithmatex">\(h_i\)</span> 为去噪网络 FFN 的中间表示。回归项天然充当"正对对齐"，故散度项只负责把批内表征推开、防止模式坍缩，等价于"无正对的对比损失"。</p>
 </li>
 <li>
-<p><strong>训练目标、负采样与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{llm}+\gamma_1(\mathcal{L}_{diff}+\gamma_2\mathcal{L}_{disp})\)</span>，其中 <span class="arithmatex">\(\mathcal{L}_{llm}\)</span> 为偏好文本的自回归交叉熵，<span class="arithmatex">\(\mathcal{L}_{diff}=\mathbb{E}\|\epsilon-\epsilon_\theta(y_i^t,c_i,t)\|_2^2\)</span>。<strong>全程无需显式负采样</strong>（BPR/InfoNCE 均不出现），检索阶段对全候选池打分。推理用 classifier-free guidance 调制噪声预测 <span class="arithmatex">\(\tilde{\epsilon}=(1+\omega)\epsilon_\theta(y^t,c)-\omega\epsilon_\theta(y^t,\Phi)\)</span>，训练 1000 步、推理重采样至 100 步；混合检索分数为 <span class="arithmatex">\(s_{ij}=\cos(\hat{y}_i,q_j)\cdot(1+\pi)\)</span>，<span class="arithmatex">\(\pi=0.05\)</span> 当物品类目/品牌命中 LLM 预测语义，否则为 0。</p>
+<p><strong>训练目标、负采样与推理效率</strong>：总损失 <span class="arithmatex">\(\mathcal{L}=\mathcal{L}_{llm}+\gamma_1(\mathcal{L}_{diff}+\gamma_2\mathcal{L}_{disp})\)</span>，其中<span class="arithmatex">\(\mathcal{L}_{llm}\)</span>为偏好文本的自回归交叉熵，<span class="arithmatex">\(\mathcal{L}_{diff}=\mathbb{E}\|\epsilon-\epsilon_\theta(y_i^t,c_i,t)\|_2^2\)</span>。<strong>全程无需显式负采样</strong>（BPR/InfoNCE 均不出现），检索阶段对全候选池打分。推理用 classifier-free guidance 调制噪声预测<span class="arithmatex">\(\tilde{\epsilon}=(1+\omega)\epsilon_\theta(y^t,c)-\omega\epsilon_\theta(y^t,\Phi)\)</span>，训练 1000 步、推理重采样至 100 步；混合检索分数为<span class="arithmatex">\(s_{ij}=\cos(\hat{y}_i,q_j)\cdot(1+\pi)\)</span>，<span class="arithmatex">\(\pi=0.05\)</span> 当物品类目/品牌命中 LLM 预测语义，否则为 0。</p>
 </li>
 </ol>
 <h2 id="experimental-setup-evaluation-protocol">Experimental Setup &amp; Evaluation Protocol (实验设置与评估协议)</h2>
@@ -4305,7 +4316,7 @@ $<span class="arithmatex">\(\mathcal{L}_{disp}=\log \mathbb{E}_{i,b}\left[\exp\l
 <ul>
 <li><strong>数据划分与防穿越 (Splitting Strategy)</strong>: 采用 <code>Split-by-Timepoint</code> 全局时间戳切分，按时间序在第 90、95 百分位切出训练/验证/测试，保证所有物品至少在训练语料中出现一次。</li>
 <li><strong>排名评测协议 (Ranking Protocol)</strong>: 无偏 <code>Full-Ranking</code>（对测试用户全库未交互物品排序），指标 HR@10/20 与 NDCG@10/20，报告测试集全体用户均值；ContRec 推理 5 次取均值±标准差。</li>
-<li><strong>对比基线与超参设置</strong>: 4 个序列模型（GRU4Rec、SASRec、SSD4Rec、DreamRec）+ 6 个 LLM 基线（P5、POD、CoLLM、TIGER*、TokenRec、LLaRA）。主干 Llama-3.2-1B-Instruct，LoRA 微调，主干 lr=1e-5/wd=1e-4、分词器 lr=1e-4/wd=1e-3；掩码率 <span class="arithmatex">\(\rho\)</span> 以 0.2 步长搜 0–1，子编码器数 <span class="arithmatex">\(K\in\{1..5\}\)</span>，<span class="arithmatex">\(\gamma_1,\gamma_2\in\{0,0.5,1,1.5,2\}\)</span>，<span class="arithmatex">\(\omega\in\{1,2,4,6,8,10\}\)</span>，<span class="arithmatex">\(\iota=0.5\)</span>，无条件训练概率 <span class="arithmatex">\(\zeta=0.1\)</span>；显著性 <span class="arithmatex">\(p&lt;0.01\)</span>。</li>
+<li><strong>对比基线与超参设置</strong>: 4 个序列模型（GRU4Rec、SASRec、SSD4Rec、DreamRec）+ 6 个 LLM 基线（P5、POD、CoLLM、TIGER*、TokenRec、LLaRA）。主干 Llama-3.2-1B-Instruct，LoRA 微调，主干 lr=1e-5/wd=1e-4、分词器 lr=1e-4/wd=1e-3；掩码率 <span class="arithmatex">\(\rho\)</span>以 0.2 步长搜 0–1，子编码器数<span class="arithmatex">\(K\in\{1..5\}\)</span>，<span class="arithmatex">\(\gamma_1,\gamma_2\in\{0,0.5,1,1.5,2\}\)</span>，<span class="arithmatex">\(\omega\in\{1,2,4,6,8,10\}\)</span>，<span class="arithmatex">\(\iota=0.5\)</span>，无条件训练概率<span class="arithmatex">\(\zeta=0.1\)</span>；显著性<span class="arithmatex">\(p&lt;0.01\)</span>。</li>
 </ul>
 <h2 id="key-experimental-results">Key Experimental Results (实验关键数据)</h2>
 <h3 id="1-main-results">1. 主实验对比 (Main Results)</h3>
@@ -4557,14 +4568,20 @@ $<span class="arithmatex">\(\mathcal{L}_{disp}=\log \mathbb{E}_{i,b}\left[\exp\l
 <ol>
 <li><strong>连续 vs 离散是最大增益来源</strong>：把 σ-VAE 换成 VQ-VAE，Beauty HR@10 从 0.0473 掉到 0.0426（−9.9%），ML1M 从 0.1099 掉到 0.0974（−11.4%），跌幅甚至大于"完全去掉分词器改用投影层"（0.0438/0.1018），说明量化码本不仅无益、反而比朴素投影更伤表征——直接印证了有损量化与直通梯度失真的动机。</li>
 <li><strong>扩散头与散度损失是生成侧双支柱</strong>：去掉扩散头（w/o Diffusion）Beauty 降至 0.0431、ML1M 降至 0.1007，是生成侧最大跌幅；单独去掉 <span class="arithmatex">\(\mathcal{L}_{disp}\)</span> 也损失 0.0025/0.0057 HR@10，证明"回归对齐 + 批内排斥"的组合确实抑制了连续表征坍缩，而非可有可无的正则。</li>
-<li><strong>混合检索的语义指示代价极低但收益稳定</strong>：仅去掉 <span class="arithmatex">\(\pi\)</span> 加权即掉 0.0010（Beauty）与 0.0036（ML1M）HR@10，说明 LLM 推理文本中的品牌/类目信号与扩散隐向量高度互补；同时超参分析显示 <span class="arithmatex">\(\gamma_1,\gamma_2\)</span> 在 <span class="arithmatex">\(\{0,0.5,1,1.5,2\}\)</span> 上性能曲线平坦（最优 <span class="arithmatex">\(\gamma_1=1,\gamma_2=0.5\)</span>），<span class="arithmatex">\(\rho=0.2\)</span>、<span class="arithmatex">\(\omega=2\)</span>、<span class="arithmatex">\(K=3\sim4\)</span> 为甜点，工程鲁棒性较好。</li>
+<li><strong>混合检索的语义指示代价极低但收益稳定</strong>：仅去掉 <span class="arithmatex">\(\pi\)</span>加权即掉 0.0010（Beauty）与 0.0036（ML1M）HR@10，说明 LLM 推理文本中的品牌/类目信号与扩散隐向量高度互补；同时超参分析显示<span class="arithmatex">\(\gamma_1,\gamma_2\)</span>在<span class="arithmatex">\(\{0,0.5,1,1.5,2\}\)</span>上性能曲线平坦（最优<span class="arithmatex">\(\gamma_1=1,\gamma_2=0.5\)</span>），<span class="arithmatex">\(\rho=0.2\)</span>、<span class="arithmatex">\(\omega=2\)</span>、<span class="arithmatex">\(K=3\sim4\)</span> 为甜点，工程鲁棒性较好。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 TIGER/TokenRec 的本质区别在于彻底放弃码本，用连续 token 保留细粒度协同信息，避免 <code>argmin</code> 直通梯度；与 CoLLM/LLaRA 的区别在于不只连续化输入侧，而是用扩散模型把输出侧也搬到连续空间，消除离散-连续错配；与 DreamRec 的区别在于扩散不是独立序列模型，而是挂在 LLM 推理文本条件下的"偏好生成头"，兼具可解释文本与隐式向量双通道。</li>
 <li><strong>可迁移亮点</strong>: ① σ-VAE 的"固定方差高斯核 + K 路并行编码"是通用防坍缩配方，可直接移植到任何需要连续物品表征的召回/生成模块；② Dispersive Loss 的"回归即对齐、散度只排斥"思路，适合任何已有重建损失、又想要对比正则却不愿付负采样代价的生成式任务。</li>
 <li><strong>审稿级局限批判</strong>: ① 推理需 100 步去噪 + 1B LLM 前向，在线延迟与显存开销远高于 TIGER 类的单次自回归解码，论文未给出与基线的推理时延对比；② 混合检索的 <span class="arithmatex">\(\pi=0.05\)</span> 为手工设定、且依赖 LLM 文本中类目/品牌抽取的准确性，缺少对抽取失败场景的鲁棒性分析；③ 实验均为公开中小规模 5-core 数据集，未验证百万级物品池下扩散采样的可扩展性。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

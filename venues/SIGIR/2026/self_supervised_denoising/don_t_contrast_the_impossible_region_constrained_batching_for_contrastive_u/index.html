@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4232,7 +4243,7 @@
 </figure>
 <h2 id="method">Method (核心方法设计)</h2>
 <h3 id="1-overall-architecture">1. 整体框架 (Overall Architecture)</h3>
-<p>沿用标准双塔：用户塔为 Pre-LN Transformer，编码长度 <span class="arithmatex">\(T\)</span> 的行为序列 <span class="arithmatex">\(S_u\)</span> 得到逐位置表征 <span class="arithmatex">\(H_u\in\mathbb{R}^{T\times d}\)</span>；物品塔为 3 层 MLP，输入为预训练多模态嵌入模型（标题/正文/元数据/图像）产出的物品向量；双方 <span class="arithmatex">\(\ell_2\)</span> 归一化后内积打分。训练目标为标准 InfoNCE，批形状 <span class="arithmatex">\([B,T]\)</span>，每个位置的下一交互物品为正例，批内其余正例物品为负例。<strong>唯一改动发生在 DataLoader 层</strong>：按区域单元 <span class="arithmatex">\(r\)</span> 分组采样用户，构造区域同质批 <span class="arithmatex">\(\mathcal{B}_r\)</span>，其余训练流程、超参、步数完全不变。推理时用户塔对最近 1024 条行为做 mean-pooling 得到最终用户向量，每日离线刷新。</p>
+<p>沿用标准双塔：用户塔为 Pre-LN Transformer，编码长度 <span class="arithmatex">\(T\)</span>的行为序列<span class="arithmatex">\(S_u\)</span>得到逐位置表征<span class="arithmatex">\(H_u\in\mathbb{R}^{T\times d}\)</span>；物品塔为 3 层 MLP，输入为预训练多模态嵌入模型（标题/正文/元数据/图像）产出的物品向量；双方<span class="arithmatex">\(\ell_2\)</span>归一化后内积打分。训练目标为标准 InfoNCE，批形状<span class="arithmatex">\([B,T]\)</span>，每个位置的下一交互物品为正例，批内其余正例物品为负例。<strong>唯一改动发生在 DataLoader 层</strong>：按区域单元<span class="arithmatex">\(r\)</span>分组采样用户，构造区域同质批<span class="arithmatex">\(\mathcal{B}_r\)</span>，其余训练流程、超参、步数完全不变。推理时用户塔对最近 1024 条行为做 mean-pooling 得到最终用户向量，每日离线刷新。</p>
 <pre class="mermaid"><code>flowchart TD
     A["用户行为序列 S_u + 物品多模态特征"] --&gt; B["区域单元映射 r(u), r(i)"]
     B --&gt; C["RCBS: 按区域 r 采样同质 mini-batch B_r"]
@@ -4241,16 +4252,16 @@
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
 <li>
-<p><strong>曝光可行性判定 (Exposure Feasibility)</strong>：把地理空间离散为区域单元集合 <span class="arithmatex">\(\mathcal{R}\)</span>，用户与物品经 <span class="arithmatex">\(r(\cdot)\)</span> 映射到单元，定义
+<p><strong>曝光可行性判定 (Exposure Feasibility)</strong>：把地理空间离散为区域单元集合 <span class="arithmatex">\(\mathcal{R}\)</span>，用户与物品经<span class="arithmatex">\(r(\cdot)\)</span> 映射到单元，定义
 $<span class="arithmatex">\(\mathrm{feas}(u,i)=\mathbb{1}\big[\mathrm{dist}(r(u),r(i))\le \delta_u\big],\)</span>$
-其中 <span class="arithmatex">\(\delta_u\in\{0,1,2,\dots\}\)</span> 是平台策略决定的用户级曝光半径（<span class="arithmatex">\(\delta_u=0\)</span> 要求同单元，<span class="arithmatex">\(\delta_u&gt;0\)</span> 纳入相邻单元）。<span class="arithmatex">\(\mathrm{feas}(u,i)=0\)</span> 的负样本即“不可能负样本”。该定义把“平台政策”显式写进训练数据构造，是全文的概念基石。</p>
+其中 <span class="arithmatex">\(\delta_u\in\{0,1,2,\dots\}\)</span>是平台策略决定的用户级曝光半径（<span class="arithmatex">\(\delta_u=0\)</span>要求同单元，<span class="arithmatex">\(\delta_u&gt;0\)</span>纳入相邻单元）。<span class="arithmatex">\(\mathrm{feas}(u,i)=0\)</span> 的负样本即“不可能负样本”。该定义把“平台政策”显式写进训练数据构造，是全文的概念基石。</p>
 </li>
 <li>
 <p><strong>区域约束批采样 RCBS</strong>：批内用户从同一区域池 <span class="arithmatex">\(U_r=\{u\in\mathcal{U}\mid r(u)=r\}\)</span> 中均匀抽取，
 $<span class="arithmatex">\(\mathcal{B}_r=\{(u_b,S_{u_b})\}_{b=1}^{M},\quad u_b\sim\mathrm{Uniform}(U_r).\)</span>$
 在精确区域匹配（<span class="arithmatex">\(\delta_u\equiv 0\)</span>）下，批内不可能负样本期望比例为
 $<span class="arithmatex">\(\rho=1-\sum_{r\in\mathcal{R}}p_r^2,\)</span>$
-随机批下 <span class="arithmatex">\(p_r\)</span> 近似均匀，<span class="arithmatex">\(\rho\approx 1-1/\min(|B|,|\mathcal{R}|)\)</span>，<strong>随系统规模增大而恶化</strong>；RCBS 把概率质量压到单一区域（<span class="arithmatex">\(p_r\approx1\)</span>），<span class="arithmatex">\(\rho\to 0\)</span> 且与批大小、区域数无关。物理直觉：同区域用户的候选池高度重叠，批内负样本几乎全部“看得见但没点”，对比信号从“区分地理可达性”回归“区分偏好”。</p>
+随机批下 <span class="arithmatex">\(p_r\)</span>近似均匀，<span class="arithmatex">\(\rho\approx 1-1/\min(|B|,|\mathcal{R}|)\)</span>，<strong>随系统规模增大而恶化</strong>；RCBS 把概率质量压到单一区域（<span class="arithmatex">\(p_r\approx1\)</span>），<span class="arithmatex">\(\rho\to 0\)</span> 且与批大小、区域数无关。物理直觉：同区域用户的候选池高度重叠，批内负样本几乎全部“看得见但没点”，对比信号从“区分地理可达性”回归“区分偏好”。</p>
 </li>
 <li>
 <p><strong>训练目标、负采样与推理效率</strong>：损失保持原样
@@ -4468,12 +4479,18 @@ $<span class="arithmatex">\(\mathcal{L}_{\text{NCE}}=-\frac{1}{BT}\sum_{b,t}\log
 <li><strong>RCBS-Eval 分数系统性低于 Random-Eval</strong>（fine 配置下 0.139 vs. 0.149），这并非模型变差，而是评估分布更接近真实曝光、负例更“硬”；该现象反向印证了“可行负样本 = 更难负样本”的论断，也提示业界常用的随机评估会<strong>高估</strong>表征质量。</li>
 <li><strong>下游增益与任务结构相似度强相关</strong>：召回任务增益最大（R@10 +7.56%），因其双塔内积目标与预训练目标同构；排序/广告增益较小（+1.18% / +0.53% ROC-AUC）但线上仍带来 +10.0% 点击与 +7.46% 广告 CTR，说明用户向量作为<strong>旁路特征</strong>在 DCN 精排中边际收益有限，而在召回侧是主路径收益。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
 <li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 PinnerFormer / PinFM 等大规模对比用户建模工作相比，本文不追求更大模型或更长序列，而是指出其<strong>批采样假设在 LBS 场景下失效</strong>；与 IPS 类去偏方法（Saito et al.、Lee et al.）相比，IPS 是 loss 级重加权且要求 positivity 假设（每对曝光概率严格为正），而地理策略造成的是<strong>结构性 positivity 违反</strong>（概率恒为 0，无观测可加权），RCBS 是 data 级修正，二者正交可叠加；与显式难负采样（RocketQA、跨批采样）相比，RCBS 不挖难负例，而是<strong>删掉伪难负例</strong>，让可行负例自然变难。</li>
 <li><strong>可迁移亮点</strong>: ① 任何存在“结构性零曝光”的系统（外卖配送范围、约会 App 距离阈值、跨境电商品类准入）都可直接套用“按可行性同质分组构造 batch”这一零成本 trick；② 评估侧应同时报告 Random-Eval 与分布对齐的 RCBS-Eval，避免随机评估高估表征。</li>
-<li><strong>审稿级局限批判</strong>: ① 全部实验基于单一工业平台私有日志，无公开基准复现，且下游指标仅报相对值，外部可验证性弱；② 细粒度区域分组在用户稀疏区域会导致批内多样性下降、长尾区域用户采样不足，论文未给出区域粒度选择准则与冷启动区域的兜底策略；③ <span class="arithmatex">\(\delta_u\)</span> 随用户配置变化、用户跨区迁移会使 <span class="arithmatex">\(\rho\)</span> 无法真正归零（实测 0.30），残余偏差仍需 IPS 补足，但该组合未做实验。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐⭐</li>
+<li><strong>审稿级局限批判</strong>: ① 全部实验基于单一工业平台私有日志，无公开基准复现，且下游指标仅报相对值，外部可验证性弱；② 细粒度区域分组在用户稀疏区域会导致批内多样性下降、长尾区域用户采样不足，论文未给出区域粒度选择准则与冷启动区域的兜底策略；③ <span class="arithmatex">\(\delta_u\)</span>随用户配置变化、用户跨区迁移会使<span class="arithmatex">\(\rho\)</span> 无法真正归零（实测 0.30），残余偏差仍需 IPS 补足，但该组合未做实验。</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 

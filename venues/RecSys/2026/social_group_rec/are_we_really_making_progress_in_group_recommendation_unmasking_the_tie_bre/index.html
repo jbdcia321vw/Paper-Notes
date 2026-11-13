@@ -4119,10 +4119,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#highlights-limitations-rating" class="md-nav__link">
+  <a href="#highlights-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)
+        Highlights &amp; Limitations (亮点、对比与审稿批判)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rating" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rating (四维评分)
       
     </span>
   </a>
@@ -4239,13 +4250,13 @@
     E --&gt; F["温度缩放 BPR：保留平滑、消除并列"]</code></pre>
 <h3 id="2-key-designs">2. 关键设计拆解 (Key Designs)</h3>
 <ol>
-<li><strong>并列感知 HR@K / NDCG@K（把破平不确定性写成闭式期望）</strong>：痛点是对正样本所在并列块，确定性排序只采样了一个可行秩。设 <span class="arithmatex">\(a_x\)</span> 为分数严格高于正样本的候选数、<span class="arithmatex">\(b_x\)</span> 为正样本所在并列块大小（含自身），则正样本秩在 <span class="arithmatex">\(\{a_x+1,\dots,a_x+b_x\}\)</span> 上均匀分布，于是</li>
+<li><strong>并列感知 HR@K / NDCG@K（把破平不确定性写成闭式期望）</strong>：痛点是对正样本所在并列块，确定性排序只采样了一个可行秩。设 <span class="arithmatex">\(a_x\)</span>为分数严格高于正样本的候选数、<span class="arithmatex">\(b_x\)</span>为正样本所在并列块大小（含自身），则正样本秩在<span class="arithmatex">\(\{a_x+1,\dots,a_x+b_x\}\)</span> 上均匀分布，于是</li>
 </ol>
 <div class="arithmatex">\[\mathrm{HR@}K^{\text{tie}}_x=\frac{\max(0,\min(K,a_x+b_x)-a_x)}{b_x},\quad \mathrm{NDCG@}K^{\text{tie}}_x=\frac{1}{b_x}\sum_{r=a_x+1}^{a_x+b_x}\frac{\mathbb{I}[r\le K]}{\log_2(r+1)}\]</div>
-<p>直觉：<span class="arithmatex">\(b_x=1\)</span> 时退化为标准指标，<span class="arithmatex">\(b_x&gt;1\)</span> 时把"运气"平均掉，得到与实现无关的无偏估计。这是全文最可直接复用的算子。</p>
+<p>直觉：<span class="arithmatex">\(b_x=1\)</span>时退化为标准指标，<span class="arithmatex">\(b_x&gt;1\)</span> 时把"运气"平均掉，得到与实现无关的无偏估计。这是全文最可直接复用的算子。</p>
 <ol>
 <li>
-<p><strong>并列统计量作为诊断签名（让偏差可观测）</strong>：定义最高分并列集 <span class="arithmatex">\(\mathcal{T}_x=\{i:\hat{y}_{x,i}=\max_j \hat{y}_{x,j}\}\)</span>、并列规模 <span class="arithmatex">\(m_x=|\mathcal{T}_x|\)</span>，并报告平均并列规模 <span class="arithmatex">\(\mathbb{E}[m_x]\)</span>、并列比 <span class="arithmatex">\(\mathbb{E}[m_x/|\mathcal{I}_x|]\)</span>、并列频率 <span class="arithmatex">\(P(m_x&gt;1)\)</span>。三者互补：DHMAE 在 Mafengwo 用户任务并列频率 98.57% 但并列比仅 0.87%（全库排序候选集大），说明单看频率会误判严重程度。</p>
+<p><strong>并列统计量作为诊断签名（让偏差可观测）</strong>：定义最高分并列集 <span class="arithmatex">\(\mathcal{T}_x=\{i:\hat{y}_{x,i}=\max_j \hat{y}_{x,j}\}\)</span>、并列规模<span class="arithmatex">\(m_x=|\mathcal{T}_x|\)</span>，并报告平均并列规模<span class="arithmatex">\(\mathbb{E}[m_x]\)</span>、并列比<span class="arithmatex">\(\mathbb{E}[m_x/|\mathcal{I}_x|]\)</span>、并列频率<span class="arithmatex">\(P(m_x&gt;1)\)</span>。三者互补：DHMAE 在 Mafengwo 用户任务并列频率 98.57% 但并列比仅 0.87%（全库排序候选集大），说明单看频率会误判严重程度。</p>
 </li>
 <li>
 <p><strong>温度缩放 BPR（解耦平滑与失真）</strong>：额外 sigmoid 的隐性收益是压缩成对 margin、起到隐式 margin smoothing；直接在损失层平滑即可保留收益而不压分数：</p>
@@ -4434,12 +4445,18 @@
 <li><strong>修正后"新方法优势"消失，强基线反超</strong>：去掉额外 sigmoid 后，CAMRa2011 群组任务上 CubeRec 的 HR@1 达 0.2248、NDCG@10 达 0.5001，均高于修正后的 AlignGroup（0.2153/0.4777）与 ITR（0.2128/0.4810）；Mafengwo 群组任务上 DGGVAE 修正后 HR@5 0.8666 与 CubeRec 0.8653 基本持平，说明原文献中"新方法持续领先"的结论不成立。</li>
 <li><strong>额外 sigmoid 确有训练收益，但可被温度缩放无损替代</strong>：ConsRec 在 Mafengwo 群组任务上直接删除 sigmoid 导致 HR@1 掉 20.33%、NDCG@5 掉 17.31%；而 <span class="arithmatex">\(\tau=64\)</span> 的温度缩放 BPR 在 HR@1 反超原实现 1.12%、HR@10 提升 0.33%、NDCG@10 仅差 0.02%，且几乎不产生并列——证明收益来自 margin 平滑而非分数压缩。</li>
 </ol>
-<h2 id="highlights-limitations-rating">Highlights, Limitations &amp; Rating (亮点、对比与审稿评价)</h2>
+<h2 id="highlights-limitations">Highlights &amp; Limitations (亮点、对比与审稿批判)</h2>
 <ul>
-<li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 Dacrema 等"复现怀疑论"不同，本文不质疑模型容量或基线强度，而是精确定位到<strong>评估代码的破平实现</strong>这一更隐蔽的层面；与 ConsRec/AlignGroup 等被检方法相比，本文不提出更强共识建模，而是证明其增益部分来自 <span class="arithmatex">\(\sigma\)</span> 压缩 + 正样本置首的联合 artifact；相较常规全库排序评估，并列感知协议在 <span class="arithmatex">\(b_x=1\)</span> 时严格退化为标准指标，兼容性极强。</li>
+<li><strong>与代表作对比 (vs. Prior Work)</strong>: 与 Dacrema 等"复现怀疑论"不同，本文不质疑模型容量或基线强度，而是精确定位到<strong>评估代码的破平实现</strong>这一更隐蔽的层面；与 ConsRec/AlignGroup 等被检方法相比，本文不提出更强共识建模，而是证明其增益部分来自 <span class="arithmatex">\(\sigma\)</span>压缩 + 正样本置首的联合 artifact；相较常规全库排序评估，并列感知协议在<span class="arithmatex">\(b_x=1\)</span> 时严格退化为标准指标，兼容性极强。</li>
 <li><strong>可迁移亮点</strong>: ① 任何单正样本 top-K 评估（含 LLM 生成式推荐的 sampled 评测）都应默认报告并列感知指标与 <span class="arithmatex">\(\mathbb{E}[m_x]\)</span>；② "训练期变换需同时审计推理期分数分布"这一检查项可直接写入论文投稿 checklist。</li>
 <li><strong>审稿级局限批判</strong>: ① 仅覆盖 ConsRec 系代码库与两个数据集，未验证全库排序下并列更普遍的场景（如大规模 item 库、量化/低精度推理），外推性受限；② 修正实验仅作诊断、未做充分调参，<span class="arithmatex">\(\tau\)</span> 扫描在测试集上进行，温度缩放的普适最优值与其他模型族（如超图方法）的适用性仍待验证。</li>
-<li><strong>四维评分</strong>: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐</li>
+</ul>
+<h2 id="rating">Rating (四维评分)</h2>
+<ul>
+<li><strong>方法创新性 (Novelty)</strong>: ⭐⭐⭐⭐ （核心机制与方法设计具备明确创新性，理论与实验动机支撑充分）</li>
+<li><strong>评估协议与实验扎实度 (Protocol &amp; Experiments)</strong>: ⭐⭐⭐⭐ （主流公开数据集评测完整，包含多基线对比与消融实验验证）</li>
+<li><strong>写作与数学规范度 (Clarity &amp; Rigor)</strong>: ⭐⭐⭐⭐⭐ （问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读）</li>
+<li><strong>工业落地与复现价值 (Industrial &amp; Practical Value)</strong>: ⭐⭐⭐⭐ （兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值）</li>
 </ul>
 
 
