@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-run_pipeline.py (v3.1 防截断 16384 输出上限 + 多会刊批量自动巡检版)
+run_pipeline.py (v3.5 支持 --all-venues 全量 22 会刊一键巡检 + 稀疏会刊自动补齐版)
 一键串联论文笔记流水线：候选名单 -> LLM 分类 -> 生成笔记 -> 导航索引 -> 站点构建/链接检查。
 
 示例：
-  # 1. 重刷 3 篇论文检验新版深度总结质量（默认关闭冗余 thinking 防止挤占正文，或开启自动 16k 上限）
-  python scripts/run_pipeline.py --venue SIGIR --year 2026 --profile quality --overwrite --limit 3
+  # 1. 一键巡检并补齐全部 22 个顶会与顶刊（已生成的笔记会自动秒跳过，仅抓取并生成新增论文！）
+  python scripts/run_pipeline.py --all-venues --year 2026 --build-list --use-dblp --profile quality --workers 4
 
-  # 2. 自动巡检多个顶会顶刊（增量发现新论文 + 生成笔记 + 构建站点）
-  python scripts/run_pipeline.py --venues SIGIR,RecSys,KDD,WWW,WSDM,CIKM,ACM_MM,TOIS,TKDE --year 2026 --build-list --use-dblp
+  # 2. 针对此前为 0 篇或个位数的会刊专项补齐
+  python scripts/run_pipeline.py --venues RecSys,WSDM,ACM_MM,ECIR,SIGIR-AP,ICDE,ICDM,DASFAA,AAAI,IJCAI,ACL_EMNLP,ICLR_NeurIPS_ICML,TOIS,TKDE,TORS,TMM,TKDD,TWEB --year 2026 --build-list --use-dblp --profile quality --workers 4
 """
 
 import argparse
@@ -26,6 +26,7 @@ REPO_ROOT = SCRIPT_DIR.parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
+from init_clean_recsys_repo import VENUES
 from run_logging import RunLog, format_duration
 
 PROFILES = {
@@ -108,7 +109,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="一键运行论文笔记自动巡检与生成流水线")
     parser.add_argument("--venue", default="SIGIR", help="单个会刊 key（默认 SIGIR）")
     parser.add_argument("--venues", default="", help="批量巡检多个会刊（逗号分隔，如 SIGIR,RecSys,KDD,WWW,TOIS）")
-    parser.add_argument("--year", default="2026", help="年份（默认 2026）")
+    parser.add_argument("--all-venues", action="store_true", help="一键巡检全部 22 个推荐系统相关顶会与顶刊")
+    parser.add_argument("--year", default="2026", help="目标年份（默认 2026）")
+    parser.add_argument("--min-venue-papers", type=int, default=18, help="开启 --supplement-prev-year 时，单会刊少于该篇数自动补充上一年份")
+    parser.add_argument("--supplement-prev-year", action="store_true", help="当目标年份论文不足时自动补充上一年份（默认关闭，严格只收 --year 当年）")
+    parser.add_argument("--strict-year", action="store_true", help="兼容参数：严格只收录 --year 当年论文（默认即开启）")
     parser.add_argument("--csv", default="", help="策展 CSV；默认 data/papers/<VENUE><YEAR>.csv")
     parser.add_argument("--profile", choices=sorted(PROFILES), default="balanced", help="成本/质量预设（默认 balanced，65k 输入 / 16k 输出）")
     parser.add_argument("--limit", type=int, default=0, help="最多处理前 N 篇（0 表示全部）")
@@ -116,8 +121,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--retries", type=int, default=2, help="失败重试次数（默认 2）")
     parser.add_argument("--model", default="", help="覆盖模型名（默认 deepseek-flash）")
     parser.add_argument("--thinking", action="store_true", help="启用 thinking 思维链模式")
-    parser.add_argument("--build-list", action="store_true", help="先从 arXiv / DBLP 自动增量更新候选 CSV")
-    parser.add_argument("--use-dblp", action="store_true", help="--build-list 时同步查询 DBLP 官方目录并反查 arXiv")
+    parser.add_argument("--build-list", action="store_true", help="先从 arXiv / OpenAlex / DBLP 自动增量更新候选 CSV")
+    parser.add_argument("--use-dblp", action="store_true", help="--build-list 时同步查询 OpenAlex 与 DBLP 官方目录并反查 arXiv")
     parser.add_argument("--build-list-max-results", type=int, default=300, help="--build-list 的 arXiv 检索上限")
     parser.add_argument("--build-list-no-llm", action="store_true", help="--build-list 时只用关键词分类")
     parser.add_argument("--classify", action="store_true", help="用 LLM 复核 CSV 相关性与分类")
@@ -125,7 +130,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--skip-generate", action="store_true", help="跳过笔记生成，只重建导航/站点")
     parser.add_argument("--skip-site", action="store_true", help="跳过 mkdocs build（CI 部署前使用）")
     parser.add_argument("--no-check-links", action="store_true", help="跳过站点本地链接检查")
-    parser.add_argument("--overwrite", action="store_true", help="覆盖已存在的笔记（重刷旧笔记质量时使用）")
+    parser.add_argument("--overwrite", action="store_true", help="强制覆盖所有已存在的笔记")
+    parser.add_argument("--only-legacy", action="store_true", help="自动检测并仅重刷早期旧脚本生成的低质量/图片堆砌笔记，保留新版高质量笔记")
+    parser.add_argument("--repair-existing", action="store_true", help="零 API 成本秒级修复全库现有笔记的 \\bm 公式报错、行内 $$ 与四维评分分行")
     parser.add_argument("--no-figures", action="store_true", help="不提取图表")
     parser.add_argument("--translate-figures", action="store_true", help="强制用 LLM 翻译图注")
     parser.add_argument("--max-input-chars", type=int, default=None, help="覆盖送入 LLM 的最大字符数（0 表示不限制）")
@@ -143,7 +150,12 @@ def main() -> int:
     pipeline_start = time.monotonic()
     log = None if args.dry_run else RunLog("pipeline")
 
-    venue_list = [v.strip() for v in args.venues.split(",") if v.strip()] if args.venues else [args.venue]
+    if args.all_venues:
+        venue_list = list(VENUES.keys())
+    elif args.venues:
+        venue_list = [v.strip() for v in args.venues.split(",") if v.strip()]
+    else:
+        venue_list = [args.venue]
 
     if log:
         log.write(
@@ -189,6 +201,8 @@ def main() -> int:
                 v_key,
                 "--year",
                 args.year,
+                "--min-venue-papers",
+                str(args.min_venue_papers),
                 "--max-results",
                 str(args.build_list_max_results),
                 "--llm-workers",
@@ -198,6 +212,8 @@ def main() -> int:
                 "--out",
                 str(csv_path),
             ]
+            if args.supplement_prev_year and not args.strict_year:
+                cmd.append("--supplement-prev-year")
             if args.use_dblp:
                 cmd.append("--use-dblp")
             if args.build_list_no_llm:
@@ -228,6 +244,14 @@ def main() -> int:
                 cmd += ["--model", args.model]
             run_command(cmd, args.dry_run, log=log, label=f"[{v_key}] LLM 分类复核")
 
+        if args.repair_existing and args.skip_generate:
+            run_command(
+                [python, str(SCRIPT_DIR / "generate_recsys_notes.py"), "--repair-existing"],
+                args.dry_run,
+                log=log,
+                label="秒级修复现有笔记公式与评分排版",
+            )
+            args.repair_existing = False
         if not args.skip_generate:
             if not csv_path.exists() and not args.dry_run:
                 print(f"[Warn] 策展 CSV 不存在，跳过生成: {csv_path}")
@@ -256,6 +280,10 @@ def main() -> int:
                 cmd += ["--limit", str(args.limit)]
             if args.overwrite:
                 cmd.append("--overwrite")
+            if args.only_legacy:
+                cmd.append("--only-legacy")
+            if args.repair_existing:
+                cmd.append("--repair-existing")
             if args.no_figures:
                 cmd.append("--no-figures")
             if not translate_figures:

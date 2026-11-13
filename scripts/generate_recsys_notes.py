@@ -335,6 +335,9 @@ SYSTEM_PROMPT = f"""你是一位推荐系统（Recommender Systems）与信息�
 2. **推荐系统核心要素一个不能少（短小但刀刀见血）**：
    - **评估协议必查**：用精炼短句点明数据集过滤（如 `5-core`）、划分方式（`Leave-One-Out` / `比例划分` / `全局时间戳切分` / `冷启动划分`）、候选打分协议（无偏 `Full-Ranking 全库排序` vs. `Sampled 负采样排序`）以及训练负采样策略。
    - **实验表格必全**：主实验表保留原文 **5–8 个最具代表性的主流 Baseline** 与核心指标数值（加粗最优并标出 `Improv.%`），消融实验单独列一张紧凑表格，并在表后写出 **3 条结合具体数字的归因发现（Key Findings）**。
+3. **LaTeX 数学公式渲染铁律（严防网页红字与 `$` 裸露报错）**：
+   - **严禁使用 `\bm` 或 `\mathbbm`**：Web 端 KaTeX/MathJax 不支持 `\bm` 宏（会直接报红字错误），向量/矩阵加粗一律使用 `\boldsymbol{...}` 或 `\mathbf{...}`，示性函数使用 `\mathbb{I}`。
+   - **严禁在段落行内使用双美元符号 `$$...$$`**：凡是嵌在文字句子或列表项中间的公式，一律使用单美元符号 `$...$`，且 `$` 内侧首尾严禁留空格或换行（如写成 `$\hat{s}_{ij} = ...$`，绝不能写成 `$$\hat{s}_{ij} = ...$$` 或 `$ \hat{s}_{ij} $`）。
 
 ### 三、输出 Markdown 模板规范（第 1 行必须是 `---`，严格使用以下二级标题！）
 ---
@@ -421,12 +424,19 @@ flowchart TD
 
 结合主实验、消融实验、长尾/稀疏分桶实验或线上 A/B 测试的具体数字，写出 **3 条一针见血的定量归因结论**（每条 1-2 句话）。
 
-## Highlights, Limitations & Rating (亮点、对比与审稿评价)
+## Highlights & Limitations (亮点、对比与审稿批判)
 
 - **与代表作对比 (vs. Prior Work)**: 用 2-3 行简明对比本文与最相关的 2-3 篇前人基线的本质区别。
 - **可迁移亮点**: 1-2 个可直接迁移到其他推荐任务的技巧。
 - **审稿级局限批判**: 客观指出 2 个潜在短板（如推理延迟、评估局限或超参敏感度）。
-- **四维评分**: 创新性 ⭐⭐⭐⭐ | 实验扎实度 ⭐⭐⭐⭐ | 方法清晰度 ⭐⭐⭐⭐ | 落地价值 ⭐⭐⭐⭐
+
+## Rating (四维评分)
+
+（每个评分维度必须独占一行列表项，并在星级后用括号附上一句话具体评分理由：）
+- **方法创新性 (Novelty)**: ⭐⭐⭐⭐ （一句话点评核心机制新颖度与理论/谱分析支撑）
+- **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （一句话点评数据集、划分/打分协议、显著性检验与消融完整性）
+- **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （一句话点评公式与符号定义清晰度、推导严谨度与复杂度分析）
+- **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （一句话点评开源代码、构图/推理开销与线上工程部署价值）
 
 ### 四、图表按需内嵌规范（宁缺毋滥，严禁堆砌！）
 - 如果提供了可用图表占位符（如 `[[FIG:1]]`），**仅当某张图（如核心架构图或关键动机对比图）确实非常适合放在某一段文字正下方辅助理解时，才在对应段落后单独另起一行插入最多 1–2 个占位符**。
@@ -496,7 +506,10 @@ def _fetch_arxiv_html_text(arxiv_id: str, max_chars: int = 80000) -> str:
         for math_tag in soup.find_all("math"):
             alt = math_tag.get("alttext")
             if alt:
-                math_tag.replace_with(f" ${alt.strip()}$ ")
+                clean_alt = re.sub(r"\\bm\s*\{([^{}]+)\}", r"\\boldsymbol{\1}", alt.strip())
+                clean_alt = re.sub(r"\\bm\s*(\\[a-zA-Z]+)", r"\\boldsymbol{\1}", clean_alt)
+                clean_alt = re.sub(r"\\bm(?:\s+|(?=[A-Za-z0-9]))([A-Za-z0-9])", r"\\boldsymbol{\1}", clean_alt)
+                math_tag.replace_with(f" ${clean_alt}$ ")
 
         for table in soup.find_all("table"):
             rows_md = []
@@ -811,9 +824,17 @@ def infer_venue_from_comment(comment: str, default_venue: str, default_year: str
 
 def _fetch_arxiv_entries(api_params: dict, cache_dir: Path = None, download_pdf: bool = True):
     url = "https://export.arxiv.org/api/query?" + urllib.parse.urlencode(api_params)
-    req = urllib.request.Request(url, headers={"User-Agent": "RecSys-Paper-Notes/3.3"})
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        xml_data = resp.read()
+    xml_data = b""
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "RecSys-Paper-Notes/3.4"})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                xml_data = resp.read()
+            break
+        except Exception as e:
+            if attempt == 2:
+                raise
+            time.sleep(2.0 * (attempt + 1))
 
     root = ET.fromstring(xml_data)
     ns = {"atom": "http://www.w3.org/2005/Atom"}
@@ -835,8 +856,14 @@ def _fetch_arxiv_entries(api_params: dict, cache_dir: Path = None, download_pdf:
         pdf_url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
         published_el = entry.find("atom:published", ns)
         published = (published_el.text or "")[:10] if published_el is not None else ""
+        updated_el = entry.find("atom:updated", ns)
+        updated = (updated_el.text or "")[:10] if updated_el is not None else published
         comment_el = entry.find("{http://arxiv.org/schemas/atom}comment")
         comment = comment_el.text.strip() if comment_el is not None and comment_el.text else ""
+        journal_el = entry.find("{http://arxiv.org/schemas/atom}journal_ref")
+        journal_ref = journal_el.text.strip() if journal_el is not None and journal_el.text else ""
+        if journal_ref and journal_ref.lower() not in comment.lower():
+            comment = f"{comment} | Journal-Ref: {journal_ref}".strip(" |")
 
         full_body = ""
         pdf_file = None
@@ -882,6 +909,9 @@ def _fetch_arxiv_entries(api_params: dict, cache_dir: Path = None, download_pdf:
             "title": title,
             "content": content_str,
             "comment": comment,
+            "journal_ref": journal_ref,
+            "published_date": published,
+            "updated_date": updated,
             "paper_url": paper_url,
             "code_url": code_url,
             "arxiv_id": arxiv_id,
@@ -1000,6 +1030,146 @@ def _set_frontmatter_field(frontmatter: str, name: str, value: str) -> str:
     return frontmatter.rstrip() + f"\n{name}: {value}"
 
 
+
+def sanitize_latex_and_markdown(md_note: str) -> str:
+    """自动修复笔记中的三大渲染与排版问题：
+    1. 将 KaTeX/MathJax 不支持的 `\bm` 与 `\mathbbm` 统一替换为 `\boldsymbol{...}` 与 `\mathbb{...}`；
+    2. 修复正文句子/列表项行内误用 `$$...$$` 导致两侧露出 `$` 符号的问题，以及单 `$` 跨行/首尾空格导致公式不渲染的问题；
+    3. 将单行挤压的 `- **四维评分**: 创新性 ⭐⭐⭐⭐ | ...` 自动展开为独占一行的 `## Rating (四维评分)` 四行列表格式，并清理旧版文末堆砌的 `## 论文图表`。
+    """
+    if not md_note:
+        return md_note
+
+    # --- 1. 修复 \bm 与 \mathbbm 宏报错 ---
+    # \bm{X} -> \boldsymbol{X}
+    md_note = re.sub(r"\\bm\s*\{([^{}]+)\}", r"\\boldsymbol{\1}", md_note)
+    # \bm\theta or \bm \theta -> \boldsymbol{\theta}
+    md_note = re.sub(r"\\bm\s*(\\[a-zA-Z]+)", r"\\boldsymbol{\1}", md_note)
+    # \bm B or \bm e_i or \bme_i -> \boldsymbol{B}, \boldsymbol{e}_i
+    md_note = re.sub(r"\\bm(?:\s+|(?=[A-Za-z0-9]))([A-Za-z0-9])", r"\\boldsymbol{\1}", md_note)
+    # \mathbbm{1} -> \mathbb{I}
+    md_note = re.sub(r"\\mathbbm\s*\{1\}", r"\\mathbb{I}", md_note)
+    md_note = re.sub(r"\\mathbbm\s*\{([^{}]+)\}", r"\\mathbb{\1}", md_note)
+
+    # --- 2. 修复行内 $$...$$ 与跨行/带空格的 $...$ ---
+    # 2a. 若某行不是纯独立公式块（即 $$...$$ 前后同一行还有中文/英文正文），将该行内的 $$...$$ 转为单美元 $...$
+    fixed_lines = []
+    for line in md_note.splitlines():
+        stripped = line.strip()
+        if "$$" in line and not (stripped.startswith("$$") and stripped.endswith("$$") and stripped.count("$$") == 2):
+            line = re.sub(r"\$\$\s*([^$\n]+?)\s*\$\$", r"$\1$", line)
+        fixed_lines.append(line)
+    md_note = "\n".join(fixed_lines)
+
+    # 2b. 修复单美元符号 `$` 后直接换行、下一行公式再以 `$` 闭合的情况（如 `： $\n\boldsymbol{e}_i = ...\n$ 门输入`）
+    md_note = re.sub(
+        r"(?<!\$)\$(?!\$)[ \t]*\n\s*([^$\n]+?)\s*(?:\n\s*)?\$(?!\$)",
+        r"$\1$",
+        md_note,
+    )
+
+    # 2c. 去除行内单美元公式 `$ ... $` 内侧首尾多余空格（避免 pymdownx.arithmatex 拒绝解析）
+    def _trim_inline_math(m):
+        inner = m.group(1).strip()
+        return f"${inner}$" if inner else m.group(0)
+
+    md_note = re.sub(r"(?<!\$)\$(?!\$)([ \t]+[^$\n]+?[ \t]*|[^$\n]+?[ \t]+)\$(?!\$)", _trim_inline_math, md_note)
+
+    # --- 3. 将单行 `- **四维评分**: ...` 自动转换为独立四行列表的 `## Rating (四维评分)` ---
+    single_line_rating_pat = re.compile(
+        r"^[ \t]*[-*]\s*\*\*四维评分\*\*[:：]\s*([^\n]+)$",
+        re.MULTILINE,
+    )
+    m_rate = single_line_rating_pat.search(md_note)
+    if m_rate:
+        raw_parts = [p.strip() for p in m_rate.group(1).split("|") if p.strip()]
+        label_map = [
+            ("方法创新性 (Novelty)", "核心机制与方法设计具备明确创新性，理论与实验动机支撑充分"),
+            ("评估协议与实验扎实度 (Protocol & Experiments)", "主流公开数据集评测完整，包含多基线对比与消融实验验证"),
+            ("写作与数学规范度 (Clarity & Rigor)", "问题形式化定义清晰，核心模块数学推导与架构阐述严谨易读"),
+            ("工业落地与复现价值 (Industrial & Practical Value)", "兼顾推荐效果增益与训练/推理效率，具备实际场景迁移参考价值"),
+        ]
+        stars_list = []
+        for part in raw_parts:
+            st = "".join(ch for ch in part if ch in "⭐★☆")
+            stars_list.append(st or "⭐⭐⭐⭐")
+        while len(stars_list) < 4:
+            stars_list.append("⭐⭐⭐⭐")
+
+        rating_lines = ["\n## Rating (四维评分)\n"]
+        for idx, (dim_title, default_desc) in enumerate(label_map):
+            part_txt = raw_parts[idx] if idx < len(raw_parts) else ""
+            m_paren = re.search(r"[（(]([^）)]+)[）)]", part_txt)
+            desc = m_paren.group(1).strip() if m_paren else default_desc
+            rating_lines.append(f"- **{dim_title}**: {stars_list[idx]} （{desc}）")
+        replacement_block = "\n".join(rating_lines) + "\n"
+        md_note = single_line_rating_pat.sub(lambda _: replacement_block, md_note, count=1)
+        md_note = re.sub(
+            r"^##\s+Highlights,\s*Limitations\s*&\s*Rating\s*\([^)]*\)",
+            "## Highlights & Limitations (亮点、对比与审稿批判)",
+            md_note,
+            flags=re.MULTILINE,
+        )
+
+    # --- 4. 清理旧版笔记末尾集中堆砌的 `## 论文图表` 章节 ---
+    md_note = re.sub(
+        r"\n##+\s*(?:论文图表|Paper Figures|Figures\s*&\s*Tables)\s*\n(?:.*\n?)*$",
+        "\n",
+        md_note,
+        flags=re.IGNORECASE,
+    )
+
+    return md_note.strip() + "\n"
+
+
+def is_legacy_low_quality_note(md_path: Path) -> bool:
+    """判断一篇已存在的 .md 笔记是否为早期旧脚本生成的低质量/图片堆砌笔记：
+    1. 包含旧版文末集中堆砌的 `## 论文图表` 章节；
+    2. 单篇内嵌超过 2 张 `<figure class="paper-figure"`（旧版无节制插图）；
+    3. 缺少新版 v3.3+ 深度总结的核心结构标识（如 `关键设计拆解`、`关键实验发现`、`与代表作对比`）。
+    满足任一条件即判定为旧版低质量笔记，在 `--only-legacy` 模式下自动重刷。
+    """
+    try:
+        content = md_path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return True
+    if re.search(r"^##+\s*(?:论文图表|Paper Figures)", content, re.MULTILINE | re.IGNORECASE):
+        return True
+    if content.count('<figure class="paper-figure"') > 2:
+        return True
+    has_key_designs = bool(re.search(r"关键设计拆解|Key Designs", content, re.IGNORECASE))
+    has_key_findings = bool(re.search(r"关键实验发现|Key Findings", content, re.IGNORECASE))
+    has_prior_work = bool(re.search(r"与代表作对比|vs\.\s*Prior Work", content, re.IGNORECASE))
+    if not (has_key_designs and has_key_findings and has_prior_work):
+        return True
+    return False
+
+
+def repair_existing_notes_in_repo(docs_dir: Path, venue_filter: str = "", year_filter: str = "") -> tuple:
+    """零 API 成本秒级扫描并修复仓库中已有 .md 笔记的 `\bm` 报错、行内 `$$` 露出、四维评分未分行与文末图表堆砌。"""
+    search_root = docs_dir / "venues"
+    if venue_filter and (search_root / venue_filter).exists():
+        search_root = search_root / venue_filter
+        if year_filter and (search_root / year_filter).exists():
+            search_root = search_root / year_filter
+
+    if not search_root.exists():
+        return 0, 0
+
+    scanned = 0
+    repaired = 0
+    for md_file in sorted(search_root.rglob("*.md")):
+        if md_file.name == "index.md":
+            continue
+        scanned += 1
+        orig = md_file.read_text(encoding="utf-8", errors="ignore")
+        fixed = sanitize_latex_and_markdown(orig)
+        if fixed != orig:
+            md_file.write_text(fixed, encoding="utf-8")
+            repaired += 1
+    return scanned, repaired
+
+
 def ensure_and_normalize_frontmatter(
     md_note: str,
     title: str,
@@ -1061,7 +1231,7 @@ def ensure_and_normalize_frontmatter(
     if not body.startswith("#"):
         body = f"# {title}\n\n" + body
 
-    return f"---\n{fm.strip()}\n---\n\n{body.strip()}\n"
+    return sanitize_latex_and_markdown(f"---\n{fm.strip()}\n---\n\n{body.strip()}\n")
 
 
 SECTION_PATTERNS = [
@@ -1122,7 +1292,10 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
     if not existing:
         existing = list((docs_dir / "venues").rglob(f"{slug}.md"))
     if existing and not args.overwrite:
-        return f"[Skip] 已存在跳过: {existing[0].relative_to(docs_dir.parent)}", None
+        if getattr(args, "only_legacy", False) and is_legacy_low_quality_note(existing[0]):
+            pass
+        else:
+            return f"[Skip] 已存在跳过: {existing[0].relative_to(docs_dir.parent)}", None
 
     figures = []
     figure_context = ""
@@ -1240,12 +1413,28 @@ def process_single_paper(item: dict, default_venue: str, default_year: str, docs
     return f"[OK] {item['title'][:55]}... -> venues/{venue}/{year}/{primary_cat}/{slug}.md (内嵌插图 {len(used_figures)} 张)", record
 
 
-def tasks_from_curated_csv(csv_path: Path, cache_dir: Path, download_pdf: bool, limit: int = 0):
+def tasks_from_curated_csv(csv_path: Path, cache_dir: Path, download_pdf: bool, limit: int = 0, docs_dir: Path = None, overwrite: bool = False, only_legacy: bool = False):
     rows = load_curated_csv(csv_path)
     if limit and limit > 0:
         rows = rows[:limit]
+
+    existing_slugs = set()
+    if docs_dir and not overwrite and (docs_dir / "venues").exists():
+        for p in (docs_dir / "venues").rglob("*.md"):
+            if p.name == "index.md":
+                continue
+            if only_legacy and is_legacy_low_quality_note(p):
+                continue
+            existing_slugs.add(p.stem)
+
+    pending_rows = []
     ids = []
+    skipped_existing = 0
     for row in rows:
+        title_str = row.get("title", "")
+        if title_str and slugify(title_str) in existing_slugs:
+            skipped_existing += 1
+            continue
         aid = row.get("arxiv_id", "")
         if not aid:
             m = re.search(r"arxiv\.org/(?:abs|pdf)/(\d{4}\.\d{4,5})", row.get("paper_url", ""))
@@ -1254,11 +1443,17 @@ def tasks_from_curated_csv(csv_path: Path, cache_dir: Path, download_pdf: bool, 
             aid_clean = re.sub(r"v\d+$", "", aid.strip())
             row["arxiv_id"] = aid_clean
             ids.append(aid_clean)
+            pending_rows.append(row)
+
+    if skipped_existing > 0:
+        print(f"  [Fast-Skip] 已存在 {skipped_existing} 篇笔记，仅拉取剩余 {len(pending_rows)} 篇待生成论文的全文 ...")
+    if not pending_rows:
+        return []
 
     fetched = fetch_arxiv_by_ids(ids, cache_dir=cache_dir, download_pdf=download_pdf)
     by_id = {re.sub(r"v\d+$", "", p["arxiv_id"]): p for p in fetched}
     tasks = []
-    for row in rows:
+    for row in pending_rows:
         aid = row.get("arxiv_id", "")
         paper = by_id.get(aid)
         if not paper:
@@ -1309,6 +1504,8 @@ def main():
     parser.add_argument("--no-pdf-download", action="store_true", help="仅使用摘要，不下载 PDF 全文（默认拒绝摘要模式）")
     parser.add_argument("--allow-abstract", action="store_true", help="允许仅凭摘要生成笔记（不推荐，默认关闭）")
     parser.add_argument("--overwrite", action="store_true", help="强制覆盖已存在的同名笔记")
+    parser.add_argument("--only-legacy", action="store_true", help="仅自动重生成早期旧版脚本生成的低质量/图表堆砌笔记，跳过已达标的新版笔记")
+    parser.add_argument("--repair-existing", action="store_true", help="零成本秒级修复现有全部笔记中的 \\bm 公式报错、行内 $$ 符号与四维评分分行")
     parser.add_argument("--no-figures", action="store_true", help="不提取、不插入 PDF 图表")
     parser.add_argument("--no-figure-translation", action="store_true", help="不调用 LLM 翻译图注，改用“图 n/表 n”中文编号兜底")
     parser.add_argument("--max-figures", type=int, default=6, help="每篇论文最多提取候选插图数（默认 6）")
@@ -1326,7 +1523,7 @@ def main():
     args.base_url = resolve_base_url(args.base_url)
     args.model = resolve_model(args.model)
 
-    if not args.api_key:
+    if not args.api_key and not args.repair_existing:
         print("[Error] 未检测到 API Key！请传入 --api-key 或设置环境变量 LLM_API_KEY / DEEPSEEK_API_KEY")
         return
 
@@ -1334,6 +1531,11 @@ def main():
     docs_dir = repo_root / "docs"
     cache_dir = repo_root / ".cache_pdfs"
     default_venue, default_year = split_venue_year(args.venue, args.year)
+
+    if args.repair_existing and not (args.papers_csv or args.all_curated or args.pdf_dir or args.arxiv_query or args.seed_all_categories):
+        scanned, repaired = repair_existing_notes_in_repo(docs_dir)
+        print(f"[Repair] 已扫描全库 {scanned} 篇现有笔记，零成本秒级修复 {repaired} 篇笔记（\\bm 宏、行内 $$、四维评分分行与文末堆砌图表）！")
+        return
 
     tasks = []
     if args.pdf_dir:
@@ -1375,7 +1577,7 @@ def main():
                 continue
             seen.add(csv_path.resolve())
             print(f"[Curated] 读取策展名单: {csv_path}")
-            tasks.extend(tasks_from_curated_csv(csv_path, cache_dir, download_pdf=not args.no_pdf_download, limit=args.limit))
+            tasks.extend(tasks_from_curated_csv(csv_path, cache_dir, download_pdf=not args.no_pdf_download, limit=args.limit, docs_dir=docs_dir, overwrite=args.overwrite, only_legacy=args.only_legacy))
     elif args.seed_all_categories:
         print(f"[Seed] 警告：自动抓取仅供本地试点，生产收录请使用 --papers-csv。每个方向获取 {args.max_papers} 篇...")
         for cat_slug, q in CATEGORY_SEED_QUERIES.items():
@@ -1397,6 +1599,10 @@ def main():
             "  4. --seed-all-categories  (仅本地试点)"
         )
         return
+
+    if args.repair_existing:
+        scanned, repaired = repair_existing_notes_in_repo(docs_dir)
+        print(f"[Repair] 已扫描全库 {scanned} 篇现有笔记，零成本秒级修复 {repaired} 篇笔记（\\bm 宏、行内 $$、四维评分分行与文末堆砌图表）！")
 
     if not tasks:
         print("[Info] 没有可处理的论文任务。")
