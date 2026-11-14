@@ -10,7 +10,7 @@
 
 - 仓库：[jbdcia321vw/Paper-Notes](https://github.com/jbdcia321vw/Paper-Notes)
 - 在线阅读：**[https://jbdcia321vw.github.io/Paper-Notes/](https://jbdcia321vw.github.io/Paper-Notes/)**
-- 当前收录：**304 篇**推荐系统与信息检索论文精读笔记
+- 当前收录：**1240 篇**推荐系统与信息检索论文精读笔记
 - 覆盖范围：**22 个顶会与顶刊**、**16 个推荐系统正交方向**
 - 更新方式：自动发现候选论文 + LLM 辅助生成 + 人工抽查纠错
 
@@ -52,53 +52,53 @@ RecSys Paper Notes 是一个面向推荐系统（Recommender Systems）与信息
 
 > 统计截至 2026-11，具体数量以[站点首页](https://jbdcia321vw.github.io/Paper-Notes/)为准。
 
-### 顶会与顶刊
+### 🧭 研究方向
 
-| 会刊 | 类型 | 2026 笔记数 | 说明 |
-| :--- | :--- | ---: | :--- |
-| [SIGIR](https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR/) | 会议 | 112 | IR/RecSys 顶会 |
-| [CIKM](https://jbdcia321vw.github.io/Paper-Notes/venues/CIKM/) | 会议 | 48 | IR/知识管理顶会 |
-| [RecSys](https://jbdcia321vw.github.io/Paper-Notes/venues/RecSys/) | 会议 | 46 | 推荐系统旗舰专会 |
-| [KDD](https://jbdcia321vw.github.io/Paper-Notes/venues/KDD/) | 会议 | 38 | 数据挖掘顶会 |
-| [WWW](https://jbdcia321vw.github.io/Paper-Notes/venues/WWW/) | 会议 | 33 | Web 与推荐顶会 |
-| [WSDM](https://jbdcia321vw.github.io/Paper-Notes/venues/WSDM/) | 会议 | 10 | 搜索与数据挖掘顶会 |
-| [TORS](https://jbdcia321vw.github.io/Paper-Notes/venues/TORS/) | 期刊 | 6 | ACM 推荐系统旗舰专刊 |
-| [TKDE](https://jbdcia321vw.github.io/Paper-Notes/venues/TKDE/) | 期刊 | 5 | IEEE 知识与数据工程顶刊 |
-| [ACM MM](https://jbdcia321vw.github.io/Paper-Notes/venues/ACM_MM/) | 会议 | 3 | 多媒体推荐重镇 |
-| [TOIS](https://jbdcia321vw.github.io/Paper-Notes/venues/TOIS/) | 期刊 | 3 | ACM 信息系统顶刊 |
-| [ECIR](https://jbdcia321vw.github.io/Paper-Notes/venues/ECIR/) | 会议 | 0 | 欧洲信息检索会议 |
-| [SIGIR-AP](https://jbdcia321vw.github.io/Paper-Notes/venues/SIGIR-AP/) | 会议 | 0 | SIGIR 亚太会议 |
-| [ICDE](https://jbdcia321vw.github.io/Paper-Notes/venues/ICDE/) | 会议 | 0 | 数据工程顶会 |
-| [ICDM](https://jbdcia321vw.github.io/Paper-Notes/venues/ICDM/) | 会议 | 0 | 数据挖掘顶会 |
-| [DASFAA](https://jbdcia321vw.github.io/Paper-Notes/venues/DASFAA/) | 会议 | 0 | 数据库与高级应用会议 |
-| [AAAI](https://jbdcia321vw.github.io/Paper-Notes/venues/AAAI/) | 会议 | 0 | AAAI RecSys Track |
-| [IJCAI](https://jbdcia321vw.github.io/Paper-Notes/venues/IJCAI/) | 会议 | 0 | IJCAI RecSys Track |
-| [ACL / EMNLP](https://jbdcia321vw.github.io/Paper-Notes/venues/ACL_EMNLP/) | 会议 | 0 | NLP 与对话推荐 |
-| [ICLR / NeurIPS / ICML](https://jbdcia321vw.github.io/Paper-Notes/venues/ICLR_NeurIPS_ICML/) | 会议 | 0 | 机器学习三大顶会 |
-| [TMM](https://jbdcia321vw.github.io/Paper-Notes/venues/TMM/) | 期刊 | 0 | IEEE 多媒体顶刊 |
-| [TKDD](https://jbdcia321vw.github.io/Paper-Notes/venues/TKDD/) | 期刊 | 0 | ACM 数据挖掘顶刊 |
-| [TWEB](https://jbdcia321vw.github.io/Paper-Notes/venues/TWEB/) | 期刊 | 0 | ACM Web 顶刊 |
-
-### 研究方向
-
-| 方向 | 主分类笔记数 | 关注主题 |
+| 方向 | 笔记数 | 关注主题 |
 | :--- | ---: | :--- |
-| [生成式推荐与离散语义 ID](https://jbdcia321vw.github.io/Paper-Notes/topics/generative_rec/) | 45 | RQ-VAE/VQ、自回归生成式检索、扩散/流匹配推荐 |
-| [去偏公平、可信隐私与工业架构](https://jbdcia321vw.github.io/Paper-Notes/topics/debias_fairness_industrial/) | 39 | 因果去偏、双边公平、隐私保护、工业全链路 |
-| [大语言模型推荐 (LLM4Rec)](https://jbdcia321vw.github.io/Paper-Notes/topics/llm_rec/) | 39 | 指令微调、In-Context 重排、语义增强、知识蒸馏 |
-| [序列与会话推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/sequential_rec/) | 33 | 长短期兴趣、Transformer/Mamba、Next-Item 预测 |
-| [对话推荐与智能体仿真](https://jbdcia321vw.github.io/Paper-Notes/topics/agent_conversational_rec/) | 24 | 多轮对话推荐、LLM Agent、可解释推荐 |
-| [多模态推荐与内容理解](https://jbdcia321vw.github.io/Paper-Notes/topics/multimodal_rec/) | 23 | 视觉-文本对齐、多模态图、短视频/电商推荐 |
-| [CTR/CVR 预估与特征交叉](https://jbdcia321vw.github.io/Paper-Notes/topics/ctr_feature_interaction/) | 20 | 高阶特征交叉、延迟反馈、概率校准 |
-| [多任务学习与列表级重排](https://jbdcia321vw.github.io/Paper-Notes/topics/multi_task_reranking/) | 17 | MMoE/PLE、Pareto 最优、列表重排 |
-| [协同过滤与双塔召回](https://jbdcia321vw.github.io/Paper-Notes/topics/collaborative_filtering/) | 14 | 矩阵分解、双塔检索、ANN 量化、负采样 |
-| [冷启动与长尾推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/cold_start_rec/) | 11 | Zero-shot 冷启动、元学习、长尾扶持 |
-| [跨域与多场景推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/cross_domain_multi_scenario/) | 10 | 跨域迁移、用户对齐、多业务联合建模 |
-| [强化学习与动态探索推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/rl_bandit_rec/) | 8 | Contextual Bandit、Offline RL、长期价值 |
-| [图神经网络与知识图谱推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/graph_rec/) | 8 | LightGCN、超图、异构图、知识图谱推理 |
-| [自监督对比学习与交互去噪](https://jbdcia321vw.github.io/Paper-Notes/topics/self_supervised_denoising/) | 5 | 图/序列对比学习、假阳性噪声过滤 |
-| [社交与群组推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/social_group_rec/) | 4 | 社交信任、群组偏好聚合、影响力建模 |
-| [时空轨迹与 POI 推荐](https://jbdcia321vw.github.io/Paper-Notes/topics/poi_spatiotemporal_rec/) | 4 | Next-POI、轨迹建模、本地生活推荐 |
+| [大语言模型推荐 (LLM4Rec)](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/llm_rec/) | **379** | 指令微调、In-Context 重排、语义增强、知识蒸馏 |
+| [去偏公平、可信隐私与工业架构](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/debias_fairness_industrial/) | **321** | 因果去偏、双边公平、隐私保护、工业全链路 |
+| [序列与会话推荐](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/sequential_rec/) | **286** | 长短期兴趣、Transformer/Mamba、Next-Item 预测 |
+| [生成式推荐与离散语义 ID](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/generative_rec/) | **199** | RQ-VAE/VQ、自回归生成式检索、扩散/流匹配推荐 |
+| [CTR/CVR 预估与特征交叉](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/ctr_feature_interaction/) | **155** | 高阶特征交叉、延迟反馈、概率校准 |
+| [协同过滤与双塔召回](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/collaborative_filtering/) | **144** | 矩阵分解、双塔检索、ANN 量化、负采样 |
+| [冷启动与长尾推荐](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/cold_start_rec/) | **136** | Zero-shot 冷启动、元学习、长尾扶持 |
+| [多模态推荐与内容理解](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/multimodal_rec/) | **129** | 视觉-文本对齐、多模态图、短视频/电商推荐 |
+| [图神经网络与知识图谱推荐](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/graph_rec/) | **122** | LightGCN、超图、异构图、知识图谱推理 |
+| [对话推荐与智能体仿真](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/agent_conversational_rec/) | **116** | 多轮对话推荐、LLM Agent、可解释推荐 |
+| [多任务学习与列表级重排](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/multi_task_reranking/) | **116** | MMoE/PLE、Pareto 最优、列表重排 |
+| [自监督对比学习与交互去噪](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/self_supervised_denoising/) | **113** | 图/序列对比学习、假阳性噪声过滤 |
+| [强化学习与动态探索推荐](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/rl_bandit_rec/) | **86** | Contextual Bandit、Offline RL、长期价值 |
+| [跨域与多场景推荐](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/cross_domain_multi_scenario/) | **72** | 跨域迁移、用户对齐、多业务联合建模 |
+| [社交与群组推荐](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/social_group_rec/) | **23** | 社交信任、群组偏好聚合、影响力建模 |
+| [时空轨迹与 POI 推荐](https://jbdcia321vw.github.io/RecSys-Paper-Notes/topics/poi_spatiotemporal_rec/) | **19** | Next-POI、轨迹建模、本地生活推荐 |
+
+### 🏛️ 顶会与顶刊
+
+| 会刊 | 类型 | 笔记数 | 说明 |
+| :--- | :--- | ---: | :--- |
+| [SIGIR](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/SIGIR/) | 会议 | **202** | IR/RecSys 顶会 |
+| [RecSys](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/RecSys/) | 会议 | **168** | 推荐系统旗舰专会 |
+| [WWW (TheWebConf)](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/WWW/) | 会议 | **154** | Web 与推荐系统顶会 |
+| [CIKM](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/CIKM/) | 会议 | **137** | IR/知识管理顶会 |
+| [KDD](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/KDD/) | 会议 | **136** | 数据挖掘与工业推荐顶会 |
+| [ICLR / NeurIPS / ICML](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/ICLR_NeurIPS_ICML/) | 会议 | **79** | 机器学习三大顶会 (RecSys Papers) |
+| [ACL / EMNLP](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/ACL_EMNLP/) | 会议 | **71** | NLP 与对话推荐顶会 |
+| [AAAI (RecSys Track)](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/AAAI/) | 会议 | **62** | AI 综合顶会 |
+| [WSDM](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/WSDM/) | 会议 | **40** | 搜索与数据挖掘顶会 |
+| [ACM TOIS](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/TOIS/) | 期刊 | **34** | 信息系统与推荐顶刊 |
+| [IEEE TKDE](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/TKDE/) | 期刊 | **32** | 知识与数据工程顶刊 |
+| [ACM TORS](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/TORS/) | 期刊 | **25** | ACM 推荐系统旗舰专刊 |
+| [ECIR](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/ECIR/) | 会议 | **22** | 欧洲信息检索会议 |
+| [ICDM](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/ICDM/) | 会议 | **21** | 数据挖掘顶会 |
+| [ACM MM](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/ACM_MM/) | 会议 | **13** | 多媒体推荐重镇 |
+| [DASFAA](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/DASFAA/) | 会议 | **12** | 数据库与推荐应用会议 |
+| [ICDE](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/ICDE/) | 会议 | **11** | 数据工程顶会 |
+| [IJCAI (RecSys Track)](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/IJCAI/) | 会议 | **8** | AI 综合顶会 |
+| [SIGIR-AP](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/SIGIR-AP/) | 会议 | **6** | SIGIR 亚太会议 |
+| [ACM TKDD](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/TKDD/) | 期刊 | **4** | ACM 数据挖掘顶刊 |
+| [IEEE TMM](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/TMM/) | 期刊 | **3** | IEEE 多媒体顶刊 |
+| [ACM TWEB](https://jbdcia321vw.github.io/RecSys-Paper-Notes/venues/TWEB/) | 期刊 | **0** | ACM Web 顶刊 |
 
 ## 🗂️ 目录结构
 
