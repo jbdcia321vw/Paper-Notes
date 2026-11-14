@@ -131,4 +131,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （合成 ground-truth + 两真实数据集 + 5 种子配对 Wilcoxon 检验完整，但真实数据缺 ground-truth、解释模型敏感性仅单种子复现）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （生成模型到 SAE 的推导链条清晰，特征分裂与合并的论证严谨；非线性情形仅作合理性论证而非严格证明）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （事后、模型无关、仅需预训练嵌入，可直接用于推荐审计与受众圈选；但未开源，LLM 自动解释有一次性成本）
-

@@ -1,0 +1,26 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+FairDgcl: Fairness-aware Recommendation with Dynamic Graph Contrastive Learning,2410.17555,https://arxiv.org/abs/2410.17555,,debias_fairness_industrial,TKDE,2025
+#REVAL: a semantic evaluation framework for hashtag recommendation,2305.18330,https://arxiv.org/abs/2305.18330,,debias_fairness_industrial,TKDE,2025
+Enhancing Collaborative Semantics of Language Model-Driven Recommendations via Graph-Aware Learning,2406.13235,https://arxiv.org/abs/2406.13235,,llm_rec,TKDE,2025
+Explainable Session-based Recommendation via Path Reasoning,2403.00832,https://arxiv.org/abs/2403.00832,,sequential_rec,TKDE,2025
+Towards Robust Recommendation: A Review and an Adversarial Robustness Evaluation Library,2404.17844,https://arxiv.org/abs/2404.17844,https://github.com/chengleileilei/ShillingREC,debias_fairness_industrial,TKDE,2025
+Efficient and Effective Adaptation of Multimodal Foundation Models in Sequential Recommendation,2411.02992,https://arxiv.org/abs/2411.02992,https://github.com/GAIR-Lab/IISAN,multimodal_rec,TKDE,2025
+Graph Cross-Correlated Network for Recommendation,2411.01182,https://arxiv.org/abs/2411.01182,,graph_rec,TKDE,2025
+AEFS: Adaptive Early Feature Selection for Deep Recommender Systems,2509.12076,https://arxiv.org/abs/2509.12076,,ctr_feature_interaction,TKDE,2025
+Improving Sequential Recommendations via Bidirectional Temporal Data Augmentation with Pre-training,2112.06460,https://arxiv.org/abs/2112.06460,https://github.com/juyongjiang/BARec,sequential_rec,TKDE,2025
+Automated Prompting for Non-overlapping Cross-domain Sequential Recommendation,2304.04218,https://arxiv.org/abs/2304.04218,,cross_domain_multi_scenario,TKDE,2025
+Uncertainty Calibration for Counterfactual Propensity Estimation in Recommendation,2303.12973,https://arxiv.org/abs/2303.12973,,ctr_feature_interaction,TKDE,2025
+Intent Propagation Contrastive Collaborative Filtering,2604.15704,https://arxiv.org/abs/2604.15704,,collaborative_filtering,TKDE,2025
+Dual-Channel Multiplex Graph Neural Networks for Recommendation,2403.11624,https://arxiv.org/abs/2403.11624,,graph_rec,TKDE,2025
+Exact and Efficient Unlearning for Large Language Model-based Recommendation,2404.10327,https://arxiv.org/abs/2404.10327,,llm_rec,TKDE,2025
+TokenRec: Learning to Tokenize ID for LLM-based Generative Recommendation,2406.10450,https://arxiv.org/abs/2406.10450,https://github.com/Quhaoh233/TokenRec,generative_rec,TKDE,2025
+Pattern-wise Transparent Sequential Recommendation,2402.11480,https://arxiv.org/abs/2402.11480,,sequential_rec,TKDE,2025
+Score-based Generative Diffusion Models for Social Recommendations,2412.15579,https://arxiv.org/abs/2412.15579,,social_group_rec,TKDE,2025
+Intent-guided Heterogeneous Graph Contrastive Learning for Recommendation,2407.17234,https://arxiv.org/abs/2407.17234,https://github.com/wangyu0627/IHGCL,graph_rec,TKDE,2025
+FairSort: Learning to Fair Rank for Personalized Recommendations in Two-Sided Platforms,2412.00424,https://arxiv.org/abs/2412.00424,,debias_fairness_industrial,TKDE,2025
+Latent Factor Modeling with Expert Network for Multi-Behavior Recommendation,2603.18556,https://arxiv.org/abs/2603.18556,,collaborative_filtering,TKDE,2025
+Dual Test-time Training for Out-of-distribution Recommender System,2407.15620,https://arxiv.org/abs/2407.15620,,debias_fairness_industrial,TKDE,2025
+CoLLM: Integrating Collaborative Embeddings into Large Language Models for Recommendation,2310.19488,https://arxiv.org/abs/2310.19488,https://github.com/zyang1580/CoLLM,llm_rec,TKDE,2025
+"A Survey on Point-of-Interest Recommendation: Models, Architectures, and Security",2410.02191,https://arxiv.org/abs/2410.02191,,poi_spatiotemporal_rec,TKDE,2025
+Personalized Recommendation Models in Federated Settings: A Survey,2504.07101,https://arxiv.org/abs/2504.07101,,debias_fairness_industrial,TKDE,2025
+Preference-Consistent Knowledge Distillation for Recommender System,2311.04549,https://arxiv.org/abs/2311.04549,https://github.com/woriazzc/KDs,llm_rec,TKDE,2025

@@ -132,4 +132,3 @@ $$RR(\text{EXN}^i_1)=\text{score}\big(\text{retrieve}(a^R_i(\text{EXN}^0))\big)$
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 + 三类细粒度错误率 + 60 人真人研究 + LLM 评审可靠性验证，但缺真实用户大规模线上验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （MDP 形式化与 UCT/奖励公式定义完整，附录给出伪代码与全部 prompt，符号略多但自洽）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码已开源、内存占用约 375MB，EA 变体给出 9s 延迟方案，但树搜索延迟仍是线上部署主要门槛）
-

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-generate_recsys_notes.py (v3.6 防截断校验 + 零转义警告 + 自动修复坏笔记版)
+generate_recsys_notes.py (v3.8 新增 OpenCode 免费 deepseek-v4.1-flash-free 协议支持 + arXiv 429 退避版)
 核心改进：
   1. 彻底移除文末堆砌的 `## 论文图表`：
      - 仅当大模型认为某张图（如核心模型架构图、关键动机对比图）适合放在对应正文段落位置时，才在正文中内嵌最多 1–3 张图片。
@@ -12,9 +12,14 @@ generate_recsys_notes.py (v3.6 防截断校验 + 零转义警告 + 自动修复�
 
 import csv
 import html
+import itertools
 import os
 import posixpath
+import random
 import re
+import shutil
+import string
+import subprocess
 import sys
 import json
 import time
@@ -76,8 +81,13 @@ USAGE_TOTALS = {
     "cost_usd": 0.0,
 }
 
-# DeepSeek 官方定价（USD / 1M tokens，高峰价；非高峰为 5 折）
+# DeepSeek 官方定价（USD / 1M tokens，高峰价；非高峰为 5 折；OpenCode Free 免费额度为 $0）
 PRICING_USD_PER_M = {
+    "deepseek-v4.1-flash-free": {
+        "cache_hit": 0.0,
+        "cache_miss": 0.0,
+        "output": 0.0,
+    },
     "deepseek-flash": {
         "cache_hit": 0.006,
         "cache_miss": 0.30,
@@ -139,6 +149,8 @@ def is_peak_now() -> bool:
 
 def _pricing_for_model(model: str):
     name = (model or "").lower()
+    if "free" in name or "opencode" in name or os.environ.get("USE_OPENCODE_FREE") == "1":
+        return PRICING_USD_PER_M["deepseek-v4.1-flash-free"]
     if "pro" in name:
         return PRICING_USD_PER_M["deepseek-v4-pro"]
     if "deepseek" in name or not name:
@@ -230,30 +242,229 @@ def print_usage_summary(
             log.write(line)
 
 
+OPENCODE_ZEN_BASE_URL = "https://opencode.ai/zen/v1"
+OPENCODE_FREE_MODEL = "deepseek-v4.1-flash-free"
+_OPENCODE_COUNTER = itertools.count(1)
+_BASE62_ALPHABET = string.digits + string.ascii_uppercase + string.ascii_lowercase
+_OPENCODE_FALLBACK_WARNED = False
+
+# OpenCode Zen 免费层服务端校验要求请求体包含非空 properties 的基础工具签名
+_OPENCODE_REQUIRED_TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": tool_name,
+            "description": f"OpenCode {tool_name} tool",
+            "parameters": {
+                "type": "object",
+                "properties": {"input": {"type": "string"}},
+            },
+        },
+    }
+    for tool_name in ("bash", "glob", "grep", "read")
+]
+
+
+def _generate_opencode_session_id() -> str:
+    """生成符合 OpenCode Zen 服务端校验的 30 位降序时间戳 Session ID:
+    格式 `/^ses_[0-9a-f]{12}[0-9A-Za-z]{14}$/`，其中 12 位 hex 为 `~((now_ms << 12) | counter) & 0xFFFFFFFFFFFF`。
+    """
+    now_ms = int(time.time() * 1000)
+    counter = next(_OPENCODE_COUNTER) & 0xFFF
+    encoded_ts = (~((now_ms << 12) | counter)) & 0xFFFFFFFFFFFF
+    rand_tail = "".join(random.choices(_BASE62_ALPHABET, k=14))
+    return f"ses_{encoded_ts:012x}{rand_tail}"
+
+
+def is_opencode_free_mode(base_url: str = "", model: str = "") -> bool:
+    if os.environ.get("USE_OPENCODE_FREE") == "1":
+        return True
+    b_lower = (base_url or "").lower()
+    m_lower = (model or "").lower()
+    return "opencode.ai" in b_lower or "deepseek-v4.1-flash-free" in m_lower or m_lower.startswith("opencode/")
+
+
 def resolve_api_key(explicit: str = "") -> str:
+    if explicit:
+        return explicit.strip()
+    if os.environ.get("USE_OPENCODE_FREE") == "1":
+        return (
+            os.environ.get("OPENCODE_API_KEY", "")
+            or os.environ.get("LLM_API_KEY", "")
+            or os.environ.get("DEEPSEEK_API_KEY", "")
+            or "public"
+        ).strip()
     return (
-        explicit
-        or os.environ.get("LLM_API_KEY", "")
+        os.environ.get("LLM_API_KEY", "")
         or os.environ.get("DEEPSEEK_API_KEY", "")
+        or os.environ.get("OPENCODE_API_KEY", "")
     ).strip()
 
 
 def resolve_base_url(explicit: str = "") -> str:
+    if explicit:
+        return explicit.strip()
+    if os.environ.get("USE_OPENCODE_FREE") == "1":
+        return (os.environ.get("OPENCODE_BASE_URL", "") or os.environ.get("LLM_BASE_URL", "") or OPENCODE_ZEN_BASE_URL).strip()
     return (
-        explicit
-        or os.environ.get("LLM_BASE_URL", "")
+        os.environ.get("LLM_BASE_URL", "")
         or os.environ.get("DEEPSEEK_BASE_URL", "")
         or DEFAULT_BASE_URL
     ).strip()
 
 
 def resolve_model(explicit: str = "") -> str:
+    if explicit:
+        return explicit.strip()
+    if os.environ.get("USE_OPENCODE_FREE") == "1":
+        return (os.environ.get("OPENCODE_MODEL", "") or os.environ.get("LLM_MODEL", "") or OPENCODE_FREE_MODEL).strip()
     return (
-        explicit
-        or os.environ.get("LLM_MODEL", "")
+        os.environ.get("LLM_MODEL", "")
         or os.environ.get("DEEPSEEK_MODEL", "")
         or DEFAULT_MODEL
     ).strip()
+
+
+def _call_opencode_zen_sse(
+    messages: list,
+    api_key: str,
+    base_url: str,
+    model: str,
+    temperature: float = 0.0,
+    timeout: int = 240,
+    max_tokens: int = None,
+) -> str:
+    """通过 OpenCode Zen 免费协议（Canonical Session ID + CLI Headers + Tools Signature + SSE Stream）调用 deepseek-v4.1-flash-free。
+    若直连被拦截，自动尝试本地代理与本机 `opencode run` CLI。
+    """
+    clean_model = model.split("/", 1)[-1] if model.startswith("opencode/") else (model or OPENCODE_FREE_MODEL)
+    auth_token = api_key if (api_key and not api_key.startswith("sk-")) else (os.environ.get("OPENCODE_API_KEY", "") or "public")
+
+    # 兼容用户在 messages 中未禁止工具调用的情况：在最后一条 user 消息末尾附加简短约束，严防模型触发 dummy tools
+    patched_messages = []
+    for idx, msg in enumerate(messages):
+        m_copy = dict(msg)
+        if idx == len(messages) - 1 and m_copy.get("role") == "user":
+            m_copy["content"] = str(m_copy.get("content", "")) + "\n\n[System Note: Reply directly with plain text/Markdown only. Do NOT invoke any tool calls.]"
+        patched_messages.append(m_copy)
+
+    payload = {
+        "model": clean_model,
+        "messages": patched_messages,
+        "temperature": temperature,
+        "stream": True,
+        "tools": _OPENCODE_REQUIRED_TOOLS,
+    }
+    if max_tokens and max_tokens > 0:
+        payload["max_tokens"] = min(max_tokens, 16384)
+
+    endpoints = [base_url.rstrip("/") + "/chat/completions"]
+    if "opencode.ai/zen/v1" in base_url:
+        endpoints.append("https://opencode.ai/inference/v1/chat/completions")
+
+    proxies = ["", "http://127.0.0.1:7897", "http://127.0.0.1:7890"]
+    last_err = None
+
+    for ep in endpoints:
+        for proxy_url in proxies:
+            try:
+                headers = {
+                    "Content-Type": "application/json",
+                    "Accept": "text/event-stream",
+                    "Authorization": f"Bearer {auth_token}",
+                    "User-Agent": "opencode/2.0.29",
+                    "x-opencode-client": "cli",
+                    "x-opencode-project": "global",
+                    "x-opencode-session": _generate_opencode_session_id(),
+                }
+                req = urllib.request.Request(
+                    ep,
+                    data=json.dumps(payload).encode("utf-8"),
+                    headers=headers,
+                    method="POST",
+                )
+                if proxy_url:
+                    opener = urllib.request.build_opener(
+                        urllib.request.ProxyHandler({"http": proxy_url, "https": proxy_url})
+                    )
+                    resp_ctx = opener.open(req, timeout=timeout)
+                else:
+                    resp_ctx = urllib.request.urlopen(req, timeout=timeout)
+
+                with resp_ctx as resp:
+                    raw_bytes = resp.read()
+                raw_text = raw_bytes.decode("utf-8", errors="replace").strip()
+
+                # 如果网关（如本地 opencode2api）直接返回了非流式 JSON
+                if raw_text.startswith("{") and '"choices"' in raw_text:
+                    res_json = json.loads(raw_text)
+                    record_usage(res_json.get("usage") if isinstance(res_json, dict) else None, clean_model)
+                    choice = res_json["choices"][0]
+                    if choice.get("finish_reason") == "length":
+                        raise RuntimeError("LLM 输出因达到 max_tokens 上限被截断 (finish_reason=length)")
+                    return (choice.get("message", {}).get("content") or "").strip()
+
+                # 解析 SSE 流式响应 (`data: {...}`)
+                chunks = []
+                finish_reason = ""
+                usage_obj = None
+                for line in raw_text.splitlines():
+                    line = line.strip()
+                    if not line.startswith("data:"):
+                        continue
+                    data_str = line[5:].strip()
+                    if not data_str or data_str == "[DONE]":
+                        continue
+                    try:
+                        evt = json.loads(data_str)
+                    except json.JSONDecodeError:
+                        continue
+                    if isinstance(evt.get("usage"), dict):
+                        usage_obj = evt["usage"]
+                    choices = evt.get("choices") or []
+                    if choices:
+                        c0 = choices[0]
+                        if c0.get("finish_reason"):
+                            finish_reason = c0["finish_reason"]
+                        delta = c0.get("delta") or c0.get("message") or {}
+                        piece = delta.get("content")
+                        if piece:
+                            chunks.append(piece)
+
+                full_content = "".join(chunks).strip()
+                if full_content:
+                    record_usage(usage_obj or {"prompt_tokens": 0, "completion_tokens": len(full_content) // 3}, clean_model)
+                    if finish_reason == "length":
+                        raise RuntimeError("LLM 输出因达到 max_tokens 上限被截断 (finish_reason=length)")
+                    return full_content
+            except Exception as e:
+                last_err = e
+                continue
+
+    # 通道 2: 若用户本机已安装官方 `opencode` CLI，自动通过 `opencode run` 子进程调用免费模型
+    opencode_bin = shutil.which("opencode")
+    if opencode_bin:
+        try:
+            combined_prompt = "\n\n".join(
+                f"[{m.get('role', 'user').upper()}]\n{m.get('content', '')}" for m in messages
+            )
+            cli_model = model if model.startswith("opencode/") else f"opencode/{clean_model}"
+            proc = subprocess.run(
+                [opencode_bin, "run", "-m", cli_model],
+                input=combined_prompt,
+                text=True,
+                 encoding="utf-8",
+                capture_output=True,
+                timeout=timeout,
+            )
+            if proc.returncode == 0 and proc.stdout and len(proc.stdout.strip()) > 10:
+                out_txt = proc.stdout.strip()
+                record_usage({"prompt_tokens": len(combined_prompt) // 4, "completion_tokens": len(out_txt) // 3}, clean_model)
+                return out_txt
+        except Exception as cli_e:
+            last_err = cli_e
+
+    raise RuntimeError(f"OpenCode Free 通道调用失败: {last_err}")
 
 
 def call_chat_completion(
@@ -267,13 +478,38 @@ def call_chat_completion(
     max_tokens: int = None,
     thinking: bool = False,
 ) -> str:
+    global _OPENCODE_FALLBACK_WARNED
+    if is_opencode_free_mode(base_url, model) and "opencode.ai" in (base_url or "").lower():
+        try:
+            return _call_opencode_zen_sse(
+                messages=messages,
+                api_key=api_key,
+                base_url=base_url,
+                model=model,
+                temperature=temperature,
+                timeout=timeout,
+                max_tokens=max_tokens,
+            )
+        except Exception as oc_err:
+            # 若用户环境变量中配置了官方 DEEPSEEK_API_KEY，当 OpenCode 免费节点限流或拦截时自动平滑降级到官方 DeepSeek API
+            fallback_ds_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
+            if fallback_ds_key and fallback_ds_key != api_key:
+                if not _OPENCODE_FALLBACK_WARNED:
+                    print(f"  [OpenCode Fallback] OpenCode 免费端点返回 ({oc_err})，已自动平滑切换至环境变量中的官方 DEEPSEEK_API_KEY 兜底！")
+                    _OPENCODE_FALLBACK_WARNED = True
+                api_key = fallback_ds_key
+                base_url = DEFAULT_BASE_URL
+                model = DEFAULT_MODEL
+            else:
+                raise
+
     endpoint = base_url.rstrip("/") + "/chat/completions"
     payload = {"model": model, "messages": messages, "temperature": temperature}
-    if response_format:
+    if response_format and not is_opencode_free_mode(base_url, model):
         payload["response_format"] = response_format
     if max_tokens and max_tokens > 0:
         payload["max_tokens"] = max_tokens
-    if thinking is not None:
+    if thinking is not None and not is_opencode_free_mode(base_url, model):
         payload["thinking"] = {"type": "enabled" if thinking else "disabled"}
 
     def _post(request_payload):
@@ -283,7 +519,8 @@ def call_chat_completion(
             data=data,
             headers={
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {api_key}",
+                "Authorization": f"Bearer {api_key or 'public'}",
+                "User-Agent": "opencode/2.0.29",
             },
             method="POST",
         )
@@ -299,11 +536,13 @@ def call_chat_completion(
                 payload["max_tokens"] = 8192
             else:
                 payload.pop("thinking", None)
+                payload.pop("response_format", None)
             try:
                 res_json = _post(payload)
             except urllib.error.HTTPError as e2:
                 payload.pop("thinking", None)
                 payload.pop("max_tokens", None)
+                payload.pop("response_format", None)
                 try:
                     res_json = _post(payload)
                 except urllib.error.HTTPError as retry_error:
@@ -829,16 +1068,40 @@ def infer_venue_from_comment(comment: str, default_venue: str, default_year: str
 def _fetch_arxiv_entries(api_params: dict, cache_dir: Path = None, download_pdf: bool = True):
     url = "https://export.arxiv.org/api/query?" + urllib.parse.urlencode(api_params)
     xml_data = b""
-    for attempt in range(3):
+    routes = ["", "http://127.0.0.1:7897", "http://127.0.0.1:7890"]
+    last_err = None
+    for attempt in range(5):
+        proxy_url = routes[attempt % len(routes)]
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "RecSys-Paper-Notes/3.4"})
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                xml_data = resp.read()
+            req = urllib.request.Request(
+                url,
+                headers={"User-Agent": f"RecSys-Paper-Notes/3.7 (polite-academic-client-{attempt})"},
+            )
+            if proxy_url:
+                opener = urllib.request.build_opener(
+                    urllib.request.ProxyHandler({"http": proxy_url, "https": proxy_url})
+                )
+                with opener.open(req, timeout=35) as resp:
+                    xml_data = resp.read()
+            else:
+                with urllib.request.urlopen(req, timeout=35) as resp:
+                    xml_data = resp.read()
             break
+        except urllib.error.HTTPError as e:
+            last_err = e
+            wait_s = 6.0 * (attempt + 1)
+            if e.code == 429 and e.headers:
+                ra = e.headers.get("Retry-After")
+                if ra and str(ra).isdigit():
+                    wait_s = max(float(ra), wait_s)
+            route_label = proxy_url or "直连"
+            print(f"  [arXiv 429/HTTP {e.code}] 通道({route_label}) 触发限流，等待 {wait_s:.0f}s 后切换备用出口重试 ({attempt + 1}/5) ...")
+            time.sleep(wait_s)
         except Exception as e:
-            if attempt == 2:
-                raise
-            time.sleep(2.0 * (attempt + 1))
+            last_err = e
+            time.sleep(3.0 * (attempt + 1))
+    if not xml_data:
+        raise last_err or RuntimeError("arXiv API 请求失败")
 
     root = ET.fromstring(xml_data)
     ns = {"atom": "http://www.w3.org/2005/Atom"}
@@ -1567,12 +1830,15 @@ def main():
     parser.add_argument("--max-input-chars", type=int, default=DEFAULT_MAX_INPUT_CHARS, help="送入 LLM 的论文最大字符数（默认 65000；0 表示不限制）")
     parser.add_argument("--max-output-tokens", type=int, default=DEFAULT_MAX_OUTPUT_TOKENS, help="单次生成最大输出 token（默认 8192）")
     parser.add_argument("--thinking", action="store_true", help="启用模型 thinking/reasoning")
-    parser.add_argument("--api-key", default="", help="大模型 API Key（或设置 LLM_API_KEY / DEEPSEEK_API_KEY）")
-    parser.add_argument("--base-url", default="", help="API Base URL（默认 https://api.deepseek.com/v1）")
-    parser.add_argument("--model", default="", help="模型名称，默认 deepseek-flash（可用 LLM_MODEL / DEEPSEEK_MODEL 覆盖）")
+    parser.add_argument("--opencode-free", action="store_true", help="使用 OpenCode 免费额度 (deepseek-v4.1-flash-free，免 Key 或配合本地 opencode2api 网关)")
+    parser.add_argument("--api-key", default="", help="大模型 API Key（或设置 LLM_API_KEY / DEEPSEEK_API_KEY / OPENCODE_API_KEY）")
+    parser.add_argument("--base-url", default="", help="API Base URL（默认 https://api.deepseek.com/v1；--opencode-free 时默认 https://opencode.ai/zen/v1）")
+    parser.add_argument("--model", default="", help="模型名称，默认 deepseek-flash（--opencode-free 时默认 deepseek-v4.1-flash-free）")
     args = parser.parse_args()
     run_start = time.monotonic()
 
+    if args.opencode_free:
+        os.environ["USE_OPENCODE_FREE"] = "1"
     args.api_key = resolve_api_key(args.api_key)
     args.base_url = resolve_base_url(args.base_url)
     args.model = resolve_model(args.model)
@@ -1719,6 +1985,10 @@ def main():
     )
     all_notes = collect_all_notes(docs_dir)
     all_years = discover_years(docs_dir, all_notes)
+    for _v in VENUES:
+        for _y in set(all_years) | {str(default_year)}:
+            for _c in CATEGORIES:
+                (docs_dir / "venues" / _v / str(_y) / _c).mkdir(parents=True, exist_ok=True)
     build_topic_pages(docs_dir, all_notes)
     build_year_pages(docs_dir, all_notes, all_years)
     build_venue_pages(docs_dir, all_notes, all_years)

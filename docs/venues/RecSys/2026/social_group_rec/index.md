@@ -4,7 +4,7 @@
 
 > **方向说明**：社交信任网络传播、社交同质性去噪、群组偏好共识聚合 (Group Rec) 与影响力建模
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (1)](../../../CIKM/2026/social_group_rec/) · [IEEE TKDE 2026 (1)](../../../TKDE/2026/social_group_rec/) · [WWW (TheWebConf) 2026 (2)](../../../WWW/2026/social_group_rec/)
+📌 **同领域跨会议浏览：** [RecSys 2025 (3)](../../2025/social_group_rec/) · [AAAI (RecSys Track) 2025 (1)](../../../AAAI/2025/social_group_rec/) · [CIKM 2025 (2)](../../../CIKM/2025/social_group_rec/) · [CIKM 2026 (1)](../../../CIKM/2026/social_group_rec/) · [SIGIR 2025 (2)](../../../SIGIR/2025/social_group_rec/) · [IEEE TKDE 2025 (1)](../../../TKDE/2025/social_group_rec/) · [IEEE TKDE 2026 (1)](../../../TKDE/2026/social_group_rec/) · [WWW (TheWebConf) 2025 (2)](../../../WWW/2025/social_group_rec/) · [WWW (TheWebConf) 2026 (2)](../../../WWW/2026/social_group_rec/)
 
 <dl>
 <dt><strong><a href="are_we_really_making_progress_in_group_recommendation_unmasking_the_tie_bre/">Are We Really Making Progress in Group Recommendation? Unmasking the Tie-Breaking Illusion</a></strong></dt>

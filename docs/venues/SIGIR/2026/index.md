@@ -5,7 +5,7 @@ hide:
 
 # 🏛️ SIGIR 2026 推荐系统论文解读
 
-115 篇 SIGIR 2026 论文解读，覆盖 14 个推荐系统细分方向。每篇均包含一句话总结、核心思想、实验设置与审稿级批判，5 分钟读懂一篇论文。
+116 篇 SIGIR 2026 论文解读，覆盖 14 个推荐系统细分方向。每篇均包含一句话总结、核心思想、实验设置与审稿级批判，5 分钟读懂一篇论文。
 
 <div class="conf-index">
 <hr />
@@ -155,7 +155,7 @@ hide:
 </dl>
 <p><a href="generative_rec/">查看全部19篇「生成式推荐与离散语义 ID」论文 →</a></p>
 <hr />
-<h2 id="llm_rec">🧠 大语言模型推荐 (LLM4Rec) (21)</h2>
+<h2 id="llm_rec">🧠 大语言模型推荐 (LLM4Rec) (22)</h2>
 <dl>
 <dt><strong><a href="llm_rec/ace_anisotropy_controllable_embedding_for_llm_enhanced_sequential_recommend/">ACE: Anisotropy-Controllable Embedding for LLM-enhanced Sequential Recommendation</a></strong></dt>
 <dd>
@@ -198,7 +198,7 @@ hide:
 <p>以参数级双视图 LoRA-MoE 替代输入/输出级融合，个性化路由对齐行为与语义视图，四数据集 N@10 提升 3.87%–8.02%，线上 CTR +9.24%。</p>
 </dd>
 </dl>
-<p><a href="llm_rec/">查看全部21篇「大语言模型推荐 (LLM4Rec)」论文 →</a></p>
+<p><a href="llm_rec/">查看全部22篇「大语言模型推荐 (LLM4Rec)」论文 →</a></p>
 <hr />
 <h2 id="agent_conversational_rec">🗣️ 对话推荐与智能体仿真 (8)</h2>
 <dl>

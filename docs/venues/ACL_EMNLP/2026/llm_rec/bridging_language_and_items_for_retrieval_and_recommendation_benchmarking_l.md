@@ -121,4 +121,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三场景 12 数据集、11 模型、参数受控适配器与 Borda 聚合严谨，惟搜索候选池非全库略打折）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （任务定义与公式简洁清晰，附录给出完整划分/元数据/失败案例分析，符号规范）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （Amazon'23 与 BLaIR-Bench 工具链全开源，离线编码 + 在线 ANN 架构直接可落地，选型指导价值高）
-

@@ -122,4 +122,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐⭐ （5 场景 14 模型、统一 Full-Ranking、5 种子 + 配对 t 检验，协议严谨度为本领域标杆）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （DDPM/SDE 预备知识完整、模块契约清晰，但部分表格排版与符号重复略显冗长）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （开源完整、扩展成本低，但扩散推理延迟与大规模数据缺失限制直接上线价值）
-

@@ -1,0 +1,89 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Does Weighting Improve Matrix Factorization for Recommender Systems?,2510.10440,https://arxiv.org/abs/2510.10440,,collaborative_filtering,WWW,2025
+BAT: Benchmark for Auto-bidding Task,2505.08485,https://arxiv.org/abs/2505.08485,https://github.com/avito-tech/bat-autobidding-benchmark,ctr_feature_interaction,WWW,2025
+On the Practice of Deep Hierarchical Ensemble Network for Ad Conversion Rate Prediction,2504.08169,https://arxiv.org/abs/2504.08169,,ctr_feature_interaction,WWW,2025
+xMTF: A Formula-Free Model for Reinforcement-Learning-Based Multi-Task Fusion in Recommender Systems,2504.05669,https://arxiv.org/abs/2504.05669,,multi_task_reranking,WWW,2025
+Comment Staytime Prediction with LLM-enhanced Comment Understanding,2504.01602,https://arxiv.org/abs/2504.01602,https://github.com/lyingCS/KuaiComt.github.io,multimodal_rec,WWW,2025
+External Large Foundation Model: How to Efficiently Serve Trillions of Parameters for Online Ads Recommendation,2502.17494,https://arxiv.org/abs/2502.17494,,llm_rec,WWW,2025
+EAGER-LLM: Enhancing Large Language Models as Recommenders through Exogenous Behavior-Semantic Integration,2502.14735,https://arxiv.org/abs/2502.14735,,llm_rec,WWW,2025
+Collaborative Retrieval for Large Language Model-based Conversational Recommender Systems,2502.14137,https://arxiv.org/abs/2502.14137,https://github.com/yaochenzhu/CRAG,agent_conversational_rec,WWW,2025
+G-Refer: Graph Retrieval-Augmented Large Language Model for Explainable Recommendation,2502.12586,https://arxiv.org/abs/2502.12586,https://github.com/Yuhan1i/G-Refer,llm_rec,WWW,2025
+Joint Evaluation of Fairness and Relevance in Recommender Systems with Pareto Frontier,2502.11921,https://arxiv.org/abs/2502.11921,https://github.com/theresiavr/DPFR-recsys-evaluation,debias_fairness_industrial,WWW,2025
+A Hybrid Cross-Stage Coordination Pre-ranking Model for Online Recommendation Systems,2502.10284,https://arxiv.org/abs/2502.10284,,multi_task_reranking,WWW,2025
+Unleashing the Power of Large Language Model for Denoising Recommendation,2502.09058,https://arxiv.org/abs/2502.09058,,self_supervised_denoising,WWW,2025
+Leveraging Member-Group Relations via Multi-View Graph Filtering for Effective Group Recommendation,2502.09050,https://arxiv.org/abs/2502.09050,,social_group_rec,WWW,2025
+Criteria-Aware Graph Filtering: Extremely Fast Yet Accurate Multi-Criteria Recommendation,2502.09046,https://arxiv.org/abs/2502.09046,,collaborative_filtering,WWW,2025
+NLGR: Utilizing Neighbor Lists for Generative Rerank in Personalized Recommendation Systems,2502.06097,https://arxiv.org/abs/2502.06097,,multi_task_reranking,WWW,2025
+HCMRM: A High-Consistency Multimodal Relevance Model for Search Ads,2502.05822,https://arxiv.org/abs/2502.05822,,multimodal_rec,WWW,2025
+Large Memory Network for Recommendation,2502.05558,https://arxiv.org/abs/2502.05558,,sequential_rec,WWW,2025
+CTR-Driven Advertising Image Generation with Multimodal Large Language Models,2502.06823,https://arxiv.org/abs/2502.06823,https://github.com/Chenguoz/CAIG,ctr_feature_interaction,WWW,2025
+RTBAgent: A LLM-based Agent System for Real-Time Bidding,2502.00792,https://arxiv.org/abs/2502.00792,https://github.com/CaiLeng/RTBAgent,ctr_feature_interaction,WWW,2025
+Personalized Denoising Implicit Feedback for Robust Recommender System,2502.00348,https://arxiv.org/abs/2502.00348,,self_supervised_denoising,WWW,2025
+Uncertainty Quantification and Decomposition for LLM-based Recommendation,2501.17630,https://arxiv.org/abs/2501.17630,https://github.com/WonbinKweon/UNC_LLM_REC_WWW2025,llm_rec,WWW,2025
+Hierarchical Time-Aware Mixture of Experts for Multi-Modal Sequential Recommendation,2501.14269,https://arxiv.org/abs/2501.14269,,multimodal_rec,WWW,2025
+Graph Neural Controlled Differential Equations For Collaborative Filtering,2501.13908,https://arxiv.org/abs/2501.13908,,collaborative_filtering,WWW,2025
+Generating with Fairness: A Modality-Diffused Counterfactual Framework for Incomplete Multimodal Recommendations,2501.11916,https://arxiv.org/abs/2501.11916,https://github.com/JinLi-i/MoDiCF,multimodal_rec,WWW,2025
+Multimodal semantic retrieval for product search,2501.07365,https://arxiv.org/abs/2501.07365,,multimodal_rec,WWW,2025
+Leveraging Memory Retrieval to Enhance LLM-based Generative Recommendation,2412.17593,https://arxiv.org/abs/2412.17593,,llm_rec,WWW,2025
+GraphHash: Graph Clustering Enables Parameter Efficiency in Recommender Systems,2412.17245,https://arxiv.org/abs/2412.17245,https://github.com/snap-research/GraphHash,collaborative_filtering,WWW,2025
+SPRec: Self-Play to Debias LLM-based Recommendation,2412.09243,https://arxiv.org/abs/2412.09243,https://github.com/RegionCh/SPRec,llm_rec,WWW,2025
+Efficient user history modeling with amortized inference for deep learning recommendation models,2412.06924,https://arxiv.org/abs/2412.06924,,sequential_rec,WWW,2025
+Disentangling Likes and Dislikes in Personalized Generative Explainable Recommendation,2410.13248,https://arxiv.org/abs/2410.13248,https://github.com/jchanxtarov/sent_xrec,agent_conversational_rec,WWW,2025
+Filtering Discomforting Recommendations with Large Language Models,2410.05411,https://arxiv.org/abs/2410.05411,,llm_rec,WWW,2025
+Leveraging LLMs for Influence Path Planning in Proactive Recommendation,2409.04827,https://arxiv.org/abs/2409.04827,,llm_rec,WWW,2025
+Debias Can be Unreliable: Mitigating Bias Issue in Evaluating Debiasing Recommendation,2409.04810,https://arxiv.org/abs/2409.04810,,debias_fairness_industrial,WWW,2025
+Retrieval with Learned Similarities,2407.15462,https://arxiv.org/abs/2407.15462,https://github.com/bailuding/rails,sequential_rec,WWW,2025
+CROWN: A Novel Approach to Comprehending Users' Preferences for Accurate Personalized News Recommendation,2310.09401,https://arxiv.org/abs/2310.09401,,cold_start_rec,WWW,2025
+Separated Contrastive Learning for Matching in Cross-domain Recommendation with Curriculum Scheduling,2502.16239,https://arxiv.org/abs/2502.16239,,cross_domain_multi_scenario,WWW,2025
+Efficient and Practical Approximation Algorithms for Advertising in Content Feeds,2502.02115,https://arxiv.org/abs/2502.02115,,ctr_feature_interaction,WWW,2025
+RecUserSim: A Realistic and Diverse User Simulator for Evaluating Conversational Recommender Systems,2507.22897,https://arxiv.org/abs/2507.22897,,agent_conversational_rec,WWW,2025
+PCL: Prompt-based Continual Learning for User Modeling in Recommender Systems,2502.19628,https://arxiv.org/abs/2502.19628,,multi_task_reranking,WWW,2025
+Training Large Recommendation Models via Graph-Language Token Alignment,2502.18757,https://arxiv.org/abs/2502.18757,,llm_rec,WWW,2025
+AgentSociety Challenge: Designing LLM Agents for User Modeling and Recommendation on Web Platforms,2502.18754,https://arxiv.org/abs/2502.18754,,agent_conversational_rec,WWW,2025
+A Contextual-Aware Position Encoding for Sequential Recommendation,2502.09027,https://arxiv.org/abs/2502.09027,https://github.com/yjdy/CAPE,sequential_rec,WWW,2025
+RALLRec: Improving Retrieval Augmented Large Language Model Recommendation with Representation Learning,2502.06101,https://arxiv.org/abs/2502.06101,https://github.com/JianXu95/RALLRec,llm_rec,WWW,2025
+"Virtual Stars, Real Fans: Understanding the VTuber Ecosystem",2502.01553,https://arxiv.org/abs/2502.01553,,social_group_rec,WWW,2025
+Collaborative Diffusion Model for Recommender System,2501.18997,https://arxiv.org/abs/2501.18997,,generative_rec,WWW,2025
+Distributionally Robust Graph Out-of-Distribution Recommendation via Diffusion Model,2501.15555,https://arxiv.org/abs/2501.15555,,debias_fairness_industrial,WWW,2025
+ABXI: Invariant Interest Adaptation for Task-Guided Cross-Domain Sequential Recommendation,2501.15118,https://arxiv.org/abs/2501.15118,https://github.com/DiMarzioBian/ABXI,cross_domain_multi_scenario,WWW,2025
+MixRec: Individual and Collective Mixing Empowers Data Augmentation for Recommender Systems,2501.13579,https://arxiv.org/abs/2501.13579,,self_supervised_denoising,WWW,2025
+Graph-Sequential Alignment and Uniformity: Toward Enhanced Recommendation Systems,2412.04276,https://arxiv.org/abs/2412.04276,https://github.com/YuweiCao-UIC/GSAU.git,graph_rec,WWW,2025
+On-device Content-based Recommendation with Single-shot Embedding Pruning: A Cooperative Game Perspective,2411.13052,https://arxiv.org/abs/2411.13052,https://github.com/chenxing1999/shaver,debias_fairness_industrial,WWW,2025
+Beyond Utility: Evaluating LLM as Recommender,2411.00331,https://arxiv.org/abs/2411.00331,https://github.com/JiangDeccc/EvaLLMasRecommender,llm_rec,WWW,2025
+Personalized Image Generation with Large Multimodal Models,2410.14170,https://arxiv.org/abs/2410.14170,,multimodal_rec,WWW,2025
+TF-DCon: Leveraging Large Language Models (LLMs) to Empower Training-Free Dataset Condensation for Content-Based Recommendation,2310.09874,https://arxiv.org/abs/2310.09874,,llm_rec,WWW,2025
+AURO: Reinforcement Learning for Adaptive User Retention Optimization in Recommender Systems,2310.03984,https://arxiv.org/abs/2310.03984,,rl_bandit_rec,WWW,2025
+Middleman Bias in Advertising: Aligning Relevance of Keyphrase Recommendations with Search,2502.00131,https://arxiv.org/abs/2502.00131,,ctr_feature_interaction,WWW,2025
+Personalized Diffusion Model Reshapes Cold-Start Bundle Recommendation,2505.14901,https://arxiv.org/abs/2505.14901,https://github.com/bt-nghia/DisCo,cold_start_rec,WWW,2025
+Reducing Symbiosis Bias Through Better A/B Tests of Recommendation Algorithms,2309.07107,https://arxiv.org/abs/2309.07107,,debias_fairness_industrial,WWW,2025
+PerSRV: Personalized Sticker Retrieval with Vision-Language Model,2410.21801,https://arxiv.org/abs/2410.21801,,multimodal_rec,WWW,2025
+PRECTR: A Synergistic Framework for Integrating Personalized Search Relevance Matching and CTR Prediction,2503.18395,https://arxiv.org/abs/2503.18395,,ctr_feature_interaction,WWW,2025
+"Creator-Side Recommender System: Challenges, Designs, and Applications",2502.20497,https://arxiv.org/abs/2502.20497,,debias_fairness_industrial,WWW,2025
+Rankformer: A Graph Transformer for Recommendation based on Ranking Objective,2503.16927,https://arxiv.org/abs/2503.16927,https://github.com/StupidThree/Rankformer,collaborative_filtering,WWW,2025
+Large Language Models as Narrative-Driven Recommenders,2410.13604,https://arxiv.org/abs/2410.13604,,llm_rec,WWW,2025
+LLM4Rerank: LLM-based Auto-Reranking Framework for Recommendations,2406.12433,https://arxiv.org/abs/2406.12433,,multi_task_reranking,WWW,2025
+Interactive Visualization Recommendation with Hier-SUCB,2502.03375,https://arxiv.org/abs/2502.03375,,rl_bandit_rec,WWW,2025
+SampleLLM: Optimizing Tabular Data Synthesis in Recommendations,2501.16125,https://arxiv.org/abs/2501.16125,,llm_rec,WWW,2025
+FLARE: Fusing Language Models and Collaborative Architectures for Recommender Enhancement,2409.11699,https://arxiv.org/abs/2409.11699,,sequential_rec,WWW,2025
+InteractRank: Personalized Web-Scale Search Pre-Ranking with Cross Interaction Features,2504.06609,https://arxiv.org/abs/2504.06609,https://github.com/pinterest/atg-research,collaborative_filtering,WWW,2025
+Unmasking Gender Bias in Recommendation Systems and Enhancing Category-Aware Fairness,2502.17921,https://arxiv.org/abs/2502.17921,,debias_fairness_industrial,WWW,2025
+Pre-train and Fine-tune: Recommenders as Large Models,2501.14268,https://arxiv.org/abs/2501.14268,,cross_domain_multi_scenario,WWW,2025
+Enhancing News Recommendation with Hierarchical LLM Prompting,2504.20452,https://arxiv.org/abs/2504.20452,,llm_rec,WWW,2025
+Legommenders: A Comprehensive Content-Based Recommendation Library with LLM Support,2412.15973,https://arxiv.org/abs/2412.15973,,llm_rec,WWW,2025
+Uncovering Cross-Domain Recommendation Ability of Large Language Models,2503.07761,https://arxiv.org/abs/2503.07761,,cross_domain_multi_scenario,WWW,2025
+Distinguished Quantized Guidance for Diffusion-based Sequence Recommendation,2501.17670,https://arxiv.org/abs/2501.17670,,generative_rec,WWW,2025
+D2K: Turning Historical Data into Retrievable Knowledge for Recommender Systems,2401.11478,https://arxiv.org/abs/2401.11478,,llm_rec,WWW,2025
+Beyond Retrieval: Generating Narratives in Conversational Recommender Systems,2410.16780,https://arxiv.org/abs/2410.16780,,llm_rec,WWW,2025
+Bridging Conversational and Collaborative Signals for Conversational Recommendation,2412.06949,https://arxiv.org/abs/2412.06949,,agent_conversational_rec,WWW,2025
+Value Function Decomposition in Markov Recommendation Process,2501.17409,https://arxiv.org/abs/2501.17409,,rl_bandit_rec,WWW,2025
+Image Fusion for Cross-Domain Sequential Recommendation,2502.15694,https://arxiv.org/abs/2502.15694,,cross_domain_multi_scenario,WWW,2025
+Frequency-aware Graph Signal Processing for Collaborative Filtering,2402.08426,https://arxiv.org/abs/2402.08426,,collaborative_filtering,WWW,2025
+Hyperbolic Diffusion Recommender Model,2504.01541,https://arxiv.org/abs/2504.01541,,generative_rec,WWW,2025
+TD3: Tucker Decomposition Based Dataset Distillation Method for Sequential Recommendation,2502.02854,https://arxiv.org/abs/2502.02854,https://github.com/USTC-StarTeam/TD3,sequential_rec,WWW,2025
+Graph Representation Learning via Causal Diffusion for Out-of-Distribution Recommendation,2408.00490,https://arxiv.org/abs/2408.00490,,debias_fairness_industrial,WWW,2025
+Long-Term Interest Clock: Fine-Grained Time Perception in Streaming Recommendation System,2501.15817,https://arxiv.org/abs/2501.15817,,sequential_rec,WWW,2025
+"A LLM-based Controllable, Scalable, Human-Involved User Simulator Framework for Conversational Recommender Systems",2405.08035,https://arxiv.org/abs/2405.08035,,agent_conversational_rec,WWW,2025
+Panoramic Interests: Stylistic-Content Aware Personalized Headline Generation,2501.11900,https://arxiv.org/abs/2501.11900,,llm_rec,WWW,2025
+Generative Large Recommendation Models: Emerging Trends in LLMs for Recommendation,2502.13783,https://arxiv.org/abs/2502.13783,,generative_rec,WWW,2025
+Reward Balancing Revisited: Enhancing Offline Reinforcement Learning for Recommender Systems,2506.22112,https://arxiv.org/abs/2506.22112,,rl_bandit_rec,WWW,2025
+Datasets for Navigating Sensitive Topics in Recommendation Systems,2509.07269,https://arxiv.org/abs/2509.07269,,debias_fairness_industrial,WWW,2025

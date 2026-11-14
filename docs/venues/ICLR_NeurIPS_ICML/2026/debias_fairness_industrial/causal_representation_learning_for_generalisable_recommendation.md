@@ -134,4 +134,3 @@ $$\mathcal{L}_{\text{final}}=\mathcal{L}_{\text{utility}}+\lambda\,\mathcal{L}_{
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （合成 SCM + 半合成 KuaiRand 100 种子 CI + 千万级线上 A/B 三档递进，含 Oracle 上界对照，唯真实场景覆盖偏少）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （假设 A1/A2 与命题链条清晰，附录含高斯闭式验证与界有效性讨论，但正文对 NCE-CLUB 与 GRL 不等价的处理略显轻描淡写）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （仅需现有日志、套任意监督模型、推理零开销，已在 Spotify 生产验证；扣分项为暂未开源）
-

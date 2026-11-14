@@ -123,4 +123,3 @@ MF-BPR 上 Obliviate 在 Amazon 达 R@10 +9.84%、N@10 +7.78%，为全表最大�
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集双主干、20% 高删除率、Demotion Rate 完整性指标与耗时对比齐全，但删除协议为合成注入，缺真实撤回场景）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （定理-命题-附录误差界链条完整，trust-region 视角解释清晰，符号略多但组织有序）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （秒级遗忘、适配器可插拔可逆、架构无关，工程价值高；但代码未开源且依赖 Adam 统计量存储）
-

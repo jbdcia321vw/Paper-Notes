@@ -125,4 +125,3 @@ $$\mathcal{L}^{\text{Img}}_{\text{RERI}}=-\sum_{u\in\mathcal{U}}\left[\log\sigma
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （四域 + 充分消融 + 冷热分组分析扎实，但仅用 100 负采样排序、缺 Full-Ranking 与显著性检验，削弱说服力）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （复杂度分析 $O((|f(\cdot)||S_u|)^2 d)$ 推导清晰，动机图与消融逻辑链完整，公式简洁无冗余）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码开源、LLM 冻结、视觉特征可离线预计算、推理较描述式快 2.93 倍，工程落地门槛极低）
-

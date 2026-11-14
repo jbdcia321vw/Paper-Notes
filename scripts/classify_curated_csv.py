@@ -19,6 +19,7 @@ classify_curated_csv.py (v3.7 严格剔除非推荐论文 + 跨CSV并集防误�
 import argparse
 import csv
 import json
+import os
 import re
 import shutil
 import sys
@@ -170,7 +171,8 @@ def main():
     parser.add_argument("--limit", type=int, default=0, help="每个 CSV 最多处理前 N 篇（0 表示全部）")
     parser.add_argument("--workers", type=int, default=4, help="并发 LLM 线程数（默认 4）")
     parser.add_argument("--retries", type=int, default=2, help="单篇失败重试次数（默认 2）")
-    parser.add_argument("--api-key", default="", help="API Key（或 LLM_API_KEY / DEEPSEEK_API_KEY）")
+    parser.add_argument("--opencode-free", action="store_true", help="启用 OpenCode 免费 deepseek-v4.1-flash-free 模型额度")
+    parser.add_argument("--api-key", default="", help="API Key（或 LLM_API_KEY / DEEPSEEK_API_KEY / OPENCODE_API_KEY）")
     parser.add_argument("--base-url", default="", help="API Base URL")
     parser.add_argument("--model", default="", help="模型名称")
     parser.add_argument("--min-confidence", type=float, default=0.55, help="删除非推荐条目所需的最低置信度（默认 0.55）")
@@ -180,6 +182,8 @@ def main():
     parser.add_argument("--refresh", action="store_true", help="忽略本地 LLM 分类缓存")
     parser.add_argument("--cache", default=str(DEFAULT_CACHE_PATH), help="LLM 分类缓存路径")
     args = parser.parse_args()
+    if args.opencode_free:
+        os.environ['USE_OPENCODE_FREE'] = '1'
     run_start = time.monotonic()
 
     repo_root = SCRIPT_DIR.parent

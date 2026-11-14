@@ -126,4 +126,3 @@ $$s_{\text{eval}}=\left|r_{ui}-r_{\text{reason}}\right|-\left|r_{ui}-r_{\text{re
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三数据集 + 自动指标 + 人工评测 + 排序任务 + 推理成本分析齐全，扣分在排序仅采样候选、缺全库评测）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （任务形式化与各步 prompt、奖励判定公式清晰，但缺少复杂度与收敛性层面的理论分析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、QLoRA 单卡 5 小时可训、离线摘要 + 单 token 解码使在线成本可控，适合高价值低频决策场景）
-

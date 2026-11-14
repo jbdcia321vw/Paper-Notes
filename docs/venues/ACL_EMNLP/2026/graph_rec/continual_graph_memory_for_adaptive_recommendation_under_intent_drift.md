@@ -126,4 +126,3 @@ $$\text{WriteScore}_t(p)=\theta_1 O_t(p)+\theta_2 Q_t(p)+\theta_3\text{Support}_
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （5 种子+配对 t 检验+防泄漏脱敏+候选池扩展+regime 漂移分析齐全，扣分在仅采样候选、Games/ML-1M 差异不显著）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （任务定义、门控公式与动作表定义严谨，但核心机制大量细节外放附录，正文公式偏符号化）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （冻结参数、免训练上线思路诱人，但 9.6 s/实例与双 LLM 调用难支撑高 QPS 场景，代码仅匿名仓库）
-

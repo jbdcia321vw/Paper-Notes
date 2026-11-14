@@ -120,4 +120,3 @@ $\mathrm{Score}(y)=\frac{1}{A}f\big(x,m_{1:\tau}(x)+A\,r(x,y)\big)+\frac{1}{\alp
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （合成 + 真实平台双验证、含 oracle 上界与 $\kappa/\lambda/\delta$/规模/漂移多维敏感性分析，但缺线上 A/B 与大规模验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （Lemma 1/2 证明完整、Toy example 直观，但留存函数估计与凹性假设的张力讨论略薄）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （$O(N\log N)$ 推理、代码开源、直接对接订阅制平台留存 KPI，落地路径清晰）
-

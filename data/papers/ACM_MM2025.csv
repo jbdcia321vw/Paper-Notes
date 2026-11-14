@@ -1,0 +1,10 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Refining Contrastive Learning and Homography Relations for Multi-Modal Recommendation,2508.13745,https://arxiv.org/abs/2508.13745,https://github.com/MrShouxingMa/REARM,multimodal_rec,ACM_MM,2025
+Dual-Phase Playtime-guided Recommendation: Interest Intensity Exploration and Multimodal Random Walks,2508.14058,https://arxiv.org/abs/2508.14058,https://github.com/zqxwcevrtyui/DP2Rec,multimodal_rec,ACM_MM,2025
+LEGO: A Lightweight and Efficient Multiple-Attribute Unlearning Framework for Recommender Systems,2510.20327,https://arxiv.org/abs/2510.20327,https://github.com/anonymifish/lego-rec-multiple-attribute-unlearning,debias_fairness_industrial,ACM_MM,2025
+Generative Flow Networks for Personalized Multimedia Systems: A Case Study on Short Video Feeds,2508.17166,https://arxiv.org/abs/2508.17166,,rl_bandit_rec,ACM_MM,2025
+I$^3$-MRec: Invariant Learning with Information Bottleneck for Incomplete Modality Recommendation,2508.04247,https://arxiv.org/abs/2508.04247,,multimodal_rec,ACM_MM,2025
+CHORD: Customizing Hybrid-precision On-device Model for Sequential Recommendation with Device-cloud Collaboration,2510.03038,https://arxiv.org/abs/2510.03038,,sequential_rec,ACM_MM,2025
+Tackling Device Data Distribution Real-time Shift via Prototype-based Parameter Editing,2509.06552,https://arxiv.org/abs/2509.06552,,cold_start_rec,ACM_MM,2025
+Leveraging Multimodal Data and Side Users for Diffusion Cross-Domain Recommendation,2507.04000,https://arxiv.org/abs/2507.04000,,cross_domain_multi_scenario,ACM_MM,2025
+Generating Negative Samples for Multi-Modal Recommendation,2501.15183,https://arxiv.org/abs/2501.15183,,multimodal_rec,ACM_MM,2025

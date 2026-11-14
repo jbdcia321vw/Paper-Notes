@@ -1,0 +1,39 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Bridging Jensen Gap for Max-Min Group Fairness Optimization in Recommendation,2502.09319,https://arxiv.org/abs/2502.09319,https://github.com/XuChen0427/FairDual,debias_fairness_industrial,ICLR_NeurIPS_ICML,2025
+Long-Sequence Recommendation Models Need Decoupled Embeddings,2410.02604,https://arxiv.org/abs/2410.02604,https://github.com/thuml/DARE,sequential_rec,ICLR_NeurIPS_ICML,2025
+Context Steering: Controllable Personalization at Inference Time,2405.01768,https://arxiv.org/abs/2405.01768,,llm_rec,ICLR_NeurIPS_ICML,2025
+Efficient Inference for Large Language Model-based Generative Recommendation,2410.05165,https://arxiv.org/abs/2410.05165,https://github.com/Linxyhaha/AtSpeed,generative_rec,ICLR_NeurIPS_ICML,2025
+Language Representations Can be What Recommenders Need: Findings and Potentials,2407.05441,https://arxiv.org/abs/2407.05441,https://github.com/LehengTHU/AlphaRec,llm_rec,ICLR_NeurIPS_ICML,2025
+RecFlow: An Industrial Full Flow Recommendation Dataset,2410.20868,https://arxiv.org/abs/2410.20868,https://github.com/RecFlow-ICLR/RecFlow,debias_fairness_industrial,ICLR_NeurIPS_ICML,2025
+Preference Diffusion for Recommendation,2410.13117,https://arxiv.org/abs/2410.13117,https://github.com/lswhim/PreferDiff,generative_rec,ICLR_NeurIPS_ICML,2025
+SLMRec: Distilling Large Language Models into Small for Sequential Recommendation,2405.17890,https://arxiv.org/abs/2405.17890,,llm_rec,ICLR_NeurIPS_ICML,2025
+ContextGNN: Beyond Two-Tower Recommendation Systems,2411.19513,https://arxiv.org/abs/2411.19513,,graph_rec,ICLR_NeurIPS_ICML,2025
+Multimodal Quantitative Language for Generative Recommendation,2504.05314,https://arxiv.org/abs/2504.05314,,generative_rec,ICLR_NeurIPS_ICML,2025
+Fine-grained List-wise Alignment for Generative Medication Recommendation,2505.20218,https://arxiv.org/abs/2505.20218,https://github.com/cxfann/Flame,llm_rec,ICLR_NeurIPS_ICML,2025
+Covariate-moderated Empirical Bayes Matrix Factorization,2505.11639,https://arxiv.org/abs/2505.11639,https://github.com/william-denault/cebmf_torch,collaborative_filtering,ICLR_NeurIPS_ICML,2025
+Learning Personalized Ad Impact via Contextual Reinforcement Learning under Delayed Rewards,2510.20055,https://arxiv.org/abs/2510.20055,,rl_bandit_rec,ICLR_NeurIPS_ICML,2025
+Semantic Retrieval Augmented Contrastive Learning for Sequential Recommendation,2503.04162,https://arxiv.org/abs/2503.04162,https://github.com/ziqiangcui/SRA-CL,sequential_rec,ICLR_NeurIPS_ICML,2025
+SPOT-Trip: Dual-Preference Driven Out-of-Town Trip Recommendation,2506.01705,https://arxiv.org/abs/2506.01705,,poi_spatiotemporal_rec,ICLR_NeurIPS_ICML,2025
+Think before Recommendation: Autonomous Reasoning-enhanced Recommender,2510.23077,https://arxiv.org/abs/2510.23077,,llm_rec,ICLR_NeurIPS_ICML,2025
+Listwise Preference Diffusion Optimization for User Behavior Trajectories Prediction,2511.00530,https://arxiv.org/abs/2511.00530,,generative_rec,ICLR_NeurIPS_ICML,2025
+ORBIT -- Open Recommendation Benchmark for Reproducible Research with Hidden Tests,2510.26095,https://arxiv.org/abs/2510.26095,,debias_fairness_industrial,ICLR_NeurIPS_ICML,2025
+Can LLMs Outshine Conventional Recommenders? A Comparative Evaluation,2503.05493,https://arxiv.org/abs/2503.05493,,llm_rec,ICLR_NeurIPS_ICML,2025
+PANTHER: Generative Pretraining Beyond Language for Sequential User Behavior Modeling,2510.10102,https://arxiv.org/abs/2510.10102,,sequential_rec,ICLR_NeurIPS_ICML,2025
+AgentRecBench: Benchmarking LLM Agent-based Personalized Recommender Systems,2505.19623,https://arxiv.org/abs/2505.19623,,agent_conversational_rec,ICLR_NeurIPS_ICML,2025
+Personalized Exercise Recommendation with Semantically-Grounded Knowledge Tracing,2507.11060,https://arxiv.org/abs/2507.11060,,rl_bandit_rec,ICLR_NeurIPS_ICML,2025
+On Efficiency-Effectiveness Trade-off of Diffusion-based Recommenders,2510.17245,https://arxiv.org/abs/2510.17245,,generative_rec,ICLR_NeurIPS_ICML,2025
+TV-Rec: Time-Variant Convolutional Filter for Sequential Recommendation,2510.25259,https://arxiv.org/abs/2510.25259,,sequential_rec,ICLR_NeurIPS_ICML,2025
+Enhancing Personalized Multi-Turn Dialogue with Curiosity Reward,2504.03206,https://arxiv.org/abs/2504.03206,,agent_conversational_rec,ICLR_NeurIPS_ICML,2025
+FACE: A General Framework for Mapping Collaborative Filtering Embeddings into LLM Tokens,2510.15729,https://arxiv.org/abs/2510.15729,https://github.com/YixinRoll/FACE,llm_rec,ICLR_NeurIPS_ICML,2025
+Truthful Aggregation of LLMs with an Application to Online Advertising,2405.05905,https://arxiv.org/abs/2405.05905,,debias_fairness_industrial,ICLR_NeurIPS_ICML,2025
+MTRec: Learning to Align with User Preferences via Mental Reward Models,2509.22807,https://arxiv.org/abs/2509.22807,,rl_bandit_rec,ICLR_NeurIPS_ICML,2025
+R$^2$ec: Towards Large Recommender Models with Reasoning,2505.16994,https://arxiv.org/abs/2505.16994,https://github.com/YRYangang/RRec,llm_rec,ICLR_NeurIPS_ICML,2025
+Structured Spectral Reasoning for Frequency-Adaptive Multimodal Recommendation,2512.01372,https://arxiv.org/abs/2512.01372,,multimodal_rec,ICLR_NeurIPS_ICML,2025
+Tree of Preferences for Diversified Recommendation,2601.02386,https://arxiv.org/abs/2601.02386,,llm_rec,ICLR_NeurIPS_ICML,2025
+VisualLens: Personalization through Task-Agnostic Visual History,2411.16034,https://arxiv.org/abs/2411.16034,,multimodal_rec,ICLR_NeurIPS_ICML,2025
+ActionPiece: Contextually Tokenizing Action Sequences for Generative Recommendation,2502.13581,https://arxiv.org/abs/2502.13581,,generative_rec,ICLR_NeurIPS_ICML,2025
+FACTER: Fairness-Aware Conformal Thresholding and Prompt Engineering for Enabling Fair LLM-Based Recommender Systems,2502.02966,https://arxiv.org/abs/2502.02966,,debias_fairness_industrial,ICLR_NeurIPS_ICML,2025
+Improving LLMs for Recommendation with Out-Of-Vocabulary Tokens,2406.08477,https://arxiv.org/abs/2406.08477,,llm_rec,ICLR_NeurIPS_ICML,2025
+SecEmb: Sparsity-Aware Secure Federated Learning of On-Device Recommender System with Large Embedding,2505.12453,https://arxiv.org/abs/2505.12453,,debias_fairness_industrial,ICLR_NeurIPS_ICML,2025
+Recommendations with Sparse Comparison Data: Provably Fast Convergence for Nonconvex Matrix Factorization,2502.20033,https://arxiv.org/abs/2502.20033,,collaborative_filtering,ICLR_NeurIPS_ICML,2025
+Optimal Auction Design in the Joint Advertising,2507.07418,https://arxiv.org/abs/2507.07418,,ctr_feature_interaction,ICLR_NeurIPS_ICML,2025

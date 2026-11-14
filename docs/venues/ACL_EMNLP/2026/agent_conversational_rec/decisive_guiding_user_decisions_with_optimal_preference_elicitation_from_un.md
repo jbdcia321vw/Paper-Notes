@@ -131,4 +131,3 @@ $$\mathrm{EIG}(a,b)=H(\chi)-\mathbb{E}_{\text{resp}}\left[H(\chi^{(\text{resp})}
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （三域 1490 场景、Full-Ranking、噪声与 $M$ 消融较完整，但全为模拟用户与合成文档，缺真人研究与公开可复现划分）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化与更新/EIG 公式定义干净、符号一致，复杂度与 LLM 调用开销分析到位，线性效用假设的局限亦自陈）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （交互期零 LLM 调用、单场景约 0.5s、提问数 2–6 轮，工程成本极低；但代码未开源且依赖三款闭源大模型打分，复现门槛偏高）
-

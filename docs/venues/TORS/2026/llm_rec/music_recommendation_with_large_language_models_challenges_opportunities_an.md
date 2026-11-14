@@ -102,4 +102,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐ （无自建实验、无数据集统计、无显著性检验，全部论据为文献转述）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三接触面 + 评估决策树的结构清晰，形式化 $f: X \to Y$与$M(y^*,y)$ 定义规范，54 页篇幅略显冗长）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （Deezer 工业视角的 RAG 延迟/token 成本、目录新鲜度讨论实用，但无开源代码与可执行基准）
-

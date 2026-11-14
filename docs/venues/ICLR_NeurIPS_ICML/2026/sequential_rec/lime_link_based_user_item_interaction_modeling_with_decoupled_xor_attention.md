@@ -146,4 +146,3 @@ KuaiRand-1K 上的组件消融（AUC）：
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （公开集+百亿级工业集+在线 A/B 三层验证完整，5 seed 显著性检验到位，但公开集规模偏小）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （MHA/XORA 公式与 Triton 伪代码清晰，附录含前反向推导；部分符号如 $\oplus$ 兼作拼接与逐元素加需读者自行辨析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （已在 Meta 级平台部署，10× 加速与 +37.9% VC 在线收益，缓存显存与 miss rate 均有实测，工程参考价值极高）
-

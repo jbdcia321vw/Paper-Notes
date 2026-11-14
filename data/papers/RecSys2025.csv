@@ -1,0 +1,90 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Balancing Fine-tuning and RAG: A Hybrid Strategy for Dynamic LLM Recommendation Updates,2510.20260,https://arxiv.org/abs/2510.20260,,llm_rec,RecSys,2025
+Improving Visual Recommendation on E-commerce Platforms Using Vision-Language Models,2510.13359,https://arxiv.org/abs/2510.13359,,multimodal_rec,RecSys,2025
+On Inherited Popularity Bias in Cold-Start Item Recommendation,2510.11402,https://arxiv.org/abs/2510.11402,,cold_start_rec,RecSys,2025
+LLM-Powered Nuanced Video Attribute Annotation for Enhanced Recommendations,2510.06657,https://arxiv.org/abs/2510.06657,,multimodal_rec,RecSys,2025
+RankGraph: Unified Heterogeneous Graph Learning for Cross-Domain Recommendation,2509.02942,https://arxiv.org/abs/2509.02942,,cross_domain_multi_scenario,RecSys,2025
+Location Matters: Leveraging Multi-Resolution Geo-Embeddings for Housing Search,2510.01196,https://arxiv.org/abs/2510.01196,,collaborative_filtering,RecSys,2025
+Stairway to Fairness: Connecting Group and Individual Fairness,2508.21334,https://arxiv.org/abs/2508.21334,https://github.com/theresiavr/stairway-to-fairness,debias_fairness_industrial,RecSys,2025
+The Hidden Cost of Defaults in Recommender System Evaluation,2508.21180,https://arxiv.org/abs/2508.21180,,collaborative_filtering,RecSys,2025
+Reading Between the Lines: A Study of Thematic Bias in Book Recommender Systems,2508.15643,https://arxiv.org/abs/2508.15643,,cold_start_rec,RecSys,2025
+Exploring Scaling Laws of CTR Model for Online Performance Improvement,2508.15326,https://arxiv.org/abs/2508.15326,https://github.com/laiweijiang/SUAN,ctr_feature_interaction,RecSys,2025
+Modeling Long-term User Behaviors with Diffusion-driven Multi-interest Network for CTR Prediction,2508.15311,https://arxiv.org/abs/2508.15311,https://github.com/laiweijiang/DiffuMIN,ctr_feature_interaction,RecSys,2025
+Semantic IDs for Joint Generative Search and Recommendation,2508.10478,https://arxiv.org/abs/2508.10478,,generative_rec,RecSys,2025
+RicciFlowRec: A Geometric Root Cause Recommender Using Ricci Curvature on Financial Graphs,2508.09334,https://arxiv.org/abs/2508.09334,,debias_fairness_industrial,RecSys,2025
+Recommendation Is a Dish Better Served Warm,2508.07856,https://arxiv.org/abs/2508.07856,,cold_start_rec,RecSys,2025
+SocRipple: A Two-Stage Framework for Cold-Start Video Recommendations,2508.07241,https://arxiv.org/abs/2508.07241,,cold_start_rec,RecSys,2025
+eSASRec: Enhancing Transformer-based Recommendations in a Modular Fashion,2508.06450,https://arxiv.org/abs/2508.06450,https://github.com/blondered/transformer_benchmark,sequential_rec,RecSys,2025
+On the Reliability of Sampling Strategies in Offline Recommender Evaluation,2508.05398,https://arxiv.org/abs/2508.05398,,collaborative_filtering,RecSys,2025
+"Not Just What, But When: Integrating Irregular Intervals to LLM for Sequential Recommendation",2507.23209,https://arxiv.org/abs/2507.23209,https://github.com/sony/ds-research-code,sequential_rec,RecSys,2025
+Industry Insights from Comparing Deep Learning and GBDT Models for E-Commerce Learning-to-Rank,2507.20753,https://arxiv.org/abs/2507.20753,,collaborative_filtering,RecSys,2025
+Practical Multi-Task Learning for Rare Conversions in Ad Tech,2507.20161,https://arxiv.org/abs/2507.20161,,multi_task_reranking,RecSys,2025
+Semantic IDs for Music Recommendation,2507.18800,https://arxiv.org/abs/2507.18800,,generative_rec,RecSys,2025
+RecPS: Privacy Risk Scoring for Recommender Systems,2507.18365,https://arxiv.org/abs/2507.18365,,debias_fairness_industrial,RecSys,2025
+Leave No One Behind: Fairness-Aware Cross-Domain Recommender Systems for Non-Overlapping Users,2507.17749,https://arxiv.org/abs/2507.17749,https://github.com/WeixinChen98/VUG,cross_domain_multi_scenario,RecSys,2025
+VL-CLIP: Enhancing Multimodal Recommendations via Visual Grounding and LLM-Augmented CLIP Embeddings,2507.17080,https://arxiv.org/abs/2507.17080,,multimodal_rec,RecSys,2025
+Time to Split: Exploring Data Splitting Strategies for Offline Evaluation of Sequential Recommenders,2507.16289,https://arxiv.org/abs/2507.16289,https://github.com/monkey0head/time-to-split,sequential_rec,RecSys,2025
+Privacy Risks of LLM-Empowered Recommender Systems: An Inversion Attack Perspective,2508.03703,https://arxiv.org/abs/2508.03703,,debias_fairness_industrial,RecSys,2025
+GRACE: Generative Recommendation via Journey-Aware Sparse Attention on Chain-of-Thought Tokenization,2507.14758,https://arxiv.org/abs/2507.14758,,generative_rec,RecSys,2025
+"Suggest, Complement, Inspire: Story of Two Tower Recommendations at Allegro.com",2508.03702,https://arxiv.org/abs/2508.03702,,collaborative_filtering,RecSys,2025
+IP2: Entity-Guided Interest Probing for Personalized News Recommendation,2507.13622,https://arxiv.org/abs/2507.13622,,collaborative_filtering,RecSys,2025
+SGCL: Unifying Self-Supervised and Supervised Learning for Graph Recommendation,2507.13336,https://arxiv.org/abs/2507.13336,,self_supervised_denoising,RecSys,2025
+Identifying Offline Metrics that Predict Online Impact: A Pragmatic Strategy for Real-World Recommender Systems,2507.09566,https://arxiv.org/abs/2507.09566,,ctr_feature_interaction,RecSys,2025
+Correcting the LogQ Correction: Revisiting Sampled Softmax for Large-Scale Retrieval,2507.09331,https://arxiv.org/abs/2507.09331,,collaborative_filtering,RecSys,2025
+"Rethinking the Privacy of Text Embeddings: A Reproducibility Study of ""Text Embeddings Reveal (Almost) As Much As Text""",2507.07700,https://arxiv.org/abs/2507.07700,,debias_fairness_industrial,RecSys,2025
+NLGCL: Naturally Existing Neighbor Layers Graph Contrastive Learning for Recommendation,2507.07522,https://arxiv.org/abs/2507.07522,,self_supervised_denoising,RecSys,2025
+You Don't Bring Me Flowers: Mitigating Unwanted Recommendations Through Conformal Risk Control,2507.16829,https://arxiv.org/abs/2507.16829,https://github.com/geektoni/mitigating-harm-recsys,social_group_rec,RecSys,2025
+Impacts of Mainstream-Driven Algorithms on Recommendations for Children Across Domains: A Reproducibility Study,2507.06596,https://arxiv.org/abs/2507.06596,,cross_domain_multi_scenario,RecSys,2025
+Do We Really Need Specialization? Evaluating Generalist Text Embeddings for Zero-Shot Recommendation and Search,2507.05006,https://arxiv.org/abs/2507.05006,,cold_start_rec,RecSys,2025
+Heterogeneous User Modeling for LLM-based Recommendation,2507.04626,https://arxiv.org/abs/2507.04626,,llm_rec,RecSys,2025
+A Multistakeholder Approach to Value-Driven Co-Design of Recommender System Evaluation Metrics in Digital Archives,2507.03556,https://arxiv.org/abs/2507.03556,,social_group_rec,RecSys,2025
+Exploring the Effect of Context-Awareness and Popularity Calibration on Popularity Bias in POI Recommendations,2507.03503,https://arxiv.org/abs/2507.03503,,poi_spatiotemporal_rec,RecSys,2025
+Estimating Quantum Execution Requirements for Feature Selection in Recommender Systems Using Extreme Value Theory,2507.03229,https://arxiv.org/abs/2507.03229,,collaborative_filtering,RecSys,2025
+Recommendation and Temptation,2412.10595,https://arxiv.org/abs/2412.10595,,collaborative_filtering,RecSys,2025
+How Fair is Your Diffusion Recommender Model?,2409.04339,https://arxiv.org/abs/2409.04339,https://github.com/danielemalitesta/FairDiffRec,generative_rec,RecSys,2025
+Normative Alignment of Recommender Systems via Internal Label Shift,2607.10915,https://arxiv.org/abs/2607.10915,https://github.com/johanneskruse/nails,debias_fairness_industrial,RecSys,2025
+USB-Rec: An Effective Framework for Improving Conversational Recommendation Capability of Large Language Model,2509.20381,https://arxiv.org/abs/2509.20381,,agent_conversational_rec,RecSys,2025
+Image-Seeking Intent Prediction for Cross-Device Product Search,2511.14764,https://arxiv.org/abs/2511.14764,,multimodal_rec,RecSys,2025
+Evaluating Podcast Recommendations with Profile-Aware LLM-as-a-Judge,2508.08777,https://arxiv.org/abs/2508.08777,,llm_rec,RecSys,2025
+Meta Off-Policy Estimation,2508.07914,https://arxiv.org/abs/2508.07914,,collaborative_filtering,RecSys,2025
+Parameter-Efficient Single Collaborative Branch for Recommendation,2508.03518,https://arxiv.org/abs/2508.03518,,collaborative_filtering,RecSys,2025
+Exploitation Over Exploration: Unmasking the Bias in Linear Bandit Recommender Offline Evaluation,2507.18756,https://arxiv.org/abs/2507.18756,,rl_bandit_rec,RecSys,2025
+Consistent Explainers or Unreliable Narrators? Understanding LLM-generated Group Recommendations,2507.13705,https://arxiv.org/abs/2507.13705,,social_group_rec,RecSys,2025
+Off-Policy Evaluation and Learning for Matching Markets,2507.13608,https://arxiv.org/abs/2507.13608,,rl_bandit_rec,RecSys,2025
+Item-centric Exploration for Cold Start Problem,2507.09423,https://arxiv.org/abs/2507.09423,,cold_start_rec,RecSys,2025
+LONGER: Scaling Up Long Sequence Modeling in Industrial Recommenders,2505.04421,https://arxiv.org/abs/2505.04421,,sequential_rec,RecSys,2025
+Counterfactual Inference under Thompson Sampling,2504.08773,https://arxiv.org/abs/2504.08773,,ctr_feature_interaction,RecSys,2025
+LLM-RecG: A Semantic Bias-Aware Framework for Zero-Shot Sequential Recommendation,2501.19232,https://arxiv.org/abs/2501.19232,,cold_start_rec,RecSys,2025
+MoRE: A Mixture of Reflectors Framework for Large Language Model-Based Sequential Recommendation,2409.06377,https://arxiv.org/abs/2409.06377,https://github.com/E-qin/MoRE-Rec,sequential_rec,RecSys,2025
+Prompt-to-Slate: Diffusion Models for Prompt-Conditioned Slate Generation,2408.06883,https://arxiv.org/abs/2408.06883,,generative_rec,RecSys,2025
+Opening the Black Box: Interpretable Remedies for Popularity Bias in Recommender Systems,2508.17297,https://arxiv.org/abs/2508.17297,,debias_fairness_industrial,RecSys,2025
+Agentic Personalisation of Cross-Channel Marketing Experiences,2506.16429,https://arxiv.org/abs/2506.16429,,collaborative_filtering,RecSys,2025
+Hierarchical Graph Information Bottleneck for Multi-Behavior Recommendation,2507.15395,https://arxiv.org/abs/2507.15395,https://github.com/zhy99426/HGIB,collaborative_filtering,RecSys,2025
+Kamae: Bridging Spark and Keras for Seamless ML Preprocessing,2507.06021,https://arxiv.org/abs/2507.06021,https://github.com/ExpediaGroup/kamae,collaborative_filtering,RecSys,2025
+"R4ec: A Reasoning, Reflection, and Refinement Framework for Recommendation Systems",2507.17249,https://arxiv.org/abs/2507.17249,,ctr_feature_interaction,RecSys,2025
+Mitigating Popularity Bias in Counterfactual Explanations using Large Language Models,2508.08946,https://arxiv.org/abs/2508.08946,,debias_fairness_industrial,RecSys,2025
+RADAR: Recall Augmentation through Deferred Asynchronous Retrieval,2506.07261,https://arxiv.org/abs/2506.07261,,multi_task_reranking,RecSys,2025
+Exploring the Potential of LLMs for Serendipity Evaluation in Recommender Systems,2507.17290,https://arxiv.org/abs/2507.17290,,cold_start_rec,RecSys,2025
+The Future is Sparse: Embedding Compression for Scalable Retrieval in Recommender Systems,2505.11388,https://arxiv.org/abs/2505.11388,https://github.com/recombee/CompresSAE,collaborative_filtering,RecSys,2025
+A Non-Parametric Choice Model That Learns How Users Choose Between Recommended Options,2507.20035,https://arxiv.org/abs/2507.20035,,collaborative_filtering,RecSys,2025
+D-RDW: Diversity-Driven Random Walks for News Recommender Systems,2508.13035,https://arxiv.org/abs/2508.13035,,multi_task_reranking,RecSys,2025
+"Blending Sequential Embeddings, Graphs, and Engineered Features: 4th Place Solution in RecSys Challenge 2025",2508.06970,https://arxiv.org/abs/2508.06970,,ctr_feature_interaction,RecSys,2025
+Decoupled Entity Representation Learning for Pinterest Ads Ranking,2509.04337,https://arxiv.org/abs/2509.04337,,ctr_feature_interaction,RecSys,2025
+Balancing Accuracy and Novelty with Sub-Item Popularity,2508.05198,https://arxiv.org/abs/2508.05198,https://github.com/sisinflab/Sub-id-Popularity,collaborative_filtering,RecSys,2025
+Just Ask for Music (JAM): Multimodal and Personalized Natural Language Music Recommendation,2507.15826,https://arxiv.org/abs/2507.15826,,multimodal_rec,RecSys,2025
+User Long-Term Multi-Interest Retrieval Model for Recommendation,2507.10097,https://arxiv.org/abs/2507.10097,,sequential_rec,RecSys,2025
+A Reproducibility Study of Product-side Fairness in Bundle Recommendation,2507.14352,https://arxiv.org/abs/2507.14352,,debias_fairness_industrial,RecSys,2025
+Non-parametric Graph Convolution for Re-ranking in Recommendation Systems,2507.09969,https://arxiv.org/abs/2507.09969,https://github.com/zyouyang/RecSys2025_NonParamGC.git,multi_task_reranking,RecSys,2025
+Personalized Image Generation for Recommendations Beyond Catalogs,2502.18477,https://arxiv.org/abs/2502.18477,,multimodal_rec,RecSys,2025
+Let It Go? Not Quite: Addressing Item Cold Start in Sequential Recommendations with Content-Based Initialization,2507.19473,https://arxiv.org/abs/2507.19473,,cold_start_rec,RecSys,2025
+Yambda-5B -- A Large-Scale Multi-modal Dataset for Ranking And Retrieval,2505.22238,https://arxiv.org/abs/2505.22238,,multimodal_rec,RecSys,2025
+Zero-shot Cross-domain Knowledge Distillation: A Case study on YouTube Music,2603.28994,https://arxiv.org/abs/2603.28994,,cross_domain_multi_scenario,RecSys,2025
+Biases in LLM-Generated Musical Taste Profiles for Recommendation,2507.16708,https://arxiv.org/abs/2507.16708,,llm_rec,RecSys,2025
+Paragon: Parameter Generation for Controllable Multi-Task Recommendation,2410.10639,https://arxiv.org/abs/2410.10639,https://github.com/bubble65/Paragon,multi_task_reranking,RecSys,2025
+APS Explorer: Navigating Algorithm Performance Spaces for Informed Dataset Selection,2508.19399,https://arxiv.org/abs/2508.19399,,multimodal_rec,RecSys,2025
+"""Beyond the past"": Leveraging Audio and Human Memory for Sequential Music Recommendation",2507.17356,https://arxiv.org/abs/2507.17356,,multimodal_rec,RecSys,2025
+Affect-aware Cross-Domain Recommendation for Art Therapy via Music Preference Elicitation,2507.21120,https://arxiv.org/abs/2507.21120,https://github.com/ArtAICare/Affect-aware-CDR,cross_domain_multi_scenario,RecSys,2025
+Failure Prediction in Conversational Recommendation Systems,2507.17976,https://arxiv.org/abs/2507.17976,,agent_conversational_rec,RecSys,2025
+Leveraging Geometric Insights in Hyperbolic Triplet Loss for Improved Recommendations,2508.11978,https://arxiv.org/abs/2508.11978,,debias_fairness_industrial,RecSys,2025
+Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID,2504.02137,https://arxiv.org/abs/2504.02137,,generative_rec,RecSys,2025
+Orthogonal Low Rank Embedding Stabilization,2508.07574,https://arxiv.org/abs/2508.07574,,collaborative_filtering,RecSys,2025

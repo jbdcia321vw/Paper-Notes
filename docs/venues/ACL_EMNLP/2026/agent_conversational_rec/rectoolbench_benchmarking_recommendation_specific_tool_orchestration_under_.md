@@ -138,4 +138,3 @@ L4 混合编排（规则 + Rubric 双轨）：
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （规则 + Rubric 双轨、无参考 PA、置换去偏、9 模型覆盖完整；扣分在 L4 单 Judge 与人工校验规模有限）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （POMDP 形式化与各层指标定义清晰，附录工具表详尽；部分指标如 Efficiency 在 L2/L3 定义不一致，易混淆）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码与数据全开源、MCP 协议天然对接生产工具生态，可直接作为 Agent 推荐上线前的回归测试集）
-

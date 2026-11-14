@@ -1,0 +1,31 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Causality-Inspired Fair Representation Learning for Multimodal Recommendation,2310.17373,https://arxiv.org/abs/2310.17373,https://github.com/WeixinChen98/FMMRec,debias_fairness_industrial,TOIS,2025
+Post-Training Attribute Unlearning in Recommender Systems,2403.06737,https://arxiv.org/abs/2403.06737,,debias_fairness_industrial,TOIS,2025
+Enhancing ID-based Recommendation with Large Language Models,2411.02041,https://arxiv.org/abs/2411.02041,,llm_rec,TOIS,2025
+Efficient Multi-task Prompt Tuning for Recommendation,2408.17214,https://arxiv.org/abs/2408.17214,,multi_task_reranking,TOIS,2025
+Position-aware Graph Transformer for Recommendation,2412.18731,https://arxiv.org/abs/2412.18731,,graph_rec,TOIS,2025
+Recommender AI Agent: Integrating Large Language Models for Interactive Recommendations,2308.16505,https://arxiv.org/abs/2308.16505,,agent_conversational_rec,TOIS,2025
+A Unified Framework for Multi-Domain CTR Prediction via Large Language Models,2312.10743,https://arxiv.org/abs/2312.10743,,ctr_feature_interaction,TOIS,2025
+How Can Recommender Systems Benefit from Large Language Models: A Survey,2306.05817,https://arxiv.org/abs/2306.05817,https://github.com/CHIANGEL/Awesome-LLM-for-RecSys,llm_rec,TOIS,2025
+Lightweight Embeddings with Graph Rewiring for Collaborative Filtering,2505.18999,https://arxiv.org/abs/2505.18999,,collaborative_filtering,TOIS,2025
+RecRanker: Instruction Tuning Large Language Model as Ranker for Top-k Recommendation,2312.16018,https://arxiv.org/abs/2312.16018,,llm_rec,TOIS,2025
+PEPT: Expert Finding Meets Personalized Pre-training,2312.12162,https://arxiv.org/abs/2312.12162,,llm_rec,TOIS,2025
+Federated Semantic Learning for Privacy-preserving Cross-domain Recommendation,2503.23026,https://arxiv.org/abs/2503.23026,https://github.com/Sapphire-star/FFMSR,cross_domain_multi_scenario,TOIS,2025
+Reinforced Prompt Personalization for Recommendation with Large Language Models,2407.17115,https://arxiv.org/abs/2407.17115,https://github.com/maowenyu-11/RPP,llm_rec,TOIS,2025
+Thoroughly Modeling Multi-domain Pre-trained Recommendation as Language,2310.13540,https://arxiv.org/abs/2310.13540,,llm_rec,TOIS,2025
+One Model for All: Large Language Models are Domain-Agnostic Recommendation Systems,2310.14304,https://arxiv.org/abs/2310.14304,,llm_rec,TOIS,2025
+A Thorough Performance Benchmarking on Lightweight Embedding-based Recommender Systems,2406.17335,https://arxiv.org/abs/2406.17335,https://github.com/chenxing1999/recsys-benchmark,debias_fairness_industrial,TOIS,2025
+Privacy-Preserving Sequential Recommendation with Collaborative Confusion,2401.04423,https://arxiv.org/abs/2401.04423,,sequential_rec,TOIS,2025
+Multi-agent Attacks for Black-box Social Recommendations,2311.07127,https://arxiv.org/abs/2311.07127,,debias_fairness_industrial,TOIS,2025
+User Behavior Simulation with Large Language Model based Agents,2306.02552,https://arxiv.org/abs/2306.02552,,agent_conversational_rec,TOIS,2025
+Learning Robust Sequential Recommenders through Confident Soft Labels,2311.02446,https://arxiv.org/abs/2311.02446,,sequential_rec,TOIS,2025
+Coherence-guided Preference Disentanglement for Cross-domain Recommendations,2410.20580,https://arxiv.org/abs/2410.20580,,cross_domain_multi_scenario,TOIS,2025
+User Invariant Preference Learning for Multi-Behavior Recommendation,2507.14925,https://arxiv.org/abs/2507.14925,,multi_task_reranking,TOIS,2025
+ID-centric Pre-training for Recommendation,2405.03562,https://arxiv.org/abs/2405.03562,,cold_start_rec,TOIS,2025
+PTF-FSR: A Parameter Transmission-Free Federated Sequential Recommender System,2406.05387,https://arxiv.org/abs/2406.05387,,sequential_rec,TOIS,2025
+FELLAS: Enhancing Federated Sequential Recommendation with LLM as External Services,2410.04927,https://arxiv.org/abs/2410.04927,,llm_rec,TOIS,2025
+Vague Preference Policy Learning for Conversational Recommendation,2306.04487,https://arxiv.org/abs/2306.04487,,agent_conversational_rec,TOIS,2025
+KG4RecEval: Does Knowledge Graph Really Matter for Recommender Systems?,2404.03164,https://arxiv.org/abs/2404.03164,https://github.com/HotBento/KG4RecEval,graph_rec,TOIS,2025
+Mitigating Propensity Bias of Large Language Models for Recommender Systems,2409.20052,https://arxiv.org/abs/2409.20052,,llm_rec,TOIS,2025
+Causal Deconfounding via Confounder Disentanglement for Dual-Target Cross-Domain Recommendation,2404.11180,https://arxiv.org/abs/2404.11180,,cross_domain_multi_scenario,TOIS,2025
+Symmetric Graph Contrastive Learning against Noisy Views for Recommendation,2408.02691,https://arxiv.org/abs/2408.02691,,self_supervised_denoising,TOIS,2025

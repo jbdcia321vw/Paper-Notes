@@ -135,4 +135,3 @@ $$\mathcal{L}_{peak}=-\frac{1}{n}\sum_{i=1}^{n}\log\sigma\big(\mathbf{M}[i,\math
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （5 模型 × 3 数据集覆盖两类注意力范式，含延迟实测与两组消融，但缺 ranking 协议与线上验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （解耦动机—公式—损失链条完整，路由可微化与负载均衡推导清晰，延迟模型略简化）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （0.8% 压缩率 + 大 batch 47× 延迟收益直击线上痛点，代码基于 FuxiCTR 开源，落地门槛低）
-

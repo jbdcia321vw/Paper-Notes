@@ -4,7 +4,7 @@
 
 > **方向说明**：社交信任网络传播、社交同质性去噪、群组偏好共识聚合 (Group Rec) 与影响力建模
 
-📌 **同领域跨会议浏览：** [CIKM 2026 (1)](../../../CIKM/2026/social_group_rec/) · [RecSys 2026 (2)](../../../RecSys/2026/social_group_rec/) · [IEEE TKDE 2026 (1)](../../../TKDE/2026/social_group_rec/)
+📌 **同领域跨会议浏览：** [WWW (TheWebConf) 2025 (2)](../../2025/social_group_rec/) · [AAAI (RecSys Track) 2025 (1)](../../../AAAI/2025/social_group_rec/) · [CIKM 2025 (2)](../../../CIKM/2025/social_group_rec/) · [CIKM 2026 (1)](../../../CIKM/2026/social_group_rec/) · [RecSys 2025 (3)](../../../RecSys/2025/social_group_rec/) · [RecSys 2026 (2)](../../../RecSys/2026/social_group_rec/) · [SIGIR 2025 (2)](../../../SIGIR/2025/social_group_rec/) · [IEEE TKDE 2025 (1)](../../../TKDE/2025/social_group_rec/) · [IEEE TKDE 2026 (1)](../../../TKDE/2026/social_group_rec/)
 
 🔥 **高频主题：** WWW 2026 ×2 · 召回 ×2
 

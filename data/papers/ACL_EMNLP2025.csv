@@ -1,0 +1,42 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+MIRA: Empowering One-Touch AI Services on Smartphones with MLLM-based Instruction Recommendation,2509.13773,https://arxiv.org/abs/2509.13773,,llm_rec,ACL_EMNLP,2025
+GRAM: Generative Recommendation via Semantic-aware Multi-granular Late Fusion,2506.01673,https://arxiv.org/abs/2506.01673,https://github.com/skleee/GRAM,generative_rec,ACL_EMNLP,2025
+Knowledge Graph Retrieval-Augmented Generation for LLM-based Recommendation,2501.02226,https://arxiv.org/abs/2501.02226,,llm_rec,ACL_EMNLP,2025
+Scholar Inbox: Personalized Paper Recommendations for Scientists,2504.08385,https://arxiv.org/abs/2504.08385,,cold_start_rec,ACL_EMNLP,2025
+RecLM: Recommendation Instruction Tuning,2412.19302,https://arxiv.org/abs/2412.19302,https://github.com/HKUDS/RecLM,llm_rec,ACL_EMNLP,2025
+Stereotype or Personalization? User Identity Biases Chatbot Recommendations,2410.05613,https://arxiv.org/abs/2410.05613,,debias_fairness_industrial,ACL_EMNLP,2025
+KERL: Knowledge-Enhanced Personalized Recipe Recommendation using Large Language Models,2505.14629,https://arxiv.org/abs/2505.14629,https://github.com/mohbattharani/KERL,llm_rec,ACL_EMNLP,2025
+"Exploring the Potential of LLMs as Personalized Assistants: Dataset, Evaluation, and Analysis",2506.01262,https://arxiv.org/abs/2506.01262,https://github.com/12kimih/HiCUPID,agent_conversational_rec,ACL_EMNLP,2025
+Q-STRUM Debate: Query-Driven Contrastive Summarization for Recommendation Comparison,2502.12921,https://arxiv.org/abs/2502.12921,,llm_rec,ACL_EMNLP,2025
+MAPS: Motivation-Aware Personalized Search via LLM-Driven Consultation Alignment,2503.01711,https://arxiv.org/abs/2503.01711,,llm_rec,ACL_EMNLP,2025
+PersonaX: A Recommendation Agent Oriented User Modeling Framework for Long Behavior Sequence,2503.02398,https://arxiv.org/abs/2503.02398,,llm_rec,ACL_EMNLP,2025
+"User Behavior Prediction as a Generic, Robust, Scalable, and Low-Cost Evaluation Strategy for Estimating Generalization in LLMs",2507.05266,https://arxiv.org/abs/2507.05266,,llm_rec,ACL_EMNLP,2025
+TripTailor: A Real-World Benchmark for Personalized Travel Planning,2508.01432,https://arxiv.org/abs/2508.01432,https://github.com/swxkfm/TripTailor,poi_spatiotemporal_rec,ACL_EMNLP,2025
+iAgent: LLM Agent as a Shield between User and Recommender Systems,2502.14662,https://arxiv.org/abs/2502.14662,,agent_conversational_rec,ACL_EMNLP,2025
+Muse: A Multimodal Conversational Recommendation Dataset with Scenario-Grounded User Profiles,2412.18416,https://arxiv.org/abs/2412.18416,,agent_conversational_rec,ACL_EMNLP,2025
+User Feedback Alignment for LLM-powered Exploration in Large-scale Recommendation Systems,2504.05522,https://arxiv.org/abs/2504.05522,,llm_rec,ACL_EMNLP,2025
+CoVE: Compressed Vocabulary Expansion Makes Better LLM-based Recommender Systems,2506.19993,https://arxiv.org/abs/2506.19993,https://github.com/HaochenZhang717/CoVE-official-Repo,llm_rec,ACL_EMNLP,2025
+The Efficiency vs. Accuracy Trade-off: Optimizing RAG-Enhanced LLM Recommender Systems Using Multi-Head Early Exit,2501.02173,https://arxiv.org/abs/2501.02173,,llm_rec,ACL_EMNLP,2025
+ICG: Improving Cover Image Generation via MLLM-based Prompting and Personalized Preference Alignment,2605.27374,https://arxiv.org/abs/2605.27374,,multimodal_rec,ACL_EMNLP,2025
+CoPL: Collaborative Preference Learning for Personalizing LLMs,2503.01658,https://arxiv.org/abs/2503.01658,https://github.com/ml-postech/CoPL,llm_rec,ACL_EMNLP,2025
+Towards Personalized Conversational Sales Agents: Contextual User Profiling for Strategic Action,2504.08754,https://arxiv.org/abs/2504.08754,,agent_conversational_rec,ACL_EMNLP,2025
+A Text-Based Recommender System that Leverages Explicit Affective State Preferences,2505.20190,https://arxiv.org/abs/2505.20190,,llm_rec,ACL_EMNLP,2025
+Bias Beware: The Impact of Cognitive Biases on LLM-Driven Product Recommendations,2502.01349,https://arxiv.org/abs/2502.01349,,debias_fairness_industrial,ACL_EMNLP,2025
+Rethinking LLM-Based Recommendations: A Personalized Query-Driven Parallel Integration,2504.11889,https://arxiv.org/abs/2504.11889,,llm_rec,ACL_EMNLP,2025
+RecGPT: A Foundation Model for Sequential Recommendation,2506.06270,https://arxiv.org/abs/2506.06270,,generative_rec,ACL_EMNLP,2025
+Enhancing Time Awareness in Generative Recommendation,2509.13957,https://arxiv.org/abs/2509.13957,https://github.com/skleee/GRUT,generative_rec,ACL_EMNLP,2025
+Similarity = Value? Consultation Value Assessment and Alignment for Personalized Search,2506.14437,https://arxiv.org/abs/2506.14437,,llm_rec,ACL_EMNLP,2025
+EasyRec: Simple yet Effective Language Models for Recommendation,2408.08821,https://arxiv.org/abs/2408.08821,https://github.com/HKUDS/EasyRec,llm_rec,ACL_EMNLP,2025
+A Survey on LLM-powered Agents for Recommender Systems,2502.10050,https://arxiv.org/abs/2502.10050,,agent_conversational_rec,ACL_EMNLP,2025
+LaMP-Val: Large Language Models Empower Personalized Valuation in Auction,2410.15817,https://arxiv.org/abs/2410.15817,,llm_rec,ACL_EMNLP,2025
+Refining Text Generation for Realistic Conversational Recommendation via Direct Preference Optimization,2508.19918,https://arxiv.org/abs/2508.19918,https://github.com/UEC-InabaLab/Refining-LLM-Text,agent_conversational_rec,ACL_EMNLP,2025
+Decoding in Latent Spaces for Efficient Inference in LLM-based Recommendation,2509.11524,https://arxiv.org/abs/2509.11524,,llm_rec,ACL_EMNLP,2025
+RecBase: Generative Foundation Model Pretraining for Zero-Shot Recommendation,2509.03131,https://arxiv.org/abs/2509.03131,,generative_rec,ACL_EMNLP,2025
+Enhancing Recommendation Explanations through User-Centric Refinement,2502.11721,https://arxiv.org/abs/2502.11721,,agent_conversational_rec,ACL_EMNLP,2025
+A Generative Framework for Personalized Sticker Retrieval,2509.17749,https://arxiv.org/abs/2509.17749,,generative_rec,ACL_EMNLP,2025
+Richer Output for Richer Countries: Uncovering Geographical Disparities in Generated Stories and Travel Recommendations,2411.07320,https://arxiv.org/abs/2411.07320,,debias_fairness_industrial,ACL_EMNLP,2025
+Empowering Retrieval-based Conversational Recommendation with Contrasting User Preferences,2503.22005,https://arxiv.org/abs/2503.22005,https://github.com/kookeej/CORAL,agent_conversational_rec,ACL_EMNLP,2025
+Generative Product Recommendations for Implicit Superlative Queries,2504.18748,https://arxiv.org/abs/2504.18748,,llm_rec,ACL_EMNLP,2025
+PREMISE: Matching-based Prediction for Accurate Review Recommendation,2505.01255,https://arxiv.org/abs/2505.01255,,multimodal_rec,ACL_EMNLP,2025
+AdTEC: A Unified Benchmark for Evaluating Text Quality in Search Engine Advertising,2408.05906,https://arxiv.org/abs/2408.05906,,debias_fairness_industrial,ACL_EMNLP,2025
+A Federated Framework for LLM-based Recommendation,2402.09959,https://arxiv.org/abs/2402.09959,,debias_fairness_industrial,ACL_EMNLP,2025

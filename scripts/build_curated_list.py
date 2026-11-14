@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
-build_curated_list.py (v3.10 DBLP 静态目录页+API双通道 + 自动代理探测 127.0.0.1:7897 + 诊断输出版)
+build_curated_list.py (v3.12 arXiv 防 429 限流版：跳过已收录标题 + 本地标题反查缓存 + 3.1s 礼貌间隔)
 核心特性与修复点：
   1. [P0-4 修复] CSV 增量合并同时兼容 arXiv 行与非 arXiv (DOI/URL/标题) 行，绝不丢失非 arXiv 记录。
   2. [P0-5 修复] 仅当单会刊运行时才响应 `--out`，多会刊 (`--venues` / `--all-venues`) 强制按 `<VENUE><YEAR>.csv` 独立落盘。
@@ -19,6 +19,8 @@ build_curated_list.py (v3.10 DBLP 静态目录页+API双通道 + 自动代理探
 
 import argparse
 import csv
+import hashlib
+import http.cookiejar
 import json
 import re
 import sys
@@ -428,18 +430,52 @@ def classify(title: str, abstract: str) -> str:
     return "collaborative_filtering"
 
 
-def batch_resolve_titles_on_arxiv(titles: list, venue: str, year: str, batch_size: int = 6, ee_map: dict = None) -> list:
-    """将从 DBLP/OpenAlex 获得的官方录用论文标题按 6 篇一批在 arXiv 上批量反查预印本，避免单篇串行触发 429。"""
+def batch_resolve_titles_on_arxiv(
+    titles: list,
+    venue: str,
+    year: str,
+    batch_size: int = 12,
+    ee_map: dict = None,
+    skip_norm_titles: set = None,
+) -> list:
+    """将从 DBLP/OpenAlex 获得的官方录用论文标题按 12 篇一批在 arXiv 上反查预印本：
+    1. 自动跳过已在当前 CSV 中的标题（避免重复请求 arXiv 触发 429）；
+    2. 使用本地持久化缓存 `data/dblp_cache/arxiv_title_resolve_cache.json`，查过的标题永不重复请求 arXiv；
+    3. 严格遵守 arXiv API 官方 3 秒 1 次的礼貌间隔规范。"""
     if not titles:
         return []
+    skip_norm_titles = skip_norm_titles or set()
+    cache_dir = SCRIPT_DIR.parent / "data" / "dblp_cache"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    resolve_cache_file = cache_dir / "arxiv_title_resolve_cache.json"
+    resolve_cache = {}
+    if resolve_cache_file.exists():
+        try:
+            resolve_cache = json.loads(resolve_cache_file.read_text(encoding="utf-8"))
+        except Exception:
+            resolve_cache = {}
+
     resolved = []
     seen_ids = set()
-
     norm_map = {}
     clean_queries = []
+
     for raw_t in titles:
         norm_t = re.sub(r"[^a-z0-9]", "", raw_t.lower())
-        if len(norm_t) < 12 or norm_t in norm_map:
+        if len(norm_t) < 12 or norm_t in norm_map or norm_t in skip_norm_titles:
+            continue
+        if norm_t in resolve_cache:
+            cached_ep = resolve_cache[norm_t]
+            if isinstance(cached_ep, dict) and cached_ep.get("arxiv_id"):
+                aid = cached_ep["arxiv_id"]
+                if aid not in seen_ids:
+                    seen_ids.add(aid)
+                    ep_copy = dict(cached_ep)
+                    ep_copy["comment"] = f"{ep_copy.get('comment', '')} | Accepted at {venue} {year} (DBLP Official Verified)".strip(" |")
+                    ep_copy["trusted_venue_match"] = True
+                    if ee_map and norm_t in ee_map and ee_map[norm_t]:
+                        ep_copy["official_ee"] = ee_map[norm_t]
+                    resolved.append(ep_copy)
             continue
         norm_map[norm_t] = raw_t
         clean_t = re.sub(r"[^a-zA-Z0-9\s]", " ", raw_t)
@@ -447,9 +483,15 @@ def batch_resolve_titles_on_arxiv(titles: list, venue: str, year: str, batch_siz
         if clean_t:
             clean_queries.append((norm_t, clean_t))
 
+    if not clean_queries:
+        return resolved
+
+    print(f"  [arXiv Resolve] 共 {len(clean_queries)} 篇未缓存新标题待反查（每批 {batch_size} 篇，遵守 arXiv 3s 礼貌间隔）...")
+    cache_dirty = False
     for start in range(0, len(clean_queries), batch_size):
         chunk = clean_queries[start : start + batch_size]
-        or_clauses = " OR ".join(f'ti:"{item[1][:95]}"' for item in chunk)
+        or_clauses = " OR ".join(f'ti:"{item[1][:90]}"' for item in chunk)
+        matched_norms_in_chunk = set()
         try:
             entries = _fetch_arxiv_entries(
                 {"search_query": or_clauses, "max_results": len(chunk) * 2},
@@ -458,124 +500,319 @@ def batch_resolve_titles_on_arxiv(titles: list, venue: str, year: str, batch_siz
             )
             for ep in entries:
                 aid = re.sub(r"v\d+$", "", ep.get("arxiv_id", "").strip())
-                if not aid or aid in seen_ids:
+                if not aid:
                     continue
                 norm_ep = re.sub(r"[^a-z0-9]", "", (ep.get("title") or "").lower())
                 if not norm_ep:
                     continue
-                matched = norm_ep in norm_map
-                if not matched:
+                matched_key = norm_ep if norm_ep in norm_map else None
+                if not matched_key:
                     for target_norm in norm_map:
                         if len(target_norm) >= 25 and (target_norm in norm_ep or norm_ep in target_norm):
-                            matched = True
+                            matched_key = target_norm
                             break
-                if matched:
-                    seen_ids.add(aid)
-                    orig_c = ep.get("comment") or ""
-                    ep["comment"] = f"{orig_c} | Accepted at {venue} {year} (DBLP Official Verified)".strip(" |")
-                    ep["trusted_venue_match"] = True
-                    if ee_map and norm_ep in ee_map and ee_map[norm_ep]:
-                        ep["official_ee"] = ee_map[norm_ep]
-                    resolved.append(ep)
-            time.sleep(0.6)
-        except Exception:
-            time.sleep(1.0)
+                if matched_key:
+                    matched_norms_in_chunk.add(matched_key)
+                    resolve_cache[matched_key] = {
+                        "title": ep.get("title", ""),
+                        "content": ep.get("content", ""),
+                        "comment": ep.get("comment", ""),
+                        "published_date": ep.get("published_date", ""),
+                        "updated_date": ep.get("updated_date", ""),
+                        "paper_url": ep.get("paper_url", ""),
+                        "code_url": ep.get("code_url", ""),
+                        "arxiv_id": aid,
+                    }
+                    cache_dirty = True
+                    if aid not in seen_ids:
+                        seen_ids.add(aid)
+                        orig_c = ep.get("comment") or ""
+                        ep["comment"] = f"{orig_c} | Accepted at {venue} {year} (DBLP Official Verified)".strip(" |")
+                        ep["trusted_venue_match"] = True
+                        if ee_map and matched_key in ee_map and ee_map[matched_key]:
+                            ep["official_ee"] = ee_map[matched_key]
+                        resolved.append(ep)
+            # 对本批次确认未在 arXiv 找到预印本的标题记录为 None，下次不再重复查询
+            for norm_k, _ in chunk:
+                if norm_k not in matched_norms_in_chunk and norm_k not in resolve_cache:
+                    resolve_cache[norm_k] = None
+                    cache_dirty = True
+            time.sleep(3.1)
+        except Exception as e:
+            print(f"  [Warn] 批量反查 arXiv 跳过当前批次: {e}")
+            time.sleep(5.0)
             continue
+
+    if cache_dirty:
+        try:
+            resolve_cache_file.write_text(json.dumps(resolve_cache, ensure_ascii=False), encoding="utf-8")
+        except OSError:
+            pass
     return resolved
 
 
-def _open_url_with_proxy_fallback(url: str, timeout: int = 20) -> str:
-    """优先使用系统/环境变量配置请求 URL；若连接超时或被重置，自动探测并尝试本地代理 http://127.0.0.1:7897。"""
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) RecSys-Paper-Notes/3.10",
-        "Accept": "application/json, text/html, application/xhtml+xml, */*",
-    }
-    req = urllib.request.Request(url, headers=headers)
-    last_err = None
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return resp.read().decode("utf-8", errors="ignore").strip()
-    except urllib.error.HTTPError:
-        raise
-    except Exception as e:
-        last_err = e
+# 全局 CookieJar，用于持久化保存通过 Anubis PoW 验证后的 Cookie
+_COOKIE_JAR = http.cookiejar.CookieJar()
 
-    # 自动尝试用户常用的本地代理端口 127.0.0.1:7897
-    for proxy_url in ("http://127.0.0.1:7897", "http://127.0.0.1:7890"):
-        try:
-            proxy_handler = urllib.request.ProxyHandler({"http": proxy_url, "https": proxy_url})
-            opener = urllib.request.build_opener(proxy_handler)
-            with opener.open(req, timeout=timeout) as resp:
-                return resp.read().decode("utf-8", errors="ignore").strip()
-        except urllib.error.HTTPError:
-            raise
-        except Exception:
-            continue
-
-    raise last_err
-
-
-# DBLP 静态会议目录页路径模板（当 Search API 限流时可直接读取静态目录页，永不 429）
-DBLP_STATIC_TOC_PATHS = {
-    "SIGIR": ["db/conf/sigir/sigir{year}.html"],
-    "RecSys": ["db/conf/recsys/recsys{year}.html"],
-    "WSDM": ["db/conf/wsdm/wsdm{year}.html"],
-    "CIKM": ["db/conf/cikm/cikm{year}.html"],
-    "ECIR": ["db/conf/ecir/ecir{year}-1.html", "db/conf/ecir/ecir{year}-2.html", "db/conf/ecir/ecir{year}-3.html"],
-    "SIGIR-AP": ["db/conf/sigir-ap/sigir-ap{year}.html"],
-    "KDD": ["db/conf/kdd/kdd{year}-1.html", "db/conf/kdd/kdd{year}-2.html"],
-    "WWW": ["db/conf/www/www{year}.html"],
-    "ACM_MM": ["db/conf/mm/mm{year}.html"],
-    "ICDE": ["db/conf/icde/icde{year}.html"],
-    "ICDM": ["db/conf/icdm/icdm{year}.html"],
-    "DASFAA": ["db/conf/dasfaa/dasfaa{year}-1.html", "db/conf/dasfaa/dasfaa{year}-2.html", "db/conf/dasfaa/dasfaa{year}-3.html"],
-    "AAAI": ["db/conf/aaai/aaai{year}.html"],
-    "IJCAI": ["db/conf/ijcai/ijcai{year}.html"],
-    "ACL_EMNLP": ["db/conf/acl/acl{year}-1.html", "db/conf/emnlp/emnlp{year}-main.html", "db/conf/emnlp/emnlp{year}.html"],
-    "ICLR_NeurIPS_ICML": ["db/conf/iclr/iclr{year}.html", "db/conf/nips/neurips{year}.html", "db/conf/icml/icml{year}.html"],
+# 22 个会刊在 DBLP RDF Knowledge Graph (https://sparql.dblp.org/sparql) 中的官方 Stream URI
+DBLP_SPARQL_STREAMS = {
+    "SIGIR": ["https://dblp.org/streams/conf/sigir"],
+    "RecSys": ["https://dblp.org/streams/conf/recsys"],
+    "WSDM": ["https://dblp.org/streams/conf/wsdm"],
+    "CIKM": ["https://dblp.org/streams/conf/cikm"],
+    "ECIR": ["https://dblp.org/streams/conf/ecir"],
+    "SIGIR-AP": ["https://dblp.org/streams/conf/sigir-ap"],
+    "KDD": ["https://dblp.org/streams/conf/kdd"],
+    "WWW": ["https://dblp.org/streams/conf/www"],
+    "ACM_MM": ["https://dblp.org/streams/conf/mm"],
+    "ICDE": ["https://dblp.org/streams/conf/icde"],
+    "ICDM": ["https://dblp.org/streams/conf/icdm"],
+    "DASFAA": ["https://dblp.org/streams/conf/dasfaa"],
+    "AAAI": ["https://dblp.org/streams/conf/aaai"],
+    "IJCAI": ["https://dblp.org/streams/conf/ijcai"],
+    "ACL_EMNLP": [
+        "https://dblp.org/streams/conf/acl",
+        "https://dblp.org/streams/conf/emnlp",
+        "https://dblp.org/streams/conf/naacl",
+    ],
+    "ICLR_NeurIPS_ICML": [
+        "https://dblp.org/streams/conf/iclr",
+        "https://dblp.org/streams/conf/nips",
+        "https://dblp.org/streams/conf/icml",
+    ],
+    "TOIS": ["https://dblp.org/streams/journals/tois"],
+    "TKDE": ["https://dblp.org/streams/journals/tkde"],
+    "TORS": ["https://dblp.org/streams/journals/tors"],
+    "TMM": ["https://dblp.org/streams/journals/tmm"],
+    "TKDD": ["https://dblp.org/streams/journals/tkdd"],
+    "TWEB": ["https://dblp.org/streams/journals/tweb"],
 }
 
 
-def _fetch_from_dblp_static_toc(venue: str, year: str) -> tuple:
-    """直接抓取 DBLP 静态会议目录页 (db/conf/<venue>/<venue><year>.html)，不受 Search API 限流影响。"""
-    paths = DBLP_STATIC_TOC_PATHS.get(venue, [])
-    if not paths:
+def _build_http_opener(proxy_url: str = ""):
+    handlers = [urllib.request.HTTPCookieProcessor(_COOKIE_JAR)]
+    if proxy_url:
+        handlers.append(urllib.request.ProxyHandler({"http": proxy_url, "https": proxy_url}))
+    return urllib.request.build_opener(*handlers)
+
+
+def _solve_anubis_pow_if_challenged(html_body: str, target_url: str, opener) -> str:
+    """如果返回了 Anubis `<title>Making sure you're not a bot!</title>` 验证页，
+    自动解析页面内的 JSON 挑战参数并用 hashlib.sha256 在毫秒级算出 nonce 获取放行 Cookie。
+    """
+    if "Making sure you" not in html_body and "anubis" not in html_body.lower():
+        return html_body
+
+    m = re.search(
+        r"""<script[^>]+id=["']anubis_challenge["'][^>]*>(.*?)</script>""",
+        html_body,
+        re.DOTALL | re.IGNORECASE,
+    )
+    if not m:
+        return html_body
+
+    try:
+        payload = json.loads(m.group(1).strip())
+        chal = payload.get("challenge") if isinstance(payload.get("challenge"), dict) else payload
+        chal_id = chal.get("id") or payload.get("id") or ""
+        rand_data = chal.get("randomData") or chal.get("data") or payload.get("randomData") or ""
+        rules = payload.get("rules") if isinstance(payload.get("rules"), dict) else chal
+        difficulty = int(rules.get("difficulty") or chal.get("difficulty") or 4)
+        if not rand_data:
+            return html_body
+
+        prefix_zeros = "0" * difficulty
+        nonce = 0
+        digest_hex = ""
+        while nonce < 5_000_000:
+            candidate = f"{rand_data}{nonce}".encode("utf-8")
+            h = hashlib.sha256(candidate).hexdigest()
+            if h.startswith(prefix_zeros):
+                digest_hex = h
+                break
+            nonce += 1
+
+        if not digest_hex:
+            return html_body
+
+        parsed = urllib.parse.urlparse(target_url)
+        base_origin = f"{parsed.scheme}://{parsed.netloc}"
+        pass_params = {
+            "response": digest_hex,
+            "nonce": str(nonce),
+            "redir": target_url,
+            "elapsedTime": "45",
+        }
+        if chal_id:
+            pass_params["id"] = chal_id
+        pass_url = f"{base_origin}/.within.website/x/cmd/anubis/api/pass-challenge?" + urllib.parse.urlencode(pass_params)
+        req = urllib.request.Request(
+            pass_url,
+            headers={
+                "User-Agent": "curl/8.7.1",
+                "Accept": "application/json, text/html, */*",
+                "Referer": target_url,
+            },
+        )
+        with opener.open(req, timeout=20) as resp:
+            return resp.read().decode("utf-8", errors="ignore").strip()
+    except Exception:
+        return html_body
+
+
+def _open_url_with_proxy_fallback(url: str, timeout: int = 25, accept: str = "application/json, text/html, */*") -> str:
+    """使用非 Mozilla 的 `curl/8.7.1` User-Agent（避开 Anubis 针对 Mozilla 浏览器的默认拦截规则），
+    支持直连与本地代理 127.0.0.1:7897 自动切换，并在遇到 Anubis PoW 时自动计算 SHA-256 签名过检。
+    """
+    headers = {
+        "User-Agent": "curl/8.7.1",
+        "Accept": accept,
+    }
+    last_err = None
+    for proxy_url in ("", "http://127.0.0.1:7897", "http://127.0.0.1:7890"):
+        opener = _build_http_opener(proxy_url)
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with opener.open(req, timeout=timeout) as resp:
+                body = resp.read().decode("utf-8", errors="ignore").strip()
+            if "Making sure you" in body or "anubis_challenge" in body:
+                body = _solve_anubis_pow_if_challenged(body, url, opener)
+            return body
+        except urllib.error.HTTPError:
+            raise
+        except Exception as e:
+            last_err = e
+            continue
+    if last_err:
+        raise last_err
+    return ""
+
+
+def _fetch_from_dblp_sparql(venue: str, year: str, verbose: bool = False) -> tuple:
+    """通道 1（首选，无 Anubis 拦截、无 1000 条截断）：
+    通过 DBLP 官方 QLever SPARQL 知识图谱接口 (https://sparql.dblp.org/sparql)
+    直接按 `dblp:publishedInStream` 与 `dblp:yearOfPublication` 精确拉取整本会议/期刊目录。
+    """
+    streams = DBLP_SPARQL_STREAMS.get(venue, [])
+    if not streams:
         return [], {}
+    pure_rec_venue = venue in {"RecSys", "TORS"}
     titles = []
     ee_map = {}
     seen_t = set()
-    pure_rec_venue = venue in {"RecSys", "TORS"}
 
-    for rel_p in paths:
-        formatted_p = rel_p.format(year=year)
-        for mirror in DBLP_MIRRORS:
-            url = f"{mirror}/{formatted_p}"
-            try:
-                html_str = _open_url_with_proxy_fallback(url, timeout=25)
-                if 'class="title"' not in html_str:
-                    continue
-                # 提取每条论文记录的 title
-                for m in re.finditer(r'<span class="title"[^>]*>(.*?)</span>', html_str, re.DOTALL):
-                    raw_t = re.sub(r"<[^>]+>", "", m.group(1)).strip()
-                    raw_t = re.sub(r"\\.$", "", raw_t).strip()
-                    if not raw_t or len(raw_t) < 15 or "Proceedings of" in raw_t or "Workshop on" in raw_t:
-                        continue
-                    if pure_rec_venue or is_recommendation_relevant(raw_t, ""):
-                        if raw_t.lower() not in seen_t:
-                            seen_t.add(raw_t.lower())
-                            titles.append(raw_t)
-                break
-            except urllib.error.HTTPError as e:
-                if e.code == 404:
-                    break
-            except Exception:
+    for stream_uri in streams:
+        sparql_query = (
+            "PREFIX dblp: <https://dblp.org/rdf/schema#>\n"
+            "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n"
+            "SELECT ?paper ?title ?ee WHERE {\n"
+            f"  ?paper dblp:publishedInStream <{stream_uri}> .\n"
+            f'  ?paper dblp:yearOfPublication "{year}"^^xsd:gYear .\n'
+            "  ?paper dblp:title ?title .\n"
+            "  OPTIONAL { ?paper dblp:primaryDocumentPage ?ee . }\n"
+            "}"
+        )
+        url = "https://sparql.dblp.org/sparql?" + urllib.parse.urlencode({"query": sparql_query})
+        try:
+            raw = _open_url_with_proxy_fallback(
+                url,
+                timeout=30,
+                accept="application/sparql-results+json, application/json",
+            )
+            if not raw.startswith("{"):
+                if verbose:
+                    print(f"    [SPARQL Debug] sparql.dblp.org 返回非 JSON: {raw[:80]}")
                 continue
-        time.sleep(1.0)
+            data = json.loads(raw)
+            bindings = data.get("results", {}).get("bindings", [])
+            for b in bindings:
+                raw_t = (b.get("title", {}).get("value") or "").strip()
+                raw_t = re.sub(r"\.$", "", raw_t).strip()
+                if not raw_t or len(raw_t) < 15 or "Proceedings of" in raw_t:
+                    continue
+                t_low = raw_t.lower()
+                if any(neg in t_low for neg in ("workshop", "tutorial", "doctoral", "symposium", "keynote", "recsys challenge")):
+                    continue
+                if pure_rec_venue or is_recommendation_relevant(raw_t, ""):
+                    if raw_t.lower() not in seen_t:
+                        seen_t.add(raw_t.lower())
+                        titles.append(raw_t)
+                        ee_str = (b.get("ee", {}).get("value") or "").strip()
+                        norm_k = re.sub(r"[^a-z0-9]", "", raw_t.lower())
+                        if ee_str and norm_k not in ee_map:
+                            ee_map[norm_k] = ee_str
+        except Exception as e:
+            if verbose:
+                print(f"    [SPARQL Warn] {stream_uri} ({year}) 查询异常: {e}")
+        time.sleep(2.5)
+
+    return titles, ee_map
+
+
+def _fetch_from_crossref(venue: str, year: str, verbose: bool = False) -> tuple:
+    """通道 3（官方 DOI 注册中心兜底，永无 Anubis 拦截、支持每秒 50 次请求）：
+    当 DBLP 主站被防火墙拦截时，从 Crossref REST API (https://api.crossref.org/works) 获取官方出版目录。
+    """
+    cfg = VENUE_CONFIGS.get(venue, {})
+    oa_aliases = cfg.get("openalex", [venue])
+    if isinstance(oa_aliases, str):
+        oa_aliases = [oa_aliases]
+    pure_rec_venue = venue in {"RecSys", "TORS"}
+    titles = []
+    ee_map = {}
+    seen_t = set()
+
+    for container_name in oa_aliases[:2]:
+        params = {
+            "query.container-title": container_name,
+            "filter": f"from-pub-date:{year}-01-01,until-pub-date:{year}-12-31",
+            "select": "DOI,title,container-title,URL",
+            "rows": "200",
+            "mailto": "recsys-notes@papernotes.org",
+        }
+        if not pure_rec_venue:
+            params["query.bibliographic"] = "recommendation recommender collaborative sequential personalization"
+        url = "https://api.crossref.org/works?" + urllib.parse.urlencode(params)
+        try:
+            raw = _open_url_with_proxy_fallback(url, timeout=25, accept="application/json")
+            if not raw.startswith("{"):
+                continue
+            data = json.loads(raw)
+            items = data.get("message", {}).get("items", [])
+            for item in items:
+                c_titles = item.get("container-title") or []
+                c_joined = " | ".join(c_titles).lower()
+                if not c_joined or not any(re.search(pat, c_joined, re.IGNORECASE) for pat in cfg.get("tokens", [venue.lower()])):
+                    continue
+                if any(bad in c_joined for bad in ("workshop", "companion", "tutorial")):
+                    continue
+                t_arr = item.get("title") or []
+                raw_t = re.sub(r"\.$", "", (t_arr[0] if t_arr else "").strip())
+                if not raw_t or len(raw_t) < 15:
+                    continue
+                if pure_rec_venue or is_recommendation_relevant(raw_t, ""):
+                    if raw_t.lower() not in seen_t:
+                        seen_t.add(raw_t.lower())
+                        titles.append(raw_t)
+                        doi = (item.get("DOI") or "").strip()
+                        ee_str = f"https://doi.org/{doi}" if doi else (item.get("URL") or "").strip()
+                        norm_k = re.sub(r"[^a-z0-9]", "", raw_t.lower())
+                        if ee_str:
+                            ee_map[norm_k] = ee_str
+        except Exception as e:
+            if verbose:
+                print(f"    [Crossref Warn] {container_name} ({year}): {e}")
+        time.sleep(0.4)
+
     return titles, ee_map
 
 
 def fetch_dblp_official_titles(venue: str, year: str, max_hits: int = 1000, use_cache: bool = True, verbose: bool = False) -> tuple:
-    """从 DBLP 官方 API + 静态目录页双通道拉取指定会刊与年份的推荐相关录用论文清单（返回 (titles, ee_map)）。"""
+    """三级官方目录拉取引擎：
+    1. 首选 DBLP 官方 SPARQL 知识图谱接口 (`https://sparql.dblp.org/sparql`，独立于主站 Anubis 防火墙，单次精确拉取整本会议/期刊)；
+    2. 次选 DBLP Search API（使用 `curl/8.7.1` 免拦截 UA + 内置 Anubis SHA-256 PoW 自动求解器）；
+    3. 兜底 Crossref 官方 DOI 注册库接口 (`https://api.crossref.org/works`)。
+    """
     cfg = VENUE_CONFIGS.get(venue, {})
     dblp_aliases = cfg.get("dblp", [venue])
     if isinstance(dblp_aliases, str):
@@ -605,76 +842,83 @@ def fetch_dblp_official_titles(venue: str, year: str, max_hits: int = 1000, use_
 
     seen_t = set()
     cached_records = []
-    for idx, dblp_venue in enumerate(dblp_aliases):
-        # 对纯推荐会刊 (RecSys / TORS) 直接拉取全量目录；对其余会刊使用 DBLP 默认前缀匹配 `recommend` (自动匹配 recommend/recommendation/recommender)
-        q = f"{dblp_venue} {year}" if pure_rec_venue else f"{dblp_venue} {year} recommend"
-        for attempt in range(len(DBLP_MIRRORS)):
-            mirror = DBLP_MIRRORS[(idx + attempt) % len(DBLP_MIRRORS)]
-            url = f"{mirror}/search/publ/api?q={urllib.parse.quote(q)}&h={max_hits}&format=json"
-            try:
-                raw = _open_url_with_proxy_fallback(url, timeout=25)
-                if not raw.startswith("{"):
-                    if verbose:
-                        print(f"    [Debug] {mirror} 返回非 JSON 内容: {raw[:80]}")
-                    time.sleep(2.0)
-                    continue
-                data = json.loads(raw)
-                hits = data.get("result", {}).get("hits", {}).get("hit", [])
-                if isinstance(hits, dict):
-                    hits = [hits]
-                for h in hits:
-                    if not isinstance(h, dict):
-                        continue
-                    info = h.get("info", {})
-                    h_year = str(info.get("year") or "").strip()
-                    if h_year and h_year != str(year):
-                        continue
-                    h_key = str(info.get("key") or "").strip().lower()
-                    if key_prefixes and h_key and not any(h_key.startswith(pfx) for pfx in key_prefixes):
-                        continue
-                    h_venue = str(info.get("venue") or "").lower()
-                    if any(bad in h_venue for bad in ("workshop", "companion", "tutorial", "doctoral")):
-                        continue
-                    title = re.sub(r"\\.$", "", (info.get("title") or "").strip())
-                    if not title or len(title) < 15 or "Proceedings of" in title:
-                        continue
-                    if pure_rec_venue or is_recommendation_relevant(title, ""):
-                        if title.lower() not in seen_t:
-                            seen_t.add(title.lower())
-                            titles.append(title)
-                            ee_val = info.get("ee", "")
-                            if isinstance(ee_val, list):
-                                ee_val = ee_val[0] if ee_val else ""
-                            ee_str = str(ee_val or "").strip()
-                            norm_k = re.sub(r"[^a-z0-9]", "", title.lower())
-                            ee_map[norm_k] = ee_str
-                            cached_records.append({"title": title, "ee": ee_str, "key": h_key})
-                break
-            except urllib.error.HTTPError as e:
-                retry_after = 3.0
-                if e.code == 429 and e.headers:
-                    ra = e.headers.get("Retry-After")
-                    if ra and str(ra).isdigit():
-                        retry_after = min(float(ra), 15.0)
-                if verbose:
-                    print(f"    [DBLP HTTP {e.code}] {mirror} 限流或报错，等待 {retry_after:.0f}s 后切换备用镜像 ...")
-                time.sleep(retry_after)
-            except Exception as e:
-                if verbose and attempt == len(DBLP_MIRRORS) - 1:
-                    print(f"    [DBLP Network Warn] {mirror} 连接异常: {e}")
-                time.sleep(1.5)
-        time.sleep(1.8)
 
-    # 若 Search API 未返回结果（如被限流），自动回退到 DBLP 静态目录页抓取
-    if not titles and venue in DBLP_STATIC_TOC_PATHS:
+    # --- 通道 1: DBLP 官方 SPARQL 知识图谱端点 (https://sparql.dblp.org/sparql) ---
+    sparql_titles, sparql_ee = _fetch_from_dblp_sparql(venue, year, verbose=verbose)
+    for t in sparql_titles:
+        if t.lower() not in seen_t:
+            seen_t.add(t.lower())
+            titles.append(t)
+            norm_k = re.sub(r"[^a-z0-9]", "", t.lower())
+            ee_str = sparql_ee.get(norm_k, "")
+            if ee_str:
+                ee_map[norm_k] = ee_str
+            cached_records.append({"title": t, "ee": ee_str, "key": "dblp_sparql"})
+
+    # --- 通道 2: 若 SPARQL 未返回结果，尝试 DBLP Search API (带 curl UA 与 Anubis PoW 自动求解) ---
+    if not titles:
+        for idx, dblp_venue in enumerate(dblp_aliases):
+            q = f"{dblp_venue} {year}" if pure_rec_venue else f"{dblp_venue} {year} recommend"
+            for attempt in range(len(DBLP_MIRRORS)):
+                mirror = DBLP_MIRRORS[(idx + attempt) % len(DBLP_MIRRORS)]
+                url = f"{mirror}/search/publ/api?q={urllib.parse.quote(q)}&h={max_hits}&format=json"
+                try:
+                    raw = _open_url_with_proxy_fallback(url, timeout=25)
+                    if not raw.startswith("{"):
+                        if verbose:
+                            print(f"    [Debug] {mirror} 仍返回非 JSON 内容: {raw[:75]}")
+                        continue
+                    data = json.loads(raw)
+                    hits = data.get("result", {}).get("hits", {}).get("hit", [])
+                    if isinstance(hits, dict):
+                        hits = [hits]
+                    for h in hits:
+                        if not isinstance(h, dict):
+                            continue
+                        info = h.get("info", {})
+                        h_year = str(info.get("year") or "").strip()
+                        if h_year and h_year != str(year):
+                            continue
+                        h_key = str(info.get("key") or "").strip().lower()
+                        if key_prefixes and h_key and not any(h_key.startswith(pfx) for pfx in key_prefixes):
+                            continue
+                        h_venue = str(info.get("venue") or "").lower()
+                        if any(bad in h_venue for bad in ("workshop", "companion", "tutorial", "doctoral")):
+                            continue
+                        title = re.sub(r"\.$", "", (info.get("title") or "").strip())
+                        if not title or len(title) < 15 or "Proceedings of" in title:
+                            continue
+                        if pure_rec_venue or is_recommendation_relevant(title, ""):
+                            if title.lower() not in seen_t:
+                                seen_t.add(title.lower())
+                                titles.append(title)
+                                ee_val = info.get("ee", "")
+                                if isinstance(ee_val, list):
+                                    ee_val = ee_val[0] if ee_val else ""
+                                ee_str = str(ee_val or "").strip()
+                                norm_k = re.sub(r"[^a-z0-9]", "", title.lower())
+                                ee_map[norm_k] = ee_str
+                                cached_records.append({"title": title, "ee": ee_str, "key": h_key})
+                    break
+                except Exception as e:
+                    if verbose and attempt == len(DBLP_MIRRORS) - 1:
+                        print(f"    [DBLP Search Warn] {mirror}: {e}")
+                    time.sleep(1.5)
+
+    # --- 通道 3: 若仍为空，回退至 Crossref 官方 REST API ---
+    if not titles:
         if verbose:
-            print(f"    [Fallback] 正在从 DBLP 静态目录页 (db/conf) 直接读取 {venue} {year} ...")
-        static_titles, static_ee = _fetch_from_dblp_static_toc(venue, year)
-        for t in static_titles:
+            print(f"    [Crossref Fallback] 正在从 Crossref 官方 DOI 库查询 {venue} {year} ...")
+        cr_titles, cr_ee = _fetch_from_crossref(venue, year, verbose=verbose)
+        for t in cr_titles:
             if t.lower() not in seen_t:
                 seen_t.add(t.lower())
                 titles.append(t)
-                cached_records.append({"title": t, "ee": static_ee.get(re.sub(r"[^a-z0-9]", "", t.lower()), ""), "key": "static_toc"})
+                norm_k = re.sub(r"[^a-z0-9]", "", t.lower())
+                ee_str = cr_ee.get(norm_k, "")
+                if ee_str:
+                    ee_map[norm_k] = ee_str
+                cached_records.append({"title": t, "ee": ee_str, "key": "crossref"})
 
     if cached_records:
         try:
@@ -685,13 +929,13 @@ def fetch_dblp_official_titles(venue: str, year: str, max_hits: int = 1000, use_
     return titles, ee_map
 
 
-def discover_via_dblp_and_resolve_arxiv(venue: str, year: str, max_hits: int = 1000) -> list:
+def discover_via_dblp_and_resolve_arxiv(venue: str, year: str, max_hits: int = 1000, skip_norm_titles: set = None) -> list:
     """从 DBLP 官方目录拉取指定会刊与年份的推荐论文标题，并批量去 arXiv 反查预印本全文。"""
     titles, ee_map = fetch_dblp_official_titles(venue, year, max_hits=max_hits)
-    return batch_resolve_titles_on_arxiv(titles[:220], venue=venue, year=year, ee_map=ee_map)
+    return batch_resolve_titles_on_arxiv(titles[:400], venue=venue, year=year, ee_map=ee_map, skip_norm_titles=skip_norm_titles)
 
 
-def discover_via_openalex(venue: str, year: str, per_page: int = 100, max_pages: int = 2) -> list:
+def discover_via_openalex(venue: str, year: str, per_page: int = 100, max_pages: int = 2, skip_norm_titles: set = None) -> list:
     """使用免 Key 的 OpenAlex API 检索目标会刊发表的推荐系统论文（支持多别名、多页抓取、429 退避与严格来源核验）。"""
     cfg = VENUE_CONFIGS.get(venue, {})
     oa_aliases = cfg.get("openalex", [venue])
@@ -774,7 +1018,7 @@ def discover_via_openalex(venue: str, year: str, per_page: int = 100, max_pages:
             resolved_papers.append(ep)
 
     if titles_to_resolve:
-        resolved_papers.extend(batch_resolve_titles_on_arxiv(titles_to_resolve[:150], venue=venue, year=year))
+        resolved_papers.extend(batch_resolve_titles_on_arxiv(titles_to_resolve[:150], venue=venue, year=year, skip_norm_titles=skip_norm_titles))
 
     return resolved_papers
 
@@ -797,6 +1041,7 @@ def build_for_single_venue(venue: str, args, log: RunLog, single_venue_mode: boo
     out_path = Path(args.out) if (args.out and single_venue_mode) else SCRIPT_DIR.parent / "data" / "papers" / f"{venue}{args.year}.csv"
     existing_rows_by_key = {}
     seen_arxiv_ids = set()
+    existing_norm_titles = set()
     if out_path.exists() and not args.no_incremental:
         with out_path.open("r", encoding="utf-8-sig", newline="") as f:
             for r in csv.DictReader(f):
@@ -808,6 +1053,8 @@ def build_for_single_venue(venue: str, args, log: RunLog, single_venue_mode: boo
                 if aid:
                     r["arxiv_id"] = aid
                     seen_arxiv_ids.add(aid)
+                if r.get("title"):
+                    existing_norm_titles.add(re.sub(r"[^a-z0-9]", "", r["title"].lower()))
                 ukey = _row_unique_key(r)
                 if ukey:
                     existing_rows_by_key[ukey] = r
@@ -817,12 +1064,12 @@ def build_for_single_venue(venue: str, args, log: RunLog, single_venue_mode: boo
 
     papers = []
     # 2024 及更早年份（或显式指定 --dblp-only）默认以 DBLP 官方录用目录为准，不再依赖可能漏标/误标的 arXiv comment 搜索
-    use_dblp_authority_only = bool(getattr(args, "dblp_only", False)) or (args.year.isdigit() and int(args.year) <= 2024)
+    use_dblp_authority_only = bool(getattr(args, "dblp_only", False)) or (args.year.isdigit() and int(args.year) <= 2025)
 
     if use_dblp_authority_only:
         print(f"[{venue} {args.year}] 启用【DBLP 官方目录权威模式】：直接从 DBLP 拉取官方录用清单并反查 arXiv/ACM 全文 ...")
-        dblp_found = discover_via_dblp_and_resolve_arxiv(venue, args.year)
-        oa_found = discover_via_openalex(venue, args.year)
+        dblp_found = discover_via_dblp_and_resolve_arxiv(venue, args.year, skip_norm_titles=existing_norm_titles)
+        oa_found = []
         print(f"[{venue} {args.year}] 官方目录共匹配到 {len(dblp_found) + len(oa_found)} 篇可获取全文的推荐系统论文。")
         papers.extend(dblp_found)
         papers.extend(oa_found)
@@ -845,12 +1092,15 @@ def build_for_single_venue(venue: str, args, log: RunLog, single_venue_mode: boo
                 )
             except Exception as e:
                 print(f"  [Warn] arXiv 查询异常 ({q_str}): {e}")
-            time.sleep(0.5)
+            time.sleep(2.5)
 
         if args.use_dblp:
-            print(f"[{venue} OpenAlex+DBLP] 正在联合检索 OpenAlex 与 DBLP 官方目录 ({venue} {args.year}) ...")
-            oa_found = discover_via_openalex(venue, args.year)
-            dblp_found = discover_via_dblp_and_resolve_arxiv(venue, args.year)
+            known_norms = set(existing_norm_titles) | {
+                re.sub(r"[^a-z0-9]", "", (p.get("title") or "").lower()) for p in papers if p.get("title")
+            }
+            print(f"[{venue} DBLP] 正在检索 DBLP 官方目录并过滤已收录标题 ({venue} {args.year}) ...")
+            dblp_found = discover_via_dblp_and_resolve_arxiv(venue, args.year, skip_norm_titles=known_norms)
+            oa_found = []
             print(f"[{venue} OpenAlex+DBLP] 额外发现 {len(oa_found) + len(dblp_found)} 篇官方录用 arXiv 预印本。")
             papers.extend(oa_found)
             papers.extend(dblp_found)
@@ -960,13 +1210,14 @@ def main():
     parser.add_argument("--year", default="2026")
     parser.add_argument("--max-results", type=int, default=300)
     parser.add_argument("--use-dblp", action="store_true", help="同时查询 OpenAlex 与 DBLP 官方录用列表并批量反查 arXiv")
-    parser.add_argument("--dblp-only", action="store_true", help="严格只以 DBLP/OpenAlex 官方目录为准（2024 及更早年份默认自动开启）")
+    parser.add_argument("--dblp-only", action="store_true", help="严格只以 DBLP/OpenAlex 官方目录为准（2025 及更早年份默认自动开启）")
     parser.add_argument("--test-dblp", action="store_true", help="仅测试各会刊 DBLP 官方目录连通性与推荐论文命中数（不写 CSV、不调 LLM）")
     parser.add_argument("--no-incremental", action="store_true", help="不合并已有 CSV，从零重建名单（默认开启增量合并）")
     parser.add_argument("--no-relevance-filter", action="store_true", help="保留所有主会论文（默认仅保留推荐相关论文）")
     parser.add_argument("--out", default="", help="输出 CSV 路径；默认 data/papers/<VENUE><YEAR>.csv")
     parser.add_argument("--no-llm", action="store_true", help="禁用 LLM，仅用关键词启发式分类")
-    parser.add_argument("--llm-api-key", default="", help="LLM API Key（或 LLM_API_KEY / DEEPSEEK_API_KEY）")
+    parser.add_argument("--opencode-free", action="store_true", help="启用 OpenCode 免费 deepseek-v4.1-flash-free 模型额度")
+    parser.add_argument("--llm-api-key", default="", help="LLM API Key（或 LLM_API_KEY / DEEPSEEK_API_KEY / OPENCODE_API_KEY）")
     parser.add_argument("--llm-base-url", default="", help="LLM API Base URL")
     parser.add_argument("--llm-model", default="", help="LLM 模型名称")
     parser.add_argument("--llm-workers", type=int, default=4, help="LLM 并发线程数（默认 4）")
@@ -975,6 +1226,8 @@ def main():
     parser.add_argument("--llm-cache", default=str(DEFAULT_CACHE_PATH), help="LLM 分类缓存路径")
     parser.add_argument("--refresh-llm-cache", action="store_true", help="忽略本地 LLM 分类缓存")
     args = parser.parse_args()
+    if args.opencode_free:
+        os.environ['USE_OPENCODE_FREE'] = '1'
     run_start = time.monotonic()
 
     if args.all_venues:

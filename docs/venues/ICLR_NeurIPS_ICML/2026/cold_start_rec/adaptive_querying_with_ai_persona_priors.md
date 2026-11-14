@@ -128,4 +128,3 @@ $T=5$时 greedy 相对最强 CAT 基线 MGRM 降低 log loss **2.4%**（1.019 vs
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （合成 + 真实双设定、三种 proper scoring rule、完整消融与运行时对比，但仅单一人群数据集、缺公平性分桶与显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （公式推导简洁自洽，闭式更新与算法伪代码清晰，复杂度与误设定分析到位）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、无需逐题校准即可上线新题是冷启动刚需，但 greedy 的 40 分钟推理与 LLM 离线批量 elicitation 成本需工程优化）
-

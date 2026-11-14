@@ -129,4 +129,3 @@ $$\mathcal{L}(\pi_\theta)=-\mathbb{E}_{\mathcal{B}\sim\mathcal{D}}\Big[\sum_{l\i
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （四个数据集 + 5 次运行 + t-test + 两周线上 A/B，但组构造超参消融仅限 Industry 单集）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （定理 1 证明链完整、附录含 UAT 与 KL 界推导，但主文公式密度高、组相对条件的实践标定略简）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （线上全量部署、延迟降 45%、MFU 提升 6 倍，单阶段架构工程价值极高；代码暂未公开为唯一扣分项）
-

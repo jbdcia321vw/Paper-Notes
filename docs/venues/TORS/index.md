@@ -98,4 +98,5 @@ hide:
 
 <div class="recsys-grid">
   <a class="recsys-card" href="2026/">    <div class="recsys-card-head">      <span class="recsys-card-title">🗓️ 2026 年</span>      <span class="recsys-badge">8 篇</span>    </div>    <div class="recsys-card-desc">ACM TORS 2026 年收录的推荐系统论文解读</div>  </a>
+  <a class="recsys-card" href="2025/">    <div class="recsys-card-head">      <span class="recsys-card-title">🗓️ 2025 年</span>      <span class="recsys-badge">17 篇</span>    </div>    <div class="recsys-card-desc">ACM TORS 2025 年收录的推荐系统论文解读</div>  </a>
 </div>

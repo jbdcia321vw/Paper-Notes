@@ -135,4 +135,3 @@ $$\mathcal{L}_{\text{reconstruct}}=\sum_{i=1}^{M-1}\big\|\boldsymbol{v}_i-\bolds
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （公开集提升微弱且仅用 AUC/NE 而非排序指标，工业离线+15 天线上 A/B 与完整消融是加分项，但缺乏统计显著性与长尾分桶）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （QLA 公式与梯度推导完整、系统架构描述清晰，但主实验表格排版混乱、部分基线数值缺失）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （已在十亿级用户平台全量部署，推理 GPU 降 94%、QPS 反升，是罕见的端到端系统级落地；可惜模型代码未开源）
-

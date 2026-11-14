@@ -122,4 +122,3 @@ $$\mathcal{L}=\mathcal{L}_{PG}+\lambda_{len}\Big(\tfrac{1}{|\Omega|}\sum_{i\in\O
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （四任务八指标 + 消融 + 预算/标记/规模/长度敏感性 + 跨 5 个 Solver 与 API 迁移，覆盖全面；扣分在推荐侧仅 40 候选重排、样本量偏小）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （问题形式化、预算投影与损失各项定义清晰，算法伪代码完整；投影前后 log-prob 的处理交代到位，但缺策略梯度方差与收敛性的理论分析）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （Solver token 开销 $<1.01\times$、Actor 延迟占比 1.3%–2.9%、查询预算省 5–10×，天然兼容 API 黑盒；扣分在模型代码未开源、多轮 cache 场景未验证）
-

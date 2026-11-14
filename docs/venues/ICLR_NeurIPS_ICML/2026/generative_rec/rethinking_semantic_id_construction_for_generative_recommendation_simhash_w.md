@@ -143,4 +143,3 @@ $$\mathcal{L}_{\text{align}}=-\frac{1}{|\mathcal{S}|}\sum_{i\in\mathcal{S}}\cos\
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （四域全库排序、配对 t 检验、分词器替换与对齐开关双消融、冷启动与超参分析齐备；缺线上验证与更大规模碰撞压力测试）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （两条设计原则贯穿全文、公式简洁且推理复杂度推导清晰；对 SimHash 局部敏感性的理论刻画偏直觉，缺形式化误差界）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （分词零训练、CPU 亚秒级、推理 $O(mMd+Nm)$ 且代码开源，是少数"降复杂度还涨点"的方案，工程迁移门槛极低）
-

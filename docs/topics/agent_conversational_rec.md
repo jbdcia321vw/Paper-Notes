@@ -2,9 +2,13 @@
 
 > **研究范畴**：多轮主动追问对话推荐 (CRS)、基于 LLM Agent 的用户行为模拟沙盒、可解释性推荐理由生成
 
-当前方向共收录 **60** 篇顶会/顶刊论文解读：
+当前方向共收录 **116** 篇顶会/顶刊论文解读：
 
 <dl>
+<dt><strong><a href="../../venues/AAAI/2025/agent_conversational_rec/llm_powered_user_simulator_for_recommender_system/">LLM-Powered User Simulator for Recommender System</a></strong></dt>
+<dd>
+<p>用 LLM 离线蒸馏物品优缺点关键词，构建关键词匹配+语义相似+序列统计三模型集成用户模拟器，为 RL 推荐提供可解释高保真环境。</p>
+</dd>
 <dt><strong><a href="../../venues/AAAI/2026/llm_rec/contextualizing_recommendation_explanations_with_llms_a_user_study/">Contextualizing Recommendation Explanations with LLMs: A User Study</a></strong></dt>
 <dd>
 <p>预注册在线实验(N=759)+访谈(N=30)对比无解释/通用解释/情境化解释，情境化解释显著提升认知需求与观看意愿，但对功利/情感需求增益有限。</p>
@@ -24,6 +28,54 @@
 <dt><strong><a href="../../venues/AAAI/2026/agent_conversational_rec/when_top_ranked_recommendations_fail_modeling_multi_granular_negative_feedb/">When Top-ranked Recommendations Fail: Modeling Multi-Granular Negative Feedback for Explainable and Robust Video Recommendation</a></strong></dt>
 <dd>
 <p>三智能体协同建模多粒度负反馈，S-GRPO 渐进奖励实现可解释视频推荐，线上快滑率降 9.4%</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/agent_conversational_rec/a_survey_on_llm_powered_agents_for_recommender_systems/">A Survey on LLM-powered Agents for Recommender Systems</a></strong></dt>
+<dd>
+<p>系统综述 LLM Agent 推荐的三范式（推荐/交互/仿真）与四模块架构，梳理数据集与评测协议并指出统一评测缺失。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/agent_conversational_rec/empowering_retrieval_based_conversational_recommendation_with_contrasting_u/">Empowering Retrieval-based Conversational Recommendation with Contrasting User Preferences</a></strong></dt>
+<dd>
+<p>用 LLM 抽取并扩增 like/dislike 对比偏好，以三路相似度线性打分做稠密检索式对话推荐，INSPIRED 上 Recall@10 相对提升 99.72%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/agent_conversational_rec/enhancing_recommendation_explanations_through_user_centric_refinement/">Enhancing Recommendation Explanations through User-Centric Refinement</a></strong></dt>
+<dd>
+<p>提出 RefineX 多智能体推理期精炼框架，以 plan-then-refine 与分层反思将 PETER 解释在事实性/个性化/连贯性三维度大幅提升。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/agent_conversational_rec/exploring_the_potential_of_llms_as_personalized_assistants_dataset_evaluati/">Exploring the Potential of LLMs as Personalized Assistants: Dataset, Evaluation, and Analysis</a></strong></dt>
+<dd>
+<p>提出 HiCUPID 个性化助手基准（1.5k 合成用户、17k token 长对话、单/多跳 QA），并蒸馏 Llama-3.2 评估器对齐人类偏好，揭示 SFT+DPO 最优而纯 DPO 崩溃。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/agent_conversational_rec/iagent_llm_agent_as_a_shield_between_user_and_recommender_systems/">iAgent: LLM Agent as a Shield between User and Recommender Systems</a></strong></dt>
+<dd>
+<p>提出 user-agent-platform 新范式，用个体指令感知 LLM Agent 在用户与平台间做重排护盾，四数据集平均提升 16.6%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/agent_conversational_rec/muse_a_multimodal_conversational_recommendation_dataset_with_scenario_groun/">Muse: A Multimodal Conversational Recommendation Dataset with Scenario-Grounded User Profiles</a></strong></dt>
+<dd>
+<p>首个多模态对话推荐数据集，用场景锚定用户画像的多智能体框架合成 7K 段图文对话，并验证三种 MLLM 的可学习性。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/llm_rec/personax_a_recommendation_agent_oriented_user_modeling_framework_for_long_b/">PersonaX: A Recommendation Agent Oriented User Modeling Framework for Long Behavior Sequence</a></strong></dt>
+<dd>
+<p>面向推荐智能体的离线多画像用户建模框架，用聚类+原型-多样性均衡采样压缩长行为序列，30-50%数据即超越全量基线并大幅降低在线延迟。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/llm_rec/q_strum_debate_query_driven_contrastive_summarization_for_recommendation_co/">Q-STRUM Debate: Query-Driven Contrastive Summarization for Recommendation Comparison</a></strong></dt>
+<dd>
+<p>用双人格辩论式提示替代单次摘要，为查询驱动的推荐对比摘要注入对比性与多样性，在酒店/餐厅/旅游三域 Win Rate 最高达 89%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/agent_conversational_rec/refining_text_generation_for_realistic_conversational_recommendation_via_di/">Refining Text Generation for Realistic Conversational Recommendation via Direct Preference Optimization</a></strong></dt>
+<dd>
+<p>用 DPO 对齐 LLM 生成的对话摘要与物品推荐信息，使评分器更准，Tabidachi 上 HR@1 提升 21.3%。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/debias_fairness_industrial/stereotype_or_personalization_user_identity_biases_chatbot_recommendations/">Stereotype or Personalization? User Identity Biases Chatbot Recommendations</a></strong></dt>
+<dd>
+<p>揭示 LLM 聊天机器人无论用户显式还是隐式透露种族身份都会产生刻板推荐，且在被追问时系统性掩盖种族影响，跨 7 个主流模型、4 个种族、12 万条合成请求验证。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/agent_conversational_rec/towards_personalized_conversational_sales_agents_contextual_user_profiling_/">Towards Personalized Conversational Sales Agents: Contextual User Profiling for Strategic Action</a></strong></dt>
+<dd>
+<p>提出 CSALES 对话销售任务与 CSUSER 真实画像用户模拟器，CSI 智能体通过上下文画像驱动统一动作空间，SR 提升约 15-20pt、SWR 提升约 5-10pt。</p>
+</dd>
+<dt><strong><a href="../../venues/ACL_EMNLP/2025/poi_spatiotemporal_rec/triptailor_a_real_world_benchmark_for_personalized_travel_planning/">TripTailor: A Real-World Benchmark for Personalized Travel Planning</a></strong></dt>
+<dd>
+<p>构建50万真实POI与近4000条真人行程的个性化旅行规划基准，提出可行性/合理性/个性化三维评估与奖励模型对比框架，揭示SOTA LLM行程超越真人比例不足10%。</p>
 </dd>
 <dt><strong><a href="../../venues/ACL_EMNLP/2026/agent_conversational_rec/decisive_guiding_user_decisions_with_optimal_preference_elicitation_from_un/">Decisive: Guiding User Decisions with Optimal Preference Elicitation from Unstructured Documents</a></strong></dt>
 <dd>
@@ -65,6 +117,18 @@
 <dd>
 <p>提出 SiPeR 框架，用场景转移估计解决“去哪”与贝叶斯逆向推理解决“要什么”，在 SIMMC 2.1 与 SCREEN 上 R@1 平均提升约 10.9%/10.6%。</p>
 </dd>
+<dt><strong><a href="../../venues/CIKM/2025/agent_conversational_rec/starec_an_efficient_agent_framework_for_recommender_systems_via_autonomous_/">STARec: An Efficient Agent Framework for Recommender Systems via Autonomous Deliberate Reasoning</a></strong></dt>
+<dd>
+<p>将每位用户建模为具备快/慢双认知的 LLM Agent，用 SFT 蒸馏 + GRPO 排序奖励两阶段训练，仅用 0.4% 数据即在 ML-1M/CDs 上超越全量训练基线。</p>
+</dd>
+<dt><strong><a href="../../venues/CIKM/2025/agent_conversational_rec/step_stepwise_curriculum_learning_for_context_knowledge_fusion_in_conversat/">STEP: Stepwise Curriculum Learning for Context-Knowledge Fusion in Conversational Recommendation</a></strong></dt>
+<dd>
+<p>用三阶段课程学习驱动 F-Former 对齐对话与知识图谱，再以双前缀提示注入冻结 PLM，ReDial R@1 提升 15.7%。</p>
+</dd>
+<dt><strong><a href="../../venues/CIKM/2025/agent_conversational_rec/temporal_aware_user_behaviour_simulation_with_large_language_models_for_rec/">Temporal-Aware User Behaviour Simulation with Large Language Models for Recommender Systems</a></strong></dt>
+<dd>
+<p>用动态画像更新、时序模式抽取与自适应聚合构建 LLM 用户模拟器，在 ML-1M 上 nDCG@5 相对 RecAgent 提升约 27.8%。</p>
+</dd>
 <dt><strong><a href="../../venues/CIKM/2026/agent_conversational_rec/a_behavioral_trait_leaks_into_preferences_diagnosing_trait_interference_in_/">A Behavioral Trait Leaks into Preferences: Diagnosing Trait Interference in LLM User Simulators</a></strong></dt>
 <dd>
 <p>揭示 LLM 用户模拟器中活跃度特质干扰偏好边界并导致评估失效，提出页面级质量锚点 PQA 恢复特质独立性。</p>
@@ -101,9 +165,37 @@
 <dd>
 <p>升级对话推荐用户模拟评测工具包，引入 LLM 模拟器、统一数据格式与 LLM-as-a-Judge 指标，案例揭示模拟器间系统排序显著分歧。</p>
 </dd>
+<dt><strong><a href="../../venues/ICDM/2025/agent_conversational_rec/bi_nas_towards_effective_and_personalized_explanation_for_recommender_syste/">Bi-NAS: Towards Effective and Personalized Explanation for Recommender Systems via Bi-Level Neural Architecture Search</a></strong></dt>
+<dd>
+<p>用双层 NAS 自动搜索交叉注意力与特征交互算子，再以零样本 LLM 提示生成个性化解释，四数据集上推荐与解释指标双优。</p>
+</dd>
+<dt><strong><a href="../../venues/ICDM/2025/multimodal_rec/fuse_failure_aware_usage_of_subagent_evidence_for_multimodal_search_and_rec/">FUSE: Failure-aware Usage of Subagent Evidence for MultiModal Search and Recommendation</a></strong></dt>
+<dd>
+<p>用紧凑 GDR 替代原始图像提示，系统对比 7 种上下文预算策略并以五阶段归因层定位失败，Context Compression 在意图/路由/召回/NDCG@5 全面最优且 p95 延迟降 45%。</p>
+</dd>
+<dt><strong><a href="../../venues/ICDM/2025/agent_conversational_rec/persopilot_an_adaptive_ai_copilot_for_transparent_contextualized_persona_cl/">PersoPilot: An Adaptive AI-Copilot for Transparent Contextualized Persona Classification and Personalized Response Generation</a></strong></dt>
+<dd>
+<p>双模式智能体 Copilot：PersoAgent 做上下文人格抽取与社区推荐，Analytic Tools 用 Phi-4-mini+TF-IDF 主动学习闭环做可解释人格分类，UniEval 四维均分 0.84–1.0。</p>
+</dd>
+<dt><strong><a href="../../venues/ICDM/2025/agent_conversational_rec/reasoning_over_user_preferences_knowledge_graph_augmented_llms_for_explaina/">Reasoning over User Preferences: Knowledge Graph-Augmented LLMs for Explainable Conversational Recommendations</a></strong></dt>
+<dd>
+<p>COMPASS 用图实体描述预训练+知识感知指令微调，让 LLM 生成可解释文本偏好摘要并以门控注入现有 CRS，ReDial/INSPIRED 上 HR@10 最高提升 44.76%。</p>
+</dd>
 <dt><strong><a href="../../venues/ICDM/2026/debias_fairness_industrial/an_efficient_and_effective_agentic_group_shilling_attack_on_recommender_sys/">An Efficient and Effective Agentic Group Shilling Attack on Recommender Systems</a></strong></dt>
 <dd>
 <p>提出协调者驱动的角色切换多智能体群体托攻击框架 AGAS，黑盒免训练、动态策略，HR@10 相对提升 155%–198% 且显著削弱检测器。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2025/agent_conversational_rec/agentrecbench_benchmarking_llm_agent_based_personalized_recommender_systems/">AgentRecBench: Benchmarking LLM Agent-based Personalized Recommender Systems</a></strong></dt>
+<dd>
+<p>首个 LLM 智能体推荐系统基准，构建 U-R-I 文本交互环境与三类场景，揭示结构化工作流智能体显著优于传统与朴素 Agent。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2025/llm_rec/context_steering_controllable_personalization_at_inference_time/">Context Steering: Controllable Personalization at Inference Time</a></strong></dt>
+<dd>
+<p>免训练解码期个性化：用有/无上下文两次前向的似然差线性缩放上下文影响力，实现可控个性化推荐与贝叶斯意图反演。</p>
+</dd>
+<dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2025/agent_conversational_rec/enhancing_personalized_multi_turn_dialogue_with_curiosity_reward/">Enhancing Personalized Multi-Turn Dialogue with Curiosity Reward</a></strong></dt>
+<dd>
+<p>将用户模型信念增益作为 PBRS 内在奖励注入多轮 RLHF，使 LLM 主动探询用户属性，习题推荐成功率 54%→87.5%。</p>
 </dd>
 <dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/agent_conversational_rec/agentselect_benchmark_for_narrative_query_to_agent_recommendation/">AgentSelect: Benchmark for Narrative Query-to-Agent Recommendation</a></strong></dt>
 <dd>
@@ -116,6 +208,18 @@
 <dt><strong><a href="../../venues/ICLR_NeurIPS_ICML/2026/agent_conversational_rec/siturecbench_evaluating_frontier_models_as_situated_recommendation_assistan/">SituRecBench: Evaluating Frontier Models as Situated Recommendation Assistants in 3D Environments</a></strong></dt>
 <dd>
 <p>构建 UE5 三维购物环境与共享第一人称视角的交互式基准，统一评测 VLM 助手的对话质量、推荐效用与导航有效性。</p>
+</dd>
+<dt><strong><a href="../../venues/KDD/2025/agent_conversational_rec/lavic_adapting_large_vision_language_models_to_visually_aware_conversationa/">LaViC: Adapting Large Vision-Language Models to Visually-Aware Conversational Recommendation</a></strong></dt>
+<dd>
+<p>用视觉知识自蒸馏把商品图压成5个[CLS] token，再做推荐提示微调，在新建Reddit-Amazon三域上HR@1最高提升54.2%。</p>
+</dd>
+<dt><strong><a href="../../venues/KDD/2025/agent_conversational_rec/leveraging_the_power_of_conversations_optimal_key_term_selection_in_convers/">Leveraging the Power of Conversations: Optimal Key Term Selection in Conversational Contextual Bandits</a></strong></dt>
+<dd>
+<p>用平滑关键词语境与最小特征值自适应触发对话，将对话式上下文 Bandit 遗憾降至近极小极大最优 O(√(dT logT))，累积遗憾较基线降低至少 14.6%。</p>
+</dd>
+<dt><strong><a href="../../venues/KDD/2025/sequential_rec/why_not_together_a_multiple_round_recommender_system_for_queries_and_items/">Why Not Together? A Multiple-Round Recommender System for Queries and Items</a></strong></dt>
+<dd>
+<p>提出 MAGUS 多轮查询-物品联合推荐框架，以词组合关系图桥接查询与物品，用标签传播在线吸收反馈，可插拔接入 12 种基座模型。</p>
 </dd>
 <dt><strong><a href="../../venues/KDD/2026/agent_conversational_rec/hierarchical_long_term_semantic_memory_for_linkedin_s_hiring_agent/">Hierarchical Long-Term Semantic Memory for LinkedIn&#x27;s Hiring Agent</a></strong></dt>
 <dd>
@@ -132,6 +236,22 @@
 <dt><strong><a href="../../venues/KDD/2026/agent_conversational_rec/safecrs_personalized_safety_alignment_for_llm_based_conversational_recommen/">SafeCRS: Personalized Safety Alignment for LLM-Based Conversational Recommender Systems</a></strong></dt>
 <dd>
 <p>提出 SafeRec 个性化安全基准与 Safe-SFT+Safe-GDPO 两阶段框架，在 SafeMovie 上将安全违规率相对降低 96.5% 且保持竞争力推荐质量。</p>
+</dd>
+<dt><strong><a href="../../venues/RecSys/2025/social_group_rec/consistent_explainers_or_unreliable_narrators_understanding_llm_generated_g/">Consistent Explainers or Unreliable Narrators? Understanding LLM-generated Group Recommendations</a></strong></dt>
+<dd>
+<p>用社会选择聚合策略作多基线对4个LLM的群组推荐与解释做一致性审计，发现推荐近似ADD、解释常称平均但夹带未定义流行度/相似度/多样性。</p>
+</dd>
+<dt><strong><a href="../../venues/RecSys/2025/agent_conversational_rec/failure_prediction_in_conversational_recommendation_systems/">Failure Prediction in Conversational Recommendation Systems</a></strong></dt>
+<dd>
+<p>提出监督式对话性能预测任务，用AE与L1收缩多轮预测器区分系统失败与目录失败，揭示目录缺失场景下预测精度显著下降。</p>
+</dd>
+<dt><strong><a href="../../venues/RecSys/2025/multimodal_rec/image_seeking_intent_prediction_for_cross_device_product_search/">Image-Seeking Intent Prediction for Cross-Device Product Search</a></strong></dt>
+<dd>
+<p>用语音查询+商品摘要预测图像意图，以可微精度损失抑制误触发，离线 Precision 达 78.5。</p>
+</dd>
+<dt><strong><a href="../../venues/RecSys/2025/agent_conversational_rec/usb_rec_an_effective_framework_for_improving_conversational_recommendation_/">USB-Rec: An Effective Framework for Improving Conversational Recommendation Capability of Large Language Model</a></strong></dt>
+<dd>
+<p>用带标签用户模拟器自动构造偏好对做 RL 训练，再在推理期用内部用户模拟器+树搜索自增强，iEval 全面超越 SOTA。</p>
 </dd>
 <dt><strong><a href="../../venues/RecSys/2026/agent_conversational_rec/rec_a_verifiable_benchmark_for_agentic_recommender_systems/">$τ$-Rec: A Verifiable Benchmark for Agentic Recommender Systems</a></strong></dt>
 <dd>
@@ -173,6 +293,38 @@
 <dd>
 <p>系统评测 14 个 LLM 作为推荐解释评审员与 216 名人类评分的一致性，发现排序相关中等但绝对评分一致性低，并给出四条实用准则。</p>
 </dd>
+<dt><strong><a href="../../venues/SIGIR/2025/agent_conversational_rec/agentcf_memory_enhanced_llm_based_agents_for_popularity_aware_cross_domain_/">AgentCF++: Memory-enhanced LLM-based Agents for Popularity-aware Cross-domain Recommendations</a></strong></dt>
+<dd>
+<p>以双层记忆+两步融合+兴趣组共享记忆，令 LLM 用户智能体在跨域场景显式建模流行度影响，采样排序 MRR 平均超 AgentCF 14.6%。</p>
+</dd>
+<dt><strong><a href="../../venues/SIGIR/2025/agent_conversational_rec/agentic_feedback_loop_modeling_improves_recommendation_and_user_simulation/">Agentic Feedback Loop Modeling Improves Recommendation and User Simulation</a></strong></dt>
+<dd>
+<p>用记忆驱动的推荐智能体-用户智能体多轮反馈闭环，同时提升下一物品推荐与用户行为模拟，并验证不放大流行度/位置偏差。</p>
+</dd>
+<dt><strong><a href="../../venues/SIGIR/2025/agent_conversational_rec/mscrs_multi_modal_semantic_graph_prompt_learning_framework_for_conversation/">MSCRS: Multi-modal Semantic Graph Prompt Learning Framework for Conversational Recommender Systems</a></strong></dt>
+<dd>
+<p>构建协同/文本/图像三模态语义图并以共享嵌入融合，图提示注入 DialoGPT，ReDial 与 INSPIRED 全指标 SOTA。</p>
+</dd>
+<dt><strong><a href="../../venues/SIGIR/2025/agent_conversational_rec/pscon_product_search_through_conversations/">PSCon: Product Search Through Conversations</a></strong></dt>
+<dd>
+<p>提出人-人教练式采集协议构建双市场双语真实 CPS 数据集 PSCon，定义六子任务流水线并给出 Transformer 统一基准模型。</p>
+</dd>
+<dt><strong><a href="../../venues/SIGIR/2025/agent_conversational_rec/pub_an_llm_enhanced_personality_driven_user_behaviour_simulator_for_recomme/">PUB: An LLM-Enhanced Personality-Driven User Behaviour Simulator for Recommender System Evaluation</a></strong></dt>
+<dd>
+<p>用大五人格驱动 LLM Agent 生成合成交互日志，Jaccard 相似度 0.31 逼近真实序列，并复现 7 种推荐算法的 nDCG 排序趋势。</p>
+</dd>
+<dt><strong><a href="../../venues/SIGIR/2025/agent_conversational_rec/search_based_interaction_for_conversation_recommendation_via_generative_rew/">Search-Based Interaction For Conversation Recommendation via Generative Reward Model Based Simulated User</a></strong></dt>
+<dd>
+<p>用生成式奖励模型构建无标签模拟用户，通过属性评论与生成式打分驱动束搜索交互，INSPIRED 上 Recall@10 相对最优基线提升 83%。</p>
+</dd>
+<dt><strong><a href="../../venues/SIGIR/2025/agent_conversational_rec/simulating_before_planning_constructing_intrinsic_user_world_model_for_user/">Simulating Before Planning: Constructing Intrinsic User World Model for User-Tailored Dialogue Policy Planning</a></strong></dt>
+<dd>
+<p>用扩散模型刻画用户画像、布朗桥预判用户反馈，构建内在用户世界模型以定制对话策略，P4G/ESConv 上 SR 显著提升。</p>
+</dd>
+<dt><strong><a href="../../venues/SIGIR/2025/llm_rec/synthtrips_a_knowledge_grounded_framework_for_benchmark_query_generation_fo/">SynthTRIPs: A Knowledge-Grounded Framework for Benchmark Query Generation for Personalized Tourism Recommenders</a></strong></dt>
+<dd>
+<p>用 PersonaHub 人格 + 可持续性过滤器 + KB 接地，让 LLM 批量合成个性化城市游查询，4,604 条查询经 J-LLM 与双专家双轨验证。</p>
+</dd>
 <dt><strong><a href="../../venues/SIGIR/2026/agent_conversational_rec/a_standardized_re_evaluation_of_conversational_recommender_systems_on_the_r/">A Standardized Re-evaluation of Conversational Recommender Systems on the ReDial Dataset</a></strong></dt>
 <dd>
 <p>统一复现 7 个 CRS 模型，揭示 Recall@1 复现粒度鸿沟、约 50% 精度来自重复捷径、增益多源于 LLM 骨干而非架构创新。</p>
@@ -213,17 +365,89 @@
 <dd>
 <p>提出 InPE 标注数据集与 COPE 分层 MoE 架构，显式建模“何时问、怎么问”的阶段感知偏好引导策略，Recall@10 相对最优基线提升 14.6%。</p>
 </dd>
+<dt><strong><a href="../../venues/SIGIR-AP/2025/agent_conversational_rec/limitations_of_current_evaluation_practices_for_conversational_recommender_/">Limitations of Current Evaluation Practices for Conversational Recommender Systems and the Potential of User Simulation</a></strong></dt>
+<dd>
+<p>批判静态数据集与 Recall@N 评估失真，提出奖励/成本效用框架与 RDL 指标，并用 LLM 用户模拟器替代真人评估。</p>
+</dd>
 <dt><strong><a href="../../venues/TKDE/2026/llm_rec/reason4rec_deliberative_user_preference_alignment_of_large_language_models_/">Reason4Rec: Deliberative User Preference Alignment of Large Language Models for Recommendation</a></strong></dt>
 <dd>
 <p>提出审慎推荐任务与三专家多步推理框架，用评论监督偏好蒸馏-匹配-预测，评分预测与排序全面领先。</p>
+</dd>
+<dt><strong><a href="../../venues/TOIS/2025/agent_conversational_rec/recommender_ai_agent_integrating_large_language_models_for_interactive_reco/">Recommender AI Agent: Integrating Large Language Models for Interactive Recommendations</a></strong></dt>
+<dd>
+<p>以 LLM 为大脑、传统推荐模型为工具，配合候选总线、长短期画像、计划优先执行与反思机制，在 Steam/MovieLens/Beauty 上显著超越 GPT-4 与 Chat-Rec。</p>
+</dd>
+<dt><strong><a href="../../venues/TOIS/2025/agent_conversational_rec/user_behavior_simulation_with_large_language_model_based_agents/">User Behavior Simulation with Large Language Model based Agents</a></strong></dt>
+<dd>
+<p>提出 LLM Agent 用户行为模拟器 RecAgent，以画像-记忆-动作三模块与沙盒环境复现信息茧房与从众现象，行为可信度逼近真人。</p>
+</dd>
+<dt><strong><a href="../../venues/TOIS/2025/agent_conversational_rec/vague_preference_policy_learning_for_conversational_recommendation/">Vague Preference Policy Learning for Conversational Recommendation</a></strong></dt>
+<dd>
+<p>提出 VPMCR 模糊偏好场景与 VPPL 框架，用软估计替代二值过滤，SR@15 最高提升 22%，平均轮次显著下降。</p>
+</dd>
+<dt><strong><a href="../../venues/TORS/2025/sequential_rec/a_survey_on_intent_aware_recommender_systems/">A Survey on Intent-aware Recommender Systems</a></strong></dt>
+<dd>
+<p>系统梳理意图感知推荐(IARS)的三大技术路线与评估实践，指出离线精度导向、可复现性不足与显式意图建模缺失三大空白。</p>
+</dd>
+<dt><strong><a href="../../venues/TORS/2025/agent_conversational_rec/impact_of_tone_aware_explanations_in_recommender_systems/">Impact of Tone-Aware Explanations in Recommender Systems</a></strong></dt>
+<dd>
+<p>用 LLM 生成六种语气解释做在线成对用户研究，序数逻辑回归揭示语气对 10 项感知指标、领域与人格年龄的差异化影响。</p>
+</dd>
+<dt><strong><a href="../../venues/TORS/2025/agent_conversational_rec/topic_centric_explanations_for_news_recommendation/">Topic-Centric Explanations for News Recommendation</a></strong></dt>
+<dd>
+<p>用双层注意力主题模型 BATM 同时做新闻推荐与主题级解释，MIND 全库排序 AUC 提升约 0.4-0.5 个点，并用 NPMI/W2V 量化主题可解释性。</p>
 </dd>
 <dt><strong><a href="../../venues/TORS/2026/agent_conversational_rec/collab_rec_an_llm_based_agentic_framework_for_balancing_recommendations_in_/">Collab-Rec: An LLM-based Agentic Framework for Balancing Recommendations in Tourism</a></strong></dt>
 <dd>
 <p>三角色 LLM 智能体 + 确定性 Moderator 多轮约束精炼，在 900 条旅游查询上兼顾约束满足与长尾多样性。</p>
 </dd>
+<dt><strong><a href="../../venues/WSDM/2025/agent_conversational_rec/crs_arena_crowdsourced_benchmarking_of_conversational_recommender_systems/">CRS Arena: Crowdsourced Benchmarking of Conversational Recommender Systems</a></strong></dt>
+<dd>
+<p>提出基于成对对战与真实用户反馈的众包 CRS 评测平台，发布 474 段对话数据集与 Elo 榜单，揭示 R@10 与用户满意度负相关。</p>
+</dd>
+<dt><strong><a href="../../venues/WSDM/2025/agent_conversational_rec/reindex_then_adapt_improving_large_language_models_for_conversational_recom/">Reindex-Then-Adapt: Improving Large Language Models for Conversational Recommendation</a></strong></dt>
+<dd>
+<p>将多 token 电影标题重索引为单 token，再用偏置/门控适配目标平台分布，Llama2-7b 上 H@10 相对提升 59.37%。</p>
+</dd>
 <dt><strong><a href="../../venues/WSDM/2026/llm_rec/towards_next_generation_recommender_systems_a_benchmark_for_personalized_re/">Towards Next-Generation Recommender Systems: A Benchmark for Personalized Recommendation Assistant with LLMs</a></strong></dt>
 <dd>
 <p>构建 RecBench+ 约3万条复杂用户查询基准，覆盖显式/隐式/误导条件与画像偏好，系统评测7个LLM并揭示SFT+RFT两阶段微调最优。</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2025/agent_conversational_rec/a_llm_based_controllable_scalable_human_involved_user_simulator_framework_f/">A LLM-based Controllable, Scalable, Human-Involved User Simulator Framework for Conversational Recommender Systems</a></strong></dt>
+<dd>
+<p>以插件管理器分阶段管控 LLM 用户模拟器，通过记忆隔离与偏好二分抑制数据泄漏，在 ReDial/OpenDialKG/MovieLens 上显著提升 CRS 评估可信度。</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2025/agent_conversational_rec/agentsociety_challenge_designing_llm_agents_for_user_modeling_and_recommend/">AgentSociety Challenge: Designing LLM Agents for User Modeling and Recommendation on Web Platforms</a></strong></dt>
+<dd>
+<p>首个 WWW LLM Agent 双赛道竞赛：Yelp/Amazon/Goodreads 三源数据 + 交互式模拟器，295 队参赛，Track1/2 最终阶段提升 9.1%/15.9%，并验证模拟 groundtruth 与真实分布强相关。</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2025/llm_rec/beyond_retrieval_generating_narratives_in_conversational_recommender_system/">Beyond Retrieval: Generating Narratives in Conversational Recommender Systems</a></strong></dt>
+<dd>
+<p>构建 REGEN 叙事数据集并提出 CF+内容嵌入经 Adapter 注入 LLM 的融合架构，在 Office/Clothing 两域上 BLEU/ROUGE/语义相似度较单模态提升 4–12%。</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2025/agent_conversational_rec/bridging_conversational_and_collaborative_signals_for_conversational_recomm/">Bridging Conversational and Collaborative Signals for Conversational Recommendation</a></strong></dt>
+<dd>
+<p>构建 Reddit-ML32M 跨源数据集，用 SASRec 协同嵌入对 GPT-3.5 零样本推荐做相似度重排，H@5 提升 12.32%。</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2025/agent_conversational_rec/collaborative_retrieval_for_large_language_model_based_conversational_recom/">Collaborative Retrieval for Large Language Model-based Conversational Recommender Systems</a></strong></dt>
+<dd>
+<p>用 EASE 协同检索 + 两步 LLM 反思重排为黑盒 LLM 注入 CF 知识，Reddit-v2/Redial 全库排序 Recall@20 显著超越 Zero-shot LLM。</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2025/agent_conversational_rec/disentangling_likes_and_dislikes_in_personalized_generative_explainable_rec/">Disentangling Likes and Dislikes in Personalized Generative Explainable Recommendation</a></strong></dt>
+<dd>
+<p>用 LLM 重构正负观点分离的可解释推荐数据集，提出情感匹配与正负内容相似度指标，并证明将预测评分作为输入可显著提升情感感知解释生成。</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2025/llm_rec/filtering_discomforting_recommendations_with_large_language_models/">Filtering Discomforting Recommendations with Large Language Models</a></strong></dt>
+<dd>
+<p>用可编辑偏好画像+对话式规则生成，以插件方式过滤主观不适推荐；离线代理任务与24人一周用户研究验证有效性。</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2025/llm_rec/leveraging_llms_for_influence_path_planning_in_proactive_recommendation/">Leveraging LLMs for Influence Path Planning in Proactive Recommendation</a></strong></dt>
+<dd>
+<p>用提示工程驱动 LLM 零样本规划主动推荐影响路径，配合 LLM 用户模拟器与 SASRec 模拟器双轨评测，显著提升路径连贯性与用户接受度。</p>
+</dd>
+<dt><strong><a href="../../venues/WWW/2025/agent_conversational_rec/recusersim_a_realistic_and_diverse_user_simulator_for_evaluating_conversati/">RecUserSim: A Realistic and Diverse User Simulator for Evaluating Conversational Recommender Systems</a></strong></dt>
+<dd>
+<p>提出四模块 LLM Agent 用户模拟器，以有限理性三层 Rating-Action-Response 机制实现真实角色扮演、多样人群覆盖与显式打分，并落地华为 Celia 餐饮助手。</p>
 </dd>
 <dt><strong><a href="../../venues/WWW/2026/agent_conversational_rec/agentdr_dynamic_recommendation_with_implicit_item_item_relations_via_llm_ba/">AgentDR: Dynamic Recommendation with Implicit Item-Item Relations via LLM-based Agents</a></strong></dt>
 <dd>

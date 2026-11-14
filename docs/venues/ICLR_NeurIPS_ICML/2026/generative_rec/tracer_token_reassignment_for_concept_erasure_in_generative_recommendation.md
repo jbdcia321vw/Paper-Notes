@@ -129,4 +129,3 @@ Forget HR@5 相对 PISCES 提升：MOR-Industrial **20.8%**、LETTER-Industrial 
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （5 骨干 × 3 数据集 × 6 基线，含探针、微调攻击、效率与 item 级泛化；但缺流行度/公平性分桶与显著性检验细节）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （Proposition 4 与 Lemma 6 推导完整、假设明确；主表指标列较多、部分附录表格排版略拥挤）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （仅更新概念物品的 $\phi$、无需重训练、比基线快 2–3.5 倍，契合 GDPR 删除请求；但代码未开源、依赖品牌等显式概念元数据）
-

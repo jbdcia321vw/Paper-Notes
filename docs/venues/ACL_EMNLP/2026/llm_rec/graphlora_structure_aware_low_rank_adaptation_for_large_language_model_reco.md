@@ -127,4 +127,3 @@ $$\Delta x_t=\mathbf{B}\big(\lambda_{lora}h_{sem}+\lambda_{gnn}z_n\big),\quad h=
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （主实验+消融+匹配预算+冷启动+少样本+效率分析齐全，但数据集规模与基线覆盖略窄）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三种对齐范式对比图清晰，公式与复杂度分析完整，符号统一）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （仅 1.67% 参数增量、~1% 延迟，代码开源，工程部署友好）
-

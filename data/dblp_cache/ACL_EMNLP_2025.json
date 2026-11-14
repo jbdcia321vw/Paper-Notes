@@ -1,0 +1,832 @@
+[
+  {
+    "title": "GRAM: Generative Recommendation via Semantic-aware Multi-granular Late Fusion",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.1596",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "In Prospect and Retrospect: Reflective Memory Management for Long-term Personalized Dialogue Agents",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.413",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Knowledge Graph Retrieval-Augmented Generation for LLM-based Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.1317",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "A Survey on Personalized Alignment - The Missing Piece for Large Language Models in Real-World Applications",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.277",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Aligning VLM Assistants with Personalized Situated Cognition",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.484",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Takin-VC: Expressive Zero-Shot Voice Conversion via Adaptive Hybrid Content Encoding and Enhanced Timbre Modeling",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.87",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PersonaLens: A Benchmark for Personalization Evaluation in Conversational AI Assistants",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.927",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "C2KD: Cross-layer and Cross-head Knowledge Distillation for Small Language Model-based Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.917",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Whose Boat Does it Float? Improving Personalization in Preference Tuning via Inferred User Personas",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.168",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Customizing In-context Learning for Dynamic Interest Adaption in LLM-based Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.735",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MIRA: Empowering One-Touch AI Services on Smartphones with MLLM-based Instruction Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-INDUSTRY.103",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "SimUSER: Simulating User Behavior with Large Language Models for Recommender System Evaluation",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-INDUSTRY.5",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "One Missing Piece for Open-Source Reasoning Models: A Dataset to Mitigate Cold-Starting Short CoT LLMs in RL",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-INDUSTRY.85",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ToolSpectrum: Towards Personalized Tool Utilization for Large Language Models",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.1063",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Expectation Confirmation Preference Optimization for Multi-Turn Conversational Recommendation Agent",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.307",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Scholar Inbox: Personalized Paper Recommendations for Scientists",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-DEMO.30",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Aligning AI Research with the Needs of Clinical Coding Workflows: Eight Recommendations Based on US Data Analysis and Critical Review",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.45",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Evaluating Personalized Tool-Augmented LLMs from the Perspectives of Personalization and Proactivity",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.1064",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "LOTUS: A Leaderboard for Detailed Image Captioning from Quality to Societal Bias and User Preferences",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-INDUSTRY.22",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MedPlan: A Two-Stage RAG-Based System for Personalized Medical Plan Generation",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-INDUSTRY.76",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "iNews: A Multimodal Dataset for Modeling Personalized Affective Responses to News",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.1217",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Multi-matrix Factorization Attention",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.1288",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Reinforcement Learning for Adversarial Query Generation to Enhance Relevance in Cold-Start Product Search",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-INDUSTRY.91",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "RecLM: Recommendation Instruction Tuning",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.751",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Exploring Persona Sentiment Sensitivity in Personalized Dialogue Generation",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.900",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "The Impact of Name Age Perception on Job Recommendations in LLMs",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.778",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Stereotype or Personalization? User Identity Biases Chatbot Recommendations",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.1254",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PVP: An Image Dataset for Personalized Visual Persuasion with Persuasion Strategies, Viewer Characteristics, and Persuasiveness Ratings",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.942",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "My Words Imply Your Opinion: Reader Agent-Based Propagation Enhancement for Personalized Implicit Emotion Analysis",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.787",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "LLMs + Persona-Plug = Personalized LLMs",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.461",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "A Persona-Aware LLM-Enhanced Framework for Multi-Session Personalized Dialogue Generation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.5",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "RT-VC: Real-Time Zero-Shot Voice Conversion with Speech Articulatory Coding",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-DEMO.37",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Can LLMs Understand Unvoiced Speech? Exploring EMG-to-Text Conversion with LLMs",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-SHORT.56",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "KERL: Knowledge-Enhanced Personalized Recipe Recommendation using Large Language Models",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.938",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Exploring the Potential of LLMs as Personalized Assistants: Dataset, Evaluation, and Analysis",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.504",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Comparison-based Active Preference Learning for Multi-dimensional Personalization",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.1590",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Principled Content Selection to Generate Diverse and Personalized Multi-Document Summaries",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.1445",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MAPS: Motivation-Aware Personalized Search via LLM-Driven Consultation Alignment",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.152",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Measuring What Makes You Unique: Difference-Aware User Modeling for Enhancing LLM Personalization",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.1095",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "DiaLLMs: EHR-Enhanced Clinical Conversational System for Clinical Test Recommendation and Diagnosis Prediction",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.1313",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "SynthesizeMe! Inducing Persona-Guided Prompts for Personalized Reward Models in LLMs",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.397",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Q-STRUM Debate: Query-Driven Contrastive Summarization for Recommendation Comparison",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.1170",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "User Behavior Prediction as a Generic, Robust, Scalable, and Low-Cost Evaluation Strategy for Estimating Generalization in LLMs",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.576",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ExPerT: Effective and Explainable Evaluation of Personalized Long-Form Text Generation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.900",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ProvBench: A Benchmark of Legal Provision Recommendation for Contract Auto-Reviewing",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.312",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PersonaX: A Recommendation Agent-Oriented User Modeling Framework for Long Behavior Sequence",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.300",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "AGRec: Adapting Autoregressive Decoders with Graph Reasoning for LLM-based Sequential Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.369",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Tunable LLM-based Proactive Recommendation Agent",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.944",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "User Feedback Alignment for LLM-powered Exploration in Large-scale Recommendation Systems",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-INDUSTRY.70",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "TripTailor: A Real-World Benchmark for Personalized Travel Planning",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.503",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MUSE: A Multimodal Conversational Recommendation Dataset with Scenario-Grounded User Profiles",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.58",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PsyDT: Using LLMs to Construct the Digital Twin of Psychological Counselor with Personalized Counseling Style for Psychological Counseling",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.55",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PEToolLLM: Towards Personalized Tool Learning in Large Language Models",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.1107",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "iAgent: LLM Agent as a Shield between User and Recommender Systems",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.928",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Beyond Single Labels: Improving Conversational Recommendation through LLM-Powered Data Augmentation",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.758",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Generation In Large Model Era: A Survey",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.1201",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MAPLE: Enhancing Review Generation with Multi-Aspect Prompt LEarning in Explainable Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.1535",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "TablePilot: Recommending Human-Preferred Tabular Data Analysis with Large Language Models",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-INDUSTRY.28",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Text Generation with Contrastive Activation Steering",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.353",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PROPER: A Progressive Learning Framework for Personalized Large Language Models with Group-Level Adaptation",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.800",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Rehearse With User: Personalized Opinion Summarization via Role-Playing based on Large Language Models",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.787",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Persona-judge: Personalized Alignment of Large Language Models via Token-level Self-judgment",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.260",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PPT: A Minor Language News Recommendation Model via Cross-Lingual Preference Pattern Transfer",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.526",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Explainable Depression Detection in Clinical Interviews with Personalized Retrieval-Augmented Generation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.517",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Bi-Tuning with Collaborative Information for Controllable LLM-based Sequential Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.949",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "NGQA: A Nutritional Graph Question Answering Benchmark for Personalized Health-aware Nutritional Reasoning",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.296",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "CoVE: Compressed Vocabulary Expansion Makes Better LLM-based Recommender Systems",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.651",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MotiR: Motivation-aware Retrieval for Long-Tail Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-INDUSTRY.65",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "HyperCRS: Hypergraph-Aware Multi-Grained Preference Learning to Burst Filter Bubbles in Conversational Recommendation System",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.292",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Why Multi-Interest Fairness Matters: Hypergraph Contrastive Multi-Interest Learning for Fair Conversational Recommender System",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-ACL.1317",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "The Efficiency vs. Accuracy Trade-off: Optimizing RAG-Enhanced LLM Recommender Systems Using Multi-Head Early Exit",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.1283",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Evaluation of LLM Vulnerabilities to Being Misused for Personalized Disinformation Generation",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.38",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Rhythm Controllable and Efficient Zero-Shot Voice Conversion via Shortcut Flow Matching",
+    "ee": "https://doi.org/10.18653/V1/2025.ACL-LONG.790",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "LLMInit: A Free Lunch from Large Language Models for Selective Initialization of Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-INDUSTRY.141",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Mind the Dialect: NLP Advancements Uncover Fairness Disparities for Arabic Users in Recommendation Systems",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.860",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Can Large Language Models Personalize Dialogues to Generational Styles?",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.5",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized open world plan generation for safety-critical human centered autonomous systems: A case study on Artificial Pancreas",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.1219",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Scaling Down, Serving Fast: Compressing and Deploying Efficient LLMs for Recommendation Systems",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-INDUSTRY.119",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ICG: Improving Cover Image Generation via MLLM-based Prompting and Personalized Preference Alignment",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.617",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized LLM Decoding via Contrasting Personal Preference",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.1723",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "CiteBART: Learning to Generate Citations for Local Citation Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.89",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "CoPL: Collaborative Preference Learning for Personalizing LLMs",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.650",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Logit Space Constrained Fine-Tuning for Mitigating Hallucinations in LLM-Based Recommender Systems",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.1491",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "When Personalization Meets Reality: A Multi-Faceted Analysis of Personalized Preference Learning",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.916",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Constrained Non-negative Matrix Factorization for Guided Topic Modeling of Minority Topics",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.1802",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Bias Beware: The Impact of Cognitive Biases on LLM-Driven Product Recommendations",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.1140",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "TailorRPA: A Retrieval-Based Framework for Eliciting Personalized and Coherent Role-Playing Agents in General Domain",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.288",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Rethinking LLM-Based Recommendations: A Personalized Query-Driven Parallel Integration",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.446",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "A Text-Based Recommender System that Leverages Explicit Affective State Preferences",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.1668",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "pFedRAG: A Personalized Federated Retrieval-Augmented Generation System with Depth-Adaptive Tiered Embedding Tuning",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.769",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "RecGPT: A Foundation Model for Sequential Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.513",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Beyond Static Testbeds: An Interaction-Centric Agent Simulation Platform for Dynamic Recommender Systems",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.956",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "EZ-VC: Easy Zero-shot Any-to-Any Voice Conversion",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.1077",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Drift: Decoding-time Personalized Alignments with Implicit User Preferences",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.324",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Pre-Storage Reasoning for Episodic Memory: Shifting Inference Burden to Memory for Personalized Dialogue",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.1204",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Towards Personalized Conversational Sales Agents: Contextual User Profiling for Strategic Action",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.275",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Language Models via Privacy-Preserving Evolutionary Model Merging",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.1747",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Stop Playing the Guessing Game! Evaluating Conversational Recommender Systems via Target-free User Simulation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.1067",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Re-FRAME the Meeting Summarization SCOPE: Fact-Based Summarization and Personalization via Questions",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.1094",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Enhancing Time Awareness in Generative Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.1300",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Toward Multi-Session Personalized Conversation: A Large-Scale Dataset and Hierarchical Tree Framework for Implicit Reasoning",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.580",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "AesBiasBench: Evaluating Bias and Alignment in Multimodal Language Models for Personalized Image Aesthetic Assessment",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.386",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Real-time Ad Retrieval via LLM-generative Commercial Intention for Sponsored Search Advertising",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.1473",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "POINTS-Reader: Distillation-Free Adaptation of Vision-Language Models for Document Conversion",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.82",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "CTR-Guided Generative Query Suggestion in Conversational Search",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-INDUSTRY.178",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalization up to a Point: Why Personalized Content Moderation Needs Boundaries, and How We Can Enforce Them",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.1726",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Reading Between the Prompts: How Stereotypes Shape LLM's Implicit Personalization",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.1029",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "LaMP-Cap: Personalized Figure Caption Generation With Multimodal Figure Profiles",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.521",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "HierDiffuse: Progressive Diffusion for Robust Interest Fusion in CTR Prediction",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-INDUSTRY.92",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Benchmarking and Improving LLM Robustness for Personalized Generation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.870",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "A Survey on LLM-powered Agents for Recommender Systems",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.620",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "IP-Dialog: Evaluating Implicit Personalization in Dialogue Systems with Synthetic Data",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.923",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Similarity = Value? Consultation Value-Assessment and Alignment for Personalized Search",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.498",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Latent Inter-User Difference Modeling for LLM Personalization",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.536",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "EasyRec: Simple yet Effective Language Models for Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.894",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "LaMP-QA: A Benchmark for Personalized Long-form Question Answering",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.60",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "pFedGPT: Hierarchically Optimizing LoRA Aggregation Weights for Personalized Federated GPT Models",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.239",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MiCRo: Mixture Modeling and Context-aware Routing for Personalized Preference Learning",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.882",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Words Like Knives: Backstory-Personalized Modeling and Detection of Violent Communication",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.586",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Answering Narrative-Driven Recommendation Queries via a Retrieve-Rank Paradigm and the OCG-Agent",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.667",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "AdDriftBench: A Benchmark for Detecting Data Drift and Label Drift in Short Video Advertising",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.545",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "LaMP-Val: Large Language Models Empower Personalized Valuation in Auction",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.31",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Question Answering with User Profile Generation and Compression",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.255",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Refining Text Generation for Realistic Conversational Recommendation via Direct Preference Optimization",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.1456",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MPTA: MultiTask Personalization Assessment",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.640",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "FaST: Feature-aware Sampling and Tuning for Personalized Preference Alignment with Limited Data",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.475",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "O_O-VC: Synthetic Data-Driven One-to-One Alignment for Any-to-Any Voice Conversion",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.879",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ICL-Bandit: Relevance Labeling in Advertisement Recommendation Systems via LLM",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.1273",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "CESRec: Constructing Pseudo Interactions for Sequential Recommendation via Conversational Feedback",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.881",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "BannerAgency: Advertising Banner Design with Multimodal LLM Agents",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.214",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Decoding in Latent Spaces for Efficient Inference in LLM-based Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.401",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "LOHRec: Leveraging Order and Hierarchy in Generative Sequential Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.977",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "From Generic Empathy to Personalized Emotional Support: A Self-Evolution Framework for User Preference Alignment",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.1024",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "LLMAP: LLM-Assisted Multi-Objective Route Planning with User Preferences",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.416",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "SOLAR: Serendipity Optimized Language Model Aligned for Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.538",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PRIME: Large Language Model Personalization with Cognitive Dual-Memory and Personalized Thought Process",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.1711",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Leveraging Unpaired Feedback for Long-Term LLM-based Recommendation Tuning",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.1332",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Enhancing Recommendation Explanations through User-Centric Refinement",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.434",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "LAGCL4Rec: When LLMs Activate Interactions Potential in Graph Contrastive Learning for Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.61",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "RecBase: Generative Foundation Model Pretraining for Zero-Shot Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.EMNLP-MAIN.786",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "A Generative Framework for Personalized Sticker Retrieval",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.753",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "LLM-based Conversational Recommendation Agents with Collaborative Verbalized Experience",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-EMNLP.119",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Persona-SQ: A Personalized Suggested Question Generation Framework For Real-world Documents",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-DEMO.20",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "On Using Arabic Language Dialects in Recommendation Systems",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-NAACL.115",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Richer Output for Richer Countries: Uncovering Geographical Disparities in Generated Stories and Travel Recommendations",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-NAACL.262",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ReasoningRec: Bridging Personalized Recommendations and Human-Interpretable Explanations through LLM Reasoning",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-NAACL.454",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Tuning-Free Personalized Alignment via Trial-Error-Explain In-Context Learning",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-NAACL.326",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Generative Product Recommendations for Implicit Superlative Queries",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-SRW.8",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "SAPIENT: Mastering Multi-turn Conversational Recommendation with Strategic Planning and Monte Carlo Tree Search",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-LONG.133",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Help for Optimizing Low-Skilled Users' Strategy",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-SHORT.6",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PREMISE: Matching-based Prediction for Accurate Review Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-NAACL.150",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Few-shot Personalization of LLMs with Mis-aligned Responses",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-LONG.598",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Empowering Retrieval-based Conversational Recommendation with Contrasting User Preferences",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-LONG.392",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ComPO: Community Preferences for Language Model Personalization",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-LONG.419",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PicPersona-TOD : A Dataset for Personalizing Utterance Style in Task-Oriented Dialogue with Image Persona",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-LONG.403",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ChatCRS: Incorporating External Knowledge and Goal Guidance for LLM-based Conversational Recommender Systems",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-NAACL.17",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Hello Again! LLM-powered Personalized Agent for Long-term Dialogue",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-LONG.272",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ALERT: An LLM-powered Benchmark for Automatic Evaluation of Recommendation Explanations",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-LONG.137",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "FaithfulPersona: Balancing Faithfulness and Personalization in Code Explanations through Self-Critique",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-NAACL.53",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Exploring Safety-Utility Trade-Offs in Personalized Language Models",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-LONG.565",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "LLMs are Biased Teachers: Evaluating LLM Bias in Personalized Education",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-NAACL.314",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Investigating the (De)Composition Capabilities of Large Language Models in Natural-to-Formal Language Conversion",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-LONG.87",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "A Multi-modal Large Language Model with Graph-of-Thought for Effective Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-LONG.76",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalize Your LLM: Fake it then Align it",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-NAACL.407",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "AdTEC: A Unified Benchmark for Evaluating Text Quality in Search Engine Advertising",
+    "ee": "https://doi.org/10.18653/V1/2025.NAACL-LONG.391",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "A Federated Framework for LLM-based Recommendation",
+    "ee": "https://doi.org/10.18653/V1/2025.FINDINGS-NAACL.155",
+    "key": "dblp_sparql"
+  }
+]

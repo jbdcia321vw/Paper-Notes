@@ -128,4 +128,3 @@ $\bar{p}_t=\arg\max_{\bar{p}\in\bar{\mathcal{S}}}\langle\bar{p},\hat{f}_t(x_t,\c
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （覆盖合成与两个真实 LTR 基准、10+10 seed 调参/评估规范，但规模小、缺数值表与显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐⭐ （上下界匹配、Mode 1/2 双路径证明完整，势函数终止性论证与 anytime 扩展齐备，44 页附录自洽）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （代码已开源、仅需回归器与线性优化 oracle 即可接入，但每轮凸优化与 $\tilde{O}(A)$ 次 oracle 调用在大候选池下需进一步近似）
-

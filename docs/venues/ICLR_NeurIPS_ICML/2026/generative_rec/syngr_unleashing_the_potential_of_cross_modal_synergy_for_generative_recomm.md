@@ -126,4 +126,3 @@ $$\mathcal{L}_{Syn}=-\log\frac{e^{\text{sim}(Z_{mask},Z_{ori})/\tau}}{e^{\text{s
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （Leave-One-Out + Full-Ranking 严谨，12 个基线覆盖三类范式，但消融仅以柱状图呈现、缺显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （PID 推导与 Lemma 1 证明完整，复杂度分析清晰；Lemma 结论的"近似"性质表述诚实但削弱了理论强度）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （推理零额外开销、训练比 MACRec 快 22–23%、收敛快近一半，工程友好；但代码未开源、依赖两阶段预训练成本）
-

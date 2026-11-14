@@ -1,0 +1,692 @@
+[
+  {
+    "title": "Efficient Inference for Large Language Model-based Generative Recommendation",
+    "ee": "https://openreview.net/forum?id=ACSNlt77hq",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Joint Fine-tuning and Conversion of Pretrained Speech and Language Models towards Linear Complexity",
+    "ee": "https://openreview.net/forum?id=90Db4RUBc7",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ClassDiffusion: More Aligned Personalization Tuning with Explicit Class Guidance",
+    "ee": "https://openreview.net/forum?id=iTm4H6N4aG",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Bad-PFL: Exploiting Backdoor Attacks against Personalized Federated Learning",
+    "ee": "https://openreview.net/forum?id=79nO2DPjVX",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Bridging Jensen Gap for Max-Min Group Fairness Optimization in Recommendation",
+    "ee": "https://openreview.net/forum?id=1PDz4Ny1N2",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PAL: Sample-Efficient Personalized Reward Modeling for Pluralistic Alignment",
+    "ee": "https://openreview.net/forum?id=1kFDrYCuSu",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PaRa: Personalizing Text-to-Image Diffusion via Parameter Rank Reduction",
+    "ee": "https://openreview.net/forum?id=KZgo2YQbhc",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PAD: Personalized Alignment of LLMs at Decoding-time",
+    "ee": "https://openreview.net/forum?id=e7AUJpP8bV",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Long-Sequence Recommendation Models Need Decoupled Embeddings",
+    "ee": "https://openreview.net/forum?id=jkpGIxSsUD",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Learning Dynamics of Deep Matrix Factorization Beyond the Edge of Stability",
+    "ee": "https://openreview.net/forum?id=J4Dvxv7WnG",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Context Steering: Controllable Personalization at Inference Time",
+    "ee": "https://openreview.net/forum?id=xQCXInDq0m",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "GANDALF: Generative AttentioN based Data Augmentation and predictive modeLing Framework for personalized cancer treatment",
+    "ee": "https://openreview.net/forum?id=WwmtcGr4lP",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Mining your own secrets: Diffusion Classifier Scores for Continual Personalization of Text-to-Image Diffusion Models",
+    "ee": "https://openreview.net/forum?id=hUdLs6TqZL",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "RecFlow: An Industrial Full Flow Recommendation Dataset",
+    "ee": "https://openreview.net/forum?id=vVHc8bGRns",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Understanding the Stability-based Generalization of Personalized Federated Learning",
+    "ee": "https://openreview.net/forum?id=znhZbonEoe",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Preference Diffusion for Recommendation",
+    "ee": "https://openreview.net/forum?id=6GATHdOi1x",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "On the Crucial Role of Initialization for Matrix Factorization",
+    "ee": "https://openreview.net/forum?id=YTEwJaBdh0",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Mixture of Experts Made Personalized: Federated Prompt Learning for Vision-Language Models",
+    "ee": "https://openreview.net/forum?id=xiDJaTim3P",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Scaling up the Banded Matrix Factorization Mechanism for Large Scale Differentially Private ML",
+    "ee": "https://openreview.net/forum?id=69Fp4dcmJN",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "SeCom: On Memory Construction and Retrieval for Personalized Conversational Agents",
+    "ee": "https://openreview.net/forum?id=xKDZAW0He3",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "DreamBench++: A Human-Aligned Benchmark for Personalized Image Generation",
+    "ee": "https://openreview.net/forum?id=4GSOESJrk6",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Visual Instruction Tuning",
+    "ee": "https://openreview.net/forum?id=sAxdIJ4l6z",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PortLLM: Personalizing Evolving Large Language Models with Training-Free and Portable Model Patches",
+    "ee": "https://openreview.net/forum?id=gyHoR6uFhU",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Language Representations Can be What Recommenders Need: Findings and Potentials",
+    "ee": "https://openreview.net/forum?id=eIJfOIMN9z",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Hot-pluggable Federated Learning: Bridging General and Personalized FL via Dynamic Selection",
+    "ee": "https://openreview.net/forum?id=B8akWa62Da",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Representation from Personalized Generation",
+    "ee": "https://openreview.net/forum?id=jw7P4MHLWw",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Adaptive Shrinkage Estimation for Personalized Deep Kernel Regression in Modeling Brain Trajectories",
+    "ee": "https://openreview.net/forum?id=peX9zpWgg4",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Privacy-Preserving Personalized Federated Prompt Learning for Multimodal Large Language Models",
+    "ee": "https://openreview.net/forum?id=Equ277PBN0",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MS-Diffusion: Multi-subject Zero-shot Image Personalization with Layout Guidance",
+    "ee": "https://openreview.net/forum?id=PJqP0wyQek",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "On the Linear Speedup of Personalized Federated Reinforcement Learning with Shared Representations",
+    "ee": "https://openreview.net/forum?id=BfUDZGqCAu",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "SLMRec: Distilling Large Language Models into Small for Sequential Recommendation",
+    "ee": "https://openreview.net/forum?id=G4wARwjF8M",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ContextGNN: Beyond Two-Tower Recommendation Systems",
+    "ee": "https://openreview.net/forum?id=nzOD1we8Z4",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "A Non-Contrastive Learning Framework for Sequential Recommendation with Preference-Preserving Profile Generation",
+    "ee": "https://openreview.net/forum?id=Ke2BEL4csm",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Multimodal Quantitative Language for Generative Recommendation",
+    "ee": "https://openreview.net/forum?id=v7YrIjpkTF",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Amulet: ReAlignment During Test Time for Personalized Preference Adaptation of LLMs",
+    "ee": "https://openreview.net/forum?id=f9w89OY2cp",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Do LLMs Recognize Your Preferences? Evaluating Personalized Preference Following in LLMs",
+    "ee": "https://openreview.net/forum?id=QWunLKbBGF",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "UniCTokens: Boosting Personalized Understanding and Generation via Unified Concept Tokens",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/d531364f1771e0972c1d11c334a0efb4-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Adaptive Latent-Space Constraints in Personalized Federated Learning",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/74fc5575632191d96881d8015f79dde3-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "FedMGP: Personalized Federated Learning with Multi-Group Text-Visual Prompts",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/4a4d5fca4bbb93ead4548854f1f28c0f-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Foundation Cures Personalization: Improving Personalized Models' Prompt Consistency via Hidden Foundation Knowledge",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/12fa90b384f16f08738e4c6564008b07-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Low-Rank Head Avatar Personalization with Registers",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/aa3e67220ca4cd50010165c950fc8056-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Learning Personalized Ad Impact via Contextual Reinforcement Learning under Delayed Rewards",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/ce5f18eba5e5e9c7c166062300c677c3-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Semantic Retrieval Augmented Contrastive Learning for Sequential Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/ee2841db84cd09a5f6e3e313ce3d79d9-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Covariate-moderated Empirical Bayes Matrix Factorization",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/4364fef031fdf7bfd9d1c9c56b287084-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Integrating Drug Substructures and Longitudinal Electronic Health Records for Personalized Drug Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/5b0c0b2c2efdd736a53688ebfdc3bcdb-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Image Editing in Text-to-Image Diffusion Models via Collaborative Direct Preference Optimization",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/f503d55f1b711673591c88e943c59695-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Fine-grained List-wise Alignment for Generative Medication Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/44a1f7e0a1fe7867f586b10739a0c26a-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "DoseSurv: Predicting Personalized Survival Outcomes under Continuous-Valued Treatments",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/221f7e3c1c8b4ee48d45a53589051590-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ORBIT - Open Recommendation Benchmark for Reproducible Research with Hidden Tests",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/e1a6951efe00913c584b48e668bc2215-Abstract-Datasets_and_Benchmarks_Track.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Listwise Preference Diffusion Optimization for User Behavior Trajectories Prediction",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/e9aa0e8679691ba5404c5b0e7caac518-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Fading to Grow: Growing Preference Ratios via Preference Fading Discrete Diffusion for Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/c5c12c9f344276b8a98fdf60ac88f5f5-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "How Does Topology Bias Distort Message Passing in Graph Recommender? A Dirichlet Energy Perspective",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/40b5237c3e025c72c02dd8b6716dac76-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Homogeneous Algorithms Can Reduce Competition in Personalized Pricing",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/91625e1de0ab1c8f2c0bb2c7742d5321-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Real-Time Hyper-Personalized Generative AI Should Be Regulated to Prevent the Rise of \"Digital Heroin\"",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/b64401e90a03f04dbfb2b6caf8691d1a-Abstract-Position_Paper_Track.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MMPB: It's Time for Multi-Modal Personalization",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/24d7018563a6e5b9ee2031d5eed5d79b-Abstract-Datasets_and_Benchmarks_Track.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Think before Recommendation: Autonomous Reasoning-enhanced Recommender",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/cea5bc68b890bffb10f18aaaab2becb1-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Perturb a Model, Not an Image: Towards Robust Privacy Protection via Anti-Personalized Diffusion Models",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/854aef0358c3d90e0022661038631d90-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "IGD: Token Decisiveness Modeling via Information Gain in LLMs for Personalized Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/707e34efcabd2b9375f7a64019600aa8-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Efficient Knowledge Transfer in Federated Recommendation for Joint Venture Ecosystem",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/b4f9b809750373d111728b8a5f649ece-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "SPOT-Trip: Dual-Preference Driven Out-of-Town Trip Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/d32abef446ead79ac1e7f80419a7b82f-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Real-World Adverse Weather Image Restoration via Dual-Level Reinforcement Learning with High-Quality Cold Start",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/a3a7387e49f4de290c23beea2dfcdc75-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Can LLMs Outshine Conventional Recommenders? A Comparative Evaluation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/129292da836f35bc051ccef07a245ab7-Abstract-Datasets_and_Benchmarks_Track.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "PANTHER: Generative Pretraining Beyond Language for Sequential User Behavior Modeling",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/ef7a500bc90d45e362c82d63a0eff22d-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "On Efficiency-Effectiveness Trade-off of Diffusion-based Recommenders",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/8573e433d2ff235a41c64e7e1d37c7a5-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Federated Conformal Prediction with Localization",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/930a720c815416c263b0a090448ee901-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "A Multimodal Benchmark for Framing of Oil & Gas Advertising and Potential Greenwashing Detection",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/7fe388e4c36b7d6a2aed2e4629804169-Abstract-Datasets_and_Benchmarks_Track.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Adaptive Preference Arithmetic: A Personalized Agent with Adaptive Preference Arithmetic for Dynamic Preference Modeling",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/964b1c8dd5667fd647c09c8772829fd1-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "RePIC: Reinforced Post-Training for Personalizing Multi-Modal Language Models",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/28f734334f9f325b515933e70b6b412c-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Exercise Recommendation with Semantically-Grounded Knowledge Tracing",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/13707aad517ddd6c09ea02e0f55e1e7a-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Inference-Time Personalized Alignment with a Few User Preference Queries",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/7ace822623d2313ec017df71c3a90286-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "AgentRecBench: Benchmarking LLM Agent-based Personalized Recommender Systems",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/e2d6f7249add096e26679eade1b4cc6f-Abstract-Datasets_and_Benchmarks_Track.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "P-Law: Predicting Quantitative Scaling Law with Entropy Guidance in Large Recommendation Models",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/133e588e1429f9f1e25b215da145580e-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "TV-Rec: Time-Variant Convolutional Filter for Sequential Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/ed31c00af5238b649171d64718c92cb2-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Truthful Aggregation of LLMs with an Application to Online Advertising",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/d60b6b7f0ba6bf07d975b3bbdacea702-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Sum Estimation under Personalized Local Differential Privacy",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/0fd4ce94d29be88a5a262a2c77a18f47-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Path-Enhanced Contrastive Learning for Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/7cb33a355bbe68305e02a080ad4eb86a-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Visual Content Generation in Conversational Systems",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/314116cd378bab6283ae19c07a4ea367-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Data-Free Model Extraction for Black-box Recommender Systems via Graph Convolutions",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/cce7576bf51b6a156346156c0976e7f6-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "FACE: A General Framework for Mapping Collaborative Filtering Embeddings into LLM Tokens",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/d6f034bb216b472fc7d32ec7aff20342-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Enhancing Personalized Multi-Turn Dialogue with Curiosity Reward",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/e48d5af30c95be08762489c5141f7fbc-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Bayesian Federated Learning with Wasserstein Barycenter Aggregation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/6d0c18c6edc02be434c883bdd9fbe3b5-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Adaptive Gradient Masking for Balancing ID and MLLM-based Representations in Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/15163b538e6be5446614de2ecbbfa026-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Safety in LLMs: A Benchmark and A Planning-Based Agent Approach",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/8c2bb821410066459be64d03a4dc5719-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "HPSERec: A Hierarchical Partitioning and Stepwise Enhancement Framework for Long-tailed Sequential Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/a6b3466b787dbfc4fadd9a611c9ee40b-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Decentralized Dynamic Cooperation of Personalized Models for Federated Continual Learning",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/a2582a9f63edd4dd9489bd59ed0b6fce-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Sparse Meets Dense: Unified Generative Recommendations with Cascaded Sparse-Dense Representations",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/86ba836d4c5dd859d795a172911745e2-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Structured Spectral Reasoning for Frequency-Adaptive Multimodal Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/288c9c3c9d214dd61282f885dfbc6117-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Optimistic Online-to-Batch Conversions for Accelerated Convergence and Universality",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/8771f91396d4c53bc2053e70f4615ad0-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Photography Perspective Composition: Towards Aesthetic Perspective Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/8227285e32f70e07fa3a247f3a48006d-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MonarchAttention: Zero-Shot Conversion to Fast, Hardware-Aware Structured Attention",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/050f8591be3874b52fdac4e1060eeb29-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "R$^2$ec: Towards Large Recommender Models with Reasoning",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/5a05d477fef5a43c805d3377700efa40-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Tree of Preferences for Diversified Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/e41f42c87e0492cdf1673e28fdaf47b2-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "SAEMark: Steering Personalized Multilingual LLM Watermarks with Sparse Autoencoders",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/e8ddc03b001d4c4b44b29bc1167e7fdd-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "TranSUN: A Preemptive Paradigm to Eradicate Retransformation Bias Intrinsically from Regression Models in Recommender Systems",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/ce3e23a212815cc1f9b7cf2b3490d715-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Who You Are Matters: Bridging Interests and Social Roles via LLM-Enhanced Logic Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/7d25b1db211d99d5750ec45d65fd6e4e-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MTRec: Learning to Align with User Preferences via Mental Reward Models",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/e530ae20f6433b2a24672fd443d3bd14-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Teaching Language Models to Evolve with Users: Dynamic Profile Modeling for Personalized Alignment",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/2fbc1ea60e215275e823c86338417162-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Decision Modeling: Utility Optimization or Textualized-Symbolic Reasoning",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/80eecea10dc05e23db2f90c9d4567153-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Negative Feedback Really Matters: Signed Dual-Channel Graph Contrastive Learning Framework for Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/9a92ea37efa0d290bd7015558166c056-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Graph-Theoretic Insights into Bayesian Personalized Ranking for Recommendation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/e749a0c356ab5b726611d45245acd964-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Knowledge Starts with Practice: Knowledge-Aware Exercise Generative Recommendation with Adaptive Multi-Agent Cooperation",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/85dbd2fb8b355e4231b51e454c08ec1c-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "VisualLens: Personalization through Task-Agnostic Visual History",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/fc9e71b0eaef3f27b9d522b20f31769b-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Personalized Subgraph Federated Learning with Differentiable Auxiliary Projections",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/2360da01c2ed6592bb691326424de184-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "BNMusic: Blending Environmental Noises into Personalized Music",
+    "ee": "http://papers.nips.cc/paper_files/paper/2025/hash/8dc9b0192713f44f035b8c0bd3f4153a-Abstract-Conference.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "MTSTRec: Multimodal Time-Aligned Shared Token Recommender",
+    "ee": "https://proceedings.mlr.press/v267/hong25b.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Efficient Personalized Adaptation for Physiological Signal Foundation Model",
+    "ee": "https://proceedings.mlr.press/v267/wu25ah.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Federated Oriented Learning: A Practical One-Shot Personalized Federated Learning Framework",
+    "ee": "https://proceedings.mlr.press/v267/huang25ae.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Unbiased Recommender Learning from Implicit Feedback via Weakly Supervised Learning",
+    "ee": "https://proceedings.mlr.press/v267/wang25p.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "General framework for online-to-nonconvex conversion: Schedule-free SGD is also effective for nonconvex optimization",
+    "ee": "https://proceedings.mlr.press/v267/ahn25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ENSUR: Equitable and Statistically Unbiased Recommendation",
+    "ee": "https://proceedings.mlr.press/v267/bisht25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Temporal Misalignment in ANN-SNN Conversion and its Mitigation via Probabilistic Spiking Neurons",
+    "ee": "https://proceedings.mlr.press/v267/bojkovic25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "A Geometric Approach to Personalized Recommendation with Set-Theoretic Constraints Using Box Embeddings",
+    "ee": "https://proceedings.mlr.press/v267/dasgupta25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "FACTER: Fairness-Aware Conformal Thresholding and Prompt Engineering for Enabling Fair LLM-Based Recommender Systems",
+    "ee": "https://proceedings.mlr.press/v267/fayyazi25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "SHARP-Distill: A 68× Faster Recommender System with Hypergraph Neural Networks and Language Models",
+    "ee": "https://proceedings.mlr.press/v267/forouzandeh25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Learning Policy Committees for Effective Personalization in MDPs with Diverse Tasks",
+    "ee": "https://proceedings.mlr.press/v267/ge25b.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Faster and Stronger: When ANN-SNN Conversion Meets Parallel Spiking Calculation",
+    "ee": "https://proceedings.mlr.press/v267/hao25c.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "ActionPiece: Contextually Tokenizing Action Sequences for Generative Recommendation",
+    "ee": "https://proceedings.mlr.press/v267/hou25f.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Differential Coding for Training-Free ANN-to-SNN Conversion",
+    "ee": "https://proceedings.mlr.press/v267/huang25i.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Flow Matching for Denoised Social Recommendation",
+    "ee": "https://proceedings.mlr.press/v267/huang25p.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Improving LLMs for Recommendation with Out-Of-Vocabulary Tokens",
+    "ee": "https://proceedings.mlr.press/v267/huang25ar.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Advancing Personalized Learning with Neural Collapse for Long-Tail Challenge",
+    "ee": "https://proceedings.mlr.press/v267/hu25f.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Skip the Equations: Learning Behavior of Personalized Dynamical Systems Directly From Data",
+    "ee": "https://proceedings.mlr.press/v267/kacprzyk25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Optimizing Social Network Interventions via Hypergradient-Based Recommender System Design",
+    "ee": "https://proceedings.mlr.press/v267/kuhne25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Optimal Auction Design in the Joint Advertising",
+    "ee": "https://proceedings.mlr.press/v267/li25bq.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Multilayer Matrix Factorization via Dimension-Reducing Diffusion Variational Inference",
+    "ee": "https://proceedings.mlr.press/v267/liu25n.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Efficient ANN-SNN Conversion with Error Compensation Learning",
+    "ee": "https://proceedings.mlr.press/v267/liu25bl.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "SecEmb: Sparsity-Aware Secure Federated Learning of On-Device Recommender System with Large Embedding",
+    "ee": "https://proceedings.mlr.press/v267/mai25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Recommendations with Sparse Comparison Data: Provably Fast Convergence for Nonconvex Matrix Factorization",
+    "ee": "https://proceedings.mlr.press/v267/sankagiri25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "SAFER: A Calibrated Risk-Aware Multimodal Recommendation Model for Dynamic Treatment Regimes",
+    "ee": "https://proceedings.mlr.press/v267/shen25l.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Private Model Personalization Revisited",
+    "ee": "https://proceedings.mlr.press/v267/snedeker25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Harnessing Heterogeneous Statistical Strength for Personalized Federated Learning via Hierarchical Bayesian Inference",
+    "ee": "https://proceedings.mlr.press/v267/thapa25a.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Position: Human Baselines in Model Evaluations Need Rigor and Transparency (With Recommendations & Reporting Checklist)",
+    "ee": "https://proceedings.mlr.press/v267/wei25s.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Leveraging Model Guidance to Extract Training Data from Personalized Diffusion Models",
+    "ee": "https://proceedings.mlr.press/v267/wu25as.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Hgformer: Hyperbolic Graph Transformer for Collaborative Filtering",
+    "ee": "https://proceedings.mlr.press/v267/yang25o.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "From Feature Interaction to Feature Generation: A Generative Paradigm of CTR Prediction Models",
+    "ee": "https://proceedings.mlr.press/v267/yin25c.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Beyond Self-Interest: How Group Strategies Reshape Content Creation in Recommendation Platforms?",
+    "ee": "https://proceedings.mlr.press/v267/yu25t.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "Understanding the Statistical Accuracy-Communication Trade-off in Personalized Federated Learning with Minimax Guarantees",
+    "ee": "https://proceedings.mlr.press/v267/yu25h.html",
+    "key": "dblp_sparql"
+  },
+  {
+    "title": "TTFSFormer: A TTFS-based Lossless Conversion of Spiking Transformer",
+    "ee": "https://proceedings.mlr.press/v267/zhao25n.html",
+    "key": "dblp_sparql"
+  }
+]

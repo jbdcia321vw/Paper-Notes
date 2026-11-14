@@ -136,4 +136,3 @@ $$\mathcal{L}_{\text{masked}}=-\sum_{t=1}^{T}M_t\cdot\log P(y_t\mid y_{<t},x),\q
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （SR/ET/FR 三率互斥设计巧妙、含人工评测，但缺严格消融表、Match Score 未验证、仅单数据集单领域）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （动机—设计—证据链条清晰，掩码公式与动作模板定义明确；数学体量偏轻，缺复杂度与收敛性讨论）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （代码开源、8B 全参微调成本可控、合成数据可无限扩展，是低成本 CRS 数据冷启动的实用方案）
-

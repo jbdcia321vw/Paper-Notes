@@ -129,4 +129,3 @@ Hellinger 距离对分布尾部差异更敏感，使编码器几何预先贴合�
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三模态七骨干 + Strong Generalization + 四类干预设计完整，但缺显著性检验与真实用户验证）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （流程与公式简洁，$\mathcal{L}_{\text{align}}$、$\mathcal{L}_{\text{rec}}$ 细节下放附录，主文略欠自足）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （打分延迟 <1 ms、代码开源，但画像生成 10–13 s/用户与多 LLM 依赖抬高部署门槛）
-

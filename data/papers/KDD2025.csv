@@ -1,0 +1,74 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+"The Mental World of Large Language Models in Recommendation: A Benchmark on Association, Personalization, and Knowledgeability",2512.17389,https://arxiv.org/abs/2512.17389,,llm_rec,KDD,2025
+Bid2X: Revealing Dynamics of Bidding Environment in Online Advertising from A Foundation Model Lens,2510.23410,https://arxiv.org/abs/2510.23410,,ctr_feature_interaction,KDD,2025
+Breaking the Top-$K$ Barrier: Advancing Top-$K$ Ranking Metrics Optimization in Recommender Systems,2508.05673,https://arxiv.org/abs/2508.05673,https://github.com/Tiny-Snow/IR-Benchmark,multi_task_reranking,KDD,2025
+Harnessing the Power of Interleaving and Counterfactual Evaluation for Airbnb Search Ranking,2508.00751,https://arxiv.org/abs/2508.00751,,debias_fairness_industrial,KDD,2025
+FindRec: Stein-Guided Entropic Flow for Multi-Modal Sequential Recommendation,2507.04651,https://arxiv.org/abs/2507.04651,https://github.com/Applied-Machine-Learning-Lab/FindRec,multimodal_rec,KDD,2025
+TayFCS: Towards Light Feature Combination Selection for Deep Recommender Systems,2507.03895,https://arxiv.org/abs/2507.03895,,ctr_feature_interaction,KDD,2025
+EARN: Efficient Inference Acceleration for LLM-based Generative Recommendation by Register Tokens,2507.00715,https://arxiv.org/abs/2507.00715,,llm_rec,KDD,2025
+Multi-task Offline Reinforcement Learning for Online Advertising in Recommender Systems,2506.23090,https://arxiv.org/abs/2506.23090,,rl_bandit_rec,KDD,2025
+Synergizing Implicit and Explicit User Interests: A Multi-Embedding Retrieval Framework at Pinterest,2506.23060,https://arxiv.org/abs/2506.23060,,collaborative_filtering,KDD,2025
+"Beyond Advertising: Mechanism Design for Platform-Wide Marketing Service ""QuanZhanTui""",2507.02931,https://arxiv.org/abs/2507.02931,,ctr_feature_interaction,KDD,2025
+An Audio-centric Multi-task Learning Framework for Streaming Ads Targeting on Spotify,2506.18735,https://arxiv.org/abs/2506.18735,,ctr_feature_interaction,KDD,2025
+PERSCEN: Learning Personalized Interaction Pattern and Scenario Preference for Multi-Scenario Matching,2506.18382,https://arxiv.org/abs/2506.18382,,cross_domain_multi_scenario,KDD,2025
+LLM2Rec: Large Language Models Are Powerful Embedding Models for Sequential Recommendation,2506.21579,https://arxiv.org/abs/2506.21579,https://github.com/HappyPointer/LLM2Rec,llm_rec,KDD,2025
+Revisiting Clustering of Neural Bandits: Selective Reinitialization for Mitigating Loss of Plasticity,2506.12389,https://arxiv.org/abs/2506.12389,,rl_bandit_rec,KDD,2025
+Optimizing Recall or Relevance? A Multi-Task Multi-Head Approach for Item-to-Item Retrieval in Recommendation,2506.06239,https://arxiv.org/abs/2506.06239,,collaborative_filtering,KDD,2025
+Generating Long Semantic IDs in Parallel for Recommendation,2506.05781,https://arxiv.org/abs/2506.05781,https://github.com/facebookresearch/RPG_KDD2025,generative_rec,KDD,2025
+GORACS: Group-level Optimal Transport-guided Coreset Selection for LLM-based Recommender Systems,2506.04015,https://arxiv.org/abs/2506.04015,https://github.com/Mithas-114/GORACS,llm_rec,KDD,2025
+Generative Next POI Recommendation with Semantic ID,2506.01375,https://arxiv.org/abs/2506.01375,,poi_spatiotemporal_rec,KDD,2025
+Measure Domain's Gap: A Similar Domain Selection Principle for Multi-Domain Recommendation,2505.20227,https://arxiv.org/abs/2505.20227,,cross_domain_multi_scenario,KDD,2025
+MDVT: Enhancing Multimodal Recommendation with Model-Agnostic Multimodal-Driven Virtual Triplets,2505.16665,https://arxiv.org/abs/2505.16665,,multimodal_rec,KDD,2025
+"OmniSage: Large Scale, Multi-Entity Heterogeneous Graph Representation Learning",2504.17811,https://arxiv.org/abs/2504.17811,https://github.com/pinterest/atg-research,self_supervised_denoising,KDD,2025
+Bridging Textual-Collaborative Gap through Semantic Codes for Sequential Recommendation,2503.12183,https://arxiv.org/abs/2503.12183,https://github.com/RUCAIBox/CCFRec,sequential_rec,KDD,2025
+GiGL: Large-Scale Graph Neural Networks at Snapchat,2502.15054,https://arxiv.org/abs/2502.15054,https://github.com/Snapchat/GiGL,debias_fairness_industrial,KDD,2025
+Lost in Sequence: Do Large Language Models Understand Sequential Recommendation?,2502.13909,https://arxiv.org/abs/2502.13909,https://github.com/Sein-Kim/LLM-SRec,llm_rec,KDD,2025
+Collaborative Filtering Meets Spectrum Shift: Connecting User-Item Interaction with Graph-Structured Side Information,2502.08071,https://arxiv.org/abs/2502.08071,https://github.com/yhhe2004/SSC-KDD,graph_rec,KDD,2025
+Flow Matching for Collaborative Filtering,2502.07303,https://arxiv.org/abs/2502.07303,https://github.com/chengkai-liu/FlowCF,generative_rec,KDD,2025
+Combinatorial Optimization Perspective based Framework for Multi-behavior Recommendation,2502.02232,https://arxiv.org/abs/2502.02232,https://github.com/1918190/COPF,multi_task_reranking,KDD,2025
+An Adaptable Budget Planner for Enhancing Budget-Constrained Auto-Bidding in Online Advertising,2502.05187,https://arxiv.org/abs/2502.05187,,rl_bandit_rec,KDD,2025
+Exploring Preference-Guided Diffusion Model for Cross-Domain Recommendation,2501.11671,https://arxiv.org/abs/2501.11671,,cross_domain_multi_scenario,KDD,2025
+Session-Level Dynamic Ad Load Optimization using Offline Robust Reinforcement Learning,2501.05591,https://arxiv.org/abs/2501.05591,,rl_bandit_rec,KDD,2025
+Forward Once for All: Structural Parameterized Adaptation for Efficient Cloud-coordinated On-device Recommendation,2501.02837,https://arxiv.org/abs/2501.02837,,debias_fairness_industrial,KDD,2025
+Why Not Together? A Multiple-Round Recommender System for Queries and Items,2412.10787,https://arxiv.org/abs/2412.10787,,sequential_rec,KDD,2025
+Controlling Diversity at Inference: Guiding Diffusion Recommender Models with Targeted Category Preferences,2411.11240,https://arxiv.org/abs/2411.11240,,generative_rec,KDD,2025
+Exploring Feature-based Knowledge Distillation for Recommender System: A Frequency Perspective,2411.10676,https://arxiv.org/abs/2411.10676,https://github.com/woriazzc/KDs,llm_rec,KDD,2025
+Enhancing Graph Contrastive Learning with Reliable and Informative Augmentation for Recommendation,2409.05633,https://arxiv.org/abs/2409.05633,,self_supervised_denoising,KDD,2025
+Gradients as an Action: Towards Communication-Efficient Federated Recommender Systems via Adaptive Action Sharing,2507.08842,https://arxiv.org/abs/2507.08842,https://github.com/mastlab-T3S/FedRAS,debias_fairness_industrial,KDD,2025
+DV365: Extremely Long User History Modeling at Instagram,2506.00450,https://arxiv.org/abs/2506.00450,,sequential_rec,KDD,2025
+Shapley Value-driven Data Pruning for Recommender Systems,2505.22057,https://arxiv.org/abs/2505.22057,,self_supervised_denoising,KDD,2025
+On the Role of Weight Decay in Collaborative Filtering: A Popularity Perspective,2505.11318,https://arxiv.org/abs/2505.11318,,collaborative_filtering,KDD,2025
+High Precision Audience Expansion via Extreme Classification in a Two-Sided Marketplace,2602.14358,https://arxiv.org/abs/2602.14358,,collaborative_filtering,KDD,2025
+Agent0: Leveraging LLM Agents to Discover Multi-value Features from Text for Enhanced Recommendations,2507.18993,https://arxiv.org/abs/2507.18993,,llm_rec,KDD,2025
+Addressing Correlated Latent Exogenous Variables in Debiased Recommender Systems,2506.07517,https://arxiv.org/abs/2506.07517,https://github.com/WallaceSUI/kdd25-background-variable,debias_fairness_industrial,KDD,2025
+Scaling Transformers for Discriminative Recommendation via Generative Pretraining,2506.03699,https://arxiv.org/abs/2506.03699,https://github.com/chqiwang/gpsd-rec,ctr_feature_interaction,KDD,2025
+A Unified Online-Offline Framework for Co-Branding Campaign Recommendations,2505.22254,https://arxiv.org/abs/2505.22254,,rl_bandit_rec,KDD,2025
+Revisiting Self-attention for Cross-domain Sequential Recommendation,2505.21811,https://arxiv.org/abs/2505.21811,https://github.com/snap-research/AutoCDSR,cross_domain_multi_scenario,KDD,2025
+Leveraging the Power of Conversations: Optimal Key Term Selection in Conversational Contextual Bandits,2505.21393,https://arxiv.org/abs/2505.21393,,agent_conversational_rec,KDD,2025
+Unlocking the Power of Diffusion Models in Sequential Recommendation: A Simple and Effective Approach,2505.19544,https://arxiv.org/abs/2505.19544,,sequential_rec,KDD,2025
+Collaboration of Large Language Models and Small Recommendation Models for Device-Cloud Recommendation,2501.05647,https://arxiv.org/abs/2501.05647,,llm_rec,KDD,2025
+An Automatic Graph Construction Framework based on Large Language Models for Recommendation,2412.18241,https://arxiv.org/abs/2412.18241,,graph_rec,KDD,2025
+Online Item Cold-Start Recommendation with Popularity-Aware Meta-Learning,2411.11225,https://arxiv.org/abs/2411.11225,,cold_start_rec,KDD,2025
+SWaT: Statistical Modeling of Video Watch Time through User Behavior Analysis,2408.07759,https://arxiv.org/abs/2408.07759,,ctr_feature_interaction,KDD,2025
+NoteLLM-2: Multimodal Large Representation Models for Recommendation,2405.16789,https://arxiv.org/abs/2405.16789,https://github.com/Applied-Machine-Learning-Lab/NoteLLM,multimodal_rec,KDD,2025
+LettinGo: Explore User Profile Generation for Recommendation System,2506.18309,https://arxiv.org/abs/2506.18309,,llm_rec,KDD,2025
+Multi-Grained Preference Enhanced Transformer for Multi-Behavior Sequential Recommendation,2411.12179,https://arxiv.org/abs/2411.12179,,sequential_rec,KDD,2025
+Real-time Indexing for Large-scale Recommendation by Streaming Vector Quantization Retriever,2501.08695,https://arxiv.org/abs/2501.08695,,collaborative_filtering,KDD,2025
+Time Matters: Enhancing Sequential Recommendations with Time-Guided Graph Neural ODEs,2511.18347,https://arxiv.org/abs/2511.18347,,sequential_rec,KDD,2025
+Effective Two-Stage Knowledge Transfer for Multi-Entity Cross-Domain Recommendation,2402.19101,https://arxiv.org/abs/2402.19101,,cross_domain_multi_scenario,KDD,2025
+LaViC: Adapting Large Vision-Language Models to Visually-Aware Conversational Recommendation,2503.23312,https://arxiv.org/abs/2503.23312,https://github.com/jeon185/LaViC,agent_conversational_rec,KDD,2025
+MerRec: A Large-scale Multipurpose Mercari Dataset for Consumer-to-Consumer Recommendation Systems,2402.14230,https://arxiv.org/abs/2402.14230,https://github.com/mercari/mercari-ml-merrec-pub-us,debias_fairness_industrial,KDD,2025
+UQABench: Evaluating User Embedding for Prompting LLMs in Personalized Question Answering,2502.19178,https://arxiv.org/abs/2502.19178,,llm_rec,KDD,2025
+Flexible Generation of Preference Data for Recommendation Analysis,2407.16594,https://arxiv.org/abs/2407.16594,https://github.com/SimoneMungari/HYDRA,debias_fairness_industrial,KDD,2025
+GREAT: Guiding Query Generation with a Trie for Recommending Related Search about Video at Kuaishou,2507.15267,https://arxiv.org/abs/2507.15267,,generative_rec,KDD,2025
+Taming Recommendation Bias with Causal Intervention on Evolving Personal Popularity,2505.14310,https://arxiv.org/abs/2505.14310,,debias_fairness_industrial,KDD,2025
+Beyond Item Dissimilarities: Diversifying by Intent in Recommender Systems,2405.12327,https://arxiv.org/abs/2405.12327,,multi_task_reranking,KDD,2025
+Breaker: Removing Shortcut Cues with User Clustering for Single-slot Recommendation System,2506.00828,https://arxiv.org/abs/2506.00828,,debias_fairness_industrial,KDD,2025
+IU4Rec: Interest Unit-Based Product Organization and Recommendation for E-Commerce Platform,2502.07658,https://arxiv.org/abs/2502.07658,,collaborative_filtering,KDD,2025
+Lightweight Auto-bidding based on Traffic Prediction in Live Advertising,2508.06069,https://arxiv.org/abs/2508.06069,,ctr_feature_interaction,KDD,2025
+GLINT-RU: Gated Lightweight Intelligent Recurrent Units for Sequential Recommender Systems,2406.10244,https://arxiv.org/abs/2406.10244,,sequential_rec,KDD,2025
+MOPI-HFRS: A Multi-objective Personalized Health-aware Food Recommendation System with LLM-enhanced Interpretation,2412.08847,https://arxiv.org/abs/2412.08847,,multi_task_reranking,KDD,2025
+Contextual Generative Auction with Permutation-level Externalities for Online Advertising,2412.11544,https://arxiv.org/abs/2412.11544,,ctr_feature_interaction,KDD,2025
+Embed Progressive Implicit Preference in Unified Space for Deep Collaborative Filtering,2505.20900,https://arxiv.org/abs/2505.20900,,collaborative_filtering,KDD,2025
+Data Watermarking for Sequential Recommender Systems,2411.12989,https://arxiv.org/abs/2411.12989,,debias_fairness_industrial,KDD,2025
+LightKG: Efficient Knowledge-Aware Recommendations with Simplified GNN Architecture,2506.10347,https://arxiv.org/abs/2506.10347,https://github.com/1371149/LightKG,graph_rec,KDD,2025

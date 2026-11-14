@@ -122,4 +122,3 @@ $$p_t(i)=\frac{1}{K+\gamma_m(\hat{\mu}_t(x_t,\hat{b}_t)-\hat{\mu}_t(x_t,i))},\qu
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （真实临床数据有说服力，但仅单数据集、$K=3$，缺大规模仿真与显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （DBIC 定义清晰、定理证明完整，附录含完整遗憾分解与 Ridge 预测误差界）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （模块化设计易接入现有 oracle，但 $K^3$ 复杂度与未开源限制大规模部署）
-

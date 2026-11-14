@@ -1,0 +1,32 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Future Sight and Tough Fights: Revolutionizing Sequential Recommendation with FENRec,2412.11589,https://arxiv.org/abs/2412.11589,https://github.com/uikdwnd/FENRec,sequential_rec,AAAI,2025
+From Pairwise to Ranking: Climbing the Ladder to Ideal Collaborative Filtering with Pseudo-Ranking,2412.18168,https://arxiv.org/abs/2412.18168,,collaborative_filtering,AAAI,2025
+MENTOR: Multi-level Self-supervised Learning for Multimodal Recommendation,2402.19407,https://arxiv.org/abs/2402.19407,https://github.com/Jinfeng-Xu/MENTOR,multimodal_rec,AAAI,2025
+Harnessing Multimodal Large Language Models for Multimodal Sequential Recommendation,2408.09698,https://arxiv.org/abs/2408.09698,,llm_rec,AAAI,2025
+LLM-Powered User Simulator for Recommender System,2412.16984,https://arxiv.org/abs/2412.16984,,agent_conversational_rec,AAAI,2025
+BayesCNS: A Unified Bayesian Approach to Address Cold Start and Non-Stationarity in Search Systems at Scale,2410.02126,https://arxiv.org/abs/2410.02126,,cold_start_rec,AAAI,2025
+Active Large Language Model-based Knowledge Distillation for Session-based Recommendation,2502.15685,https://arxiv.org/abs/2502.15685,,llm_rec,AAAI,2025
+Augmenting Sequential Recommendation with Balanced Relevance and Diversity,2412.08300,https://arxiv.org/abs/2412.08300,https://github.com/KingGugu/BASRec,sequential_rec,AAAI,2025
+Neural Combinatorial Clustered Bandits for Recommendation Systems,2410.14586,https://arxiv.org/abs/2410.14586,,rl_bandit_rec,AAAI,2025
+BeFA: A General Behavior-driven Feature Adapter for Multimedia Recommendation,2406.00323,https://arxiv.org/abs/2406.00323,https://github.com/fqldom/BeFA,multimodal_rec,AAAI,2025
+Behavior Importance-Aware Graph Neural Architecture Search for Cross-Domain Recommendation,2504.07102,https://arxiv.org/abs/2504.07102,,cross_domain_multi_scenario,AAAI,2025
+Beyond Graph Convolution: Multimodal Recommendation with Topology-aware MLPs,2412.11747,https://arxiv.org/abs/2412.11747,,multimodal_rec,AAAI,2025
+Bites of Tomorrow: Personalized Recommendations for a Healthier and Greener Plate,2508.13870,https://arxiv.org/abs/2508.13870,,debias_fairness_industrial,AAAI,2025
+Exploiting Fine-Grained Skip Behaviors for Micro-Video Recommendation,2504.03107,https://arxiv.org/abs/2504.03107,,multimodal_rec,AAAI,2025
+Bridging the User-side Knowledge Gap in Knowledge-aware Recommendations with Large Language Models,2412.13544,https://arxiv.org/abs/2412.13544,,llm_rec,AAAI,2025
+Direct Routing Gradient (DRGrad): A Personalized Information Surgery for Multi-Task Learning (MTL) Recommendations,2510.09643,https://arxiv.org/abs/2510.09643,,multi_task_reranking,AAAI,2025
+Coherency Improved Explainable Recommendation via Large Language Model,2504.05315,https://arxiv.org/abs/2504.05315,,llm_rec,AAAI,2025
+SIGMA: Selective Gated Mamba for Sequential Recommendation,2408.11451,https://arxiv.org/abs/2408.11451,https://github.com/ziwliu-cityu/SIMGA,sequential_rec,AAAI,2025
+Personalized Federated Collaborative Filtering: A Variational AutoEncoder Approach,2408.08931,https://arxiv.org/abs/2408.08931,https://github.com/mtics/FedDAE,debias_fairness_industrial,AAAI,2025
+Contrastive Representation for Interactive Recommendation,2412.18396,https://arxiv.org/abs/2412.18396,,rl_bandit_rec,AAAI,2025
+One for Dozens: Adaptive REcommendation for All Domains with Counterfactual Augmentation,2412.11905,https://arxiv.org/abs/2412.11905,https://github.com/Chrissie-Law/AREAD-Multi-Domain-Recommendation,cross_domain_multi_scenario,AAAI,2025
+"An XAI Social Media Platform for Teaching K-12 Students AI-Driven Profiling, Clustering, and Engagement-Based Recommending",2412.13554,https://arxiv.org/abs/2412.13554,,debias_fairness_industrial,AAAI,2025
+Predicting User Behavior in Smart Spaces with LLM-Enhanced Logs and Personalized Prompts,2412.12653,https://arxiv.org/abs/2412.12653,,llm_rec,AAAI,2025
+"Multi-Modal Recommendation Unlearning for Legal, Licensing, and Modality Constraints",2405.15328,https://arxiv.org/abs/2405.15328,https://github.com/MachineUnlearn/MMRecUN,debias_fairness_industrial,AAAI,2025
+Re2LLM: Reflective Reinforcement Large Language Model for Session-based Recommendation,2403.16427,https://arxiv.org/abs/2403.16427,,llm_rec,AAAI,2025
+STAIR: Manipulating Collaborative and Multimodal Information for E-Commerce Recommendation,2412.11729,https://arxiv.org/abs/2412.11729,https://github.com/yhhe2004/STAIR,multimodal_rec,AAAI,2025
+Disentangled Modeling of Preferences and Social Influence for Group Recommendation,2501.11342,https://arxiv.org/abs/2501.11342,,social_group_rec,AAAI,2025
+Lightweight yet Fine-grained: A Graph Capsule Convolutional Network with Subspace Alignment for Shared-account Sequential Recommendation,2412.13408,https://arxiv.org/abs/2412.13408,,sequential_rec,AAAI,2025
+Spatial-Temporal Knowledge Distillation for Takeaway Recommendation,2412.16502,https://arxiv.org/abs/2412.16502,,poi_spatiotemporal_rec,AAAI,2025
+Multifaceted User Modeling in Recommendation: A Federated Foundation Models Approach,2412.16969,https://arxiv.org/abs/2412.16969,,sequential_rec,AAAI,2025
+Preliminary Evaluation of the Test-Time Training Layers in Recommendation System (Student Abstract),2411.15186,https://arxiv.org/abs/2411.15186,,sequential_rec,AAAI,2025

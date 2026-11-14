@@ -1,0 +1,12 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Adversarial Alignment and Disentanglement for Cross-Domain CTR Prediction with Domain-Encompassing Features,2601.17472,https://arxiv.org/abs/2601.17472,https://github.com/youzi0925/A-2DCDR,cross_domain_multi_scenario,ICDM,2025
+Efficient Sequential Recommendation for Long Term User Interest Via Personalization,2601.03479,https://arxiv.org/abs/2601.03479,https://github.com/facebookresearch/PerSRec,sequential_rec,ICDM,2025
+Beyond Static LLM Policies: Imitation-Enhanced Reinforcement Learning for Recommendation,2510.13229,https://arxiv.org/abs/2510.13229,https://github.com/ArronDZhang/IL-Rec,rl_bandit_rec,ICDM,2025
+On Predicting Post-Click Conversion Rate via Counterfactual Inference,2510.04816,https://arxiv.org/abs/2510.04816,,ctr_feature_interaction,ICDM,2025
+Customized Retrieval-Augmented Generation with LLM for Debiasing Recommendation Unlearning,2511.05494,https://arxiv.org/abs/2511.05494,https://github.com/zhanghaichao520/LLM_rec_unlearning,debias_fairness_industrial,ICDM,2025
+Scaling Multimodal Search and Recommendation with Small Language Models via Upside-Down Reinforcement Learning,2502.09854,https://arxiv.org/abs/2502.09854,,llm_rec,ICDM,2025
+Reasoning over User Preferences: Knowledge Graph-Augmented LLMs for Explainable Conversational Recommendations,2411.14459,https://arxiv.org/abs/2411.14459,,agent_conversational_rec,ICDM,2025
+Bi-NAS: Towards Effective and Personalized Explanation for Recommender Systems via Bi-Level Neural Architecture Search,2607.01387,https://arxiv.org/abs/2607.01387,,agent_conversational_rec,ICDM,2025
+FUSE : Failure-aware Usage of Subagent Evidence for MultiModal Search and Recommendation,2601.02365,https://arxiv.org/abs/2601.02365,,multimodal_rec,ICDM,2025
+PersoPilot: An Adaptive AI-Copilot for Transparent Contextualized Persona Classification and Personalized Response Generation,2602.04540,https://arxiv.org/abs/2602.04540,,agent_conversational_rec,ICDM,2025
+Effectiveness of LLMs in Temporal User Profiling for Recommendation,2511.00176,https://arxiv.org/abs/2511.00176,,llm_rec,ICDM,2025

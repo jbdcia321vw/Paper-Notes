@@ -131,4 +131,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （合成+两个真实数据集、10 次重复+Wilcoxon 检验、$\alpha$/Sinkhorn/鲁棒性多组消融齐全，但真实数据规模与线上 A/B 缺失）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （定义-命题-定理链条清晰，Example 3.2/3.4 反例直观，符号略密集但附录有汇总）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、Sinkhorn 版可 GPU 批处理支撑上百规模，但偏好概率估计与在线低延迟部署仍需额外工程）
-

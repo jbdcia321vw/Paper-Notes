@@ -1,0 +1,73 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Alibaba International E-commerce Product Search Competition DcuRAGONs Team Technical Report,2510.25428,https://arxiv.org/abs/2510.25428,https://github.com/nhtlongcs/e-commerce-product-search,llm_rec,CIKM,2025
+GReF: A Unified Generative Framework for Efficient Reranking via Ordered Multi-token Prediction,2510.25220,https://arxiv.org/abs/2510.25220,,multi_task_reranking,CIKM,2025
+Causality-aware Graph Aggregation Weight Estimator for Popularity Debiasing in Top-K Recommendation,2510.04502,https://arxiv.org/abs/2510.04502,https://github.com/QueYork/CAGED,debias_fairness_industrial,CIKM,2025
+Modality Alignment with Multi-scale Bilateral Attention for Multimodal Recommendation,2509.09114,https://arxiv.org/abs/2509.09114,https://github.com/rkl71/MambaRec,multimodal_rec,CIKM,2025
+Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs,2509.02017,https://arxiv.org/abs/2509.02017,https://github.com/Applied-Machine-Learning-Lab/MME-SID,generative_rec,CIKM,2025
+CSRM-LLM: Embracing Multilingual LLMs for Cold-Start Relevance Matching in Emerging E-commerce Markets,2509.01566,https://arxiv.org/abs/2509.01566,,cold_start_rec,CIKM,2025
+Ultra Fast Warm Start Solution for Graph Recommendations,2509.01549,https://arxiv.org/abs/2509.01549,,graph_rec,CIKM,2025
+MPFormer: Adaptive Framework for Industrial Multi-Task Personalized Sequential Retriever,2508.20400,https://arxiv.org/abs/2508.20400,,multi_task_reranking,CIKM,2025
+BiListing: Modality Alignment for Listings,2508.20396,https://arxiv.org/abs/2508.20396,,multimodal_rec,CIKM,2025
+Improving Recommendation Fairness via Graph Structure and Representation Augmentation,2508.19547,https://arxiv.org/abs/2508.19547,,debias_fairness_industrial,CIKM,2025
+A Self-Supervised Mixture-of-Experts Framework for Multi-behavior Recommendation,2508.19507,https://arxiv.org/abs/2508.19507,,self_supervised_denoising,CIKM,2025
+STARec: An Efficient Agent Framework for Recommender Systems via Autonomous Deliberate Reasoning,2508.18812,https://arxiv.org/abs/2508.18812,,agent_conversational_rec,CIKM,2025
+A Universal Framework for Offline Serendipity Evaluation in Recommender Systems via Large Language Models,2508.17571,https://arxiv.org/abs/2508.17571,,debias_fairness_industrial,CIKM,2025
+ORCA: Mitigating Over-Reliance for Multi-Task Dwell Time Prediction with Causal Decoupling,2508.16573,https://arxiv.org/abs/2508.16573,https://github.com/Chrissie-Law/ORCA-Mitigating-Over-Reliance-for-Multi-Task-Dwell-Time-Prediction-with-Causal-Decoupling,multi_task_reranking,CIKM,2025
+See Beyond a Single View: Multi-Attribution Learning Leads to Better Conversion Rate Prediction,2508.15217,https://arxiv.org/abs/2508.15217,,ctr_feature_interaction,CIKM,2025
+MISS: Multi-Modal Tree Indexing and Searching with Lifelong Sequential Behavior for Retrieval Recommendation,2508.14515,https://arxiv.org/abs/2508.14515,,multimodal_rec,CIKM,2025
+Global-Distribution Aware Scenario-Specific Variational Representation Learning Framework,2508.14493,https://arxiv.org/abs/2508.14493,,cross_domain_multi_scenario,CIKM,2025
+Distribution-Guided Auto-Encoder for User Multimodal Interest Cross Fusion,2508.14485,https://arxiv.org/abs/2508.14485,,multimodal_rec,CIKM,2025
+You Only Evaluate Once: A Tree-based Rerank Method at Meituan,2508.14420,https://arxiv.org/abs/2508.14420,,multi_task_reranking,CIKM,2025
+MUFFIN: Mixture of User-Adaptive Frequency Filtering for Sequential Recommendation,2508.13670,https://arxiv.org/abs/2508.13670,https://github.com/ilwoong100/MUFFIN,sequential_rec,CIKM,2025
+Heterogeneous Influence Maximization in User Recommendation,2508.13517,https://arxiv.org/abs/2508.13517,https://github.com/socialalgo/HIM,social_group_rec,CIKM,2025
+LLM-Enhanced Linear Autoencoders for Recommendation,2508.13500,https://arxiv.org/abs/2508.13500,https://github.com/jaewan7599/L3AE_CIKM2025,llm_rec,CIKM,2025
+Hypercomplex Prompt-aware Multimodal Recommendation,2508.10753,https://arxiv.org/abs/2508.10753,,multimodal_rec,CIKM,2025
+STEP: Stepwise Curriculum Learning for Context-Knowledge Fusion in Conversational Recommendation,2508.10669,https://arxiv.org/abs/2508.10669,https://github.com/Alex-bupt/STEP,agent_conversational_rec,CIKM,2025
+DAS: Dual-Aligned Semantic IDs Empowered Industrial Recommender System,2508.10584,https://arxiv.org/abs/2508.10584,,generative_rec,CIKM,2025
+Expert-Guided Diffusion Planner for Auto-Bidding,2508.08687,https://arxiv.org/abs/2508.08687,,rl_bandit_rec,CIKM,2025
+Efficient Multimodal Streaming Recommendation via Expandable Side Mixture-of-Experts,2508.05993,https://arxiv.org/abs/2508.05993,https://github.com/qykcq/Efficient-Multimodal-Streaming-Recommendation-via-Expandable-Side-Mixture-of-Experts,multimodal_rec,CIKM,2025
+Federated Continual Recommendation,2508.04792,https://arxiv.org/abs/2508.04792,,debias_fairness_industrial,CIKM,2025
+Do Recommender Systems Really Leverage Multimodal Content? A Comprehensive Analysis on Multimodal Representations for Recommendation,2508.04571,https://arxiv.org/abs/2508.04571,,multimodal_rec,CIKM,2025
+Benefit from Rich: Tackling Search Interaction Sparsity in Search Enhanced Recommendation,2508.04145,https://arxiv.org/abs/2508.04145,,cross_domain_multi_scenario,CIKM,2025
+Shallow AutoEncoding Recommender with Cold Start Handling via Side Features,2504.02288,https://arxiv.org/abs/2504.02288,,cold_start_rec,CIKM,2025
+Harnessing Light for Cold-Start Recommendations: Leveraging Epistemic Uncertainty to Enhance Performance in User-Item Interactions,2502.16256,https://arxiv.org/abs/2502.16256,https://github.com/EsiksonX/CREU,cold_start_rec,CIKM,2025
+Scenario-Wise Rec: A Multi-Scenario Recommendation Benchmark,2412.17374,https://arxiv.org/abs/2412.17374,,cross_domain_multi_scenario,CIKM,2025
+MARM: Unlocking the Future of Recommendation Systems through Memory Augmentation and Scalable Complexity,2411.09425,https://arxiv.org/abs/2411.09425,,debias_fairness_industrial,CIKM,2025
+Prompt Tuning as User Inherent Profile Inference Machine,2408.06577,https://arxiv.org/abs/2408.06577,https://github.com/Applied-Machine-Learning-Lab/UserIP-Tuning,llm_rec,CIKM,2025
+Enhancing Graph Collaborative Filtering with FourierKAN Feature Transformation,2406.01034,https://arxiv.org/abs/2406.01034,,graph_rec,CIKM,2025
+Exploring the Upper Limits of Text-Based Collaborative Filtering Using Large Language Models: Discoveries and Insights,2305.11700,https://arxiv.org/abs/2305.11700,,llm_rec,CIKM,2025
+Evaluating and Addressing Fairness Across User Groups in Negative Sampling for Recommender Systems,2304.07487,https://arxiv.org/abs/2304.07487,,debias_fairness_industrial,CIKM,2025
+A Soft-partitioned Semi-supervised Collaborative Transfer Learning Approach for Multi-Domain Recommendation,2511.01404,https://arxiv.org/abs/2511.01404,,cross_domain_multi_scenario,CIKM,2025
+Maximum In-Support Return Modeling for Dynamic Recommendation with Language Model Prior,2510.12816,https://arxiv.org/abs/2510.12816,,rl_bandit_rec,CIKM,2025
+Energy-Guided Diffusion Sampling for Long-Term User Behavior Prediction in Reinforcement Learning-based Recommendation,2510.12815,https://arxiv.org/abs/2510.12815,,rl_bandit_rec,CIKM,2025
+SPARK: Adaptive Low-Rank Knowledge Graph Modeling in Hybrid Geometric Spaces for Recommendation,2509.11094,https://arxiv.org/abs/2509.11094,https://github.com/Applied-Machine-Learning-Lab/SPARK,graph_rec,CIKM,2025
+What Data is Really Necessary? A Feasibility Study of Inference Data Minimization for Recommender Systems,2508.21547,https://arxiv.org/abs/2508.21547,,debias_fairness_industrial,CIKM,2025
+Personalized Tree-Based Progressive Regression Model for Watch-Time Prediction in Short Video Recommendation,2505.22153,https://arxiv.org/abs/2505.22153,,ctr_feature_interaction,CIKM,2025
+SELF: Surrogate-light Feature Selection with Large Language Models in Deep Recommender Systems,2412.08516,https://arxiv.org/abs/2412.08516,,llm_rec,CIKM,2025
+CPMR: Context-Aware Incremental Sequential Recommendation with Pseudo-Multi-Task Learning,2309.04802,https://arxiv.org/abs/2309.04802,https://github.com/DiMarzioBian/CPMR,sequential_rec,CIKM,2025
+Patient Clustering via Integrated Profiling of Clinical and Digital Data,2308.11748,https://arxiv.org/abs/2308.11748,,collaborative_filtering,CIKM,2025
+Leveraging Watch-time Feedback for Short-Video Recommendations: A Causal Labeling Framework,2306.17426,https://arxiv.org/abs/2306.17426,,debias_fairness_industrial,CIKM,2025
+TransAct V2: Lifelong User Action Sequence Modeling on Pinterest Recommendation,2506.02267,https://arxiv.org/abs/2506.02267,,sequential_rec,CIKM,2025
+InterFormer: Effective Heterogeneous Interaction Learning for Click-Through Rate Prediction,2411.09852,https://arxiv.org/abs/2411.09852,,ctr_feature_interaction,CIKM,2025
+A Node-Aware Dynamic Quantization Approach for Graph Collaborative Filtering,2508.16516,https://arxiv.org/abs/2508.16516,,collaborative_filtering,CIKM,2025
+MTGR: Industrial-Scale Generative Recommendation Framework in Meituan,2505.18654,https://arxiv.org/abs/2505.18654,,generative_rec,CIKM,2025
+TBGRecall: A Generative Retrieval Model for E-commerce Recommendation Scenarios,2508.11977,https://arxiv.org/abs/2508.11977,,generative_rec,CIKM,2025
+Content-Agnostic Moderation for Stance-Neutral Recommendation,2405.18941,https://arxiv.org/abs/2405.18941,,debias_fairness_industrial,CIKM,2025
+KP-Agent: Keyword Pruning in Sponsored Search Advertising via LLM-Powered Contextual Bandits,2601.05257,https://arxiv.org/abs/2601.05257,,rl_bandit_rec,CIKM,2025
+QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou,2411.11739,https://arxiv.org/abs/2411.11739,,multimodal_rec,CIKM,2025
+TRAWL: External Knowledge-Enhanced Recommendation with LLM Assistance,2403.06642,https://arxiv.org/abs/2403.06642,,llm_rec,CIKM,2025
+Harnessing Large Language Models for Group POI Recommendations,2411.13415,https://arxiv.org/abs/2411.13415,,poi_spatiotemporal_rec,CIKM,2025
+Multi-modal Adaptive Mixture of Experts for Cold-start Recommendation,2508.08042,https://arxiv.org/abs/2508.08042,https://github.com/L2R-UET/MAMEX,cold_start_rec,CIKM,2025
+A Content-Driven Micro-Video Recommendation Dataset at Scale,2309.15379,https://arxiv.org/abs/2309.15379,https://github.com/westlake-repl/MicroLens,multimodal_rec,CIKM,2025
+Progressive Semantic Residual Quantization for Multimodal-Joint Interest Modeling in Music Recommendation,2508.20359,https://arxiv.org/abs/2508.20359,,generative_rec,CIKM,2025
+Generative Data Augmentation in Graph Contrastive Learning for Recommendation,2510.09129,https://arxiv.org/abs/2510.09129,https://github.com/MrYansong/GDA4Rec,self_supervised_denoising,CIKM,2025
+HIT Model: A Hierarchical Interaction-Enhanced Two-Tower Model for Pre-Ranking Systems,2505.19849,https://arxiv.org/abs/2505.19849,https://github.com/HarveyYang123/HIT_model,ctr_feature_interaction,CIKM,2025
+Climber: Toward Efficient Scaling Laws for Large Recommendation Models,2502.09888,https://arxiv.org/abs/2502.09888,,sequential_rec,CIKM,2025
+Empowering Denoising Sequential Recommendation with Large Language Model Embeddings,2510.04239,https://arxiv.org/abs/2510.04239,,self_supervised_denoising,CIKM,2025
+Multi-Item-Query Attention for Stable Sequential Recommendation,2509.24424,https://arxiv.org/abs/2509.24424,,sequential_rec,CIKM,2025
+Temporal-Aware User Behaviour Simulation with Large Language Models for Recommender Systems,2509.16895,https://arxiv.org/abs/2509.16895,,agent_conversational_rec,CIKM,2025
+Continual Recommender Systems,2507.03861,https://arxiv.org/abs/2507.03861,,sequential_rec,CIKM,2025
+RankMixer: Scaling Up Ranking Models in Industrial Recommenders,2507.15551,https://arxiv.org/abs/2507.15551,,ctr_feature_interaction,CIKM,2025
+Asymmetric Diffusion Recommendation Model,2508.12706,https://arxiv.org/abs/2508.12706,,generative_rec,CIKM,2025
+Stratified Expert Cloning for Retention-Aware Recommendation at Scale,2504.05628,https://arxiv.org/abs/2504.05628,,rl_bandit_rec,CIKM,2025
+Community-Aware Social Community Recommendation,2508.05107,https://arxiv.org/abs/2508.05107,,social_group_rec,CIKM,2025

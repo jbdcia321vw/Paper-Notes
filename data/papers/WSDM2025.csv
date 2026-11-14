@@ -1,0 +1,27 @@
+﻿title,arxiv_id,paper_url,code_url,category,venue,year
+Teach Me How to Denoise: A Universal Framework for Denoising Multi-modal Recommender Systems via Guided Calibration,2504.14214,https://arxiv.org/abs/2504.14214,https://github.com/Neon-Jing/Guider,multimodal_rec,WSDM,2025
+LightGNN: Simple Graph Neural Network for Recommendation,2501.03228,https://arxiv.org/abs/2501.03228,https://github.com/HKUDS/LightGNN,graph_rec,WSDM,2025
+S-Diff: An Anisotropic Diffusion Model for Collaborative Filtering in Spectral Domain,2501.00384,https://arxiv.org/abs/2501.00384,,collaborative_filtering,WSDM,2025
+Spectrum-based Modality Representation Fusion Graph Convolutional Network for Multimodal Recommendation,2412.14978,https://arxiv.org/abs/2412.14978,https://github.com/kennethorq/SMORE,multimodal_rec,WSDM,2025
+MixRec: Heterogeneous Graph Collaborative Filtering,2412.13825,https://arxiv.org/abs/2412.13825,https://github.com/HKUDS/MixRec,graph_rec,WSDM,2025
+Sequential Diversification with Provable Guarantees,2412.10944,https://arxiv.org/abs/2412.10944,,multi_task_reranking,WSDM,2025
+Temporal Linear Item-Item Model for Sequential Recommendation,2412.07382,https://arxiv.org/abs/2412.07382,https://github.com/psm1206/TALE,sequential_rec,WSDM,2025
+Explainable CTR Prediction via LLM Reasoning,2412.02588,https://arxiv.org/abs/2412.02588,,ctr_feature_interaction,WSDM,2025
+Privacy-Preserving Orthogonal Aggregation for Guaranteeing Gender Fairness in Federated Recommendation,2411.19678,https://arxiv.org/abs/2411.19678,,debias_fairness_industrial,WSDM,2025
+Fusion Matters: Learning Fusion in Deep Click-through Rate Prediction Models,2411.15731,https://arxiv.org/abs/2411.15731,https://github.com/kexin-kxzhang/OptFusion,ctr_feature_interaction,WSDM,2025
+DLCRec: A Novel Approach for Managing Diversity in LLM-Based Recommender Systems,2408.12470,https://arxiv.org/abs/2408.12470,,llm_rec,WSDM,2025
+SCONE: A Novel Stochastic Sampling to Generate Contrastive Views and Hard Negative Samples for Recommendation,2405.00287,https://arxiv.org/abs/2405.00287,https://github.com/jeongwhanchoi/SCONE,self_supervised_denoising,WSDM,2025
+Large Language Model Simulator for Cold-Start Recommendation,2402.09176,https://arxiv.org/abs/2402.09176,,cold_start_rec,WSDM,2025
+An Aspect Performance-aware Hypergraph Neural Network for Review-based Recommendation,2501.15429,https://arxiv.org/abs/2501.15429,https://github.com/dianziliu/APH,graph_rec,WSDM,2025
+CRS Arena: Crowdsourced Benchmarking of Conversational Recommender Systems,2412.10514,https://arxiv.org/abs/2412.10514,,agent_conversational_rec,WSDM,2025
+Facet-Aware Multi-Head Mixture-of-Experts Model for Sequential Recommendation,2411.01457,https://arxiv.org/abs/2411.01457,,sequential_rec,WSDM,2025
+Your Causal Self-Attentive Recommender Hosts a Lonely Neighborhood,2406.02048,https://arxiv.org/abs/2406.02048,https://github.com/yueqirex/SAR-Check,sequential_rec,WSDM,2025
+Review-Based Hyperbolic Cross-Domain Recommendation,2403.20298,https://arxiv.org/abs/2403.20298,,cross_domain_multi_scenario,WSDM,2025
+Supervised Advantage Actor-Critic for Recommender Systems,2111.03474,https://arxiv.org/abs/2111.03474,,rl_bandit_rec,WSDM,2025
+Choosing the Best of Both Worlds: Diverse and Novel Recommendations through Multi-Objective Reinforcement Learning,2110.15097,https://arxiv.org/abs/2110.15097,,rl_bandit_rec,WSDM,2025
+Personalised Outfit Recommendation via History-aware Transformers,2407.00289,https://arxiv.org/abs/2407.00289,,sequential_rec,WSDM,2025
+Reindex-Then-Adapt: Improving Large Language Models for Conversational Recommendation,2405.12119,https://arxiv.org/abs/2405.12119,,agent_conversational_rec,WSDM,2025
+Towards Personalized Federated Multi-Scenario Multi-Task Recommendation,2406.18938,https://arxiv.org/abs/2406.18938,,cross_domain_multi_scenario,WSDM,2025
+"A Contrastive Framework with User, Item and Review Alignment for Recommendation",2501.11963,https://arxiv.org/abs/2501.11963,,self_supervised_denoising,WSDM,2025
+Large Language Model driven Policy Exploration for Recommender Systems,2501.13816,https://arxiv.org/abs/2501.13816,,rl_bandit_rec,WSDM,2025
+Oracle-guided Dynamic User Preference Modeling for Sequential Recommendation,2412.00813,https://arxiv.org/abs/2412.00813,,sequential_rec,WSDM,2025

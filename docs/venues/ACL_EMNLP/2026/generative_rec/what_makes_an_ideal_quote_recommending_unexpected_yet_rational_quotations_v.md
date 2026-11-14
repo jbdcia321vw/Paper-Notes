@@ -132,4 +132,3 @@ $$S_N=\sum_{t=1}^{T}\tilde{w}_t\big[\log p(x_t|x_{<t})-\log p(x_t|C,x_{<t})\big]
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （964 人问卷 + 100 人受控实验 + 三数据集人工标注 + LLM-as-judge 校准，协议完整；扣分在测试集规模仅 300 条）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三阶段流水线与公式定义清晰，偏差分析有附录详证；部分符号如 $\delta_2^{pad}$ 的边界处理仅在附录展开）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、离线/在线解耦、小模型即可支撑新颖性估计；扣分在 772 ms 在线延迟与 Bing 计数依赖）
-

@@ -130,4 +130,3 @@ $$J_{MGRPO}=\frac{\sum_{i\in\mathcal{B}}\sum_{l\in P_i}\ell(\rho_{i,l},\hat{A}_i
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （Full-Ranking 全库排序、5 次运行、消融与泛化/效率/人工评测齐全，但基准为自建合成数据，外部效度受限）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （两阶段流程与奖励公式定义清楚，工具集与合成细节下沉附录，理论分析偏弱）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐ （两阶段解耦使物品富化可离线缓存、在线仅 2 次 MLLM 调用，工程友好；但 4 s 延迟、未开源、隐私与记忆访问合规成本构成落地门槛）
-

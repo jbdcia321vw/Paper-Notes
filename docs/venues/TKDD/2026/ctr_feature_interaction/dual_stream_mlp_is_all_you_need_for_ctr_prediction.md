@@ -132,4 +132,3 @@ flowchart TD
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐⭐ （三基准 17 基线 + 五教师兼容性 + scaling + 保真度拟合 + 完整消融，唯缺线上验证与时间切分）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （公式与算法流程清晰，Sobolev 空间论证略偏形式化、平滑性假设较强）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐⭐ （纯 MLP 推理、代码开源、基于 FuxiCTR/BARS 可复现，延迟与主流模型同级，部署友好）
-

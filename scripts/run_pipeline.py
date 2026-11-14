@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
-run_pipeline.py (v3.6 全量 22 会刊异常隔离 + 坏笔记/旧笔记自动识别重刷版)
+run_pipeline.py (v3.8 支持 --opencode-free 免费调用 deepseek-v4.1-flash-free + 22 会刊异常隔离版)
 一键串联论文笔记流水线：候选名单 -> LLM 分类 -> 生成笔记 -> 导航索引 -> 站点构建/链接检查。
 
 核心修复：
@@ -33,7 +33,7 @@ REPO_ROOT = SCRIPT_DIR.parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from init_clean_recsys_repo import VENUES
+from init_clean_recsys_repo import VENUES, CATEGORIES
 from run_logging import RunLog, format_duration
 
 PROFILES = {
@@ -123,10 +123,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--limit", type=int, default=0, help="最多处理前 N 篇待生成论文（0 表示全部）")
     parser.add_argument("--workers", type=int, default=0, help="并发数；0 表示使用 profile 默认值")
     parser.add_argument("--retries", type=int, default=2, help="失败重试次数（默认 2）")
-    parser.add_argument("--model", default="", help="覆盖模型名（默认 deepseek-flash）")
+    parser.add_argument("--opencode-free", action="store_true", help="一键启用 OpenCode 免费 deepseek-v4.1-flash-free 模型额度（$0 成本）")
+    parser.add_argument("--base-url", default="", help="覆盖 LLM API Base URL（如本地网关 http://127.0.0.1:8080/v1）")
+    parser.add_argument("--model", default="", help="覆盖模型名（默认 deepseek-flash；--opencode-free 时默认 deepseek-v4.1-flash-free）")
     parser.add_argument("--thinking", action="store_true", help="启用 thinking 思维链模式")
     parser.add_argument("--build-list", action="store_true", help="先从 arXiv / OpenAlex / DBLP 自动增量更新候选 CSV")
     parser.add_argument("--use-dblp", action="store_true", help="--build-list 时同步查询 OpenAlex 与 DBLP 官方目录并反查 arXiv")
+    parser.add_argument("--dblp-only", action="store_true", help="--build-list 时严格只以 DBLP 官方录用目录为准，跳过 arXiv 备注搜索（<=2025 默认开启）")
     parser.add_argument("--build-list-max-results", type=int, default=300, help="--build-list 的 arXiv 检索上限")
     parser.add_argument("--build-list-no-llm", action="store_true", help="--build-list 时只用关键词分类")
     parser.add_argument("--classify", action="store_true", help="用 LLM 复核 CSV 相关性与分类")
@@ -183,7 +186,12 @@ def main() -> int:
     translate_figures = args.translate_figures or profile["translate_figures"]
     needs_llm = (args.build_list and not args.build_list_no_llm) or args.classify or not args.skip_generate
 
-    if needs_llm and is_peak_now():
+    if args.opencode_free:
+        os.environ["USE_OPENCODE_FREE"] = "1"
+        if not args.model:
+            args.model = "deepseek-v4.1-flash-free"
+        print(f"[OpenCode Free] 已启用免费模型通道: model={args.model} base_url={args.base_url or 'https://opencode.ai/zen/v1'}")
+    elif needs_llm and is_peak_now():
         print("[Cost] 当前是 DeepSeek 高峰时段，API 价格为非高峰的 2 倍。")
         if args.off_peak_wait:
             if args.dry_run:
@@ -193,8 +201,8 @@ def main() -> int:
     elif args.off_peak_wait:
         print("[Cost] 当前已是非高峰时段，无需等待。")
 
-    if needs_llm and not (os.environ.get("LLM_API_KEY") or os.environ.get("DEEPSEEK_API_KEY")):
-        print("[Warn] 未检测到 LLM_API_KEY / DEEPSEEK_API_KEY；需要 LLM 的步骤可能失败。")
+    if needs_llm and not args.opencode_free and not (os.environ.get("LLM_API_KEY") or os.environ.get("DEEPSEEK_API_KEY") or os.environ.get("USE_OPENCODE_FREE")):
+        print("[Warn] 未检测到 LLM_API_KEY / DEEPSEEK_API_KEY（提示：可加 --opencode-free 使用 OpenCode 免费额度）。")
 
     python = sys.executable
     failed_steps = []
@@ -212,6 +220,12 @@ def main() -> int:
             if args.fail_fast:
                 raise
         args.repair_existing = False
+
+    # 预先创建目标年份下全部 22 会刊 x 16 分类子目录，防止 build_nav_and_index 写空分类 index.md 时报 FileNotFoundError
+    if not args.dry_run:
+        for _v in VENUES:
+            for _c in CATEGORIES:
+                (REPO_ROOT / "docs" / "venues" / _v / str(args.year) / _c).mkdir(parents=True, exist_ok=True)
 
     for v_key in venue_list:
         csv_path = Path(args.csv) if (args.csv and len(venue_list) == 1) else REPO_ROOT / "data" / "papers" / f"{v_key}{args.year}.csv"
@@ -238,8 +252,14 @@ def main() -> int:
                 ]
                 if args.use_dblp:
                     cmd.append("--use-dblp")
+                if args.dblp_only:
+                    cmd.append("--dblp-only")
                 if args.build_list_no_llm:
                     cmd.append("--no-llm")
+                if args.opencode_free:
+                    cmd.append("--opencode-free")
+                if args.base_url:
+                    cmd += ["--llm-base-url", args.base_url]
                 if args.model:
                     cmd += ["--llm-model", args.model]
                 run_command(cmd, args.dry_run, log=log, label=f"[{v_key}] 构建候选名单")
@@ -262,6 +282,10 @@ def main() -> int:
                     cmd += ["--limit", str(args.limit)]
                 if not args.allow_classify_remove:
                     cmd.append("--no-remove")
+                if args.opencode_free:
+                    cmd.append("--opencode-free")
+                if args.base_url:
+                    cmd += ["--base-url", args.base_url]
                 if args.model:
                     cmd += ["--model", args.model]
                 run_command(cmd, args.dry_run, log=log, label=f"[{v_key}] LLM 分类复核")
@@ -304,6 +328,10 @@ def main() -> int:
                     cmd.append("--no-figures")
                 if not translate_figures:
                     cmd.append("--no-figure-translation")
+                if args.opencode_free:
+                    cmd.append("--opencode-free")
+                if args.base_url:
+                    cmd += ["--base-url", args.base_url]
                 if args.model:
                     cmd += ["--model", args.model]
                 if args.thinking:

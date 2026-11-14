@@ -126,4 +126,3 @@ Qwen-2.5-3B 骨干上 ReRec 同样全面领先（Movie-Hard 0.547 vs RLOO 0.529�
 - **评估协议与实验扎实度 (Protocol & Experiments)**: ⭐⭐⭐ （双域五类查询 + 跨域/跨任务/能力保留实验较全面，但 Sampled Ranking 协议偏弱、缺 Full-Ranking 与显著性检验）
 - **写作与数学规范度 (Clarity & Rigor)**: ⭐⭐⭐⭐ （三模块公式定义清晰、超参与实现细节完整，RAAE 的段切分与奖励回填逻辑表述严谨）
 - **工业落地与复现价值 (Industrial & Practical Value)**: ⭐⭐⭐⭐ （代码开源、仅需 3B 骨干与 2×H20、无额外过程奖励模型，推理单次前向，落地成本可控）
-
